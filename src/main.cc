@@ -1,15 +1,13 @@
 #include <QtGui/QApplication>
-#include "mainwindow.h"
-#include "hpp-qt/corbaserver.hh"
+
+#include "hpp/gui/mainwindow.h"
 
 int main(int argc, char *argv[])
 {
   QApplication a(argc, argv);
+  a.setStyle(new QCleanlooksStyle);
   MainWindow w;
   w.show();
-  
-  OmniORBThread omniThread (0, NULL);
-  omniThread.start();
 
   return a.exec();
 }

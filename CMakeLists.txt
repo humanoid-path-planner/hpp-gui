@@ -32,8 +32,10 @@ SETUP_PROJECT()
 FIND_PACKAGE(Qt4 REQUIRED QtCore QtGui QtOpenGl)
 
 ADD_REQUIRED_DEPENDENCY("openscenegraph >= 3.2")
+ADD_REQUIRED_DEPENDENCY("openscenegraph-osgQt")
 ADD_REQUIRED_DEPENDENCY("openthreads >= 3.2")
 ADD_REQUIRED_DEPENDENCY("hpp-corbaserver")
+ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba")
 
 # Activate hpp-util logging if requested
 SET (HPP_DEBUG FALSE CACHE BOOL "trigger hpp-util debug output")
@@ -42,34 +44,58 @@ IF (HPP_DEBUG)
 ENDIF()
 
 SET (${PROJECT_NAME}_HEADERS
-  mainwindow.h
-  osgwidget.h
-  hpp-qt/corbaserver.hh
+  include/hpp/gui/mainwindow.h
+  include/hpp/gui/osgwidget.h
+  include/hpp/gui/configurationlistwidget.h
+  include/hpp/gui/pathplayer.h
+  include/hpp/gui/solverwidget.h
+  include/hpp/gui/tree-item.h
+  include/hpp/gui/ledindicator.h
+  include/hpp/gui/omniorb/omniorbthread.h
+  include/hpp/gui/dialog/dialogloadrobot.h
+  include/hpp/gui/dialog/dialogloadenvironment.h
   )
 
-SET (${PROJECT_NAME}_SOURCES
-  main.cc
-  mainwindow.cc
-  osgwidget.cc
-  hpp-qt/corbaserver.cc
+SET(${PROJECT_NAME}_FORMS
+  include/hpp/gui/ui/mainwindow.ui
+  include/hpp/gui/ui/dialogloadrobot.ui
+  include/hpp/gui/ui/dialogloadenvironment.ui
   )
 
-SET(${PROJECT_NAME}_FORMS mainwindow.ui)
+SET(${PROJECT_NAME}_RESOURCES res/images.qrc)
 
 QT4_WRAP_CPP(${PROJECT_NAME}_HEADERS_MOC ${${PROJECT_NAME}_HEADERS})
 QT4_WRAP_UI(${PROJECT_NAME}_FORMS_HEADERS ${${PROJECT_NAME}_FORMS})
+QT4_ADD_RESOURCES(${PROJECT_NAME}_RESOURCES_RCC ${${PROJECT_NAME}_RESOURCES})
 
 INCLUDE(${QT_USE_FILE})
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
+SET (${PROJECT_NAME}_SOURCES
+  src/main.cc
+  src/mainwindow.cc
+  src/configurationlistwidget.cc
+  src/osgwidget.cc
+  src/tree-item.cc
+  src/pathplayer.cc
+  src/solverwidget.cc
+  src/omniorbthread.cc
+  src/ledindicator.cc
+  src/dialog/dialogloadrobot.cc
+  src/dialog/dialogloadenvironment.cc
+  )
+
 ADD_EXECUTABLE(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES} 
   ${${PROJECT_NAME}_HEADERS_MOC}
   ${${PROJECT_NAME}_FORMS_HEADERS}
+  ${${PROJECT_NAME}_RESOURCES_RCC}
   )
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_LIBRARIES})
 PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} openscenegraph)
 PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} openthreads)
 PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} hpp-corbaserver)
+PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} gepetto-viewer-corba)
+PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} openscenegraph-osgQt)
 
 SETUP_PROJECT_FINALIZE()
