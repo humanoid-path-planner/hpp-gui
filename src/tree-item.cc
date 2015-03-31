@@ -13,6 +13,17 @@ const int JointTreeItem::UpperBoundRole = Qt::UserRole + 3;
 const int JointTreeItem::NumberDofRole  = Qt::UserRole + 4;
 const int JointTreeItem::TypeRole       = Qt::UserRole + 10;
 
+QPushButton* JointItemDelegate::forceIntegrator = 0;
+
+void JointItemDelegate::updateTypeRole (JointTreeItem::ItemType& type)
+{
+  if (forceIntegrator && forceIntegrator->isChecked () && (
+        type == JointTreeItem::UnboundedValueType
+        || type == JointTreeItem::BoundedValueType
+        ))
+    type = JointTreeItem::IntegratorType;
+}
+
 BodyTreeItem::BodyTreeItem(graphics::NodePtr_t node) :
   QStandardItem (QString (node->getID().c_str())),
   node_ (node)
@@ -144,7 +155,7 @@ void JointTreeItem::updateTypeRole()
       if (integrate)    value_[i][0]->setData(IntegratorType,     TypeRole);
       else if (lo < up) value_[i][0]->setData(BoundedValueType,   TypeRole);
       else              value_[i][0]->setData(UnboundedValueType, TypeRole);
-    }
+  }
 }
 
 JointItemDelegate::JointItemDelegate(MainWindow *parent)
@@ -154,23 +165,37 @@ JointItemDelegate::JointItemDelegate(MainWindow *parent)
 QWidget *JointItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
   JointTreeItem::ItemType type = (JointTreeItem::ItemType)index.data(JointTreeItem::TypeRole).toInt();
+  updateTypeRole(type);
+  const QStandardItemModel* m = static_cast <const QStandardItemModel*> (index.model());
+  const JointTreeItem* ji = dynamic_cast <const JointTreeItem*> (m->itemFromIndex(index)->parent());
   switch (type) {
     case JointTreeItem::SkipType:
       return 0;
     case JointTreeItem::IntegratorType: {
-        const QStandardItemModel* m = static_cast <const QStandardItemModel*> (index.model());
-        const JointTreeItem* ji = dynamic_cast <const JointTreeItem*> (m->itemFromIndex(index)->parent());
         assert (ji);
         IntegratorWheel* wheel =
             new IntegratorWheel (Qt::Horizontal, parent, main_,
                                  ji->name(),
                                  ji->data(JointTreeItem::NumberDofRole).toInt(),
-                                 std::min (index.data(JointTreeItem::IndexRole).toInt(),ji->data(JointTreeItem::NumberDofRole).toInt()));
+                                 std::min (
+                                   index.data(JointTreeItem::IndexRole).toInt(),
+                                   ji->data(JointTreeItem::NumberDofRole).toInt()-1));
         return wheel;
       }
     case JointTreeItem::BoundedValueType: {
-        QSlider* slider = new QSlider (Qt::Horizontal, parent);
-        slider->setRange(0, 100);
+        assert (ji);
+        hpp::floatSeq* q = new hpp::floatSeq;
+        hpp::floatSeq cfg = ji->config();
+        q->length(cfg.length());
+        *q = cfg;
+        const QModelIndex& lower = index.sibling(index.row(), 1);
+        const QModelIndex& upper = index.sibling(index.row(), 2);
+        float lo = lower.data(Qt::EditRole).toFloat(),
+              up = upper.data(Qt::EditRole).toFloat();
+        SliderBoundedJoint* slider =
+            new SliderBoundedJoint (Qt::Horizontal, parent,
+                                    main_, ji->name(), q, index.data(JointTreeItem::IndexRole).toInt(),
+                                    lo, up);
         return slider;
       }
     case JointTreeItem::UnboundedValueType:
@@ -179,6 +204,7 @@ QWidget *JointItemDelegate::createEditor(QWidget *parent, const QStyleOptionView
         spinbox->setMinimum(-DBL_MAX);
         spinbox->setMaximum(DBL_MAX);
         spinbox->setSingleStep(0.01);
+        spinbox->setDecimals(3);
         return spinbox;
       }
     default:
@@ -189,20 +215,15 @@ QWidget *JointItemDelegate::createEditor(QWidget *parent, const QStyleOptionView
 void JointItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
   JointTreeItem::ItemType type = (JointTreeItem::ItemType)index.data(JointTreeItem::TypeRole).toInt();
+  updateTypeRole(type);
   float q = index.data(Qt::EditRole).toFloat ();
   switch (type) {
     case JointTreeItem::SkipType:
       return;
-    case JointTreeItem::BoundedValueType:{
-        const QModelIndex& lower = index.sibling(index.row(), 1);
-        const QModelIndex& upper = index.sibling(index.row(), 2);
-        float lo = lower.data(Qt::EditRole).toFloat(),
-              up = upper.data(Qt::EditRole).toFloat();
-        int value = ((float)100 * (q - lo) / (up - lo));
-        QSlider* slider = static_cast <QSlider*> (editor);
-        slider->setValue(value);
-        break;
-      }
+    case JointTreeItem::IntegratorType:
+      return;
+    case JointTreeItem::BoundedValueType:
+      return;
     case JointTreeItem::UnboundedValueType:
     case JointTreeItem::BoundType:{
         QDoubleSpinBox* spinbox = static_cast <QDoubleSpinBox*> (editor);
@@ -218,18 +239,21 @@ void JointItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                      const QModelIndex &index) const
 {
   JointTreeItem::ItemType type = (JointTreeItem::ItemType)index.data(JointTreeItem::TypeRole).toInt();
+  updateTypeRole(type);
+  QStandardItemModel* m = static_cast <QStandardItemModel*> (model);
+  JointTreeItem* ji = dynamic_cast <JointTreeItem*> (m->itemFromIndex(index)->parent());
   float q;
   switch (type) {
     case JointTreeItem::SkipType:
       return;
+    case JointTreeItem::IntegratorType:{
+        hpp::floatSeq_var q = main_->hppClient()->robot()->getJointConfig (ji->name().c_str());
+        ji->updateConfig(q.in());
+        return;
+      }
     case JointTreeItem::BoundedValueType: {
-        const QModelIndex& lower = index.sibling(index.row(), 1);
-        const QModelIndex& upper = index.sibling(index.row(), 2);
-        float lo = lower.data(Qt::EditRole).toFloat(),
-              up = upper.data(Qt::EditRole).toFloat();
-        QSlider* slider = static_cast <QSlider*> (editor);
-        int value = slider->value();
-        q = lo + (float)value * (up - lo) / (float)100;
+        SliderBoundedJoint* slider = static_cast <SliderBoundedJoint*> (editor);
+        q = slider->getValue();
         break;
       }
     case JointTreeItem::UnboundedValueType:
@@ -242,11 +266,10 @@ void JointItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
       return;
     }
   model->setData(index, q, Qt::EditRole);
-  QStandardItemModel* m = static_cast <QStandardItemModel*> (model);
-  JointTreeItem* ji = dynamic_cast <JointTreeItem*> (m->itemFromIndex(index)->parent());
   assert (ji);
   switch (type) {
     case JointTreeItem::BoundedValueType:
+      return;
     case JointTreeItem::UnboundedValueType:
       main_->hppClient()->robot()->setJointConfig (ji->name().c_str(), ji->config());
       break;
@@ -268,11 +291,13 @@ IntegratorWheel::IntegratorWheel(Qt::Orientation o, QWidget *parent,
                                  int nbDof, int index)
   : QSlider (o, parent), rate_ (100), main_ (main), jointName_ (jointName),
     bound_ (100), maxVelocity_ (0.1),
-    currentValue_ (0), nbDof_ (nbDof), index_ (index)
+    currentValue_ (0), dq_ (new hpp::floatSeq), nbDof_ (nbDof), index_ (index)
 {
   setMinimum(-bound_);
   setMaximum(bound_);
   setValue (0);
+  dq_->length (nbDof_);
+  for (int i = 0; i < dq_->length(); ++i) dq_[i] = 0;
   connect(this, SIGNAL (sliderReleased()), this, SLOT (reset()));
   connect(this, SIGNAL (sliderMoved(int)), this, SLOT (updateIntegrator(int)));
   timerId_ = startTimer(rate_);
@@ -282,10 +307,8 @@ void IntegratorWheel::timerEvent(QTimerEvent *)
 {
   killTimer(timerId_);
   if (currentValue_ != 0) {
-      hpp::floatSeq_var dq = new hpp::floatSeq;
-      dq->length(nbDof_);
-      dq[index_] = currentValue_;
-      main_->hppClient()->robot ()->jointIntegrate (jointName_.c_str(), dq.in());
+      dq_[index_] = currentValue_;
+      main_->hppClient()->robot ()->jointIntegrate (jointName_.c_str(), dq_.in());
       main_->applyCurrentConfiguration();
     }
   timerId_ = startTimer(rate_);
@@ -311,7 +334,7 @@ SliderBoundedJoint::SliderBoundedJoint(Qt::Orientation orientation, QWidget *par
   setMinimum(0);
   setMaximum(100);
   setValue (100*(q_[index_] - m_)/(M_ - m_));
-  connect (this, SIGNAL (valueChanged()), this, SLOT (updateConfig()));
+  connect (this, SIGNAL (sliderMoved(int)), this, SLOT (updateConfig(int)));
 }
 
 double SliderBoundedJoint::getValue()
@@ -319,10 +342,9 @@ double SliderBoundedJoint::getValue()
   return q_[index_];
 }
 
-void SliderBoundedJoint::updateConfig()
+void SliderBoundedJoint::updateConfig(int value)
 {
-  q_[index_] = m_ + (double)(value() - 0) * (M_ - m_) / (double)100;
+  q_[index_] = m_ + (double)(value - 0) * (M_ - m_) / (double)100;
   main_->hppClient()->robot()->setJointConfig (jointName_.c_str(), q_.in());
   main_->applyCurrentConfiguration();
 }
-

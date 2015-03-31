@@ -3,6 +3,10 @@
 
 #include <QStandardItem>
 #include <QItemDelegate>
+#include <QDoubleSpinBox>
+#include <QSlider>
+#include <QMenu>
+#include <QPushButton>
 
 #include <hpp/corbaserver/robot.hh>
 #include <hpp/gui/fwd.h>
@@ -89,6 +93,7 @@ private:
   const int bound_;
   const double maxVelocity_;
   double currentValue_;
+  hpp::floatSeq_var dq_;
   int nbDof_, index_;
 };
 
@@ -104,7 +109,7 @@ public:
   double getValue ();
 
 private slots:
-  void updateConfig ();
+  void updateConfig (int value);
 
 private:
   MainWindow* main_;
@@ -167,6 +172,9 @@ class JointItemDelegate : public QItemDelegate
   Q_OBJECT
 
 public:
+  static QPushButton* forceIntegrator;
+  static void updateTypeRole (JointTreeItem::ItemType& type);
+
   JointItemDelegate (MainWindow* parent);
 
   QWidget* createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
