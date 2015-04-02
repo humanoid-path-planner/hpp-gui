@@ -76,7 +76,7 @@ OSGWidget::OSGWidget( WindowsManagerPtr_t wm,
   , wm_ ()
   , wid_ (-1)
   , viewer_ ()
-  , selectionActive_( false )
+  , mode_ (CAMERA_MANIPULATION)
   , selectionFinished_( true )
   , infoBox_ (this)
 {
@@ -98,16 +98,12 @@ OSGWidget::OSGWidget( WindowsManagerPtr_t wm,
   traits_ptr->sampleBuffers = ds->getMultiSamples();
   traits_ptr->samples = ds->getNumMultiSamples();
 
-//  graphicsWindow_ = new osgQt::GraphicsWindowQt ( traits_ptr, parent, shareWidget, f );
   graphicsWindow_ = new osgViewer::GraphicsWindowEmbedded ( traits_ptr );
   wid_ = wm->createWindow (name.c_str(), graphicsWindow_.get());
   wm_ = wsm_->getWindowManager (wid_);
   viewer_ = wm_->getViewerClone();
   osgQt::initQtWindowingSystem();
-  viewer_->setUpViewerAsEmbeddedInWindow(this->x(), this->y(), this->width(), this->height());
-//  viewer_->setRunFrameScheme(osgViewer::ViewerBase::ON_DEMAND);
   viewer_->setThreadingModel( osgViewer::Viewer::SingleThreaded);
-//  osgQt::setViewer (viewer_);
   viewer_->addEventHandler(new osgViewer::WindowSizeHandler);
   viewer_->addEventHandler(new osgViewer::StatsHandler);
 
@@ -163,7 +159,7 @@ void OSGWidget::paintEvent( QPaintEvent* /* paintEvent */ )
 
   this->paintGL();
 
-  if( selectionActive_ && !selectionFinished_ )
+  if( mode_ == NODE_SELECTION && !selectionFinished_ )
   {
     painter.setPen( Qt::black );
     painter.setBrush( Qt::transparent );
@@ -194,16 +190,22 @@ void OSGWidget::keyPressEvent( QKeyEvent* event )
   QString keyString   = event->text();
   const char* keyData = keyString.toAscii().data();
 
-  if( event->key() == Qt::Key_S )
-  {
-    selectionActive_ = !selectionActive_;
-    if (selectionActive_) infoBox_.selectionMode();
-    else infoBox_.normalMode();
-  }
-  else if( event->key() == Qt::Key_H )
-    this->onHome();
-  else
-    this->getEventQueue()->keyPress( osgGA::GUIEventAdapter::KeySymbol( *keyData ) );
+  switch (event->key()) {
+    case Qt::Key_S:
+      this->changeMode(NODE_SELECTION);
+      break;
+    case Qt::Key_M:
+      changeMode(NODE_MOTION);
+      break;
+    case Qt::Key_Escape:
+      changeMode(CAMERA_MANIPULATION);
+      break;
+    case Qt::Key_H:
+      this->onHome();
+      break;
+    default:
+      this->getEventQueue()->keyPress( osgGA::GUIEventAdapter::KeySymbol( *keyData ) );
+    }
 }
 
 void OSGWidget::keyReleaseEvent( QKeyEvent* event )
@@ -219,7 +221,7 @@ void OSGWidget::mouseMoveEvent( QMouseEvent* event )
   // Note that we have to check the buttons mask in order to see whether the
   // left button has been pressed. A call to `button()` will only result in
   // `Qt::NoButton` for mouse move events.
-  if( selectionActive_ && event->buttons() & Qt::LeftButton )
+  if( mode_ == NODE_SELECTION && event->buttons() & Qt::LeftButton )
   {
     selectionEnd_ = event->pos();
 
@@ -237,43 +239,48 @@ void OSGWidget::mouseMoveEvent( QMouseEvent* event )
 void OSGWidget::mousePressEvent( QMouseEvent* event )
 {
   // Selection processing
-  if( selectionActive_ && event->button() == Qt::LeftButton )
-  {
-    selectionStart_    = event->pos();
-    selectionEnd_      = selectionStart_; // Deletes the old selection
-    selectionFinished_ = false;           // As long as this is set, the rectangle will be drawn
-  }
+  switch (mode_) {
+    case CAMERA_MANIPULATION:{
+        // 1 = left mouse button
+        // 2 = middle mouse button
+        // 3 = right mouse button
 
-  // Normal processing
-  else
-  {
-    // 1 = left mouse button
-    // 2 = middle mouse button
-    // 3 = right mouse button
-
-    unsigned int button = 0;
-
-    switch( event->button() )
-    {
-    case Qt::LeftButton:
-      button = 1;
+        unsigned int button = 0;
+        switch (event->button()) {
+          case Qt::LeftButton:
+            button = 1;
+            break;
+          case Qt::MiddleButton:
+            button = 2;
+            break;
+          case Qt::RightButton:
+            button = 3;
+            break;
+          default:
+            break;
+          }
+        this->getEventQueue()->mouseButtonPress( static_cast<float>( event->x() ),
+                                                 static_cast<float>( event->y() ),
+                                                 button );
+      }
       break;
-
-    case Qt::MiddleButton:
-      button = 2;
+    case NODE_SELECTION:
+      if (event->button() == Qt::LeftButton) {
+          selectionStart_    = event->pos();
+          selectionEnd_      = selectionStart_; // Deletes the old selection
+          selectionFinished_ = false;           // As long as this is set, the rectangle will be drawn
+        }
       break;
-
-    case Qt::RightButton:
-      button = 3;
+    case NODE_MOTION:
+      selectionStart_ = event->pos();
+      if (selectedNode_) selectedNode_->setArrowsVisibility (graphics::VISIBILITY_OFF);
+      NodeList list = processPoint();
+      if (list.empty()) selectedNode_ = graphics::NodePtr_t();
+      else {
+          selectedNode_ = list.front();
+          selectedNode_->setArrowsVisibility (graphics::VISIBILITY_ON);
+        }
       break;
-
-    default:
-      break;
-    }
-
-    this->getEventQueue()->mouseButtonPress( static_cast<float>( event->x() ),
-                                             static_cast<float>( event->y() ),
-                                             button );
     }
 }
 
@@ -281,7 +288,7 @@ void OSGWidget::mouseReleaseEvent(QMouseEvent* event)
 {
   // Selection processing: Store end position and obtain selected objects
   // through polytope intersection.
-  if( selectionActive_ && event->button() == Qt::LeftButton )
+  if( mode_ == NODE_SELECTION && event->button() == Qt::LeftButton )
   {
     selectionEnd_      = event->pos();
     selectionFinished_ = true; // Will force the painter to stop drawing the
@@ -330,7 +337,7 @@ void OSGWidget::mouseReleaseEvent(QMouseEvent* event)
 void OSGWidget::wheelEvent( QWheelEvent* event )
 {
   // Ignore wheel events as long as the selection is active.
-  if( selectionActive_ )
+  if( mode_ == NODE_SELECTION )
     return;
 
   event->accept();
@@ -380,6 +387,12 @@ void OSGWidget::onHome()
   }
 }
 
+void OSGWidget::changeMode(Mode mode)
+{
+  mode_ = mode;
+  infoBox_.setMode (mode);
+}
+
 void OSGWidget::onResize( int width, int height )
 {
   osg::Camera* camera = viewer_->getCamera();
@@ -388,7 +401,7 @@ void OSGWidget::onResize( int width, int height )
 
 osgGA::EventQueue* OSGWidget::getEventQueue() const
 {
-  osgGA::EventQueue* eventQueue = graphicsWindow_->getEventQueue();
+  osgGA::EventQueue* eventQueue = viewer_->getEventQueue();
 
   if( eventQueue )
     return( eventQueue );
@@ -396,24 +409,14 @@ osgGA::EventQueue* OSGWidget::getEventQueue() const
     throw( std::runtime_error( "Unable to obtain valid event queue") );
 }
 
-void OSGWidget::processPoint()
+std::list <graphics::NodePtr_t> OSGWidget::processPoint()
 {
-  if (!(selectionStart_ - selectionEnd_).isNull())
-    return;
+  NodeList nodes;
 
-  unsigned int nbSlave = viewer_->getNumSlaves();
-  const osg::View::Slave& s = viewer_->getSlave(0);
   osg::ref_ptr<osg::Camera> camera = viewer_->getCamera();
 
   if( !camera )
     throw std::runtime_error( "Unable to obtain valid camera for selection processing" );
-
-  double w = camera->getViewport()->width();
-  double h = camera->getViewport()->height();
-  if (std::abs(w - width ()) > 1)
-    qDebug() << "Viewport and widgets have different width.";
-  if (std::abs(h - height()) > 1)
-    qDebug() << "Viewport and widgets have different height.";
 
   double x = selectionStart_.x();
   double y = height() - selectionStart_.y();
@@ -432,11 +435,10 @@ void OSGWidget::processPoint()
   camera->accept( iv );
 
   if( !intersector->containsIntersections() )
-    return;
+    return nodes;
 
   osgUtil::LineSegmentIntersector::Intersections intersections = intersector->getIntersections();
 
-  std::list <graphics::NodePtr_t> nodes;
   qDebug () << "Selected node 1:";
   for(osgUtil::LineSegmentIntersector::Intersections::iterator it = intersections.begin();
       it != intersections.end(); ++it) {
@@ -449,33 +451,12 @@ void OSGWidget::processPoint()
             }
         }
     }
-
-  iv = osgUtil::IntersectionVisitor ( intersector );
-
-  s._camera->accept( iv );
-
-  if( !intersector->containsIntersections() )
-    return;
-
-  intersections = intersector->getIntersections();
-
-  nodes.clear();
-  qDebug () << "Selected node 2:";
-  for(osgUtil::LineSegmentIntersector::Intersections::iterator it = intersections.begin();
-      it != intersections.end(); ++it) {
-      for (size_t i = it->nodePath.size()-1; i >= 0 ; --i) {
-          graphics::NodePtr_t n = wsm_->getNode(it->nodePath[i]->getName ());
-          if (n) {
-              nodes.push_back(n);
-              qDebug () << QString::fromStdString(n->getID());
-              break;
-            }
-        }
-    }
+  return nodes;
 }
 
-void OSGWidget::processSelection()
+std::list <graphics::NodePtr_t> OSGWidget::processSelection()
 {
+  NodeList nodes;
   QRect selectionRectangle = makeRectangle( selectionStart_, selectionEnd_ );
   int widgetHeight         = this->height();
 
@@ -505,11 +486,10 @@ void OSGWidget::processSelection()
   camera->accept( iv );
 
   if( !polytopeIntersector->containsIntersections() )
-    return;
+    return nodes;
 
   osgUtil::PolytopeIntersector::Intersections intersections = polytopeIntersector->getIntersections();
 
-  std::list <graphics::NodePtr_t> nodes;
   qDebug () << "Selected nodes:";
   for(osgUtil::PolytopeIntersector::Intersections::iterator it = intersections.begin();
       it != intersections.end(); ++it) {
@@ -522,6 +502,7 @@ void OSGWidget::processSelection()
             }
         }
     }
+  return nodes;
 }
 
 OSGWidget::InfoBox::InfoBox(QWidget *parent) :
@@ -550,4 +531,22 @@ void OSGWidget::InfoBox::recordMode()
 {
   label_.show();
   label_.setPixmap(record_);
+}
+
+void OSGWidget::InfoBox::setMode(OSGWidget::Mode mode)
+{
+  switch (mode) {
+    case CAMERA_MANIPULATION:
+      normalMode();
+      break;
+    case NODE_SELECTION:
+      selectionMode();
+      break;
+    case NODE_MOTION:
+      selectionMode();
+      break;
+    default:
+      normalMode();
+      break;
+    }
 }
