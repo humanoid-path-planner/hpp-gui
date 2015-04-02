@@ -169,9 +169,15 @@ void MainWindow::reload()
   jointsToLink_.clear();
   jointsToLinkMap_.clear();
   bodyTreeModel_->clear();
+  char* robotName;
+  try {
+    robotName = hppClient()->robot()->getRobotName();
+  } catch (hpp::Error& e) {
+    logError(QString(e.msg));
+    return;
+  }
   hpp::Names_t_var joints = hppClient()->robot()->getAllJointNames ();
   std::string bjn (joints[0]);
-  char* robotName = hppClient()->robot()->getRobotName();
   updateRobotJoints(robotName);
   addJointToTree(bjn, 0);
   std::vector <std::string> sceneNames = osgViewerManagers_->getSceneList ();
