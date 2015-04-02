@@ -327,7 +327,7 @@ void MainWindow::showTreeContextMenu(const QPoint &point)
               item->node()->getID().c_str(),
               QSTRING_TO_CONSTCHARARRAY (toDo->text()));
       else if (toDo->parent() == windows) {
-          OSGWidget* w = dynamic_cast <OSGWidget*> (toDo->userData(0));
+          OSGWidget* w = (OSGWidget*)toDo->userData(0);
           if (!w) return;
           osgViewerManagers_->addSceneToWindow(item->node()->getID().c_str(),
                                                w->windowID());
