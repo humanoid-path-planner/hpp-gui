@@ -23,9 +23,10 @@ SET(CXX_DISABLE_WERROR TRUE)
 
 INCLUDE(cmake/base.cmake)
 
-SET(PROJECT_NAME hpp-gui)
-SET(PROJECT_URL "")
-SET(PROJECT_DESCRIPTION "")
+SET(PROJECT_NAME "hpp-gui")
+SET(PROJECT_URL "https://github.com/jmirabel/hpp-gui")
+SET(PROJECT_DESCRIPTION "Graphical interface for HPP ")
+SET(PROJECT_VERSION "0")
 
 SETUP_PROJECT()
 
@@ -71,8 +72,13 @@ QT4_ADD_RESOURCES(${PROJECT_NAME}_RESOURCES_RCC ${${PROJECT_NAME}_RESOURCES})
 INCLUDE(${QT_USE_FILE})
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
+CONFIGURE_FILE (src/main.cc
+  ${CMAKE_BINARY_DIR}/src/main.cc
+  @ONLY
+)
+
 SET (${PROJECT_NAME}_SOURCES
-  src/main.cc
+  ${CMAKE_BINARY_DIR}/src/main.cc
   src/mainwindow.cc
   src/configurationlistwidget.cc
   src/osgwidget.cc
