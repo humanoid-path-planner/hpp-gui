@@ -33,6 +33,7 @@ public:
                                         QString packagePath,
                                         QString urdfFilename,
                                         QString meshDirectory);
+  static QList <EnvironmentDefinition> getEnvironmentDefinitions ();
 
   EnvironmentDefinition getSelectedDescription () {
     return selected_;

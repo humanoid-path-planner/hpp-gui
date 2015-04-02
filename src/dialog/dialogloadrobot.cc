@@ -9,16 +9,7 @@ QStringList DialogLoadRobot::rootJointTypes = QStringList () << "freeflyer" << "
 
 QList <DialogLoadRobot::RobotDefinition> DialogLoadRobot::definitions =
     QList <DialogLoadRobot::RobotDefinition>()
-    << DialogLoadRobot::RobotDefinition ()
-    << DialogLoadRobot::RobotDefinition ("PR2 - hpp_tutorial", "pr2", DialogLoadRobot::rootJointTypes[1], "pr2", "hpp_tutorial",
-                                         "/local/jmirabel/devel/release/install/share/hpp_tutorial/",
-                                         "", "_manipulation", "/opt/ros/hydro/share/")
-    << DialogLoadRobot::RobotDefinition ("HRP2", "hrp2", DialogLoadRobot::rootJointTypes[1], "hrp2", "hrp2_14_description",
-                                         "/local/jmirabel/devel/release/install/share/hrp2_14_description/",
-                                         "", "", "/local/jmirabel/devel/release/install/share/hrp2_14_description/")
-    << DialogLoadRobot::RobotDefinition ("DLR MIIWA", "dlr_miiwa", DialogLoadRobot::rootJointTypes[1], "dlr_miiwa", "dlr_miiwa",
-                                         "/local/jmirabel/devel/release/install/share/dlr_miiwa/",
-                                         "", "", "/local/jmirabel/devel/release/install/share/");
+    << DialogLoadRobot::RobotDefinition ();
 
 DialogLoadRobot::DialogLoadRobot(QWidget *parent) :
   QDialog(parent),
@@ -43,6 +34,11 @@ DialogLoadRobot::~DialogLoadRobot()
 void DialogLoadRobot::addRobotDefinition(QString name, QString robotName, QString rootJointType, QString modelName, QString package, QString packagePath, QString urdfSuffix, QString srdfSuffix, QString meshDirectory)
 {
   definitions.append(RobotDefinition (name, robotName, rootJointType, modelName, package, packagePath, urdfSuffix, srdfSuffix, meshDirectory));
+}
+
+QList<DialogLoadRobot::RobotDefinition> DialogLoadRobot::getRobotDefinitions()
+{
+  return definitions;
 }
 
 void DialogLoadRobot::accept()

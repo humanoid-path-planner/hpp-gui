@@ -42,6 +42,7 @@ public:
                                   QString urdfSuffix,
                                   QString srdfSuffix,
                                   QString meshDirectory);
+  static QList <RobotDefinition> getRobotDefinitions ();
 
   RobotDefinition getSelectedRobotDescription () {
     return selected_;

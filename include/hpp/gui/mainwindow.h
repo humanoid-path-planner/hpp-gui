@@ -73,6 +73,8 @@ private slots:
 
 private:
   void computeObjectPosition ();
+  void readSettings ();
+  void writeSettings ();
 
   Ui::MainWindow* ui_;
   OSGWidget* centralWidget_;

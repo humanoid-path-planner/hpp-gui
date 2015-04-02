@@ -7,13 +7,7 @@
 
 QList <DialogLoadEnvironment::EnvironmentDefinition> DialogLoadEnvironment::definitions =
     QList <DialogLoadEnvironment::EnvironmentDefinition>()
-    << DialogLoadEnvironment::EnvironmentDefinition ()
-    << DialogLoadEnvironment::EnvironmentDefinition ("Kitchen", "kitchen", "iai_maps",
-                                         "/local/jmirabel/devel/release/install/share/iai_maps/",
-                                         "kitchen_area", "/local/jmirabel/devel/release/install/share/iai_maps/")
-    << DialogLoadEnvironment::EnvironmentDefinition ("Floor with bar", "floor_with_bar", "iai_maps",
-                                         "/local/jmirabel/devel/release/install/share/iai_maps/",
-                                         "floor_with_bar", "/local/jmirabel/devel/release/install/share/iai_maps/");
+    << DialogLoadEnvironment::EnvironmentDefinition ();
 
 DialogLoadEnvironment::DialogLoadEnvironment(QWidget *parent) :
   QDialog(parent),
@@ -36,6 +30,11 @@ DialogLoadEnvironment::~DialogLoadEnvironment()
 void DialogLoadEnvironment::addEnvironmentDefinition(QString name, QString envName, QString package, QString packagePath, QString urdfFilename, QString meshDirectory)
 {
   definitions.append(EnvironmentDefinition (name, envName, package, packagePath, urdfFilename, meshDirectory));
+}
+
+QList<DialogLoadEnvironment::EnvironmentDefinition> DialogLoadEnvironment::getEnvironmentDefinitions()
+{
+  return definitions;
 }
 
 void DialogLoadEnvironment::accept()
