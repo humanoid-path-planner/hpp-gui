@@ -240,7 +240,11 @@ void MainWindow::openLoadRobotDialog()
       emit sendToBackground(item);
       QDir dir (rd.packagePath_); dir.cd("urdf");
       QString urdfFile = dir.absoluteFilePath(rd.modelName_ + rd.urdfSuf_ + ".urdf");
-      centralWidget_->loadURDF(rd.robotName_, urdfFile, rd.mesh_);
+      try {
+        centralWidget_->loadURDF(rd.robotName_, urdfFile, rd.mesh_);
+      } catch (std::runtime_error& exc) {
+        log (exc.what ());
+      }
     }
   d->close();
   statusBar()->clearMessage();
@@ -272,12 +276,16 @@ void MainWindow::openLoadEnvironmentDialog()
       emit sendToBackground(item);
       QDir d (rd.packagePath_); d.cd("urdf");
       QString urdfFile = d.absoluteFilePath(rd.urdfFilename_ + ".urdf");
-      osgViewerManagers_->addUrdfObjects(QSTRING_TO_CONSTCHARARRAY (rd.envName_),
-                                         QSTRING_TO_CONSTCHARARRAY (urdfFile),
-                                         QSTRING_TO_CONSTCHARARRAY (rd.mesh_),
-                                         true);
-      osgViewerManagers_->addSceneToWindow(QSTRING_TO_CONSTCHARARRAY (rd.envName_),
-                                           centralWidget_->windowID());
+      try {
+        osgViewerManagers_->addUrdfObjects(QSTRING_TO_CONSTCHARARRAY (rd.envName_),
+                                           QSTRING_TO_CONSTCHARARRAY (urdfFile),
+                                           QSTRING_TO_CONSTCHARARRAY (rd.mesh_),
+                                           true);
+        osgViewerManagers_->addSceneToWindow(QSTRING_TO_CONSTCHARARRAY (rd.envName_),
+                                             centralWidget_->windowID());
+      } catch (std::runtime_error& exc) {
+        log (exc.what ());
+      }
       addBodyToTree(osgViewerManagers_->getScene(rd.envName_.toStdString()));
     }
   statusBar()->clearMessage();
