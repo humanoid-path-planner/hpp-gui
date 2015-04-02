@@ -30,6 +30,8 @@
 
 #include <gepetto/viewer/urdf-parser.h>
 
+#include <hpp/gui/windows-manager.h>
+
 namespace
 {
 
@@ -64,7 +66,7 @@ QRect makeRectangle( const QPoint& first, const QPoint& second )
 
 }
 
-OSGWidget::OSGWidget( graphics::WindowsManagerPtr_t wm,
+OSGWidget::OSGWidget( WindowsManagerPtr_t wm,
                       std::string name,
                       QWidget *parent,
                       const QGLWidget *shareWidget, Qt::WindowFlags f )

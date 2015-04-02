@@ -7,14 +7,37 @@
 
 int WorkItem::idGlobal = 0;
 
+ServerProcess::ServerProcess()
+  : initDone_ ()
+{
+  initDone_.lock();
+}
+
+void ServerProcess::waitForInitDone()
+{
+  initDone_.lock();
+  initDone_.unlock();
+}
+
+void ServerProcess::init()
+{
+  initDone_.unlock();
+}
+
 HppServerProcess::HppServerProcess(hpp::corbaServer::Server *server)
   : server_ (server)
 {}
+
+HppServerProcess::~HppServerProcess()
+{
+  delete server_;
+}
 
 void HppServerProcess::init()
 {
   server_->startCorbaServer ();
   emit done ();
+  ServerProcess::init();
 }
 
 void HppServerProcess::processRequest(bool loop)
@@ -27,10 +50,16 @@ ViewerServerProcess::ViewerServerProcess (graphics::corbaServer::Server *server)
   : server_ (server)
 {}
 
+ViewerServerProcess::~ViewerServerProcess()
+{
+  delete server_;
+}
+
 void ViewerServerProcess::init()
 {
   server_->startCorbaServer ();
   emit done ();
+  ServerProcess::init();
 }
 
 void ViewerServerProcess::processRequest(bool loop)
@@ -61,7 +90,12 @@ void CorbaServer::wait ()
   if (worker_.isRunning()) {
       worker_.terminate();
       worker_.wait();
-    }
+  }
+}
+
+void CorbaServer::waitForInitDone()
+{
+  control_->waitForInitDone();
 }
 
 void CorbaServer::start()

@@ -130,12 +130,19 @@ class ServerProcess : public QObject
 {
   Q_OBJECT
 
+public:
+  ServerProcess () ;
+  void waitForInitDone ();
+
 signals:
   void done ();
 
 public slots:
-  virtual void init () = 0;
+  virtual void init ();
   virtual void processRequest (bool loop) = 0;
+
+protected:
+  QMutex initDone_;
 };
 
 class HppServerProcess : public ServerProcess
@@ -145,7 +152,7 @@ class HppServerProcess : public ServerProcess
 public:
   HppServerProcess (hpp::corbaServer::Server* server_);
 
-  ~HppServerProcess () { delete server_; }
+  ~HppServerProcess ();
 
 public slots:
   void init ();
@@ -162,7 +169,8 @@ class ViewerServerProcess : public ServerProcess
 public:
   ViewerServerProcess (graphics::corbaServer::Server* server);
 
-  ~ViewerServerProcess () { delete server_; }
+  ~ViewerServerProcess ();
+
 
 public slots:
   void init ();
@@ -182,6 +190,8 @@ public:
   ~CorbaServer ();
 
   void wait ();
+
+  void waitForInitDone ();
 
   void start ();
 

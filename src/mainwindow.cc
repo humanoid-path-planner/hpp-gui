@@ -6,6 +6,7 @@
 #include <hpp/corbaserver/client.hh>
 #include <gepetto/viewer/corba/server.hh>
 
+#include "hpp/gui/windows-manager.h"
 #include "hpp/gui/osgwidget.h"
 #include "hpp/gui/solverwidget.h"
 #include "hpp/gui/pathplayer.h"
@@ -23,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui_(new Ui::MainWindow),
   centralWidget_ (),
   problemSolver_ (new hpp::core::ProblemSolver),
-  osgViewerManagers_ (graphics::WindowsManager::create()),
+  osgViewerManagers_ (WindowsManager::create()),
   hppServer_ (new HppServerProcess (
                 new hpp::corbaServer::Server (problemSolver_, 0, NULL, true))),
   osgServer_ (new ViewerServerProcess (
@@ -50,13 +51,8 @@ MainWindow::MainWindow(QWidget *parent) :
   jointTreeModel_->setHorizontalHeaderLabels(l);
   jointTreeModel_->setColumnCount(3);
 
-  QString objName = "hpp_gui_main_window";
-  centralWidget_ = new OSGWidget (osgViewerManagers_, objName.toStdString(), this, 0, 0);
-  centralWidget_->setObjectName(objName);
-  setCentralWidget(centralWidget_);
-  osgWindows_.append(centralWidget_);
-  connect(ui_->actionHome, SIGNAL (activated()), centralWidget_, SLOT (onHome()));
-  hppClient_->connect();
+  // Setup the main OSG widget
+  connect (this, SIGNAL (createView(QString)), SLOT (onCreateView()));
 
   connect (&backgroundQueue_, SIGNAL (done(int)), this, SLOT (handleWorkerDone(int)));
   connect (&backgroundQueue_, SIGNAL (failed(int,const QString&)),
@@ -91,6 +87,10 @@ MainWindow::MainWindow(QWidget *parent) :
   // Setup the status bar
   collisionIndicator_ = new LedIndicator (statusBar());
   statusBar()->addPermanentWidget(collisionIndicator_);
+
+  // Create the HPP client
+  hppServer().waitForInitDone();
+  hppClient()->connect();
 }
 
 MainWindow::~MainWindow()
@@ -128,7 +128,7 @@ SolverWidget *MainWindow::solver() const
   return ui_->dockWidgetContents_solver;
 }
 
-graphics::WindowsManagerPtr_t MainWindow::osg() const
+WindowsManagerPtr_t MainWindow::osg() const
 {
   return osgViewerManagers_;
 }
@@ -163,18 +163,57 @@ void MainWindow::logJobFailed(int id, const QString &text)
   log (QString ("Job ") + QString::number (id) + " failed: " + text);
 }
 
-void MainWindow::onCreateView()
+OSGWidget *MainWindow::delayedCreateView(QString name)
 {
-  QDockWidget* dockOSG = new QDockWidget (
-        tr("OSG Viewer") + " " + QString::number (osgWindows_.size()), this);
-  QString objName = "hpp_gui_side_window_" + QString::number(osgWindows_.size());
-  OSGWidget* osgWidget = new OSGWidget(osgViewerManagers_,
-                                       objName.toStdString(),
-                                       dockOSG, centralWidget_);
-  osgWidget->setObjectName(objName);
+  delayedCreateView_.lock();
+  emit createView(name);
+  delayedCreateView_.lock();
+  delayedCreateView_.unlock();
+  return osgWindows_.last();
+}
+
+void MainWindow::reload()
+{
+  resetJointTree();
+  jointsToLink_.clear();
+  jointsToLinkMap_.clear();
+  bodyTreeModel_->clear();
+  hpp::Names_t_var joints = hppClient()->robot()->getAllJointNames ();
+  std::string bjn (joints[0]);
+  char* robotName = hppClient()->robot()->getRobotName();
+  updateRobotJoints(robotName);
+  addJointToTree(bjn, 0);
+  std::vector <std::string> sceneNames = osgViewerManagers_->getSceneList ();
+  for (int i = 0; i < sceneNames.size(); ++i) {
+      graphics::GroupNodePtr_t group = osgViewerManagers_->getScene(sceneNames[i]);
+      if (!group) continue;
+      addBodyToTree(group);
+    }
+  delete[] robotName;
+}
+
+OSGWidget *MainWindow::onCreateView()
+{
+  QString objName = "hpp_gui_window_" + QString::number(osgWindows_.size());
+  OSGWidget* osgWidget = new OSGWidget (osgViewerManagers_, objName.toStdString(),
+                                        this, centralWidget_, 0);
+  if (centralWidget_) {
+      QDockWidget* dockOSG = new QDockWidget (
+            tr("OSG Viewer") + " " + QString::number (osgWindows_.size()), this);
+      osgWidget->setObjectName(objName);
+      dockOSG->setWidget(osgWidget);
+      addDockWidget(Qt::RightDockWidgetArea, dockOSG);
+    } else {
+      // This OSGWidget should be the central view
+      centralWidget_ = osgWidget;
+      centralWidget_->setObjectName(objName);
+      setCentralWidget(centralWidget_);
+      osgWindows_.append(centralWidget_);
+      connect(ui_->actionHome, SIGNAL (activated()), centralWidget_, SLOT (onHome()));
+    }
   osgWindows_.append(osgWidget);
-  dockOSG->setWidget(osgWidget);
-  addDockWidget(Qt::RightDockWidgetArea, dockOSG);
+  delayedCreateView_.unlock();
+  return osgWidget;
 }
 
 void MainWindow::openLoadRobotDialog()
@@ -182,6 +221,7 @@ void MainWindow::openLoadRobotDialog()
   statusBar()->showMessage("Loading a robot...");
   DialogLoadRobot* d = new DialogLoadRobot (this);
   if (d->exec () == QDialog::Accepted) {
+      createCentralWidget();
       LoadRobot* lr = new LoadRobot;
       LoadRobot& loadDone = *lr;
       loader_.push_back(lr);
@@ -221,6 +261,7 @@ void MainWindow::openLoadEnvironmentDialog()
   statusBar()->showMessage("Loading an environment...");
   DialogLoadEnvironment* e = new DialogLoadEnvironment (this);
   if (e->exec() == QDialog::Accepted) {
+      createCentralWidget();
       LoadEnvironment* le = new LoadEnvironment;
       loader_.push_back(le);
       DialogLoadEnvironment::EnvironmentDefinition rd = e->getSelectedDescription();
@@ -305,6 +346,11 @@ void MainWindow::handleWorkerDone(int id)
           return;
         }
     }
+
+void MainWindow::createCentralWidget()
+{
+  if (centralWidget_) return;
+  onCreateView();
 }
 
 void MainWindow::computeObjectPosition()

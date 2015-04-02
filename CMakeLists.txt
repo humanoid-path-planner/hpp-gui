@@ -45,6 +45,7 @@ IF (HPP_DEBUG)
 ENDIF()
 
 SET (${PROJECT_NAME}_HEADERS
+  include/hpp/gui/windows-manager.h
   include/hpp/gui/mainwindow.h
   include/hpp/gui/osgwidget.h
   include/hpp/gui/configurationlistwidget.h
@@ -79,6 +80,7 @@ CONFIGURE_FILE (src/main.cc
 
 SET (${PROJECT_NAME}_SOURCES
   ${CMAKE_BINARY_DIR}/src/main.cc
+  src/windows-manager.cc
   src/mainwindow.cc
   src/configurationlistwidget.cc
   src/osgwidget.cc

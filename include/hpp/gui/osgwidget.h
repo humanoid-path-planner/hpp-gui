@@ -7,14 +7,16 @@
 #include <osg/ref_ptr>
 
 #include <osgQt/GraphicsWindowQt>
-#include <gepetto/viewer/windows-manager.h>
 #include <gepetto/viewer/window-manager.h>
+
+#include <hpp/gui/fwd.h>
+#include <hpp/gui/windows-manager.h>
 
 class OSGWidget : public QGLWidget
 {
   Q_OBJECT
 public:
-  OSGWidget( graphics::WindowsManagerPtr_t wm,
+  OSGWidget( WindowsManagerPtr_t wm,
              std::string name,
              QWidget* parent = 0,
              const QGLWidget* shareWidget = 0,
@@ -22,7 +24,7 @@ public:
 
   virtual ~OSGWidget();
 
-  graphics::WindowsManager::WindowID windowID () const;
+  WindowsManager::WindowID windowID () const;
 
 public slots:
   void loadURDF (const QString robotName,
@@ -56,8 +58,8 @@ private:
 
   osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> graphicsWindow_;
 //  osg::ref_ptr<osgQt::GraphicsWindowQt> graphicsWindow_;
-  graphics::WindowsManagerPtr_t wsm_;
-  graphics::WindowsManager::WindowID wid_;
+  WindowsManagerPtr_t wsm_;
+  WindowsManager::WindowID wid_;
   graphics::WindowManagerPtr_t wm_;
   osgViewer::ViewerRefPtr viewer_;
 
