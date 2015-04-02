@@ -181,7 +181,7 @@ void MainWindow::reload()
   updateRobotJoints(robotName);
   addJointToTree(bjn, 0);
   std::vector <std::string> sceneNames = osgViewerManagers_->getSceneList ();
-  for (int i = 0; i < sceneNames.size(); ++i) {
+  for (unsigned int i = 0; i < sceneNames.size(); ++i) {
       graphics::GroupNodePtr_t group = osgViewerManagers_->getScene(sceneNames[i]);
       if (!group) continue;
       addBodyToTree(group);
@@ -205,7 +205,6 @@ OSGWidget *MainWindow::onCreateView()
       centralWidget_ = osgWidget;
       centralWidget_->setObjectName(objName);
       setCentralWidget(centralWidget_);
-      osgWindows_.append(centralWidget_);
       connect(ui_->actionHome, SIGNAL (activated()), centralWidget_, SLOT (onHome()));
     }
   osgWindows_.append(osgWidget);
@@ -305,7 +304,7 @@ void MainWindow::updateBodyTree(const QModelIndex &index)
   if (vi) vi->update();
 }
 
-void MainWindow::updateJointTree(const QModelIndex &index)
+void MainWindow::updateJointTree(const QModelIndex &/*index*/)
 {
 }
 
@@ -404,7 +403,7 @@ void MainWindow::computeObjectPosition()
   float d[7];
   for (size_t i = 0; i < obs->length(); ++i) {
       hppClient()->obstacle()->getObstaclePosition (obs[i], cfg);
-      for (size_t j = 0; j < 7; j++) d[j] = cfg[j];
+      for (size_t j = 0; j < 7; j++) d[j] = (float)cfg[j];
       const char* name = obs[i];
       osg ()->applyConfiguration(name, d);
     }
@@ -568,7 +567,7 @@ void MainWindow::applyCurrentConfiguration()
   float T[7];
   foreach (JointLinkPair p, jointsToLink_) {
       hpp::Transform__slice* t = hppClient()->robot()->getLinkPosition(p.first.c_str());
-      for (size_t i = 0; i < 7; ++i) T[i]=t[i];
+      for (size_t i = 0; i < 7; ++i) T[i] = (float)t[i];
       osgViewerManagers_->applyConfiguration(p.second.c_str(), T);
     }
   osgViewerManagers_->refresh();

@@ -162,7 +162,7 @@ JointItemDelegate::JointItemDelegate(MainWindow *parent)
   : QItemDelegate (parent), main_ (parent)
 {}
 
-QWidget *JointItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+QWidget *JointItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/*option*/, const QModelIndex &index) const
 {
   JointTreeItem::ItemType type = (JointTreeItem::ItemType)index.data(JointTreeItem::TypeRole).toInt();
   updateTypeRole(type);
@@ -283,7 +283,7 @@ void JointItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
   main_->applyCurrentConfiguration();
 }
 
-void JointItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void JointItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &/*index*/) const
 {
   editor->setGeometry(option.rect);
 }

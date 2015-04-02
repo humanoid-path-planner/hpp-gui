@@ -42,9 +42,7 @@ signals:
 public slots:
   void loadURDF (const QString robotName,
                  const QString urdf_file_path,
-                 const QString meshDataRootDir,
-                 const QString collisionOrVisual="visual",
-                 const QString linkOrObjectFrame="link");
+                 const QString meshDataRootDir);
   virtual void onHome();
   void changeMode (Mode mode);
 

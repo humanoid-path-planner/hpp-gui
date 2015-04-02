@@ -73,8 +73,8 @@ OSGWidget::OSGWidget( WindowsManagerPtr_t wm,
   : QGLWidget( parent, shareWidget, f )
   , graphicsWindow_()
   , wsm_ (wm)
-  , wm_ ()
   , wid_ (-1)
+  , wm_ ()
   , viewer_ ()
   , mode_ (CAMERA_MANIPULATION)
   , selectionFinished_( true )
@@ -133,9 +133,7 @@ graphics::WindowsManager::WindowID OSGWidget::windowID() const
 
 void OSGWidget::loadURDF(const QString robotName,
                          const QString urdf_file_path,
-                         const QString meshDataRootDir,
-                         const QString collisionOrVisual,
-                         const QString linkOrObjectFrame)
+                         const QString meshDataRootDir)
 {
   QByteArray rn = robotName.toLocal8Bit();
   QByteArray uf = urdf_file_path.toLocal8Bit();
@@ -393,7 +391,7 @@ void OSGWidget::changeMode(Mode mode)
   infoBox_.setMode (mode);
 }
 
-void OSGWidget::onResize( int width, int height )
+void OSGWidget::onResize( int /*width*/, int /*height*/ )
 {
   osg::Camera* camera = viewer_->getCamera();
   camera->setViewport( 0, 0, this->width(), this->height() );
@@ -442,7 +440,7 @@ std::list <graphics::NodePtr_t> OSGWidget::processPoint()
   qDebug () << "Selected node 1:";
   for(osgUtil::LineSegmentIntersector::Intersections::iterator it = intersections.begin();
       it != intersections.end(); ++it) {
-      for (size_t i = it->nodePath.size()-1; i >= 0 ; --i) {
+      for (int i = it->nodePath.size()-1; i >= 0 ; --i) {
           graphics::NodePtr_t n = wsm_->getNode(it->nodePath[i]->getName ());
           if (n) {
               nodes.push_back(n);
@@ -493,7 +491,7 @@ std::list <graphics::NodePtr_t> OSGWidget::processSelection()
   qDebug () << "Selected nodes:";
   for(osgUtil::PolytopeIntersector::Intersections::iterator it = intersections.begin();
       it != intersections.end(); ++it) {
-      for (size_t i = it->nodePath.size()-1; i >= 0 ; --i) {
+      for (int i = it->nodePath.size()-1; i >= 0 ; --i) {
           graphics::NodePtr_t n = wsm_->getNode(it->nodePath[i]->getName ());
           if (n) {
               nodes.push_back(n);

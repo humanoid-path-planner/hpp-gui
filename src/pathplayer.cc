@@ -55,7 +55,8 @@ void PathPlayer::update ()
 
 void PathPlayer::pathIndexChanged(int i)
 {
-  pathLength_ = main_->hppClient()->problem()->pathLength (i);
+  assert (i >= 0);
+  pathLength_ = main_->hppClient()->problem()->pathLength ((short unsigned int)i);
   currentParam_= 0;
 }
 
@@ -100,7 +101,7 @@ void PathPlayer::pathPulse()
       // Stil playing
       currentParam_ += lengthBetweenRefresh();
       if (currentParam_ > pathLength_) {
-          currentParam_ == pathLength_;
+          currentParam_ = pathLength_;
           playPause()->setChecked(false);
         }
       else
@@ -120,7 +121,7 @@ void PathPlayer::timerEvent(QTimerEvent *event)
 void PathPlayer::updateConfiguration ()
 {
   hpp::floatSeq_var config =
-      main_->hppClient()->problem()->configAtParam (pathIndex()->value(),currentParam_);
+      main_->hppClient()->problem()->configAtParam ((short unsigned int)pathIndex()->value(),currentParam_);
   main_->hppClient()->robot()->setCurrentConfig (config.in());
   main_->applyCurrentConfiguration();
 }
@@ -132,7 +133,7 @@ inline double PathPlayer::sliderToLength(int v) const
 
 int PathPlayer::lengthToSlider(double l) const
 {
-  return pathSlider()->maximum() * l / pathLength_;
+  return (int) (pathSlider()->maximum() * l / pathLength_);
 }
 
 inline double PathPlayer::timeToLength(double time) const

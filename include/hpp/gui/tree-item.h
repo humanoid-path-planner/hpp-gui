@@ -19,8 +19,8 @@ class VisibilityItem :public QStandardItem
 public:
   VisibilityItem (BodyTreeItem* parent, Qt::CheckState state = Qt::Checked) :
     QStandardItem ("Visible"),
-    parent_ (parent),
-    state_ (state)
+    state_ (state),
+    parent_ (parent)
   {
     setEditable(false);
     setCheckable(true);
