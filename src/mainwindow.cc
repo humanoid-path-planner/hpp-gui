@@ -527,7 +527,8 @@ void MainWindow::addBodyToTree(graphics::GroupNodePtr_t group)
 
 void MainWindow::addJointToTree(const std::string name, JointTreeItem* parent)
 {
-  graphics::NodePtr_t node = osgViewerManagers_->getScene(jointsToLinkMap_[name]);
+  graphics::NodePtr_t node = osgViewerManagers_->getNode(jointsToLinkMap_[name]);
+  if (!node) node = osgViewerManagers_->getScene(jointsToLinkMap_[name]);
   hpp::floatSeq_var c = hppClient()->robot ()->getJointConfig (name.c_str());
   CORBA::Short nbDof = hppClient()->robot ()->getJointNumberDof (name.c_str());
   hpp::corbaserver::jointBoundSeq_var b = hppClient()->robot ()->getJointBounds (name.c_str());
@@ -542,12 +543,14 @@ void MainWindow::addJointToTree(const std::string name, JointTreeItem* parent)
 
 void MainWindow::updateRobotJoints(const QString robotName)
 {
-  hpp::Names_t* joints = hppClient()->robot()->getAllJointNames ();
+  hpp::Names_t_var joints = hppClient()->robot()->getAllJointNames ();
   for (size_t i = 0; i < joints->length (); ++i) {
-      const char* jname = (*joints)[i];
-      std::string linkName = robotName.toStdString() + "/" + std::string (hppClient()->robot()->getLinkName (jname));
+      const char* jname = joints[i];
+      const char* lname = hppClient()->robot()->getLinkName (jname);
+      std::string linkName = robotName.toStdString() + "/" + std::string (lname);
       jointsToLink_.append(JointLinkPair(jname, linkName));
       jointsToLinkMap_[jname] = linkName;
+      delete[] lname;
     }
 }
 
