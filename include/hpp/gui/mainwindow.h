@@ -38,7 +38,7 @@ public:
 
   SolverWidget* solver() const;
 
-  graphics::WindowsManagerPtr_t osg () const;
+  WindowsManagerPtr_t osg () const;
 
   OSGWidget* centralWidget() const;
 
@@ -48,12 +48,14 @@ public:
 
 signals:
   void sendToBackground (WorkItem* item);
+  void createView (QString name);
 
 public slots:
   void logJobStarted (int id, const QString& text);
   void logJobDone    (int id, const QString& text);
   void logJobFailed  (int id, const QString& text);
 
+  OSGWidget* delayedCreateView (QString name = "");
   void addBodyToTree (graphics::GroupNodePtr_t group);
   void addJointToTree (const std::string name, JointTreeItem *parent);
   void updateRobotJoints (const QString robotName);
@@ -62,7 +64,7 @@ public slots:
   bool close();
 
 private slots:
-  void onCreateView();
+  OSGWidget* onCreateView();
   void openLoadRobotDialog ();
   void openLoadEnvironmentDialog ();
   void updateBodyTree (const QModelIndex& index);
@@ -72,6 +74,7 @@ private slots:
   void handleWorkerDone (int id);
 
 private:
+  void createCentralWidget ();
   void computeObjectPosition ();
   void readSettings ();
   void writeSettings ();
@@ -81,7 +84,7 @@ private:
   QList <OSGWidget*> osgWindows_;
 
   hpp::core::ProblemSolverPtr_t problemSolver_;
-  graphics::WindowsManagerPtr_t osgViewerManagers_;
+  WindowsManagerPtr_t osgViewerManagers_;
   CorbaServer hppServer_, osgServer_;
   hpp::corbaServer::Client* hppClient_;
 //  graphics::corbaServer::Client* hppClient_;
@@ -122,6 +125,8 @@ private:
     virtual void done ();
   };
   QList <LoadDoneStruct*> loader_;
+
+  QMutex delayedCreateView_;
 };
 
 #endif // MAINWINDOW_H
