@@ -335,7 +335,7 @@ SliderBoundedJoint::SliderBoundedJoint(Qt::Orientation orientation, QWidget *par
 {
   setMinimum(0);
   setMaximum(100);
-  setValue (100*((double)q_[index_] - m_)/(M_ - m_));
+  setValue ((int)(100*(q_[index_] - m_)/(M_ - m_)));
   connect (this, SIGNAL (sliderMoved(int)), this, SLOT (updateConfig(int)));
 }
 
