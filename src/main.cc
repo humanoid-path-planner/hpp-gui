@@ -2,8 +2,12 @@
 
 #include "hpp/gui/mainwindow.h"
 
+#include <X11/Xlib.h>
+
 int main(int argc, char *argv[])
 {
+  XInitThreads();
+
   QCoreApplication::setOrganizationName("@PROJECT_NAME@");
   QCoreApplication::setOrganizationDomain("@PROJECT_URL@");
   QCoreApplication::setApplicationName("@PROJECT_NAME@");
