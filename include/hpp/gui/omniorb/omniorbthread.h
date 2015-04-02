@@ -43,8 +43,8 @@ public:
   void performWork () { (caller->*method) (arg0); }
 private:
   Caller* caller;
-  Arg0 arg0;
   Method method;
+  Arg0 arg0;
 };
 template <typename Caller, typename ReturnType, typename Arg0, typename Arg1>
 class WorkItem_2 : public WorkItem {
@@ -55,9 +55,9 @@ public:
   void performWork () { (caller->*method) (arg0, arg1); }
 private:
   Caller* caller;
+  Method method;
   Arg0 arg0;
   Arg1 arg1;
-  Method method;
 };
 template <typename Caller, typename ReturnType,
           typename Arg0, typename Arg1, typename Arg2>
@@ -69,10 +69,10 @@ public:
   void performWork () { (caller->*method) (arg0, arg1, arg2); }
 private:
   Caller* caller;
+  Method method;
   Arg0 arg0;
   Arg1 arg1;
   Arg2 arg2;
-  Method method;
 };
 template <typename Caller, typename ReturnType,
           typename Arg0, typename Arg1, typename Arg2, typename Arg3>
@@ -84,11 +84,11 @@ public:
   void performWork () { (caller->*method) (arg0, arg1, arg2, arg3); }
 private:
   Caller* caller;
+  Method method;
   Arg0 arg0;
   Arg1 arg1;
   Arg2 arg2;
   Arg3 arg3;
-  Method method;
 };
 template <typename Caller, typename ReturnType,
           typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
@@ -100,12 +100,12 @@ public:
   void performWork () { (caller->*method) (arg0, arg1, arg2, arg3, arg4); }
 private:
   Caller* caller;
+  Method method;
   Arg0 arg0;
   Arg1 arg1;
   Arg2 arg2;
   Arg3 arg3;
   Arg4 arg4;
-  Method method;
 };
 template <typename Caller, typename ReturnType,
           typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4, typename Arg5>
@@ -117,13 +117,13 @@ public:
   void performWork () { (caller->*method) (arg0, arg1, arg2, arg3, arg4, arg5); }
 private:
   Caller* caller;
+  Method method;
   Arg0 arg0;
   Arg1 arg1;
   Arg2 arg2;
   Arg3 arg3;
   Arg4 arg4;
   Arg5 arg5;
-  Method method;
 };
 
 class ServerProcess : public QObject

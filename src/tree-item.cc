@@ -118,7 +118,7 @@ hpp::corbaserver::jointBoundSeq JointTreeItem::bounds() const
   hpp::corbaserver::jointBoundSeq b =
       hpp::corbaserver::jointBoundSeq();
   b.length (2*value_.size());
-  for (size_t i = 0; i < value_.size(); ++i) {
+  for (int i = 0; i < value_.size(); ++i) {
       b[2*i  ] = value_[i][1]->data(Qt::EditRole).toFloat();
       b[2*i+1] = value_[i][2]->data(Qt::EditRole).toFloat();
     }
@@ -127,15 +127,15 @@ hpp::corbaserver::jointBoundSeq JointTreeItem::bounds() const
 
 void JointTreeItem::updateConfig (const hpp::floatSeq& c)
 {
-  assert (c.length() == value_.size());
-  for (size_t i = 0; i < value_.size(); ++i)
+  assert ((int)c.length() == value_.size());
+  for (int i = 0; i < value_.size(); ++i)
       value_[i][0]->setData(c[i], Qt::EditRole);
 }
 
 void JointTreeItem::updateBounds(const hpp::corbaserver::jointBoundSeq& b)
 {
-  assert (b.length() == 2*value_.size());
-  for (size_t i = 0; i < value_.size(); ++i) {
+  assert ((int)b.length() == 2*value_.size());
+  for (int i = 0; i < value_.size(); ++i) {
       QStandardItem *lower = value_[i][1];
       QStandardItem *upper = value_[i][2];
       lower->setData(BoundType, TypeRole);
@@ -149,7 +149,7 @@ void JointTreeItem::updateBounds(const hpp::corbaserver::jointBoundSeq& b)
 void JointTreeItem::updateTypeRole()
 {
   bool integrate = (data(NumberDofRole).toInt() != value_.size());
-  for (size_t i = 0; i < value_.size(); ++i) {
+  for (int i = 0; i < value_.size(); ++i) {
       float lo = value_[i][1]->data (Qt::EditRole).toFloat();
       float up = value_[i][2]->data (Qt::EditRole).toFloat();
       if (integrate)    value_[i][0]->setData(IntegratorType,     TypeRole);
@@ -242,7 +242,7 @@ void JointItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
   updateTypeRole(type);
   QStandardItemModel* m = static_cast <QStandardItemModel*> (model);
   JointTreeItem* ji = dynamic_cast <JointTreeItem*> (m->itemFromIndex(index)->parent());
-  float q;
+  double q;
   switch (type) {
     case JointTreeItem::SkipType:
       return;
@@ -277,6 +277,8 @@ void JointItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
       main_->hppClient()->robot()->setJointBounds (ji->name().c_str(), ji->bounds());
       ji->updateTypeRole();
       break;
+    default:
+      break;
     }
   main_->applyCurrentConfiguration();
 }
@@ -297,7 +299,7 @@ IntegratorWheel::IntegratorWheel(Qt::Orientation o, QWidget *parent,
   setMaximum(bound_);
   setValue (0);
   dq_->length (nbDof_);
-  for (int i = 0; i < dq_->length(); ++i) dq_[i] = 0;
+  for (size_t i = 0; i < dq_->length(); ++i) dq_[i] = 0;
   connect(this, SIGNAL (sliderReleased()), this, SLOT (reset()));
   connect(this, SIGNAL (sliderMoved(int)), this, SLOT (updateIntegrator(int)));
   timerId_ = startTimer(rate_);
@@ -333,7 +335,7 @@ SliderBoundedJoint::SliderBoundedJoint(Qt::Orientation orientation, QWidget *par
 {
   setMinimum(0);
   setMaximum(100);
-  setValue (100*(q_[index_] - m_)/(M_ - m_));
+  setValue (100*((double)q_[index_] - m_)/(M_ - m_));
   connect (this, SIGNAL (sliderMoved(int)), this, SLOT (updateConfig(int)));
 }
 
