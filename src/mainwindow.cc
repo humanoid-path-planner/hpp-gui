@@ -36,20 +36,19 @@ MainWindow::MainWindow(QWidget *parent) :
   MainWindow::instance_ = this;
   ui_->setupUi(this);
 
-  findChild <PathPlayer*> ("dockWidgetContents_player")->setup ();
+  pathPlayer()->setup();
   solver()->setup ();
-  hppServer_.start();
+  hppServer().start();
   osgServer_.start();
 
+  // Setup the tree views
+  JointItemDelegate::forceIntegrator = ui_->button_forceVelocity;
   bodyTreeModel_  = new QStandardItemModel;
   jointTreeModel_ = new QStandardItemModel;
   ui_->bodyTree ->setModel(bodyTreeModel_ );
   ui_->jointTree->setModel(jointTreeModel_);
   ui_->jointTree->setItemDelegate (new JointItemDelegate(this));
-  ui_->jointTree->header()->setVisible(true);
-  QStringList l; l << "Joint" << "Lower bound" << "Upper bound";
-  jointTreeModel_->setHorizontalHeaderLabels(l);
-  jointTreeModel_->setColumnCount(3);
+  resetJointTree();
 
   // Setup the main OSG widget
   connect (this, SIGNAL (createView(QString)), SLOT (onCreateView()));
@@ -62,31 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
   backgroundQueue_.moveToThread(&worker_);
   worker_.start();
 
-  // Group dock widgets
-  this->tabifyDockWidget(ui_->dockWidget_jointTree, ui_->dockWidget_bodyTree);
-  // Menu "Window"
-  ui_->dockWidget_bodyTree->setVisible (false);
-  ui_->menuWindow->addAction(ui_->dockWidget_bodyTree->toggleViewAction ());
-  ui_->dockWidget_jointTree->setVisible (false);
-  ui_->menuWindow->addAction(ui_->dockWidget_jointTree->toggleViewAction ());
-  ui_->dockWidget_configurations->setVisible (false);
-  ui_->menuWindow->addAction(ui_->dockWidget_configurations->toggleViewAction ());
-  ui_->dockWidget_solver->setVisible (false);
-  ui_->menuWindow->addAction(ui_->dockWidget_solver->toggleViewAction ());
-  ui_->dockWidget_player->setVisible (false);
-  ui_->menuWindow->addAction(ui_->dockWidget_player->toggleViewAction ());
-  ui_->dockWidget_log->setVisible (false);
-  ui_->menuWindow->addAction(ui_->dockWidget_log->toggleViewAction ());
-  ui_->menuWindow->addSeparator();
-  QMenu* toolbar = ui_->menuWindow->addMenu("Tool bar");
-  ui_->mainToolBar->setVisible(false);
-  ui_->osgToolBar->setVisible(false);
-  toolbar->addAction (ui_->mainToolBar->toggleViewAction ());
-  toolbar->addAction (ui_->osgToolBar->toggleViewAction ());
-
-  // Setup the status bar
-  collisionIndicator_ = new LedIndicator (statusBar());
-  statusBar()->addPermanentWidget(collisionIndicator_);
+  setupInterface();
 
   readSettings();
 
@@ -131,6 +106,11 @@ SolverWidget *MainWindow::solver() const
   return ui_->dockWidgetContents_solver;
 }
 
+PathPlayer *MainWindow::pathPlayer() const
+{
+  return ui_->dockWidgetContents_player;
+}
+
 WindowsManagerPtr_t MainWindow::osg() const
 {
   return osgViewerManagers_;
@@ -143,7 +123,15 @@ OSGWidget *MainWindow::centralWidget() const
 
 void MainWindow::log(const QString &text)
 {
-  ui_->logText->appendPlainText (text);
+  ui_->logText->insertHtml("<hr/><font color=black>"+text+"</font>");
+}
+
+void MainWindow::logError(const QString &text)
+{
+  if (!ui_->dockWidget_log->isVisible()) {
+      ui_->dockWidget_log->show();
+    }
+  ui_->logText->insertHtml("<hr/><font color=red>"+text+"</font>");
 }
 
 void MainWindow::emitSendToBackground(WorkItem *item)
@@ -163,7 +151,7 @@ void MainWindow::logJobDone(int id, const QString &text)
 
 void MainWindow::logJobFailed(int id, const QString &text)
 {
-  log (QString ("Job ") + QString::number (id) + " failed: " + text);
+  logError (QString ("Job ") + QString::number (id) + " failed: " + text);
 }
 
 OSGWidget *MainWindow::delayedCreateView(QString name)
@@ -348,7 +336,46 @@ void MainWindow::handleWorkerDone(int id)
           delete d;
           return;
         }
-    }
+  }
+}
+
+void MainWindow::setupInterface()
+{
+  // Group dock widgets
+  this->tabifyDockWidget(ui_->dockWidget_jointTree, ui_->dockWidget_bodyTree);
+  // Menu "Window"
+  ui_->dockWidget_bodyTree->setVisible (false);
+  ui_->menuWindow->addAction(ui_->dockWidget_bodyTree->toggleViewAction ());
+  ui_->dockWidget_jointTree->setVisible (false);
+  ui_->menuWindow->addAction(ui_->dockWidget_jointTree->toggleViewAction ());
+  ui_->dockWidget_configurations->setVisible (false);
+  ui_->menuWindow->addAction(ui_->dockWidget_configurations->toggleViewAction ());
+  ui_->dockWidget_solver->setVisible (false);
+  ui_->menuWindow->addAction(ui_->dockWidget_solver->toggleViewAction ());
+  ui_->dockWidget_player->setVisible (false);
+  ui_->menuWindow->addAction(ui_->dockWidget_player->toggleViewAction ());
+  ui_->dockWidget_log->setVisible (false);
+  ui_->menuWindow->addAction(ui_->dockWidget_log->toggleViewAction ());
+  ui_->menuWindow->addSeparator();
+  QMenu* toolbar = ui_->menuWindow->addMenu("Tool bar");
+  ui_->mainToolBar->setVisible(false);
+  ui_->osgToolBar->setVisible(false);
+  toolbar->addAction (ui_->mainToolBar->toggleViewAction ());
+  toolbar->addAction (ui_->osgToolBar->toggleViewAction ());
+
+  // Setup the status bar
+  collisionIndicator_ = new LedIndicator (statusBar());
+  statusBar()->addPermanentWidget(collisionIndicator_);
+}
+
+void MainWindow::resetJointTree()
+{
+  jointTreeModel_->clear();
+  ui_->jointTree->header()->setVisible(true);
+  QStringList l; l << "Joint" << "Lower bound" << "Upper bound";
+  jointTreeModel_->setHorizontalHeaderLabels(l);
+  jointTreeModel_->setColumnCount(3);
+}
 
 void MainWindow::createCentralWidget()
 {
@@ -497,14 +524,9 @@ void MainWindow::addJointToTree(const std::string name, JointTreeItem* parent)
   CORBA::Short nbDof = hppClient()->robot ()->getJointNumberDof (name.c_str());
   hpp::corbaserver::jointBoundSeq_var b = hppClient()->robot ()->getJointBounds (name.c_str());
 
-//  char* n = new char[sizeof(char)*(name.length()+1)];
-//  strcpy (n, name.c_str());
   JointTreeItem* j = new JointTreeItem (name.c_str(), c.in(), b.in(), nbDof, node);
-  if (parent) {
-      parent->appendRow(j);
-    } else {
-      jointTreeModel_->appendRow(j);
-    }
+  if (parent) parent->appendRow(j);
+  else        jointTreeModel_->appendRow(j);
   hpp::Names_t_var children = hppClient()->robot ()->getChildJointNames (name.c_str());
   for (size_t i = 0; i < children->length(); ++i)
     addJointToTree(std::string(children[i]),j);
@@ -524,9 +546,9 @@ void MainWindow::updateRobotJoints(const QString robotName)
 void MainWindow::applyCurrentConfiguration()
 {
   statusBar()->showMessage("Applying current configuration...");
+  float T[7];
   foreach (JointLinkPair p, jointsToLink_) {
       hpp::Transform__slice* t = hppClient()->robot()->getLinkPosition(p.first.c_str());
-      float T[7];
       for (size_t i = 0; i < 7; ++i) T[i]=t[i];
       osgViewerManagers_->applyConfiguration(p.second.c_str(), T);
     }
@@ -543,16 +565,6 @@ void MainWindow::requestConfigurationValidation()
   hppClient()->robot()->isConfigValid (q.in(), b);
   collisionIndicator_->switchLed(b);
   if (!b) log ("Current configuration is NOT valid.");
-}
-
-bool MainWindow::close()
-{
-//  if (hpp_.isRunning()) hpp_.requestInterruption ();
-//  if (worker_.isRunning()) worker_.requestInterruption ();
-//  if (hpp_.isRunning()) hpp_.wait();
-//  if (worker_.isRunning()) worker_.wait ();
-
-  return QMainWindow::close();
 }
 
 void MainWindow::LoadRobot::done()

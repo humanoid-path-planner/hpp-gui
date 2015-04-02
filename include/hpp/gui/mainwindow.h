@@ -38,11 +38,14 @@ public:
 
   SolverWidget* solver() const;
 
+  PathPlayer* pathPlayer() const;
+
   WindowsManagerPtr_t osg () const;
 
   OSGWidget* centralWidget() const;
 
   void log (const QString& text);
+  void logError (const QString& text);
 
   void emitSendToBackground (WorkItem* item);
 
@@ -61,7 +64,6 @@ public slots:
   void updateRobotJoints (const QString robotName);
   void applyCurrentConfiguration ();
   void requestConfigurationValidation ();
-  bool close();
 
 private slots:
   OSGWidget* onCreateView();
@@ -74,6 +76,8 @@ private slots:
   void handleWorkerDone (int id);
 
 private:
+  void setupInterface ();
+  void resetJointTree ();
   void createCentralWidget ();
   void computeObjectPosition ();
   void readSettings ();
