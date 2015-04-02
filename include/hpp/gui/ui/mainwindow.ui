@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>576</width>
+    <width>754</width>
     <height>728</height>
    </rect>
   </property>
@@ -29,7 +29,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>576</width>
+     <width>754</width>
      <height>22</height>
     </rect>
    </property>
@@ -121,6 +121,64 @@
      <property name="margin">
       <number>0</number>
      </property>
+     <item>
+      <widget class="QWidget" name="widget_2" native="true">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="button_forceVelocity">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When possible, force velocity mode.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;There are two modes available for editing the value of a joint:&lt;/p&gt;&lt;p&gt;- velocity: the user provides a speed to be integrated by HPP;&lt;/p&gt;&lt;p&gt;- position: the user provides the value of the joint.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Force velocity</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="refreshButton">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../../../../res/images.qrc">
+            <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>18</width>
+            <height>18</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
      <item>
       <widget class="QTreeView" name="jointTree">
        <property name="contextMenuPolicy">
@@ -228,6 +286,23 @@
    </attribute>
    <widget class="PathPlayer" name="dockWidgetContents_player">
     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QPushButton" name="refreshButton_path">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../../../res/images.qrc">
+         <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>18</width>
+         <height>18</height>
+        </size>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QSpinBox" name="pathIndexSpin">
        <property name="enabled">
@@ -432,17 +507,7 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QPlainTextEdit" name="logText">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="textInteractionFlags">
-        <set>Qt::TextBrowserInteraction</set>
-       </property>
-       <property name="maximumBlockCount">
-        <number>100</number>
-       </property>
-      </widget>
+      <widget class="QTextEdit" name="logText"/>
      </item>
     </layout>
    </widget>
@@ -703,6 +768,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>refreshButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>reload()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>728</x>
+     <y>69</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>376</x>
+     <y>363</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>refreshButton_path</sender>
+   <signal>clicked()</signal>
+   <receiver>dockWidget_player</receiver>
+   <slot>update()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>49</x>
+     <y>639</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>262</x>
+     <y>627</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onCreateView()</slot>
@@ -711,5 +808,6 @@
   <slot>showTreeContextMenu(QPoint)</slot>
   <slot>updateJointTree(QModelIndex)</slot>
   <slot>openLoadEnvironmentDialog()</slot>
+  <slot>reload()</slot>
  </slots>
 </ui>

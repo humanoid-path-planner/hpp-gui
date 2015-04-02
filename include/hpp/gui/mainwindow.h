@@ -59,6 +59,7 @@ public slots:
   void logJobFailed  (int id, const QString& text);
 
   OSGWidget* delayedCreateView (QString name = "");
+  void reload ();
   void addBodyToTree (graphics::GroupNodePtr_t group);
   void addJointToTree (const std::string name, JointTreeItem *parent);
   void updateRobotJoints (const QString robotName);
