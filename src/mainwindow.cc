@@ -547,9 +547,11 @@ void MainWindow::updateRobotJoints(const QString robotName)
   for (size_t i = 0; i < joints->length (); ++i) {
       const char* jname = joints[i];
       const char* lname = hppClient()->robot()->getLinkName (jname);
-      std::string linkName = robotName.toStdString() + "/" + std::string (lname);
-      jointsToLink_.append(JointLinkPair(jname, linkName));
-      jointsToLinkMap_[jname] = linkName;
+      if (strlen(lname) > 0) {
+        std::string linkName = robotName.toStdString() + "/" + std::string (lname);
+        jointsToLink_.append(JointLinkPair(jname, linkName));
+        jointsToLinkMap_[jname] = linkName;
+      }
       delete[] lname;
     }
 }
