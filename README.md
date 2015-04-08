@@ -7,18 +7,42 @@
 #### Basic usage
 Launch the binary file `hpp-gui` and do as in [this video](http://homepages.laas.fr/jmirabel/raw/videos/hpp-gui-example.mp4).
 
-For convenience, robots and environments can be predifined. The configuration files are - from the installation prefix - in `etc/hpp-gui`. Open `robots.conf` and write:
+For convenience, robots and environments can be predifined. The configuration files are - from the installation prefix - in `etc/hpp-gui`.
+
+Open `${CMAKE_INSTALL_PREFIX}/etc/hpp-gui/robots.conf` and write:
 ```
 [PR2 - hpp_tutorial]
 RobotName=pr2
 ModelName=pr2
 RootJointType=planar
 Package=hpp_tutorial
-PackagePath=<INSTALLATION_PREFIX>/share/hpp_tutorial
+PackagePath=${CMAKE_INSTALL_PREFIX}/share/hpp_tutorial
 URDFSuffix=
 SRDFSuffix=_manipulation
 MeshDirectory=/opt/ros/hydro/share/
+
+[HRP2]
+RobotName=hrp2_14
+ModelName=hrp2_14
+RootJointType=freeflyer
+Package=hrp2_14_description
+PackagePath=${CMAKE_INSTALL_PREFIX}/share/hrp2_14_description
+URDFSuffix=
+SRDFSuffix=
+MeshDirectory=${CMAKE_INSTALL_PREFIX}/share/
 ```
+
+Open `${CMAKE_INSTALL_PREFIX}/etc/hpp-gui/environments.conf` and write:
+```
+[Kitchen]
+RobotName=Kitchen
+Package=iai_maps
+PackagePath=${CMAKE_INSTALL_PREFIX}/share/iai_maps
+URDFFilename=kitchen_area
+MeshDirectory=${CMAKE_INSTALL_PREFIX}/share/
+```
+
+Note: Do not forget to replace `${CMAKE_INSTALL_PREFIX}` by a relevant path.
 
 #### For HPP developpers
 As [HPP], the *GUI* can be controlled using a python interface. When the *GUI* starts, it launches a server for both [HPP] and the Gepetto Viewer exactly as if you were manually launching the two commands `hppcorbaserver` and `gepetto-viewer-server`. This means that **you can run the same python scripts** and it will work !
