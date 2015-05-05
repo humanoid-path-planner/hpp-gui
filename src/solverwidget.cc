@@ -57,7 +57,7 @@ void SolverWidget::selectPathPlanner (const QString& text) {
 }
 
 void SolverWidget::selectPathOptimizer (const QString& text) {
-  main_->hppClient()->problem()->selectPathOptimizer (text.toStdString().c_str());
+  main_->hppClient()->problem()->addPathOptimizer (text.toStdString().c_str());
 }
 
 void SolverWidget::selectPathProjector (int index) {

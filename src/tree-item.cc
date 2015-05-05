@@ -80,7 +80,7 @@ JointTreeItem::JointTreeItem(const char* name, const hpp::floatSeq &q,
       QStandardItem *joint = new QStandardItem;
       QStandardItem *upper = new QStandardItem;
       QStandardItem *lower = new QStandardItem;
-      joint->setData(i, IndexRole);
+      joint->setData(static_cast<int>(i), IndexRole);
       QList <QStandardItem*> row;
       row << joint << lower << upper;
       value_.append(row);
