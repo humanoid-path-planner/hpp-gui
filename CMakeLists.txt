@@ -37,6 +37,7 @@ ADD_REQUIRED_DEPENDENCY("openscenegraph-osgQt")
 ADD_REQUIRED_DEPENDENCY("openthreads >= 3.2")
 ADD_REQUIRED_DEPENDENCY("hpp-corbaserver")
 ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba")
+ADD_REQUIRED_DEPENDENCY("remoteimu")
 
 # Activate hpp-util logging if requested
 SET (HPP_DEBUG FALSE CACHE BOOL "trigger hpp-util debug output")
@@ -53,6 +54,7 @@ SET (${PROJECT_NAME}_HEADERS
   include/hpp/gui/solverwidget.h
   include/hpp/gui/tree-item.h
   include/hpp/gui/ledindicator.h
+  include/hpp/gui/attitude-device.h
   include/hpp/gui/omniorb/omniorbthread.h
   include/hpp/gui/dialog/dialogloadrobot.h
   include/hpp/gui/dialog/dialogloadenvironment.h
@@ -89,6 +91,7 @@ SET (${PROJECT_NAME}_SOURCES
   src/solverwidget.cc
   src/omniorbthread.cc
   src/ledindicator.cc
+  src/attitude-device.cc
   src/dialog/dialogloadrobot.cc
   src/dialog/dialogloadenvironment.cc
   )
@@ -103,6 +106,7 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_LIBRARIES})
 PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} openscenegraph)
 PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} openthreads)
 PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} hpp-corbaserver)
+PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} remoteimu)
 PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} gepetto-viewer-corba)
 PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} openscenegraph-osgQt)
 

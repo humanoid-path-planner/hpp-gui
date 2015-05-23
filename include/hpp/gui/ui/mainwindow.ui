@@ -800,6 +800,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>jointTree</sender>
+   <signal>customContextMenuRequested(QPoint)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>showTreeContextMenu(QPoint)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>625</x>
+     <y>182</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>376</x>
+     <y>363</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onCreateView()</slot>

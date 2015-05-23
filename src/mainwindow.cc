@@ -13,6 +13,7 @@
 #include "hpp/gui/tree-item.h"
 #include "hpp/gui/dialog/dialogloadrobot.h"
 #include "hpp/gui/dialog/dialogloadenvironment.h"
+#include "hpp/gui/attitude-device.h"
 
 #define QSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.toStdString().c_str())
 #define STDSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.c_str())
@@ -337,6 +338,21 @@ void MainWindow::showTreeContextMenu(const QPoint &point)
           osgViewerManagers_->addSceneToWindow(item->node()->getID().c_str(),
                                                w->windowID());
         }
+      return;
+    }
+  index = ui_->jointTree->indexAt(point);
+  if(index.isValid()) {
+      JointTreeItem *item =
+          dynamic_cast <JointTreeItem*> (jointTreeModel_->itemFromIndex(index));
+      if (!item) return;
+      QAction* attDev = contextMenu.addAction(tr("Attach attitude device"));
+      QAction* toDo = contextMenu.exec(ui_->jointTree->mapToGlobal(point));
+      if (!toDo) return;
+      if (toDo == attDev) {
+          AttitudeDevice* att = new AttitudeDevice (item->name());
+          att->start();
+        }
+      return;
     }
 }
 
@@ -566,7 +582,7 @@ void MainWindow::applyCurrentConfiguration()
   statusBar()->showMessage("Applying current configuration...");
   float T[7];
   foreach (JointLinkPair p, jointsToLink_) {
-      hpp::Transform__slice* t = hppClient()->robot()->getLinkPosition(p.first.c_str());
+      hpp::Transform__var t = hppClient()->robot()->getLinkPosition(p.first.c_str());
       for (size_t i = 0; i < 7; ++i) T[i] = (float)t[i];
       osgViewerManagers_->applyConfiguration(p.second.c_str(), T);
     }
