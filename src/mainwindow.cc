@@ -579,7 +579,7 @@ void MainWindow::updateRobotJoints(const QString robotName)
 
 void MainWindow::applyCurrentConfiguration()
 {
-  statusBar()->showMessage("Applying current configuration...");
+//  statusBar()->showMessage("Applying current configuration...");
   float T[7];
   foreach (JointLinkPair p, jointsToLink_) {
       hpp::Transform__var t = hppClient()->robot()->getLinkPosition(p.first.c_str());
