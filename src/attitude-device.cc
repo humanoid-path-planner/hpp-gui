@@ -13,13 +13,12 @@ AttitudeEventSender::AttitudeEventSender(std::string jointName) :
 
 void AttitudeEventSender::mouseEvent(const remoteimu::MouseEventSender::Event e)
 {
-    qDebug () << e.ori[0] << ", " << e.ori[1] << ", " << e.ori[2];
-    emit attitudeEvent(e.ori[0], e.ori[1], e.ori[2]);
+    qDebug () << e.ori[0] << ", " << e.ori[1] << ", " << e.ori[2] << ", " << e.ori[4];
     MainWindow* m = MainWindow::instance();
 
     hpp::Transform__var transform = m->hppClient()->robot()->getJointPosition(jn.c_str());
     hpp::floatSeq pos1, pos2; pos1.length(3); pos2.length(3);
-    for (int i = 0; i < 4; i++) q[i] = e.q[i];
+    for (int i = 0; i < 4; i++) q[i] = e.ori[i];
     for (int i = 0; i < 3; i++) pos2[i] = transform[i];
     for (int i = 0; i < 3; i++) pos1[i] = 0;
 
