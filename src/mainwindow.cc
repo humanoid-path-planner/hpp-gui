@@ -1,6 +1,8 @@
 #include "hpp/gui/mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QHostInfo>
+
 #include <hpp/core/problem-solver.hh>
 #include <hpp/corbaserver/server.hh>
 #include <hpp/corbaserver/client.hh>
@@ -32,15 +34,20 @@ MainWindow::MainWindow(QWidget *parent) :
                 new graphics::corbaServer::Server (osgViewerManagers_, 0, NULL, true))),
   hppClient_ (new hpp::corbaServer::Client (0, 0)),
   backgroundQueue_(),
-  worker_ ()
+  worker_ (),
+  attitudeDevice_ ()
 {
   MainWindow::instance_ = this;
   ui_->setupUi(this);
 
   pathPlayer()->setup();
   solver()->setup ();
+  // Start HPP and gepetto-viewer server.
   hppServer().start();
   osgServer_.start();
+  // This scene contains elements required for User Interaction.
+  osg()->createScene("hpp-gui");
+  attitudeDevice_.init ();
 
   // Setup the tree views
   JointItemDelegate::forceIntegrator = ui_->button_forceVelocity;
@@ -167,8 +174,7 @@ OSGWidget *MainWindow::delayedCreateView(QString name)
 void MainWindow::reload()
 {
   resetJointTree();
-  jointsToLink_.clear();
-  jointsToLinkMap_.clear();
+  jointsMap_.clear();
   bodyTreeModel_->clear();
   char* robotName;
   try {
@@ -207,6 +213,8 @@ OSGWidget *MainWindow::onCreateView()
       centralWidget_->setObjectName(objName);
       setCentralWidget(centralWidget_);
       connect(ui_->actionHome, SIGNAL (activated()), centralWidget_, SLOT (onHome()));
+
+      osg()->addSceneToWindow("hpp-gui", centralWidget_->windowID());
     }
   osgWindows_.append(osgWidget);
   delayedCreateView_.unlock();
@@ -349,8 +357,22 @@ void MainWindow::showTreeContextMenu(const QPoint &point)
       QAction* toDo = contextMenu.exec(ui_->jointTree->mapToGlobal(point));
       if (!toDo) return;
       if (toDo == attDev) {
-          AttitudeDevice* att = new AttitudeDevice (item->name());
-          att->start();
+          QMessageBox* msgBox = new QMessageBox (
+                QMessageBox::Information, "Attitude Device",
+                "Configuration steps:\n"
+                "1 - Configure your device to send its datas to " + QHostInfo::localHostName() + "." + QHostInfo::localDomainName() + ":6000\n"
+                "2 - Do not move your device for a short initialization time (corresponding to 100 measurements of your device).\n"
+                "3 - Move your device, the frame should move as well.\n"
+                "4 - Close this popup to stop the connection.",
+                QMessageBox::Close, this,
+                Qt::Dialog | Qt::WindowStaysOnTopHint);
+          msgBox->setModal(false);
+          attitudeDevice_.stop();
+          attitudeDevice_.jointName (item->name());
+          connect (msgBox, SIGNAL(finished(int)), &attitudeDevice_, SLOT (stop()));
+          connect (msgBox, SIGNAL(finished(int)), msgBox, SLOT (deleteLater()));
+          attitudeDevice_.start();
+          msgBox->show();
         }
       return;
     }
@@ -548,13 +570,15 @@ void MainWindow::addBodyToTree(graphics::GroupNodePtr_t group)
 
 void MainWindow::addJointToTree(const std::string name, JointTreeItem* parent)
 {
-  graphics::NodePtr_t node = osgViewerManagers_->getNode(jointsToLinkMap_[name]);
-  if (!node) node = osgViewerManagers_->getScene(jointsToLinkMap_[name]);
+  JointElement& je = jointsMap_ [name];
+  graphics::NodePtr_t node = osgViewerManagers_->getNode(je.bodyName);
+  if (!node) node = osgViewerManagers_->getScene(je.bodyName);
   hpp::floatSeq_var c = hppClient()->robot ()->getJointConfig (name.c_str());
   CORBA::Short nbDof = hppClient()->robot ()->getJointNumberDof (name.c_str());
   hpp::corbaserver::jointBoundSeq_var b = hppClient()->robot ()->getJointBounds (name.c_str());
 
   JointTreeItem* j = new JointTreeItem (name.c_str(), c.in(), b.in(), nbDof, node);
+  je.item = j;
   if (parent) parent->appendRow(j);
   else        jointTreeModel_->appendRow(j);
   hpp::Names_t_var children = hppClient()->robot ()->getChildJointNames (name.c_str());
@@ -568,23 +592,25 @@ void MainWindow::updateRobotJoints(const QString robotName)
   for (size_t i = 0; i < joints->length (); ++i) {
       const char* jname = joints[i];
       const char* lname = hppClient()->robot()->getLinkName (jname);
-      if (strlen(lname) > 0) {
-        std::string linkName = robotName.toStdString() + "/" + std::string (lname);
-        jointsToLink_.append(JointLinkPair(jname, linkName));
-        jointsToLinkMap_[jname] = linkName;
-      }
+      std::string linkName = robotName.toStdString() + "/" + std::string (lname);
+      jointsMap_[jname] = JointElement(jname, linkName, 0, true);
       delete[] lname;
     }
 }
 
 void MainWindow::applyCurrentConfiguration()
 {
-//  statusBar()->showMessage("Applying current configuration...");
+  statusBar()->showMessage("Applying current configuration...");
   float T[7];
-  foreach (JointLinkPair p, jointsToLink_) {
-      hpp::Transform__var t = hppClient()->robot()->getLinkPosition(p.first.c_str());
+  for (JointMap::iterator ite = jointsMap_.begin ();
+       ite != jointsMap_.end (); ite++) {
+      hpp::Transform__var t = hppClient()->robot()->getLinkPosition(ite->name.c_str());
       for (size_t i = 0; i < 7; ++i) T[i] = (float)t[i];
-      osgViewerManagers_->applyConfiguration(p.second.c_str(), T);
+      if (ite->updateViewer)
+          ite->updateViewer = osgViewerManagers_->applyConfiguration(ite->bodyName.c_str(), T);
+      if (!ite->item) continue;
+      hpp::floatSeq_var c = hppClient()->robot ()->getJointConfig (ite->name.c_str());
+      ite->item->updateConfig (c.in());
     }
   osgViewerManagers_->refresh();
   requestConfigurationValidation();

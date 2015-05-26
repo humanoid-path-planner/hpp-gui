@@ -15,35 +15,47 @@ class AttitudeEventSender : public QObject, public remoteimu::MouseEventSender
   Q_OBJECT
 
 public:
-  AttitudeEventSender (std::string jointName);
+  AttitudeEventSender ();
 
   void mouseEvent(const Event e);
 
 signals:
-  void attitudeEvent (double r, double p, double y);
+  void attitudeEvent (double w, double x, double y, double z);
 
 private:
-  std::string jn;
   hpp::Quaternion_ q;
-  hpp::boolSeq_var mask;
 };
 
-class AttitudeDevice
+class AttitudeDevice : public QObject
 {
+  Q_OBJECT
+
 public:
-  AttitudeDevice (std::string jointName);
+  AttitudeDevice ();
+
+  void init ();
+
+  void jointName (const std::string jointName);
 
   AttitudeEventSender* sender () {
     return &aes_;
   }
 
-  void start ();
 
+public slots:
+  void updateJointAttitude (double w, double x, double y, double z);
+  void start ();
   void stop ();
 
 private:
   remoteimu::Mouse mouse_;
   AttitudeEventSender aes_;
+
+  std::string jn;
+  hpp::Quaternion_ q;
+  hpp::boolSeq_var mask;
+
+  float frameViz[7];
 
   QFuture <void> lock_;
 };

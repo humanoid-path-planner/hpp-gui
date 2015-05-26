@@ -5,16 +5,18 @@
 #include <QMdiArea>
 #include <QList>
 
-#include "hpp/gui/osgwidget.h"
-#include "hpp/gui/ledindicator.h"
+#include <hpp/core/fwd.hh>
 
-#include "hpp/gui/omniorb/omniorbthread.h"
-#include "hpp/gui/dialog/dialogloadrobot.h"
-#include "hpp/gui/dialog/dialogloadenvironment.h"
+#include <hpp/gui/fwd.h>
 
-#include "hpp/gui/fwd.h"
+#include <hpp/gui/osgwidget.h>
+#include <hpp/gui/ledindicator.h>
 
-#include "hpp/core/fwd.hh"
+#include <hpp/gui/omniorb/omniorbthread.h>
+#include <hpp/gui/dialog/dialogloadrobot.h>
+#include <hpp/gui/dialog/dialogloadenvironment.h>
+#include <hpp/gui/attitude-device.h>
+
 
 namespace Ui {
   class MainWindow;
@@ -25,6 +27,19 @@ class MainWindow : public QMainWindow
   Q_OBJECT
   
 public:
+  struct JointElement {
+    std::string name;
+    std::string bodyName;
+    JointTreeItem* item;
+    bool updateViewer;
+
+    JointElement ()
+      : name (), bodyName (), item (NULL), updateViewer (false) {}
+    JointElement (std::string n, std::string bn, JointTreeItem* i, bool updateV = true)
+      : name (n), bodyName (bn), item (i), updateViewer (updateV) {}
+  };
+  typedef QMap <std::string, JointElement> JointMap;
+
   explicit MainWindow(QWidget *parent = 0);
   ~MainWindow();
 
@@ -43,6 +58,10 @@ public:
   WindowsManagerPtr_t osg () const;
 
   OSGWidget* centralWidget() const;
+
+  const JointMap& jointMap () const {
+    return jointsMap_;
+  }
 
   void log (const QString& text);
   void logError (const QString& text);
@@ -84,6 +103,8 @@ private:
   void readSettings ();
   void writeSettings ();
 
+  static MainWindow* instance_;
+
   Ui::MainWindow* ui_;
   OSGWidget* centralWidget_;
   QList <OSGWidget*> osgWindows_;
@@ -92,20 +113,17 @@ private:
   WindowsManagerPtr_t osgViewerManagers_;
   CorbaServer hppServer_, osgServer_;
   hpp::corbaServer::Client* hppClient_;
-//  graphics::corbaServer::Client* hppClient_;
   BackgroundQueue backgroundQueue_;
   QThread worker_;
   SolverWidget* solver_;
+
+  AttitudeDevice attitudeDevice_;
 
   LedIndicator* collisionIndicator_;
 
   QStandardItemModel *bodyTreeModel_, *jointTreeModel_;
 
-  typedef QPair <std::string, std::string> JointLinkPair;
-  QList <JointLinkPair> jointsToLink_;
-  QMap <std::string, std::string> jointsToLinkMap_;
-
-  static MainWindow* instance_;
+  QMap <std::string, JointElement> jointsMap_;
 
   struct LoadDoneStruct {
     LoadDoneStruct () : id (-1), parent (MainWindow::instance()) {}
