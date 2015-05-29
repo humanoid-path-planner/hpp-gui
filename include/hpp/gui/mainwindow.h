@@ -45,8 +45,6 @@ public:
 
   static MainWindow* instance ();
 
-  CorbaServer &hppServer();
-
   hpp::corbaServer::Client* hppClient ();
 
   BackgroundQueue &worker();
@@ -96,6 +94,8 @@ private slots:
   void handleWorkerDone (int id);
 
 private:
+  CorbaServer &hppServer();
+
   void setupInterface ();
   void resetJointTree ();
   void createCentralWidget ();
