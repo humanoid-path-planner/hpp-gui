@@ -172,7 +172,9 @@ void OSGWidget::paintEvent( QPaintEvent* /* paintEvent */ )
 
 void OSGWidget::paintGL()
 {
+  wsm_->lock ().lock ();
   viewer_->frame();
+  wsm_->lock ().unlock ();
 }
 
 void OSGWidget::resizeGL( int width, int height )
