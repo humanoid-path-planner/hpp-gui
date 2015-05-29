@@ -40,7 +40,7 @@ public:
   };
   typedef QMap <std::string, JointElement> JointMap;
 
-  explicit MainWindow(QWidget *parent = 0);
+  explicit MainWindow(QWidget *parent = 0, bool startHppServer = true);
   ~MainWindow();
 
   static MainWindow* instance ();

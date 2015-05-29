@@ -22,7 +22,7 @@
 
 MainWindow* MainWindow::instance_ = NULL;
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent, bool startHppServer) :
   QMainWindow(parent),
   ui_(new Ui::MainWindow),
   centralWidget_ (),
@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
   pathPlayer()->setup();
   solver()->setup ();
   // Start HPP and gepetto-viewer server.
-  hppServer().start();
+  if (startHppServer) hppServer().start();
   osgServer_.start();
   // This scene contains elements required for User Interaction.
   osg()->createScene("hpp-gui");
@@ -74,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent) :
   readSettings();
 
   // Create the HPP client
-  hppServer().waitForInitDone();
+  if (startHppServer) hppServer().waitForInitDone();
   hppClient()->connect();
 }
 
