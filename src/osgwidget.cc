@@ -89,6 +89,7 @@ OSGWidget::OSGWidget( WindowsManagerPtr_t wm,
   traits_ptr->height = this->height();
   traits_ptr->windowDecoration = false;
   traits_ptr->doubleBuffer = true;
+  traits_ptr->vsync = true;
 //  traits_ptr->sharedContext = 0;
 //  traits_ptr->sampleBuffers = 1;
 //  traits_ptr->samples = 1;
