@@ -586,6 +586,9 @@
    <extends>QWidget</extends>
    <header>hpp/gui/pathplayer.h</header>
    <container>1</container>
+   <slots>
+    <slot>update()</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources>
@@ -787,7 +790,7 @@
   <connection>
    <sender>refreshButton_path</sender>
    <signal>clicked()</signal>
-   <receiver>dockWidget_player</receiver>
+   <receiver>dockWidgetContents_player</receiver>
    <slot>update()</slot>
    <hints>
     <hint type="sourcelabel">
