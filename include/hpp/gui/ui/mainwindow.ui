@@ -35,7 +35,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionCreate_view"/>
     <addaction name="actionLoad_robot_from_file"/>
@@ -45,7 +45,7 @@
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
-     <string>Window</string>
+     <string>&amp;Window</string>
     </property>
    </widget>
    <addaction name="menuFile"/>
@@ -165,7 +165,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../../../../res/images.qrc">
+           <iconset theme="view-refresh" resource="../../../../res/images.qrc">
             <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
           </property>
           <property name="iconSize">
@@ -204,8 +204,8 @@
    </property>
    <property name="iconSize">
     <size>
-     <width>12</width>
-     <height>12</height>
+     <width>16</width>
+     <height>16</height>
     </size>
    </property>
    <attribute name="toolBarArea">
@@ -261,7 +261,18 @@
            <item>
             <widget class="QPushButton" name="button_SaveConfig">
              <property name="text">
-              <string>Save</string>
+              <string>&amp;Save</string>
+             </property>
+             <property name="icon">
+              <iconset theme="list-add">
+               <normaloff/>
+              </iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
              </property>
             </widget>
            </item>
@@ -292,7 +303,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../../../../res/images.qrc">
+        <iconset theme="view-refresh" resource="../../../../res/images.qrc">
          <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
        </property>
        <property name="iconSize">
@@ -365,6 +376,9 @@
        </property>
        <property name="checkable">
         <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
        </property>
        <property name="default">
         <bool>false</bool>
@@ -477,7 +491,10 @@
      <item row="3" column="1">
       <widget class="QPushButton" name="pushButtonSolve">
        <property name="text">
-        <string>Solve</string>
+        <string>&amp;Solve</string>
+       </property>
+       <property name="icon">
+        <iconset theme="games-solve"/>
        </property>
       </widget>
      </item>
@@ -495,6 +512,11 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidget_log">
+   <property name="windowIcon">
+    <iconset theme="dialog-information">
+     <normaloff/>
+    </iconset>
+   </property>
    <property name="windowTitle">
     <string>Log</string>
    </property>
@@ -513,28 +535,48 @@
    </widget>
   </widget>
   <action name="actionCreate_view">
+   <property name="icon">
+    <iconset theme="window-new">
+     <normaloff/>
+    </iconset>
+   </property>
    <property name="text">
-    <string>Create view</string>
+    <string>Create &amp;view</string>
    </property>
   </action>
   <action name="actionLoad_robot_from_file">
+   <property name="icon">
+    <iconset theme="list-add">
+     <normaloff/>
+    </iconset>
+   </property>
    <property name="text">
-    <string>Load robot from file</string>
+    <string>Load &amp;robot from file</string>
    </property>
   </action>
   <action name="actionQuit">
+   <property name="icon">
+    <iconset theme="window-close">
+     <normaloff/>
+    </iconset>
+   </property>
    <property name="text">
-    <string>Quit</string>
+    <string>&amp;Quit</string>
    </property>
   </action>
   <action name="actionLoad_environment">
+   <property name="icon">
+    <iconset theme="list-add">
+     <normaloff/>
+    </iconset>
+   </property>
    <property name="text">
-    <string>Load environment</string>
+    <string>Load &amp;environment</string>
    </property>
   </action>
   <action name="actionSelection">
    <property name="icon">
-    <iconset resource="../../../../res/images.qrc">
+    <iconset theme="select-rectangular" resource="../../../../res/images.qrc">
      <normaloff>:/osg/selection.png</normaloff>:/osg/selection.png</iconset>
    </property>
    <property name="text">
@@ -546,8 +588,9 @@
   </action>
   <action name="actionHome">
    <property name="icon">
-    <iconset resource="../../../../res/images.qrc">
-     <normaloff>:/icons/zoom_fit.png</normaloff>:/icons/zoom_fit.png</iconset>
+    <iconset theme="zoom-fit-best">
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>Home</string>

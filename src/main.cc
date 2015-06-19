@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 
   QApplication a(argc, argv);
   a.setStyle(new QCleanlooksStyle);
+  QIcon::setThemeName("oxygen");
 
   QStringList args = a.arguments();
   if (args.contains("--help")) {

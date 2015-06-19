@@ -396,19 +396,26 @@ void MainWindow::setupInterface()
   this->tabifyDockWidget(ui_->dockWidget_jointTree, ui_->dockWidget_bodyTree);
   // Menu "Window"
   ui_->dockWidget_bodyTree->setVisible (false);
+  ui_->dockWidget_bodyTree->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_bodyTree->toggleViewAction ());
   ui_->dockWidget_jointTree->setVisible (false);
+  ui_->dockWidget_jointTree->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_jointTree->toggleViewAction ());
   ui_->dockWidget_configurations->setVisible (false);
+  ui_->dockWidget_configurations->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_configurations->toggleViewAction ());
   ui_->dockWidget_solver->setVisible (false);
+  ui_->dockWidget_solver->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_solver->toggleViewAction ());
   ui_->dockWidget_player->setVisible (false);
+  ui_->dockWidget_player->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_player->toggleViewAction ());
   ui_->dockWidget_log->setVisible (false);
+  ui_->dockWidget_log->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_log->toggleViewAction ());
   ui_->menuWindow->addSeparator();
   QMenu* toolbar = ui_->menuWindow->addMenu("Tool bar");
+  toolbar->setIcon(QIcon::fromTheme("configure-toolbars"));
   ui_->mainToolBar->setVisible(false);
   ui_->osgToolBar->setVisible(false);
   toolbar->addAction (ui_->mainToolBar->toggleViewAction ());
