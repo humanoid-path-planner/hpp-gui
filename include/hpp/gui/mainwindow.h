@@ -117,8 +117,6 @@ private:
   QThread worker_;
   SolverWidget* solver_;
 
-  AttitudeDevice attitudeDevice_;
-
   LedIndicator* collisionIndicator_;
 
   QStandardItemModel *bodyTreeModel_, *jointTreeModel_;

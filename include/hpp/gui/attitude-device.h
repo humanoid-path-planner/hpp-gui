@@ -3,6 +3,9 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QString>
+#include <QHostInfo>
+#include <QMessageBox>
 #include <QtConcurrentRun>
 
 #include <remoteimu/mouse.hh>
@@ -41,13 +44,20 @@ public:
     return &aes_;
   }
 
+  QString address () const {
+    return QString ("%1.%2:%3").arg(QHostInfo::localHostName(), QHostInfo::localDomainName(),
+                                    QString::number (port));
+  }
 
 public slots:
   void updateJointAttitude (double w, double x, double y, double z);
+  void updateTargetPosition (double x, double y, double z);
   void start ();
   void stop ();
 
 private:
+  const int port;
+
   remoteimu::Mouse mouse_;
   AttitudeEventSender aes_;
 
@@ -58,6 +68,24 @@ private:
   float frameViz[7];
 
   QFuture <void> lock_;
+};
+
+class AttitudeDeviceMsgBox : public QMessageBox
+{
+public:
+  AttitudeDeviceMsgBox (QWidget *parent);
+
+  void setJointName (const std::string jn) {
+    device_.jointName(jn);
+  }
+
+  void show ();
+
+protected:
+  virtual void keyPressEvent(QKeyEvent *event);
+
+private:
+  AttitudeDevice device_;
 };
 
 #endif // ATTITUDEDEVICE_HH

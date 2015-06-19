@@ -1,8 +1,6 @@
 #include "hpp/gui/mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QHostInfo>
-
 #include <hpp/core/problem-solver.hh>
 #include <hpp/corbaserver/server.hh>
 #include <hpp/corbaserver/client.hh>
@@ -34,8 +32,7 @@ MainWindow::MainWindow(QWidget *parent, bool startHppServer) :
                 new graphics::corbaServer::Server (osgViewerManagers_, 0, NULL, true))),
   hppClient_ (new hpp::corbaServer::Client (0, 0)),
   backgroundQueue_(),
-  worker_ (),
-  attitudeDevice_ ()
+  worker_ ()
 {
   MainWindow::instance_ = this;
   ui_->setupUi(this);
@@ -47,7 +44,6 @@ MainWindow::MainWindow(QWidget *parent, bool startHppServer) :
   osgServer_.start();
   // This scene contains elements required for User Interaction.
   osg()->createScene("hpp-gui");
-  attitudeDevice_.init ();
 
   // Setup the tree views
   JointItemDelegate::forceIntegrator = ui_->button_forceVelocity;
@@ -357,21 +353,8 @@ void MainWindow::showTreeContextMenu(const QPoint &point)
       QAction* toDo = contextMenu.exec(ui_->jointTree->mapToGlobal(point));
       if (!toDo) return;
       if (toDo == attDev) {
-          QMessageBox* msgBox = new QMessageBox (
-                QMessageBox::Information, "Attitude Device",
-                "Configuration steps:\n"
-                "1 - Configure your device to send its datas to " + QHostInfo::localHostName() + "." + QHostInfo::localDomainName() + ":6000\n"
-                "2 - Do not move your device for a short initialization time (corresponding to 100 measurements of your device).\n"
-                "3 - Move your device, the frame should move as well.\n"
-                "4 - Close this popup to stop the connection.",
-                QMessageBox::Close, this,
-                Qt::Dialog | Qt::WindowStaysOnTopHint);
-          msgBox->setModal(false);
-          attitudeDevice_.stop();
-          attitudeDevice_.jointName (item->name());
-          connect (msgBox, SIGNAL(finished(int)), &attitudeDevice_, SLOT (stop()));
-          connect (msgBox, SIGNAL(finished(int)), msgBox, SLOT (deleteLater()));
-          attitudeDevice_.start();
+          AttitudeDeviceMsgBox* msgBox = new AttitudeDeviceMsgBox (this);
+          msgBox->setJointName (item->name());
           msgBox->show();
         }
       return;

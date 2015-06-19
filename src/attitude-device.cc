@@ -14,7 +14,8 @@ void AttitudeEventSender::mouseEvent(const remoteimu::MouseEventSender::Event e)
 }
 
 AttitudeDevice::AttitudeDevice () :
-  mouse_ (new remoteimu::UDPServer ("0.0.0.0", 6000), 5),
+  port (6000),
+  mouse_ (new remoteimu::UDPServer ("0.0.0.0", port), 5),
   aes_ (), mask (new hpp::boolSeq)
 {
 }
@@ -32,7 +33,7 @@ void AttitudeDevice::init ()
   MainWindow* m = MainWindow::instance();
   float black[4] = {1,1,1,1};
   m->osg()->addBox("hpp-gui/attitudeControl", 0.001, 0.001, 0.001, black);
-  m->osg()->addLandmark("hpp-gui/attitudeControl", 0.05f);
+  m->osg()->addLandmark("hpp-gui/attitudeControl", 0.1f);
   m->osg()->setVisibility("hpp-gui/attitudeControl", "OFF");
 }
 
@@ -55,6 +56,11 @@ void AttitudeDevice::start()
   for (int i = 0; i < 3; i++) frameViz[i]=(float)pos2[i];
   frameViz [3] = 1;
   for (int i = 0; i < 3; i++) frameViz[i+4]=0;
+
+  mouse_.setInitialQuat (Eigen::Quaterniond(transform.in()[0+3],
+                                          transform.in()[1+3],
+                                          transform.in()[2+3],
+                                          transform.in()[3+3]));
 
   m->hppClient()->problem()->createPositionConstraint (
         "attitudeDeviceControl/pos", "", jn.c_str(),
@@ -82,16 +88,21 @@ void AttitudeDevice::stop()
 
 void AttitudeDevice::updateJointAttitude(double w, double x, double y, double z)
 {
-  qDebug () << w << ", " << x << ", " << y << ", " << z;
-
   MainWindow* m = MainWindow::instance();
 
   q[0] = w; q[1] = x; q[2] = y; q[3] = z;
   for (int i = 0; i < 4; i++) {
       frameViz [i+3] = q [i];
     }
-
   m->osg()->applyConfiguration("hpp-gui/attitudeControl", frameViz);
+
+  hpp::floatSeq pos1, pos2; pos1.length(3); pos2.length(3);
+  for (int i = 0; i < 3; i++) pos1[i] = 0;
+  for (int i = 0; i < 3; i++) pos2[i] = frameViz[i];
+
+  m->hppClient()->problem()->createPositionConstraint (
+        "attitudeDeviceControl/pos", "", jn.c_str(),
+        pos2, pos1, mask.in());
   m->hppClient()->problem()->createOrientationConstraint (
         "attitudeDeviceControl/ori", "", jn.c_str(),
         q, mask.in());
@@ -108,8 +119,82 @@ void AttitudeDevice::updateJointAttitude(double w, double x, double y, double z)
       qDebug() << "Projection failed: " << err;
       m->hppClient()->robot()->setCurrentConfig (qin.in());
   } else {
-      qDebug() << "Projection succeeded";
       m->hppClient()->robot()->setCurrentConfig (qproj);
   }
   m->applyCurrentConfiguration();
+}
+
+void AttitudeDevice::updateTargetPosition (double x, double y, double z) {
+  Eigen::Quaternion<double> q (frameViz[3], frameViz[4], frameViz[5], frameViz[6]);
+  Eigen::Vector3d dx = q.inverse() * Eigen::Vector3d (x,y,z);
+  frameViz[0] += dx[0];
+  frameViz[1] += dx[1];
+  frameViz[2] += dx[2];
+}
+
+AttitudeDeviceMsgBox::AttitudeDeviceMsgBox (QWidget *parent) :
+   QMessageBox (QMessageBox::Information,  "Attitude Device","",
+                QMessageBox::Close, parent,
+                Qt::Dialog | Qt::WindowStaysOnTopHint),
+  device_ ()
+{
+  setModal (false);
+  setText ("Configuration steps:\n"
+           "1 - Configure your device to send its datas to " + device_.address() + "\n"
+           "2 - Do not move your device for a short initialization time (corresponding to 100 measurements of your device).\n"
+           "3 - Move your device, the frame should move as well.\n"
+           "4 - Close this popup to stop the connection."
+           );
+}
+
+void AttitudeDeviceMsgBox::show()
+{
+  connect (this, SIGNAL(finished(int)), &device_, SLOT (stop()));
+  connect (this, SIGNAL(finished(int)), this, SLOT (deleteLater()));
+  device_.init ();
+  device_.start ();
+  QMessageBox::show ();
+}
+
+void AttitudeDeviceMsgBox::keyPressEvent(QKeyEvent *event)
+{
+  double shift = 0.01;
+  if (event->modifiers() == Qt::ControlModifier)
+    shift /= 10;
+  else if (event->modifiers() == Qt::ShiftModifier)
+    shift *= 10;
+  switch (event->key ()) {
+    case Qt::Key_Up:
+    case Qt::Key_W:
+      qDebug () << "X+";
+      device_.updateTargetPosition (shift, 0, 0);
+      break;
+    case Qt::Key_Down:
+    case Qt::Key_S:
+      qDebug () << "X-";
+      device_.updateTargetPosition (-shift, 0, 0);
+      break;
+    case Qt::Key_Left:
+    case Qt::Key_A:
+      qDebug () << "Y+";
+      device_.updateTargetPosition (0, shift, 0);
+      break;
+    case Qt::Key_Right:
+    case Qt::Key_D:
+      qDebug () << "Y-";
+      device_.updateTargetPosition (0, -shift, 0);
+      break;
+    case Qt::Key_PageUp:
+    case Qt::Key_Q:
+      qDebug () << "Z+";
+      device_.updateTargetPosition (0, 0, shift);
+      break;
+    case Qt::Key_PageDown:
+    case Qt::Key_E:
+      qDebug () << "Z-";
+      device_.updateTargetPosition (0, 0, -shift);
+      break;
+    }
+
+  QMessageBox::keyPressEvent(event);
 }
