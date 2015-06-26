@@ -125,6 +125,7 @@ private:
 
   struct LoadDoneStruct {
     LoadDoneStruct () : id (-1), parent (MainWindow::instance()) {}
+    virtual ~LoadDoneStruct () {};
     virtual void done ();
     bool isValid () { return id >= 0; }
     void invalidate () { id = -1; }

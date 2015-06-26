@@ -15,6 +15,7 @@
 class WorkItem {
 public:
   WorkItem () : id_ (idGlobal++) {}
+  virtual ~WorkItem () {}
   virtual void performWork () = 0;
   int id () const { return id_; }
 protected:
