@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent, bool startHppServer) :
   QMainWindow(parent),
   ui_(new Ui::MainWindow),
   centralWidget_ (),
-  problemSolver_ (new hpp::core::ProblemSolver),
+  problemSolver_ (hpp::core::ProblemSolver::create ()),
   osgViewerManagers_ (WindowsManager::create()),
   hppServer_ (new HppServerProcess (
                 new hpp::corbaServer::Server (problemSolver_, 0, NULL, true))),
