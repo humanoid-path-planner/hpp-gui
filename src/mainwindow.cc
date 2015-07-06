@@ -197,7 +197,7 @@ OSGWidget *MainWindow::onCreateView()
   QString objName = "hpp_gui_window_" + QString::number(osgWindows_.size());
   OSGWidget* osgWidget = new OSGWidget (osgViewerManagers_, objName.toStdString(),
                                         this, centralWidget_, 0);
-  if (centralWidget_) {
+  if (!osgWindows_.empty()) {
       QDockWidget* dockOSG = new QDockWidget (
             tr("OSG Viewer") + " " + QString::number (osgWindows_.size()), this);
       osgWidget->setObjectName(objName);
@@ -420,7 +420,7 @@ void MainWindow::resetJointTree()
 
 void MainWindow::createCentralWidget()
 {
-  if (centralWidget_) return;
+  if (!osgWindows_.empty()) return;
   onCreateView();
 }
 
