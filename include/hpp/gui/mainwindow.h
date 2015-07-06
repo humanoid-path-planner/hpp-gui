@@ -82,6 +82,8 @@ public slots:
   void updateRobotJoints (const QString robotName);
   void applyCurrentConfiguration ();
   void requestConfigurationValidation ();
+  void selectJointFromBodyName (const std::string& bodyName);
+  void selectJoint (const std::string& jointName);
 
 private slots:
   OSGWidget* onCreateView();

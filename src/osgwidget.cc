@@ -196,7 +196,7 @@ void OSGWidget::keyPressEvent( QKeyEvent* event )
       changeMode(NODE_SELECTION);
       break;
     case Qt::Key_M:
-      changeMode(NODE_MOTION);
+//      changeMode(NODE_MOTION);
       break;
     case Qt::Key_Escape:
       changeMode(CAMERA_MANIPULATION);
@@ -266,20 +266,35 @@ void OSGWidget::mousePressEvent( QMouseEvent* event )
       }
       break;
     case NODE_SELECTION:
-      if (event->button() == Qt::LeftButton) {
+      switch (event->button()) {
+        case Qt::LeftButton:
           selectionStart_    = event->pos();
           selectionEnd_      = selectionStart_; // Deletes the old selection
           selectionFinished_ = false;           // As long as this is set, the rectangle will be drawn
+          break;
+        default:
+          break;
         }
       break;
     case NODE_MOTION:
       selectionStart_ = event->pos();
       if (selectedNode_) selectedNode_->setArrowsVisibility (graphics::VISIBILITY_OFF);
       NodeList list = processPoint();
-      if (list.empty()) selectedNode_ = graphics::NodePtr_t();
-      else {
-          selectedNode_ = list.front();
-          selectedNode_->setArrowsVisibility (graphics::VISIBILITY_ON);
+      switch (event->button()) {
+        case Qt::LeftButton:
+          if (selectedNode_) selectedNode_->setArrowsVisibility (graphics::VISIBILITY_OFF);
+          if (list.empty()) selectedNode_ = graphics::NodePtr_t();
+          else {
+              selectedNode_ = list.front();
+              selectedNode_->setArrowsVisibility (graphics::VISIBILITY_ON);
+            }
+          break;
+        case Qt::RightButton:
+          if (list.empty()) selectedNode_ = graphics::NodePtr_t();
+          else {
+              selectedNode_ = list.front();
+            }
+          break;
         }
       break;
     }
@@ -289,16 +304,20 @@ void OSGWidget::mouseReleaseEvent(QMouseEvent* event)
 {
   // Selection processing: Store end position and obtain selected objects
   // through polytope intersection.
-  if( mode_ == NODE_SELECTION && event->button() == Qt::LeftButton )
-  {
+  if( mode_ == NODE_SELECTION && event->button() == Qt::LeftButton ) {
     selectionEnd_      = event->pos();
     selectionFinished_ = true; // Will force the painter to stop drawing the
                                // selection rectangle
 
+    NodeList list;
     if ((selectionStart_ - selectionEnd_).isNull()) {
-        processPoint();
+        list = processPoint();
       } else  {
-        processSelection();
+        list = processSelection();
+      }
+    if (!list.empty()) {
+        MainWindow* mw = MainWindow::instance();
+        mw->selectJointFromBodyName (list.front()->getID());
       }
   }
 

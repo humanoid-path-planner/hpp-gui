@@ -588,6 +588,26 @@ void MainWindow::updateRobotJoints(const QString robotName)
     }
 }
 
+void MainWindow::selectJointFromBodyName (const std::string& bodyName) {
+  std::size_t slash = 0;
+  foreach (const JointElement& je, jointsMap_) {
+      if (bodyName.compare(slash, std::string::npos, je.bodyName) == 0) {
+          selectJoint (je.name);
+          return;
+        }
+    }
+}
+
+void MainWindow::selectJoint (const std::string& jointName) {
+  const JointElement& je = jointsMap_[jointName];
+  if (!je.item) return;
+  qDebug () << "Selected joint: " << QString::fromStdString(je.name);
+  ui_->jointTree->clearSelection();
+  ui_->jointTree->setCurrentIndex(je.item->index());
+  if (!ui_->dockWidget_jointTree->isVisible())
+    ui_->dockWidget_jointTree->setVisible(true);
+}
+
 void MainWindow::applyCurrentConfiguration()
 {
   statusBar()->showMessage("Applying current configuration...");
