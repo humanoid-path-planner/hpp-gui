@@ -635,11 +635,10 @@
   </action>
   <action name="actionSelection">
    <property name="icon">
-    <iconset theme="select-rectangular" resource="../../../../res/images.qrc">
-     <normaloff>:/osg/selection.png</normaloff>:/osg/selection.png</iconset>
+    <iconset theme="edit-select"/>
    </property>
    <property name="text">
-    <string>selection</string>
+    <string>Select</string>
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter in select mode in the main OSG view&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -647,9 +646,7 @@
   </action>
   <action name="actionHome">
    <property name="icon">
-    <iconset theme="zoom-fit-best">
-     <normaloff/>
-    </iconset>
+    <iconset theme="zoom-fit-best"/>
    </property>
    <property name="text">
     <string>Home</string>

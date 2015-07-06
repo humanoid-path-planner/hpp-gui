@@ -62,6 +62,8 @@ This package depends on:
 * [hpp-corbaserver] - comes with the [HPP] framework.
 * [gepetto-viewer-corba] - comes with the [HPP] framework.
 
+Optionnally, you may want to install `oxygen-icon-theme`: `sudo apt-get install oxygen-icon-theme`
+
 #### Installation of *hpp-gui*
 The installation procedure is a classic `cmake` installation.
 

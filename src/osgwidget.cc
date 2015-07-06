@@ -193,7 +193,7 @@ void OSGWidget::keyPressEvent( QKeyEvent* event )
 
   switch (event->key()) {
     case Qt::Key_S:
-      this->changeMode(NODE_SELECTION);
+      changeMode(NODE_SELECTION);
       break;
     case Qt::Key_M:
       changeMode(NODE_MOTION);
@@ -508,8 +508,8 @@ std::list <graphics::NodePtr_t> OSGWidget::processSelection()
 
 OSGWidget::InfoBox::InfoBox(QWidget *parent) :
   size_ (16,16),
-  selection_ (QPixmap (":/osg/selection.png").scaled(size_)),
-  record_ (QPixmap (":/osg/record.gif").scaled(size_)),
+  selection_ (QIcon::fromTheme("edit-select").pixmap(size_)),
+  record_ (QIcon::fromTheme("media-record").pixmap(size_)),
   label_ (parent)
 {
   label_.setAutoFillBackground(true);
