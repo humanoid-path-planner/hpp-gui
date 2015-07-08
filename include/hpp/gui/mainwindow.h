@@ -15,8 +15,7 @@
 #include <hpp/gui/omniorb/omniorbthread.h>
 #include <hpp/gui/dialog/dialogloadrobot.h>
 #include <hpp/gui/dialog/dialogloadenvironment.h>
-#include <hpp/gui/attitude-device.h>
-
+#include <hpp/gui/dialog/pluginmanagerdialog.h>
 
 namespace Ui {
   class MainWindow;
@@ -130,7 +129,7 @@ private:
 
   struct LoadDoneStruct {
     LoadDoneStruct () : id (-1), parent (MainWindow::instance()) {}
-    virtual ~LoadDoneStruct () {};
+    virtual ~LoadDoneStruct () {}
     virtual void done ();
     bool isValid () { return id >= 0; }
     void invalidate () { id = -1; }
