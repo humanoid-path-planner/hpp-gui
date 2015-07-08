@@ -84,6 +84,7 @@ public slots:
   void requestConfigurationValidation ();
   void selectJointFromBodyName (const std::string& bodyName);
   void selectJoint (const std::string& jointName);
+  void onOpenPluginManager ();
 
 private slots:
   OSGWidget* onCreateView();
@@ -124,6 +125,8 @@ private:
   QStandardItemModel *bodyTreeModel_, *jointTreeModel_;
 
   QMap <std::string, JointElement> jointsMap_;
+
+  PluginManager pluginManager_;
 
   struct LoadDoneStruct {
     LoadDoneStruct () : id (-1), parent (MainWindow::instance()) {}

@@ -1,6 +1,9 @@
 #include "hpp/gui/mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QPluginLoader>
+#include <QTextStream>
+
 #include <hpp/core/problem-solver.hh>
 #include <hpp/corbaserver/server.hh>
 #include <hpp/corbaserver/client.hh>
@@ -13,7 +16,7 @@
 #include "hpp/gui/tree-item.h"
 #include "hpp/gui/dialog/dialogloadrobot.h"
 #include "hpp/gui/dialog/dialogloadenvironment.h"
-#include "hpp/gui/attitude-device.h"
+#include "hpp/gui/plugin-interface.h"
 
 #define QSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.toStdString().c_str())
 #define STDSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.c_str())
@@ -346,17 +349,16 @@ void MainWindow::showTreeContextMenu(const QPoint &point)
     }
   index = ui_->jointTree->indexAt(point);
   if(index.isValid()) {
+      AttitudeDeviceInterface* adi = pluginManager_.get <AttitudeDeviceInterface> ();
+      if (!adi) return;
       JointTreeItem *item =
           dynamic_cast <JointTreeItem*> (jointTreeModel_->itemFromIndex(index));
       if (!item) return;
       QAction* attDev = contextMenu.addAction(tr("Attach attitude device"));
       QAction* toDo = contextMenu.exec(ui_->jointTree->mapToGlobal(point));
       if (!toDo) return;
-      if (toDo == attDev) {
-          AttitudeDeviceMsgBox* msgBox = new AttitudeDeviceMsgBox (this);
-          msgBox->setJointName (item->name());
-          msgBox->show();
-        }
+      if (toDo == attDev)
+        adi->newDevice(item->name());
       return;
     }
 }
@@ -506,6 +508,23 @@ void MainWindow::readSettings()
           log (QString ("Read configuration file ") + env.fileName());
         }
     } while (0);
+  do {
+      QSettings env (QSettings::SystemScope,
+                     QCoreApplication::organizationName(), "plugins", this);
+      if (env.status() != QSettings::NoError) {
+          logError(QString ("Enable to open configuration file ") + env.fileName());
+          break;
+        } else {
+          QFile f (env.fileName());
+          f.open(QIODevice::ReadOnly);
+          QTextStream in (&f);
+          while (!in.atEnd()) {
+              pluginManager_.add (in.readLine(), this, true);
+            }
+          log (QString ("Read configuration file ") + env.fileName());
+          f.close ();
+        }
+    } while (0);
 }
 
 void MainWindow::writeSettings()
@@ -550,6 +569,26 @@ void MainWindow::writeSettings()
           env.endGroup();
         }
       log (QString ("Wrote configuration file ") + env.fileName());
+    } while (0);
+  do {
+      QSettings env (QSettings::SystemScope,
+                     QCoreApplication::organizationName(), "settings", this);
+      if (env.status() != QSettings::NoError) {
+          logError(QString ("Enable to open configuration file ") + env.fileName());
+          break;
+        } else {
+          QFile f (env.fileName());
+          if (f.isWritable()) {
+              f.open(QIODevice::WriteOnly);
+              QTextStream out (&f);
+              for (PluginManager::Map::const_iterator p = pluginManager_.plugins ().constBegin();
+                   p != pluginManager_.plugins().constEnd(); p++) {
+                  out << p.key () << "\n";
+                }
+              log (QString ("Read configuration file ") + env.fileName());
+              f.close ();
+            }
+        }
     } while (0);
 }
 
@@ -606,6 +645,12 @@ void MainWindow::selectJoint (const std::string& jointName) {
   ui_->jointTree->setCurrentIndex(je.item->index());
   if (!ui_->dockWidget_jointTree->isVisible())
     ui_->dockWidget_jointTree->setVisible(true);
+}
+
+void MainWindow::onOpenPluginManager()
+{
+  PluginManagerDialog d (&pluginManager_, this);
+  d.exec ();
 }
 
 void MainWindow::applyCurrentConfiguration()

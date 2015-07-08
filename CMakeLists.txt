@@ -3,18 +3,18 @@
 # Authors: Joseph Mirabel
 #
 #
-# This file is part of hpp-manipulation
-# hpp-manipulation is free software: you can redistribute it
+# This file is part of hpp-gui
+# hpp-gui is free software: you can redistribute it
 # and/or modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation, either version
 # 3 of the License, or (at your option) any later version.
 #
-# hpp-manipulation is distributed in the hope that it will be
+# hpp-gui is distributed in the hope that it will be
 # useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 # of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Lesser Public License for more details.  You should have
 # received a copy of the GNU Lesser General Public License along with
-# hpp-manipulation  If not, see
+# hpp-gui  If not, see
 # <http://www.gnu.org/licenses/>.
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
@@ -56,16 +56,19 @@ SET (${PROJECT_NAME}_HEADERS
   include/hpp/gui/solverwidget.h
   include/hpp/gui/tree-item.h
   include/hpp/gui/ledindicator.h
+  include/hpp/gui/plugin-interface.h
   include/hpp/gui/attitude-device.h
   include/hpp/gui/omniorb/omniorbthread.h
   include/hpp/gui/dialog/dialogloadrobot.h
   include/hpp/gui/dialog/dialogloadenvironment.h
+  include/hpp/gui/dialog/pluginmanagerdialog.h
   )
 
 SET(${PROJECT_NAME}_FORMS
   include/hpp/gui/ui/mainwindow.ui
   include/hpp/gui/ui/dialogloadrobot.ui
   include/hpp/gui/ui/dialogloadenvironment.ui
+  include/hpp/gui/ui/pluginmanagerdialog.ui
   )
 
 SET(${PROJECT_NAME}_RESOURCES res/images.qrc)
@@ -96,6 +99,7 @@ SET (${PROJECT_NAME}_SOURCES
   src/attitude-device.cc
   src/dialog/dialogloadrobot.cc
   src/dialog/dialogloadenvironment.cc
+  src/dialog/pluginmanagerdialog.cc
   )
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES}
@@ -114,5 +118,7 @@ PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} openscenegraph-osgQt)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${X11_LIBRARIES})
 
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION bin)
+
+ADD_SUBDIRECTORY(plugins)
 
 SETUP_PROJECT_FINALIZE()

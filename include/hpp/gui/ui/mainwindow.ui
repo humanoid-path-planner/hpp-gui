@@ -42,7 +42,7 @@
      <x>0</x>
      <y>0</y>
      <width>754</width>
-     <height>27</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -60,7 +60,14 @@
      <string>&amp;Window</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+    <addaction name="actionPlugins"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
    <addaction name="menuWindow"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -635,7 +642,9 @@
   </action>
   <action name="actionSelection">
    <property name="icon">
-    <iconset theme="edit-select"/>
+    <iconset theme="edit-select">
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>Select</string>
@@ -646,13 +655,20 @@
   </action>
   <action name="actionHome">
    <property name="icon">
-    <iconset theme="zoom-fit-best"/>
+    <iconset theme="zoom-fit-best">
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>Home</string>
    </property>
    <property name="toolTip">
     <string>Zoom to fit</string>
+   </property>
+  </action>
+  <action name="actionPlugins">
+   <property name="text">
+    <string>&amp;Plugins</string>
    </property>
   </action>
  </widget>
@@ -918,6 +934,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionPlugins</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onOpenPluginManager()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>376</x>
+     <y>363</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onCreateView()</slot>
@@ -927,5 +959,6 @@
   <slot>updateJointTree(QModelIndex)</slot>
   <slot>openLoadEnvironmentDialog()</slot>
   <slot>reload()</slot>
+  <slot>onOpenPluginManager()</slot>
  </slots>
 </ui>

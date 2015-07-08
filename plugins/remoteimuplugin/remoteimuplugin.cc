@@ -1,26 +1,27 @@
-#include "hpp/gui/attitude-device.h"
+#include <remoteimuplugin.hh>
 
+#include <QtPlugin>
 #include <QtConcurrentRun>
 
-#include "hpp/gui/mainwindow.h"
+#include <hpp/gui/mainwindow.h>
 
-AttitudeEventSender_deprecated::AttitudeEventSender_deprecated()
+AttitudeEventSender::AttitudeEventSender()
 {
 }
 
-void AttitudeEventSender_deprecated::mouseEvent(const remoteimu::MouseEventSender::Event e)
+void AttitudeEventSender::mouseEvent(const remoteimu::MouseEventSender::Event e)
 {
   emit attitudeEvent(e.ori[0], e.ori[1], e.ori[2], e.ori[3]);
 }
 
-AttitudeDevice_deprecated::AttitudeDevice_deprecated () :
+AttitudeDevice::AttitudeDevice () :
   port (6000),
   mouse_ (new remoteimu::UDPServer ("0.0.0.0", port), 5),
   aes_ (), mask (new hpp::boolSeq)
 {
 }
 
-void AttitudeDevice_deprecated::init ()
+void AttitudeDevice::init ()
 {
   mouse_.setMouseEventSender(&aes_);
 
@@ -37,12 +38,12 @@ void AttitudeDevice_deprecated::init ()
   m->osg()->setVisibility("hpp-gui/attitudeControl", "OFF");
 }
 
-void AttitudeDevice_deprecated::jointName (const std::string jointName)
+void AttitudeDevice::jointName (const std::string jointName)
 {
   jn = jointName;
 }
 
-void AttitudeDevice_deprecated::start()
+void AttitudeDevice::start()
 {
   if (lock_.isRunning()) stop ();
 
@@ -57,6 +58,10 @@ void AttitudeDevice_deprecated::start()
   frameViz [3] = 1;
   for (int i = 0; i < 3; i++) frameViz[i+4]=0;
 
+  qDebug() << transform.in()[0+3] << ","
+           << transform.in()[1+3] << ","
+           << transform.in()[2+3] << ","
+           << transform.in()[3+3];
   mouse_.setInitialQuat (Eigen::Quaterniond(transform.in()[0+3],
                                           transform.in()[1+3],
                                           transform.in()[2+3],
@@ -75,7 +80,7 @@ void AttitudeDevice_deprecated::start()
   lock_ = QtConcurrent::run (&mouse_, &remoteimu::Mouse::handleEvents, true);
 }
 
-void AttitudeDevice_deprecated::stop()
+void AttitudeDevice::stop()
 {
   mouse_.stopEventHandler();
   MainWindow* m = MainWindow::instance();
@@ -86,13 +91,13 @@ void AttitudeDevice_deprecated::stop()
   lock_.waitForFinished();
 }
 
-void AttitudeDevice_deprecated::updateJointAttitude(double w, double x, double y, double z)
+void AttitudeDevice::updateJointAttitude(double w, double x, double y, double z)
 {
   MainWindow* m = MainWindow::instance();
 
   q[0] = w; q[1] = x; q[2] = y; q[3] = z;
   for (int i = 0; i < 4; i++) {
-      frameViz [i+3] = q [i];
+      frameViz[i+3] = (float)q[i];
     }
   m->osg()->applyConfiguration("hpp-gui/attitudeControl", frameViz);
 
@@ -124,15 +129,15 @@ void AttitudeDevice_deprecated::updateJointAttitude(double w, double x, double y
   m->applyCurrentConfiguration();
 }
 
-void AttitudeDevice_deprecated::updateTargetPosition (double x, double y, double z) {
+void AttitudeDevice::updateTargetPosition (double x, double y, double z) {
   Eigen::Quaternion<double> q (frameViz[3], frameViz[4], frameViz[5], frameViz[6]);
   Eigen::Vector3d dx = q.inverse() * Eigen::Vector3d (x,y,z);
-  frameViz[0] += dx[0];
-  frameViz[1] += dx[1];
-  frameViz[2] += dx[2];
+  frameViz[0] += (float)dx[0];
+  frameViz[1] += (float)dx[1];
+  frameViz[2] += (float)dx[2];
 }
 
-AttitudeDeviceMsgBox_deprecated::AttitudeDeviceMsgBox_deprecated (QWidget *parent) :
+AttitudeDeviceMsgBox::AttitudeDeviceMsgBox (QWidget *parent) :
    QMessageBox (QMessageBox::Information,  "Attitude Device","",
                 QMessageBox::Close, parent,
                 Qt::Dialog | Qt::WindowStaysOnTopHint),
@@ -147,7 +152,7 @@ AttitudeDeviceMsgBox_deprecated::AttitudeDeviceMsgBox_deprecated (QWidget *paren
            );
 }
 
-void AttitudeDeviceMsgBox_deprecated::show()
+void AttitudeDeviceMsgBox::show()
 {
   connect (this, SIGNAL(finished(int)), &device_, SLOT (stop()));
   connect (this, SIGNAL(finished(int)), this, SLOT (deleteLater()));
@@ -156,7 +161,7 @@ void AttitudeDeviceMsgBox_deprecated::show()
   QMessageBox::show ();
 }
 
-void AttitudeDeviceMsgBox_deprecated::keyPressEvent(QKeyEvent *event)
+void AttitudeDeviceMsgBox::keyPressEvent(QKeyEvent *event)
 {
   double shift = 0.01;
   if (event->modifiers() == Qt::ControlModifier)
@@ -198,3 +203,25 @@ void AttitudeDeviceMsgBox_deprecated::keyPressEvent(QKeyEvent *event)
 
   QMessageBox::keyPressEvent(event);
 }
+
+void RemoteImuPlugin::init() {
+  msgBox_ = NULL;
+}
+
+void RemoteImuPlugin::newDevice(const std::string &jointName)
+{
+  if (msgBox_) {
+      delete msgBox_;
+    }
+  msgBox_ = new AttitudeDeviceMsgBox (NULL);
+  msgBox_->setJointName (jointName);
+  msgBox_->show();
+}
+
+RemoteImuPlugin::~RemoteImuPlugin()
+{
+  if (msgBox_)
+      delete msgBox_;
+}
+
+Q_EXPORT_PLUGIN2 (remoteimuplugin, RemoteImuPlugin)

@@ -8,17 +8,19 @@
 #include <QMessageBox>
 #include <QtConcurrentRun>
 
+#include <hpp/gui/deprecated.hh>
+
 #include <remoteimu/mouse.hh>
 
 #include <hpp/corbaserver/client.hh>
 
 
-class AttitudeEventSender : public QObject, public remoteimu::MouseEventSender
+class AttitudeEventSender_deprecated : public QObject, public remoteimu::MouseEventSender
 {
   Q_OBJECT
 
 public:
-  AttitudeEventSender ();
+  AttitudeEventSender_deprecated ();
 
   void mouseEvent(const Event e);
 
@@ -27,20 +29,20 @@ signals:
 
 private:
   hpp::Quaternion_ q;
-};
+} HPP_GUI_DEPRECATED;
 
-class AttitudeDevice : public QObject
+class AttitudeDevice_deprecated : public QObject
 {
   Q_OBJECT
 
 public:
-  AttitudeDevice ();
+  AttitudeDevice_deprecated ();
 
   void init ();
 
   void jointName (const std::string jointName);
 
-  AttitudeEventSender* sender () {
+  AttitudeEventSender_deprecated* sender () {
     return &aes_;
   }
 
@@ -59,7 +61,7 @@ private:
   const int port;
 
   remoteimu::Mouse mouse_;
-  AttitudeEventSender aes_;
+  AttitudeEventSender_deprecated aes_;
 
   std::string jn;
   hpp::Quaternion_ q;
@@ -68,12 +70,12 @@ private:
   float frameViz[7];
 
   QFuture <void> lock_;
-};
+} HPP_GUI_DEPRECATED;
 
-class AttitudeDeviceMsgBox : public QMessageBox
+class AttitudeDeviceMsgBox_deprecated : public QMessageBox
 {
 public:
-  AttitudeDeviceMsgBox (QWidget *parent);
+  AttitudeDeviceMsgBox_deprecated (QWidget *parent);
 
   void setJointName (const std::string jn) {
     device_.jointName(jn);
@@ -85,7 +87,7 @@ protected:
   virtual void keyPressEvent(QKeyEvent *event);
 
 private:
-  AttitudeDevice device_;
-};
+  AttitudeDevice_deprecated device_;
+} HPP_GUI_DEPRECATED;
 
 #endif // ATTITUDEDEVICE_HH
