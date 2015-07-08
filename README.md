@@ -62,7 +62,9 @@ This package depends on:
 * [hpp-corbaserver] - comes with the [HPP] framework.
 * [gepetto-viewer-corba] - comes with the [HPP] framework.
 
-Optionnally, you may want to install `oxygen-icon-theme`: `sudo apt-get install oxygen-icon-theme`
+The following packages are optional:
+* `oxygen-icon-theme`: `sudo apt-get install oxygen-icon-theme`
+* [remoteimu] - enables controlling a robot body orientation with an IMU (typically, in a smart phone).
 
 #### Installation of *hpp-gui*
 The installation procedure is a classic `cmake` installation.
@@ -90,3 +92,4 @@ See the ToDo's list below and use the github pull request mechanism.
 [hpp-corbaserver]:https://github.com/humanoid-path-planner/hpp-corbaserver
 [gepetto-viewer-corba]:https://github.com/humanoid-path-planner/gepetto-viewer-corba
 [hpp-doc]:https://github.com/humanoid-path-planner/hpp-doc
+[remoteimu]:https://github.com/jmirabel/remoteimu
