@@ -37,7 +37,8 @@ ADD_REQUIRED_DEPENDENCY("openscenegraph-osgQt")
 ADD_REQUIRED_DEPENDENCY("openthreads >= 3.2")
 ADD_REQUIRED_DEPENDENCY("hpp-corbaserver")
 ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba")
-ADD_REQUIRED_DEPENDENCY("remoteimu")
+
+ADD_OPTIONAL_DEPENDENCY("remoteimu")
 
 FIND_PACKAGE("X11")
 

@@ -18,4 +18,6 @@
 # <http://www.gnu.org/licenses/>.
 
 #ADD_SUBDIRECTORY(plugintest)
-ADD_SUBDIRECTORY(remoteimuplugin)
+IF (REMOTEIMU_FOUND)
+  ADD_SUBDIRECTORY(remoteimuplugin)
+ENDIF()

@@ -11,5 +11,4 @@ class TestPlugin : public QObject, public PluginInterface {
 
 public:
   void init();
-  QWidget* widget ();
 };
