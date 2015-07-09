@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QMap>
+#include <QDir>
 #include <QPluginLoader>
 #include <QTableWidgetItem>
 #include <QDebug>
@@ -34,6 +35,8 @@ public:
 
   static QString status (const QPluginLoader* pl);
 
+  static void addPluginDir (const QString& path);
+
 private:
   bool loadPlugin (const QString& name);
 
@@ -41,6 +44,7 @@ private:
   static const Interface* const_instance_cast (const QPluginLoader* pl);
 
   QMap <QString, QPluginLoader*> plugins_;
+  static QList <QDir> pluginDirs_;
 };
 
 class PluginManagerDialog : public QDialog

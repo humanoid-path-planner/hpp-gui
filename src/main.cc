@@ -1,6 +1,7 @@
 #include <QtGui/QApplication>
 
 #include "hpp/gui/mainwindow.h"
+#include "hpp/gui/dialog/pluginmanagerdialog.h"
 
 #include <X11/Xlib.h>
 
@@ -21,6 +22,11 @@ int main(int argc, char *argv[])
   QApplication a(argc, argv);
   a.setStyle(new QCleanlooksStyle);
   QIcon::setThemeName("oxygen");
+
+  QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+  foreach (QString p, env.value("LD_LIBRARY_PATH").split(':')) {
+      PluginManager::addPluginDir (p + "/hpp-gui-plugins");
+    }
 
   QStringList args = a.arguments();
   if (args.contains("--help")) {

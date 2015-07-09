@@ -3,8 +3,18 @@
 
 #include "hpp/gui/plugin-interface.h"
 
+QList <QDir> PluginManager::pluginDirs_;
+
 bool PluginManager::add(const QString &name, QWidget *parent, bool load) {
-  plugins_[name] = new QPluginLoader (name, parent);
+  QString filename = name;
+  if (!QDir::isAbsolutePath(name)) {
+    foreach (QDir dir, pluginDirs_) {
+        if (dir.exists(name)) {
+            filename = dir.absoluteFilePath(name);
+        }
+    }
+  }
+  plugins_[name] = new QPluginLoader (filename, parent);
   if (load) return loadPlugin(name);
   return false;
 }
@@ -29,7 +39,15 @@ QString PluginManager::status(const QPluginLoader *pl)
     else
       return QString ("Wrong interface");
   } else
-    return pl->errorString();
+      return pl->errorString();
+}
+
+void PluginManager::addPluginDir(const QString &path)
+{
+    QDir dir (QDir::cleanPath(path));
+    QDir can (dir.canonicalPath());
+    if (can.exists() && can.isReadable())
+        pluginDirs_.append (can);
 }
 
 bool PluginManager::loadPlugin(const QString &name) {

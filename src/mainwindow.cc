@@ -507,19 +507,16 @@ void MainWindow::readSettings()
     } while (0);
   do {
       QSettings env (QSettings::SystemScope,
-                     QCoreApplication::organizationName(), "plugins", this);
+                     QCoreApplication::organizationName(), "settings", this);
       if (env.status() != QSettings::NoError) {
           logError(QString ("Enable to open configuration file ") + env.fileName());
           break;
         } else {
-          QFile f (env.fileName());
-          f.open(QIODevice::ReadOnly);
-          QTextStream in (&f);
-          while (!in.atEnd()) {
-              pluginManager_.add (in.readLine(), this, true);
-            }
+          env.beginGroup("plugins");
+          foreach (QString name, env.childKeys()) {
+              pluginManager_.add(name, this, env.value(name, true).toBool());
+          }
           log (QString ("Read configuration file ") + env.fileName());
-          f.close ();
         }
     } while (0);
 }
@@ -574,17 +571,12 @@ void MainWindow::writeSettings()
           logError(QString ("Enable to open configuration file ") + env.fileName());
           break;
         } else {
-          QFile f (env.fileName());
-          if (f.isWritable()) {
-              f.open(QIODevice::WriteOnly);
-              QTextStream out (&f);
-              for (PluginManager::Map::const_iterator p = pluginManager_.plugins ().constBegin();
-                   p != pluginManager_.plugins().constEnd(); p++) {
-                  out << p.key () << "\n";
-                }
-              log (QString ("Read configuration file ") + env.fileName());
-              f.close ();
-            }
+          env.beginGroup("plugins");
+          for (PluginManager::Map::const_iterator p = pluginManager_.plugins ().constBegin();
+            p != pluginManager_.plugins().constEnd(); p++) {
+            env.setValue(p.key(), p.value()->isLoaded());
+          }
+          log (QString ("Read configuration file ") + env.fileName());
         }
     } while (0);
 }
