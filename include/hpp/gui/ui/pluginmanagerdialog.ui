@@ -14,11 +14,29 @@
    <string>Plugin Manager</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="preferences-plugin"/>
+   <iconset theme="preferences-plugin">
+    <normaloff/>
+   </iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QListWidget" name="pluginList"/>
+    <widget class="QTableWidget" name="pluginList">
+     <column>
+      <property name="text">
+       <string>Name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>File</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Version</string>
+      </property>
+     </column>
+    </widget>
    </item>
    <item>
     <widget class="QLabel" name="pluginMessage">

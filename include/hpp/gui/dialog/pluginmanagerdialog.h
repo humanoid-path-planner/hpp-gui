@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QMap>
 #include <QPluginLoader>
-#include <QListWidgetItem>
+#include <QTableWidgetItem>
 #include <QDebug>
 
 namespace Ui {
@@ -52,7 +52,7 @@ public:
   ~PluginManagerDialog();
 
 public slots:
-  void onItemChanged (QListWidgetItem* current, QListWidgetItem* previous);
+  void onItemChanged (QTableWidgetItem* current, QTableWidgetItem* previous);
 
 private:
   Ui::PluginManagerDialog *ui_;

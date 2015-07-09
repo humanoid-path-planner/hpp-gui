@@ -9,6 +9,29 @@ bool PluginManager::add(const QString &name, QWidget *parent, bool load) {
   return false;
 }
 
+QIcon PluginManager::icon(const QPluginLoader *pl)
+{
+  if (pl->isLoaded()) {
+      const PluginInterface* pi = const_instance_cast <PluginInterface> (pl);
+      if (pi) {
+          return QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
+        }
+    }
+  return QApplication::style()->standardIcon(QStyle::SP_MessageBoxCritical);
+}
+
+QString PluginManager::status(const QPluginLoader *pl)
+{
+  if (pl->isLoaded()) {
+    const PluginInterface* pi = const_instance_cast <PluginInterface> (pl);
+    if (pi)
+      return QString ("Plugin loaded correctly");
+    else
+      return QString ("Wrong interface");
+  } else
+    return pl->errorString();
+}
+
 bool PluginManager::loadPlugin(const QString &name) {
   if (!plugins_[name]->load()) {
       qDebug() << name << ": " << plugins_[name]->errorString();
@@ -16,7 +39,7 @@ bool PluginManager::loadPlugin(const QString &name) {
     }
   PluginInterface* pi = qobject_cast <PluginInterface*> (plugins_[name]->instance());
   if (!pi) {
-      qDebug() << name << ": " << plugins_[name]->errorString();
+      qDebug() << name << ": Wrong interface.";
       return false;
     }
   pi->init();
@@ -32,25 +55,19 @@ PluginManagerDialog::PluginManagerDialog(PluginManager *pm, QWidget *parent) :
 
   for (PluginManager::Map::const_iterator p = pm_->plugins ().constBegin();
        p != pm_->plugins().constEnd(); p++) {
-      QString text;
-      QIcon icon;
-      if (p.value()->isLoaded()) {
-          text = p.value()->fileName();
-          icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
-        } else {
-          if (p.value()->fileName ().isEmpty ())
-            text = p.key();
-          else
-            text = p.value()->fileName();
-          icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxCritical);
-        }
-      QListWidgetItem* item = new QListWidgetItem (icon, text);
-      item->setData(Qt::UserRole, p.key());
-      ui_->pluginList->addItem(item);
+      QString name = p.key(),
+          filename = p.value()->fileName(),
+          version = "";
+      QIcon icon = pm_->icon (p.value());
+
+      ui_->pluginList->insertRow(ui_->pluginList->rowCount());
+      ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, 0, new QTableWidgetItem (icon, name));
+      ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, 1, new QTableWidgetItem (filename));
+      ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, 2, new QTableWidgetItem (version));
     }
 
-  connect(ui_->pluginList, SIGNAL (currentItemChanged (QListWidgetItem*,QListWidgetItem*)),
-          this, SLOT (onItemChanged(QListWidgetItem*,QListWidgetItem*)));
+  connect(ui_->pluginList, SIGNAL (currentItemChanged (QTableWidgetItem*,QTableWidgetItem*)),
+          this, SLOT (onItemChanged(QTableWidgetItem*,QTableWidgetItem*)));
 }
 
 PluginManagerDialog::~PluginManagerDialog()
@@ -58,13 +75,9 @@ PluginManagerDialog::~PluginManagerDialog()
   delete ui_;
 }
 
-void PluginManagerDialog::onItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
+void PluginManagerDialog::onItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
 {
-  QString key = current->data(Qt::UserRole).toString();
+  QString key = ui_->pluginList->item(current->row(), 0)->text();
   const QPluginLoader* pl = pm_->plugins()[key];
-  if (pl->isLoaded())
-    ui_->pluginMessage->setText("Plugin loaded correctly");
-  else
-    ui_->pluginMessage->setText(pl->errorString());
-  return;
+  ui_->pluginMessage->setText(pm_->status (pl));
 }
