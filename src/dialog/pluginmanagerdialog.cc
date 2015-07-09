@@ -64,6 +64,11 @@ bool PluginManager::loadPlugin(const QString &name) {
   return true;
 }
 
+bool PluginManager::unloadPlugin(const QString &name)
+{
+    plugins_[name]->unload();
+}
+
 PluginManagerDialog::PluginManagerDialog(PluginManager *pm, QWidget *parent) :
   QDialog(parent),
   ui_(new Ui::PluginManagerDialog),
@@ -71,21 +76,12 @@ PluginManagerDialog::PluginManagerDialog(PluginManager *pm, QWidget *parent) :
 {
   ui_->setupUi(this);
 
-  for (PluginManager::Map::const_iterator p = pm_->plugins ().constBegin();
-       p != pm_->plugins().constEnd(); p++) {
-      QString name = p.key(),
-          filename = p.value()->fileName(),
-          version = "";
-      QIcon icon = pm_->icon (p.value());
-
-      ui_->pluginList->insertRow(ui_->pluginList->rowCount());
-      ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, 0, new QTableWidgetItem (icon, name));
-      ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, 1, new QTableWidgetItem (filename));
-      ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, 2, new QTableWidgetItem (version));
-    }
+  updateList ();
 
   connect(ui_->pluginList, SIGNAL (currentItemChanged (QTableWidgetItem*,QTableWidgetItem*)),
           this, SLOT (onItemChanged(QTableWidgetItem*,QTableWidgetItem*)));
+  connect(ui_->pluginList, SIGNAL(customContextMenuRequested(QPoint)),
+          this, SLOT(contextMenu(QPoint)));
 }
 
 PluginManagerDialog::~PluginManagerDialog()
@@ -95,7 +91,57 @@ PluginManagerDialog::~PluginManagerDialog()
 
 void PluginManagerDialog::onItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
 {
+  if (!current) return;
   QString key = ui_->pluginList->item(current->row(), 0)->text();
   const QPluginLoader* pl = pm_->plugins()[key];
   ui_->pluginMessage->setText(pm_->status (pl));
+}
+
+void PluginManagerDialog::contextMenu(const QPoint &pos)
+{
+    int row = ui_->pluginList->rowAt(pos.y());
+    if (row == -1) return;
+    QString key = ui_->pluginList->item(row, 0)->text();
+    QMenu contextMenu (tr("Plugin"), ui_->pluginList);
+    if (pm_->plugins()[key]->isLoaded()) {
+        QAction* unload = contextMenu.addAction("&Unload", &signalMapper_, SLOT(map()));
+        signalMapper_.setMapping (unload, key);
+        connect(&signalMapper_, SIGNAL (mapped(QString)), this, SLOT(unload(QString)));
+        contextMenu.exec(ui_->pluginList->mapToGlobal(pos));
+    } else {
+        QAction* load = contextMenu.addAction("&Load", &signalMapper_, SLOT(map()));
+        signalMapper_.setMapping (load, key);
+        connect(&signalMapper_, SIGNAL (mapped(QString)), this, SLOT(load(QString)));
+        contextMenu.exec(ui_->pluginList->mapToGlobal(pos));
+    }
+}
+
+void PluginManagerDialog::load(const QString &name)
+{
+    pm_->loadPlugin(name);
+    updateList ();
+}
+
+void PluginManagerDialog::unload(const QString &name)
+{
+    pm_->unloadPlugin (name);
+    updateList ();
+}
+
+void PluginManagerDialog::updateList()
+{
+    while (ui_->pluginList->rowCount() > 0)
+        ui_->pluginList->removeRow(0);
+    for (PluginManager::Map::const_iterator p = pm_->plugins ().constBegin();
+         p != pm_->plugins().constEnd(); p++) {
+        QString name = p.key(),
+            filename = p.value()->fileName(),
+            version = "";
+        QIcon icon = pm_->icon (p.value());
+
+        ui_->pluginList->insertRow(ui_->pluginList->rowCount());
+        ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, 0, new QTableWidgetItem (icon, name));
+        ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, 1, new QTableWidgetItem (filename));
+        ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, 2, new QTableWidgetItem (version));
+      }
 }

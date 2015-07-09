@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QMap>
+#include <QSignalMapper>
 #include <QDir>
 #include <QPluginLoader>
 #include <QTableWidgetItem>
@@ -37,9 +38,11 @@ public:
 
   static void addPluginDir (const QString& path);
 
-private:
   bool loadPlugin (const QString& name);
 
+  bool unloadPlugin (const QString& name);
+
+private:
   template <typename Interface>
   static const Interface* const_instance_cast (const QPluginLoader* pl);
 
@@ -57,11 +60,18 @@ public:
 
 public slots:
   void onItemChanged (QTableWidgetItem* current, QTableWidgetItem* previous);
+  void contextMenu(const QPoint& pos);
+
+  void load (const QString& name);
+  void unload (const QString& name);
 
 private:
+  void updateList ();
+
   Ui::PluginManagerDialog *ui_;
 
   PluginManager* pm_;
+  QSignalMapper signalMapper_;
 };
 
 template <typename Interface>
