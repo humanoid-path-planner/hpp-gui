@@ -26,10 +26,19 @@ public:
 
   bool add (const QString& name, QWidget* parent = NULL, bool load = false);
 
-  template <typename Interface> Interface* get ();
+  template <typename Interface> Interface* getFirstOf ();
+
+  template <typename Interface> QList <Interface*> get ();
+
+  static QIcon icon (const QPluginLoader* pl);
+
+  static QString status (const QPluginLoader* pl);
 
 private:
   bool loadPlugin (const QString& name);
+
+  template <typename Interface>
+  static const Interface* const_instance_cast (const QPluginLoader* pl);
 
   QMap <QString, QPluginLoader*> plugins_;
 };
@@ -52,13 +61,30 @@ private:
 };
 
 template <typename Interface>
-Interface* PluginManager::get ()
+Interface* PluginManager::getFirstOf ()
 {
   foreach (QPluginLoader* p, plugins_) {
       Interface* pi = qobject_cast <Interface*> (p->instance());
       if (pi) return pi;
     }
   return NULL;
+}
+
+template <typename Interface>
+QList <Interface*> PluginManager::get ()
+{
+  QList <Interface*> list;
+  foreach (QPluginLoader* p, plugins_) {
+      Interface* pi = qobject_cast <Interface*> (p->instance());
+      if (pi) list.append(pi);
+    }
+  return list;
+}
+
+template <typename Interface>
+const Interface* PluginManager::const_instance_cast (const QPluginLoader* pl)
+{
+    return (const Interface*) qobject_cast <Interface*> (const_cast <QPluginLoader*>(pl)->instance());
 }
 
 #endif // PLUGINMANAGERDIALOG_H

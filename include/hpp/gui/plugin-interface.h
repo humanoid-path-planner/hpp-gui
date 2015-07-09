@@ -9,17 +9,19 @@ public:
   virtual ~PluginInterface () {}
 
   virtual void init () = 0;
+
+  virtual QString name () const = 0;
 };
 
 Q_DECLARE_INTERFACE (PluginInterface, "hpp-gui.plugins/0.0")
 
-class AttitudeDeviceInterface : public PluginInterface {
+class JointModifierInterface {
 public:
-  virtual ~AttitudeDeviceInterface () {}
+  virtual ~JointModifierInterface () {}
 
-  virtual void newDevice (const std::string& jointName) = 0;
+  virtual QAction* action (const std::string& jointName) const = 0;
 };
 
-Q_DECLARE_INTERFACE (AttitudeDeviceInterface, "hpp-gui.plugin.attitude-device/0.0")
+Q_DECLARE_INTERFACE (JointModifierInterface, "hpp-gui.plugin.joint-modifier/0.0")
 
 #endif // PLUGININTERFACE_HH

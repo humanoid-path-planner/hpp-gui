@@ -93,16 +93,22 @@ class AttitudeDeviceMsgBox : public QMessageBox
     AttitudeDevice device_;
 };
 
-class RemoteImuPlugin : public QObject, public AttitudeDeviceInterface {
+class RemoteImuPlugin : public QObject,
+  public PluginInterface, public JointModifierInterface {
   Q_OBJECT
-  Q_INTERFACES (AttitudeDeviceInterface)
+  Q_INTERFACES (PluginInterface JointModifierInterface)
 
   public:
     virtual ~RemoteImuPlugin ();
 
     void init();
 
-    void newDevice (const std::string& jointName);
+    QString name () const;
+
+    QAction* action (const std::string &jointName) const;
+
+public slots:
+    void newDevice ();
 
   private:
     AttitudeDeviceMsgBox* msgBox_;

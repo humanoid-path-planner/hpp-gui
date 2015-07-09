@@ -204,24 +204,33 @@ void AttitudeDeviceMsgBox::keyPressEvent(QKeyEvent *event)
   QMessageBox::keyPressEvent(event);
 }
 
+RemoteImuPlugin::~RemoteImuPlugin()
+{
+}
+
 void RemoteImuPlugin::init() {
   msgBox_ = NULL;
 }
 
-void RemoteImuPlugin::newDevice(const std::string &jointName)
+QString RemoteImuPlugin::name() const
 {
-  if (msgBox_) {
-      delete msgBox_;
-    }
-  msgBox_ = new AttitudeDeviceMsgBox (NULL);
-  msgBox_->setJointName (jointName);
-  msgBox_->show();
+  return QString ("Remote IMU");
 }
 
-RemoteImuPlugin::~RemoteImuPlugin()
+QAction* RemoteImuPlugin::action(const std::string &jointName) const
 {
-  if (msgBox_)
-      delete msgBox_;
+  QAction* action = new QAction (QIcon::fromTheme("smartphone"), "Attach to attitude device", NULL);
+  action->setObjectName(QString::fromStdString(jointName));
+  connect (action, SIGNAL (triggered()), this, SLOT (newDevice ()));
+  return action;
+}
+
+void RemoteImuPlugin::newDevice()
+{
+  QString name = QObject::sender()->objectName();
+  msgBox_ = new AttitudeDeviceMsgBox (NULL);
+  msgBox_->setJointName (name.toStdString());
+  msgBox_->show();
 }
 
 Q_EXPORT_PLUGIN2 (remoteimuplugin, RemoteImuPlugin)

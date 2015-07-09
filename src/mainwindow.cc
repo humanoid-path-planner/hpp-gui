@@ -349,16 +349,13 @@ void MainWindow::showTreeContextMenu(const QPoint &point)
     }
   index = ui_->jointTree->indexAt(point);
   if(index.isValid()) {
-      AttitudeDeviceInterface* adi = pluginManager_.get <AttitudeDeviceInterface> ();
+      JointModifierInterface* adi = pluginManager_.getFirstOf <JointModifierInterface> ();
       if (!adi) return;
       JointTreeItem *item =
           dynamic_cast <JointTreeItem*> (jointTreeModel_->itemFromIndex(index));
       if (!item) return;
-      QAction* attDev = contextMenu.addAction(tr("Attach attitude device"));
-      QAction* toDo = contextMenu.exec(ui_->jointTree->mapToGlobal(point));
-      if (!toDo) return;
-      if (toDo == attDev)
-        adi->newDevice(item->name());
+      contextMenu.addAction (adi->action (item->name()));
+      contextMenu.exec(ui_->jointTree->mapToGlobal(point));
       return;
     }
 }
