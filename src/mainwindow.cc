@@ -82,10 +82,6 @@ MainWindow *MainWindow::instance()
 {
   return instance_;
 }
-//CorbaServer &MainWindow::hppServer()
-//{
-//  return hppServer_;
-//}
 
 hpp::corbaServer::Client *MainWindow::hppClient()
 {
