@@ -17,8 +17,10 @@ void AttitudeEventSender::mouseEvent(const remoteimu::MouseEventSender::Event e)
 AttitudeDevice::AttitudeDevice () :
   port (6000),
   mouse_ (new remoteimu::UDPServer ("0.0.0.0", port), 5),
+  hpp_ (0, 0),
   aes_ (), mask (new hpp::boolSeq)
 {
+  hpp_.connect();
 }
 
 void AttitudeDevice::init ()
@@ -50,7 +52,7 @@ void AttitudeDevice::start()
   MainWindow* m = MainWindow::instance();
 
   // Initialize the constraints
-  hpp::Transform__var transform = m->hppClient()->robot()->getJointPosition(jn.c_str());
+  hpp::Transform__var transform = hpp_.robot()->getJointPosition(jn.c_str());
   hpp::floatSeq pos1, pos2; pos1.length(3); pos2.length(3);
   for (int i = 0; i < 3; i++) pos1[i] = 0;
   for (int i = 0; i < 3; i++) pos2[i] = transform.in()[i];
@@ -67,7 +69,7 @@ void AttitudeDevice::start()
                                           transform.in()[2+3],
                                           transform.in()[3+3]));
 
-  m->hppClient()->problem()->createPositionConstraint (
+  hpp_.problem()->createPositionConstraint (
         "attitudeDeviceControl/pos", "", jn.c_str(),
         pos2, pos1, mask.in());
 
@@ -105,26 +107,26 @@ void AttitudeDevice::updateJointAttitude(double w, double x, double y, double z)
   for (int i = 0; i < 3; i++) pos1[i] = 0;
   for (int i = 0; i < 3; i++) pos2[i] = frameViz[i];
 
-  m->hppClient()->problem()->createPositionConstraint (
+  hpp_.problem()->createPositionConstraint (
         "attitudeDeviceControl/pos", "", jn.c_str(),
         pos2, pos1, mask.in());
-  m->hppClient()->problem()->createOrientationConstraint (
+  hpp_.problem()->createOrientationConstraint (
         "attitudeDeviceControl/ori", "", jn.c_str(),
         q, mask.in());
-  m->hppClient()->problem()->resetConstraints ();
+  hpp_.problem()->resetConstraints ();
   hpp::Names_t n; n.length(2);
   n[0] = "attitudeDeviceControl/ori"; n[1] = "attitudeDeviceControl/pos";
-  m->hppClient()->problem()->setNumericalConstraints ("attitudeDeviceControl", n);
-  hpp::floatSeq_var qin = m->hppClient()->robot()->getCurrentConfig ();
+  hpp_.problem()->setNumericalConstraints ("attitudeDeviceControl", n);
+  hpp::floatSeq_var qin = hpp_.robot()->getCurrentConfig ();
   hpp::floatSeq_var qproj;
   hpp::floatSeq_out qp_out (qproj);
   double err;
-  bool res = m->hppClient()->problem()->applyConstraints (qin.in(), qp_out, err);
+  bool res = hpp_.problem()->applyConstraints (qin.in(), qp_out, err);
   if (!res) {
       qDebug() << "Projection failed: " << err;
-      m->hppClient()->robot()->setCurrentConfig (qin.in());
+      hpp_.robot()->setCurrentConfig (qin.in());
   } else {
-      m->hppClient()->robot()->setCurrentConfig (qproj);
+      hpp_.robot()->setCurrentConfig (qproj);
   }
   m->applyCurrentConfiguration();
 }

@@ -21,7 +21,7 @@
 
 MainWindow* MainWindow::instance_ = NULL;
 
-MainWindow::MainWindow(QWidget *parent, bool startHppServer) :
+MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   ui_(new Ui::MainWindow),
   centralWidget_ (),

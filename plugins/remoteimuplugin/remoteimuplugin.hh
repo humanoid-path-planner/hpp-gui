@@ -64,6 +64,7 @@ class AttitudeDevice : public QObject
     const int port;
 
     remoteimu::Mouse mouse_;
+    hpp::corbaServer::Client hpp_;
     AttitudeEventSender aes_;
 
     std::string jn;

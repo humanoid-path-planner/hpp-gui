@@ -31,15 +31,10 @@ int main(int argc, char *argv[])
   QStringList args = a.arguments();
   if (args.contains("--help")) {
       std::cout << "--help   " << "\t" << "show this message." << std::endl;
-      std::cout << "--hpp-off" << "\t" << "turns off the HPP server." << std::endl;
       return 0;
        }
-  bool hppoff = args.contains("--hpp-off");
-  if (hppoff)
-    std::cout << "The HPP server won't start automatically."
-              << "It should have been started before." << std::endl;
 
-  MainWindow w (0, !hppoff);
+  MainWindow w;
   w.show();
 
   return a.exec();
