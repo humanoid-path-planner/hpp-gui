@@ -5,7 +5,7 @@
 #include <QMdiArea>
 #include <QList>
 
-#include <hpp/core/fwd.hh>
+#include <hpp/corbaserver/fwd.hh>
 
 #include <hpp/gui/fwd.h>
 
@@ -96,8 +96,6 @@ private slots:
   void handleWorkerDone (int id);
 
 private:
-  CorbaServer &hppServer();
-
   void setupInterface ();
   void resetJointTree ();
   void createCentralWidget ();
@@ -111,9 +109,8 @@ private:
   OSGWidget* centralWidget_;
   QList <OSGWidget*> osgWindows_;
 
-  hpp::core::ProblemSolverPtr_t problemSolver_;
   WindowsManagerPtr_t osgViewerManagers_;
-  CorbaServer hppServer_, osgServer_;
+  CorbaServer osgServer_;
   hpp::corbaServer::Client* hppClient_;
   BackgroundQueue backgroundQueue_;
   QThread worker_;

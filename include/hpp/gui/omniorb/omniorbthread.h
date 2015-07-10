@@ -9,7 +9,6 @@
 #include <QElapsedTimer>
 
 #include "hpp/gui/fwd.h"
-#include "hpp/corbaserver/fwd.hh"
 #include "gepetto/viewer/corba/fwd.hh"
 
 class WorkItem {
@@ -144,23 +143,6 @@ public slots:
 
 protected:
   QMutex initDone_;
-};
-
-class HppServerProcess : public ServerProcess
-{
-  Q_OBJECT
-
-public:
-  HppServerProcess (hpp::corbaServer::Server* server_);
-
-  ~HppServerProcess ();
-
-public slots:
-  void init ();
-  void processRequest (bool loop);
-
-private:
-  hpp::corbaServer::Server* server_;
 };
 
 class ViewerServerProcess : public ServerProcess

@@ -1,6 +1,5 @@
 #include "hpp/gui/omniorb/omniorbthread.h"
 
-#include <hpp/corbaserver/server.hh>
 #include <hpp/corbaserver/common.hh>
 #include <gepetto/viewer/corba/server.hh>
 #include <QDebug>
@@ -22,28 +21,6 @@ void ServerProcess::waitForInitDone()
 void ServerProcess::init()
 {
   initDone_.unlock();
-}
-
-HppServerProcess::HppServerProcess(hpp::corbaServer::Server *server)
-  : server_ (server)
-{}
-
-HppServerProcess::~HppServerProcess()
-{
-  delete server_;
-}
-
-void HppServerProcess::init()
-{
-  server_->startCorbaServer ();
-  emit done ();
-  ServerProcess::init();
-}
-
-void HppServerProcess::processRequest(bool loop)
-{
-  server_->processRequest (loop);
-  emit done();
 }
 
 ViewerServerProcess::ViewerServerProcess (graphics::corbaServer::Server *server)

@@ -4,8 +4,6 @@
 #include <QPluginLoader>
 #include <QTextStream>
 
-#include <hpp/core/problem-solver.hh>
-#include <hpp/corbaserver/server.hh>
 #include <hpp/corbaserver/client.hh>
 #include <gepetto/viewer/corba/server.hh>
 
@@ -27,10 +25,7 @@ MainWindow::MainWindow(QWidget *parent, bool startHppServer) :
   QMainWindow(parent),
   ui_(new Ui::MainWindow),
   centralWidget_ (),
-  problemSolver_ (hpp::core::ProblemSolver::create ()),
   osgViewerManagers_ (WindowsManager::create()),
-  hppServer_ (new HppServerProcess (
-                new hpp::corbaServer::Server (problemSolver_, 0, NULL, true))),
   osgServer_ (new ViewerServerProcess (
                 new graphics::corbaServer::Server (osgViewerManagers_, 0, NULL, true))),
   hppClient_ (new hpp::corbaServer::Client (0, 0)),
@@ -42,8 +37,6 @@ MainWindow::MainWindow(QWidget *parent, bool startHppServer) :
 
   pathPlayer()->setup();
   solver()->setup ();
-  // Start HPP and gepetto-viewer server.
-  if (startHppServer) hppServer().start();
   osgServer_.start();
   // This scene contains elements required for User Interaction.
   osg()->createScene("hpp-gui");
@@ -72,8 +65,6 @@ MainWindow::MainWindow(QWidget *parent, bool startHppServer) :
 
   readSettings();
 
-  // Create the HPP client
-  if (startHppServer) hppServer().waitForInitDone();
   hppClient()->connect();
 }
 
@@ -81,7 +72,6 @@ MainWindow::~MainWindow()
 {
   writeSettings();
   worker_.quit();
-  hppServer_.wait();
   osgServer_.wait();
   worker_.wait();
   delete hppClient_;
@@ -92,11 +82,10 @@ MainWindow *MainWindow::instance()
 {
   return instance_;
 }
-
-CorbaServer &MainWindow::hppServer()
-{
-  return hppServer_;
-}
+//CorbaServer &MainWindow::hppServer()
+//{
+//  return hppServer_;
+//}
 
 hpp::corbaServer::Client *MainWindow::hppClient()
 {
