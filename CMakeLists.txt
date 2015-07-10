@@ -58,7 +58,6 @@ SET (${PROJECT_NAME}_HEADERS
   include/hpp/gui/tree-item.h
   include/hpp/gui/ledindicator.h
   include/hpp/gui/plugin-interface.h
-  include/hpp/gui/attitude-device.h
   include/hpp/gui/omniorb/omniorbthread.h
   include/hpp/gui/dialog/dialogloadrobot.h
   include/hpp/gui/dialog/dialogloadenvironment.h
@@ -97,7 +96,6 @@ SET (${PROJECT_NAME}_SOURCES
   src/solverwidget.cc
   src/omniorbthread.cc
   src/ledindicator.cc
-  src/attitude-device.cc
   src/dialog/dialogloadrobot.cc
   src/dialog/dialogloadenvironment.cc
   src/dialog/pluginmanagerdialog.cc
