@@ -9,7 +9,6 @@
 
 #include "hpp/gui/windows-manager.h"
 #include "hpp/gui/osgwidget.h"
-#include "hpp/gui/solverwidget.h"
 #include "hpp/gui/pathplayer.h"
 #include "hpp/gui/tree-item.h"
 #include "hpp/gui/dialog/dialogloadrobot.h"
@@ -35,7 +34,6 @@ MainWindow::MainWindow(QWidget *parent) :
   MainWindow::instance_ = this;
   ui_->setupUi(this);
 
-  solver()->setup ();
   osgServer_.start();
   // This scene contains elements required for User Interaction.
   osg()->createScene("hpp-gui");
@@ -98,11 +96,6 @@ hpp::corbaServer::Client *MainWindow::hppClient()
 BackgroundQueue& MainWindow::worker()
 {
   return backgroundQueue_;
-}
-
-SolverWidget *MainWindow::solver() const
-{
-  return ui_->dockWidgetContents_solver;
 }
 
 WindowsManagerPtr_t MainWindow::osg() const
@@ -382,9 +375,6 @@ void MainWindow::setupInterface()
   ui_->dockWidget_configurations->setVisible (false);
   ui_->dockWidget_configurations->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_configurations->toggleViewAction ());
-  ui_->dockWidget_solver->setVisible (false);
-  ui_->dockWidget_solver->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
-  ui_->menuWindow->addAction(ui_->dockWidget_solver->toggleViewAction ());
   ui_->dockWidget_log->setVisible (false);
   ui_->dockWidget_log->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_log->toggleViewAction ());

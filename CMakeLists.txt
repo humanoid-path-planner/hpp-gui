@@ -54,7 +54,6 @@ SET (${PROJECT_NAME}_HEADERS
   include/hpp/gui/mainwindow.h
   include/hpp/gui/osgwidget.h
   include/hpp/gui/configurationlistwidget.h
-  include/hpp/gui/solverwidget.h
   include/hpp/gui/tree-item.h
   include/hpp/gui/ledindicator.h
   include/hpp/gui/plugin-interface.h
@@ -93,7 +92,6 @@ SET (${PROJECT_NAME}_SOURCES
   src/configurationlistwidget.cc
   src/osgwidget.cc
   src/tree-item.cc
-  src/solverwidget.cc
   src/omniorbthread.cc
   src/ledindicator.cc
   src/dialog/dialogloadrobot.cc

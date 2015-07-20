@@ -21,7 +21,6 @@ PathPlayer::PathPlayer (HppWidgetsPlugin *plugin, QWidget *parent) :
   connect (playPause(), SIGNAL (toggled (bool)), this, SLOT (playPauseToggled(bool)));
   connect (stop(), SIGNAL (clicked()), this, SLOT (stopClicked()));
   connect (record(), SIGNAL (toggled(bool)), this, SLOT (recordToggled(bool)));
-  connect (MainWindow::instance()->solver(), SIGNAL (problemSolved ()), this, SLOT (update()));
   connect (ui_->refreshButton_path, SIGNAL (clicked()), this, SLOT (update()));
 }
 

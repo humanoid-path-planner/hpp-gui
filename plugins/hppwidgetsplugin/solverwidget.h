@@ -6,6 +6,11 @@
 #include <QFormLayout>
 
 #include "hpp/gui/fwd.h"
+#include "hppwidgetsplugin.hh"
+
+namespace Ui {
+  class SolverWidget;
+}
 
 class SolverWidget : public QWidget
 {
@@ -19,13 +24,11 @@ public:
     All
   };
 
-  SolverWidget (QWidget* parent = 0);
+  SolverWidget (HppWidgetsPlugin* plugin, QWidget* parent = 0);
 
   ~SolverWidget ();
 
   virtual void update (Select s = All);
-
-  void setup ();
 
 signals:
   void problemSolved ();
@@ -43,6 +46,8 @@ private:
   QComboBox* projector ();
   QComboBox* optimizer ();
 
+  Ui::SolverWidget* ui_;
+  HppWidgetsPlugin* plugin_;
   MainWindow* main_;
 
   QComboBox *planner_, *projector_, *optimizer_;

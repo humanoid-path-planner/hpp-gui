@@ -340,63 +340,6 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_solver">
-   <property name="windowTitle">
-    <string>Problem</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>8</number>
-   </attribute>
-   <widget class="SolverWidget" name="dockWidgetContents_solver">
-    <layout class="QFormLayout" name="formLayout_3">
-     <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-     </property>
-     <item row="0" column="0">
-      <widget class="QLabel" name="pathPlannerLabel">
-       <property name="text">
-        <string>Path planner</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="pathPlannerComboBox"/>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="pathProjectorLabel">
-       <property name="text">
-        <string>Path projector</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="pathProjectorComboBox"/>
-     </item>
-     <item row="3" column="1">
-      <widget class="QPushButton" name="pushButtonSolve">
-       <property name="text">
-        <string>&amp;Solve</string>
-       </property>
-       <property name="icon">
-        <iconset theme="games-solve">
-         <normaloff/>
-        </iconset>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="pathOptimizerLabel">
-       <property name="text">
-        <string>Path optimizer</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QComboBox" name="pathOptimizerComboBox"/>
-     </item>
-    </layout>
-   </widget>
-  </widget>
   <widget class="QDockWidget" name="dockWidget_log">
    <property name="windowIcon">
     <iconset theme="dialog-information">
@@ -517,17 +460,6 @@
     <slot>onSaveClicked()</slot>
     <slot>showListContextMenu(QPoint)</slot>
     <slot>updateCurrentConfig(QListWidgetItem*)</slot>
-   </slots>
-  </customwidget>
-  <customwidget>
-   <class>SolverWidget</class>
-   <extends>QWidget</extends>
-   <header>hpp/gui/solverwidget.h</header>
-   <container>1</container>
-   <slots>
-    <slot>selectPathPlanner(QString)</slot>
-    <slot>selectPathOptimizer(QString)</slot>
-    <slot>selectPathProjector(int)</slot>
    </slots>
   </customwidget>
  </customwidgets>

@@ -1,4 +1,5 @@
-#include "hpp/gui/solverwidget.h"
+#include "solverwidget.h"
+#include "ui_solverwidget.h"
 
 #include <hpp/corbaserver/client.hh>
 
@@ -11,16 +12,27 @@ namespace {
   }
 }
 
-SolverWidget::SolverWidget (QWidget *parent) :
-  QWidget (parent), main_(MainWindow::instance()),
+SolverWidget::SolverWidget (HppWidgetsPlugin *plugin, QWidget *parent) :
+  QWidget (parent),
+  ui_ (new Ui::SolverWidget),
+  plugin_ (plugin),
+  main_(MainWindow::instance()),
   planner_ (0), projector_ (0), optimizer_ (0),
   solveDoneId_ (-1)
 {
+  ui_->setupUi (this);
   connect (&main_->worker(), SIGNAL (done(int)), this, SLOT (handleWorkerDone (int)));
+
+  update ();
+  connect(planner(), SIGNAL (currentIndexChanged(const QString&)), this, SLOT (selectPathPlanner(const QString&)));
+  connect(optimizer(), SIGNAL (currentIndexChanged(const QString&)), this, SLOT (selectPathOptimizer(const QString&)));
+  connect(projector(), SIGNAL (currentIndexChanged(int)), this, SLOT (selectPathProjector(int)));
+  connect(ui_->pushButtonSolve, SIGNAL (clicked ()), this, SLOT (solve ()));
 }
 
 SolverWidget::~SolverWidget()
 {
+  delete ui_;
 }
 
 void SolverWidget::update (Select s) {
@@ -41,15 +53,6 @@ void SolverWidget::update (Select s) {
       projector()->addItem(QString("Dichotomy"), QVariant ((double)0.2));
       if (s == Projector) break;
   }
-}
-
-void SolverWidget::setup()
-{
-  update ();
-  connect(planner(), SIGNAL (currentIndexChanged(const QString&)), this, SLOT (selectPathPlanner(const QString&)));
-  connect(optimizer(), SIGNAL (currentIndexChanged(const QString&)), this, SLOT (selectPathOptimizer(const QString&)));
-  connect(projector(), SIGNAL (currentIndexChanged(int)), this, SLOT (selectPathProjector(int)));
-  connect(findChild<QPushButton*> ("pushButtonSolve"), SIGNAL (clicked ()), this, SLOT (solve ()));
 }
 
 void SolverWidget::selectPathPlanner (const QString& text) {
@@ -87,18 +90,15 @@ void SolverWidget::handleWorkerDone(int id)
 
 QComboBox *SolverWidget::planner()
 {
-  if (planner_ == 0) planner_ = findChild <QComboBox*> ("pathPlannerComboBox");
-  return planner_;
+  return ui_->pathPlannerComboBox;
 }
 
 QComboBox *SolverWidget::projector()
 {
-  if (projector_ == 0) projector_ = findChild <QComboBox*> ("pathProjectorComboBox");
-  return projector_;
+  return ui_->pathProjectorComboBox;
 }
 
 QComboBox *SolverWidget::optimizer()
 {
-  if (optimizer_ == 0) optimizer_ = findChild <QComboBox*> ("pathOptimizerComboBox");
-  return optimizer_;
+  return ui_->pathOptimizerComboBox;
 }

@@ -5,8 +5,11 @@
 #include <hpp/gui/mainwindow.h>
 
 #include "pathplayer.h"
+#include "solverwidget.h"
 
 HppWidgetsPlugin::HppWidgetsPlugin() :
+  pathPlayer_ (NULL),
+  solverWidget_ (NULL),
   hpp_ (new hpp::corbaServer::Client (0,0))
 {
   hpp_->connect ();
@@ -24,9 +27,17 @@ void HppWidgetsPlugin::init()
 
   // Path player widget
   QDockWidget* pp_dock = new QDockWidget ("Path player", main);
-  PathPlayer* pp = new PathPlayer (this, pp_dock);
-  pp_dock->setWidget(pp);
+  pathPlayer_ = new PathPlayer (this, pp_dock);
+  pp_dock->setWidget(pathPlayer_);
   main->insertDockWidget (pp_dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
+
+  // Solver widget
+  QDockWidget* sw_dock = new QDockWidget ("Problem solver", main);
+  solverWidget_ = new SolverWidget (this, sw_dock);
+  sw_dock->setWidget(solverWidget_);
+  main->insertDockWidget (sw_dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
+
+  connect (solverWidget_, SIGNAL (problemSolved ()), pathPlayer_, SLOT (update()));
 }
 
 QString HppWidgetsPlugin::name() const

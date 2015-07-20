@@ -4,6 +4,9 @@
 #include <hpp/gui/plugin-interface.h>
 #include <hpp/corbaserver/client.hh>
 
+class SolverWidget;
+class PathPlayer;
+
 class HppWidgetsPlugin : public QObject, public PluginInterface
 {
   Q_OBJECT
@@ -26,6 +29,9 @@ public:
   QString name() const;
 
   HppClient* client () const;
+
+  PathPlayer* pathPlayer_;
+  SolverWidget* solverWidget_;
 
 private:
   HppClient* hpp_;

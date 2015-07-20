@@ -52,8 +52,6 @@ public:
 
   BackgroundQueue &worker();
 
-  SolverWidget* solver() const;
-
   WindowsManagerPtr_t osg () const;
 
   OSGWidget* centralWidget() const;
@@ -116,7 +114,6 @@ private:
   hpp::corbaServer::Client* hppClient_;
   BackgroundQueue backgroundQueue_;
   QThread worker_;
-  SolverWidget* solver_;
 
   LedIndicator* collisionIndicator_;
 
