@@ -44,13 +44,15 @@ public:
 
   static MainWindow* instance ();
 
+  void insertDockWidget (QDockWidget* dock,
+                         Qt::DockWidgetArea area = Qt::AllDockWidgetAreas,
+                         Qt::Orientation orientation = Qt::Horizontal);
+
   hpp::corbaServer::Client* hppClient ();
 
   BackgroundQueue &worker();
 
   SolverWidget* solver() const;
-
-  PathPlayer* pathPlayer() const;
 
   WindowsManagerPtr_t osg () const;
 

@@ -35,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent) :
   MainWindow::instance_ = this;
   ui_->setupUi(this);
 
-  pathPlayer()->setup();
   solver()->setup ();
   osgServer_.start();
   // This scene contains elements required for User Interaction.
@@ -83,6 +82,14 @@ MainWindow *MainWindow::instance()
   return instance_;
 }
 
+void MainWindow::insertDockWidget(QDockWidget *dock, Qt::DockWidgetArea area, Qt::Orientation orientation)
+{
+  addDockWidget(area, dock, orientation);
+  dock->setVisible (false);
+  dock->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
+  ui_->menuWindow->addAction(dock->toggleViewAction ());
+}
+
 hpp::corbaServer::Client *MainWindow::hppClient()
 {
   return hppClient_;
@@ -96,11 +103,6 @@ BackgroundQueue& MainWindow::worker()
 SolverWidget *MainWindow::solver() const
 {
   return ui_->dockWidgetContents_solver;
-}
-
-PathPlayer *MainWindow::pathPlayer() const
-{
-  return ui_->dockWidgetContents_player;
 }
 
 WindowsManagerPtr_t MainWindow::osg() const
@@ -362,6 +364,15 @@ void MainWindow::setupInterface()
   // Group dock widgets
   this->tabifyDockWidget(ui_->dockWidget_jointTree, ui_->dockWidget_bodyTree);
   // Menu "Window"
+  QMenu* toolbar = ui_->menuWindow->addMenu("Tool bar");
+  toolbar->setIcon(QIcon::fromTheme("configure-toolbars"));
+  ui_->mainToolBar->setVisible(false);
+  ui_->osgToolBar->setVisible(false);
+  toolbar->addAction (ui_->mainToolBar->toggleViewAction ());
+  toolbar->addAction (ui_->osgToolBar->toggleViewAction ());
+
+  ui_->menuWindow->addSeparator();
+
   ui_->dockWidget_bodyTree->setVisible (false);
   ui_->dockWidget_bodyTree->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_bodyTree->toggleViewAction ());
@@ -374,19 +385,10 @@ void MainWindow::setupInterface()
   ui_->dockWidget_solver->setVisible (false);
   ui_->dockWidget_solver->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_solver->toggleViewAction ());
-  ui_->dockWidget_player->setVisible (false);
-  ui_->dockWidget_player->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
-  ui_->menuWindow->addAction(ui_->dockWidget_player->toggleViewAction ());
   ui_->dockWidget_log->setVisible (false);
   ui_->dockWidget_log->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_log->toggleViewAction ());
   ui_->menuWindow->addSeparator();
-  QMenu* toolbar = ui_->menuWindow->addMenu("Tool bar");
-  toolbar->setIcon(QIcon::fromTheme("configure-toolbars"));
-  ui_->mainToolBar->setVisible(false);
-  ui_->osgToolBar->setVisible(false);
-  toolbar->addAction (ui_->mainToolBar->toggleViewAction ());
-  toolbar->addAction (ui_->osgToolBar->toggleViewAction ());
 
   // Setup the status bar
   collisionIndicator_ = new LedIndicator (statusBar());

@@ -8,15 +8,19 @@
 
 #include <hpp/gui/fwd.h>
 
+#include <hppwidgetsplugin.hh>
+
+namespace Ui {
+  class PathPlayerWidget;
+}
+
 class PathPlayer : public QWidget
 {
   Q_OBJECT
 
 public:
-  PathPlayer (QWidget* parent = 0);
+  PathPlayer (HppWidgetsPlugin* plugin, QWidget* parent = 0);
   ~PathPlayer();
-
-  void setup ();
 
 private slots:
   void update ();
@@ -38,6 +42,8 @@ private:
   int timeBetweenRefresh() const;
   double lengthBetweenRefresh () const;
 
+  Ui::PathPlayerWidget* ui_;
+
   QDoubleSpinBox* timeSpinBox () const;
   QSpinBox* pathIndex() const;
   QSlider* pathSlider () const;
@@ -45,12 +51,12 @@ private:
   QPushButton* stop () const;
   QPushButton* record () const;
 
-  MainWindow* main_;
-
   const int frameRate_;
   double pathLength_;
   double currentParam_;
   int timerId_;
+
+  HppWidgetsPlugin* plugin_;
 };
 
 #endif // PATHPLAYER_H

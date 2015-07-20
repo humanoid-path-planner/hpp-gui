@@ -42,7 +42,7 @@
      <x>0</x>
      <y>0</y>
      <width>754</width>
-     <height>26</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -109,7 +109,16 @@
      <property name="sizeConstraint">
       <enum>QLayout::SetMaximumSize</enum>
      </property>
-     <property name="margin">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
       <number>0</number>
      </property>
      <item>
@@ -137,7 +146,16 @@
      <property name="spacing">
       <number>0</number>
      </property>
-     <property name="margin">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
       <number>0</number>
      </property>
      <item>
@@ -248,7 +266,16 @@
      <property name="spacing">
       <number>0</number>
      </property>
-     <property name="margin">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
       <number>0</number>
      </property>
      <item>
@@ -257,7 +284,16 @@
         <property name="spacing">
          <number>0</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
          <number>0</number>
         </property>
         <item>
@@ -299,177 +335,6 @@
          </widget>
         </item>
        </layout>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QDockWidget" name="dockWidget_player">
-   <property name="allowedAreas">
-    <set>Qt::BottomDockWidgetArea|Qt::TopDockWidgetArea</set>
-   </property>
-   <property name="windowTitle">
-    <string>Path player</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>8</number>
-   </attribute>
-   <widget class="PathPlayer" name="dockWidgetContents_player">
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QPushButton" name="refreshButton_path">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset theme="view-refresh" resource="../../../../res/images.qrc">
-         <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>18</width>
-         <height>18</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSpinBox" name="pathIndexSpin">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="toolTip">
-        <string>Path index</string>
-       </property>
-       <property name="prefix">
-        <string/>
-       </property>
-       <property name="maximum">
-        <number>0</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSlider" name="pathSlider">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="maximum">
-        <number>99999</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="playPauseButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Play/pause</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../../../../res/images.qrc">
-         <normaloff>:/icons/play.png</normaloff>
-         <normalon>:/icons/pause.png</normalon>:/icons/play.png</iconset>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-       <property name="default">
-        <bool>false</bool>
-       </property>
-       <property name="flat">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="stopButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Stop</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../../../../res/images.qrc">
-         <normaloff>:/icons/stop.png</normaloff>:/icons/stop.png</iconset>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="recordButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Record the central widget as a sequence of images. You can find the images in /tmp/hpp_gui/record/img_%d.jpeg&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../../../../res/images.qrc">
-         <normaloff>:/icons/record.png</normaloff>:/icons/record.png</iconset>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QDoubleSpinBox" name="timeSpinBox">
-       <property name="toolTip">
-        <string>Total time</string>
-       </property>
-       <property name="value">
-        <double>10.000000000000000</double>
-       </property>
       </widget>
      </item>
     </layout>
@@ -546,7 +411,16 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_4">
     <layout class="QVBoxLayout" name="verticalLayout_3">
-     <property name="margin">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
       <number>0</number>
      </property>
      <item>
@@ -623,7 +497,9 @@
   </action>
   <action name="actionPlugins">
    <property name="icon">
-    <iconset theme="preferences-plugin"/>
+    <iconset theme="preferences-plugin">
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>&amp;Plugins</string>
@@ -652,15 +528,6 @@
     <slot>selectPathPlanner(QString)</slot>
     <slot>selectPathOptimizer(QString)</slot>
     <slot>selectPathProjector(int)</slot>
-   </slots>
-  </customwidget>
-  <customwidget>
-   <class>PathPlayer</class>
-   <extends>QWidget</extends>
-   <header>hpp/gui/pathplayer.h</header>
-   <container>1</container>
-   <slots>
-    <slot>update()</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -857,22 +724,6 @@
     <hint type="destinationlabel">
      <x>376</x>
      <y>363</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>refreshButton_path</sender>
-   <signal>clicked()</signal>
-   <receiver>dockWidgetContents_player</receiver>
-   <slot>update()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>49</x>
-     <y>639</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>262</x>
-     <y>627</y>
     </hint>
    </hints>
   </connection>

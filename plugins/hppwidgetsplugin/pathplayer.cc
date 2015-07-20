@@ -1,4 +1,4 @@
-#include "hpp/gui/pathplayer.h"
+#include "pathplayer.h"
 
 #include <hpp/corbaserver/common.hh>
 #include <hpp/corbaserver/client.hh>
@@ -6,30 +6,33 @@
 #include "hpp/gui/mainwindow.h"
 #include "hpp/gui/solverwidget.h"
 
-PathPlayer::PathPlayer (QWidget *parent) :
+#include "ui_pathplayerwidget.h"
+
+PathPlayer::PathPlayer (HppWidgetsPlugin *plugin, QWidget *parent) :
   QWidget (parent)
-, main_ (MainWindow::instance())
+, ui_ (new Ui::PathPlayerWidget)
 , frameRate_ (25)
-{}
-
-PathPlayer::~PathPlayer()
+, plugin_ (plugin)
 {
-}
-
-void PathPlayer::setup()
-{
+  ui_->setupUi (this);
   pathIndex()->setMaximum(0);
   connect (pathSlider(), SIGNAL (sliderMoved (int)), this, SLOT (pathSliderChanged(int)));
   connect (pathIndex(), SIGNAL (valueChanged(int)), this, SLOT (pathIndexChanged(int)));
   connect (playPause(), SIGNAL (toggled (bool)), this, SLOT (playPauseToggled(bool)));
   connect (stop(), SIGNAL (clicked()), this, SLOT (stopClicked()));
   connect (record(), SIGNAL (toggled(bool)), this, SLOT (recordToggled(bool)));
-  connect (main_->solver(), SIGNAL (problemSolved ()), this, SLOT (update()));
+  connect (MainWindow::instance()->solver(), SIGNAL (problemSolved ()), this, SLOT (update()));
+  connect (ui_->refreshButton_path, SIGNAL (clicked()), this, SLOT (update()));
+}
+
+PathPlayer::~PathPlayer()
+{
+  delete ui_;
 }
 
 void PathPlayer::update ()
 {
-  CORBA::Short nbPath = main_->hppClient ()->problem ()->numberPaths ();
+  CORBA::Short nbPath = plugin_->client()->problem ()->numberPaths ();
   if (nbPath > 0)
     {
       pathIndex()->setEnabled(true);
@@ -40,7 +43,7 @@ void PathPlayer::update ()
           // If path index value is 0, no signal valueChanged will
           // be emitted. Force a value changed.
           if (pathIndex()->value() == 0)
-              pathIndexChanged(0);
+            pathIndexChanged(0);
           pathIndex()->setValue(0);
         }
       pathIndex()->setMaximum(nbPath - 1);
@@ -50,13 +53,13 @@ void PathPlayer::update ()
       pathSlider()->setEnabled(false);
       playPause()->setEnabled(false);
       stop()->setEnabled(false);
-  }
+    }
 }
 
 void PathPlayer::pathIndexChanged(int i)
 {
   assert (i >= 0);
-  pathLength_ = main_->hppClient()->problem()->pathLength ((short unsigned int)i);
+  pathLength_ = plugin_->client()->problem()->pathLength ((short unsigned int)i);
   currentParam_= 0;
 }
 
@@ -88,8 +91,8 @@ void PathPlayer::recordToggled(bool toggled)
   if (toggled) {
       std::string path = "/tmp/hpp-gui/record/img";
       std::string ext = "jpeg";
-      main_->osg ()->startCapture(
-            main_->centralWidget()->windowID(),
+      MainWindow::instance()->osg ()->startCapture(
+            MainWindow::instance()->centralWidget()->windowID(),
             path.c_str(),
             ext.c_str());
     }
@@ -121,9 +124,9 @@ void PathPlayer::timerEvent(QTimerEvent *event)
 void PathPlayer::updateConfiguration ()
 {
   hpp::floatSeq_var config =
-      main_->hppClient()->problem()->configAtParam ((short unsigned int)pathIndex()->value(),currentParam_);
-  main_->hppClient()->robot()->setCurrentConfig (config.in());
-  main_->applyCurrentConfiguration();
+      plugin_->client()->problem()->configAtParam ((short unsigned int)pathIndex()->value(),currentParam_);
+  plugin_->client()->robot()->setCurrentConfig (config.in());
+  MainWindow::instance()->applyCurrentConfiguration();
 }
 
 inline double PathPlayer::sliderToLength(int v) const
@@ -153,30 +156,30 @@ double PathPlayer::lengthBetweenRefresh() const
 
 QDoubleSpinBox *PathPlayer::timeSpinBox() const
 {
-  return findChild <QDoubleSpinBox*> ("timeSpinBox");
+  return ui_->timeSpinBox;
 }
 
 QSpinBox *PathPlayer::pathIndex() const
 {
-  return findChild <QSpinBox*> ("pathIndexSpin");
+  return ui_->pathIndexSpin;
 }
 
 QSlider *PathPlayer::pathSlider() const
 {
-  return findChild <QSlider*> ("pathSlider");
+  return ui_->pathSlider;
 }
 
 QPushButton *PathPlayer::playPause() const
 {
-  return findChild <QPushButton*> ("playPauseButton");
+  return ui_->playPauseButton;
 }
 
 QPushButton *PathPlayer::stop() const
 {
-  return findChild <QPushButton*> ("stopButton");
+  return ui_->stopButton;
 }
 
 QPushButton *PathPlayer::record() const
 {
-  return findChild <QPushButton*> ("recordButton");
+  return ui_->recordButton;
 }
