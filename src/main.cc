@@ -1,5 +1,6 @@
 #include <QtGui/QApplication>
 
+#include "hpp/gui/safeapplication.h"
 #include "hpp/gui/mainwindow.h"
 #include "hpp/gui/dialog/pluginmanagerdialog.h"
 
@@ -19,7 +20,7 @@ int main(int argc, char *argv[])
   QSettings::setPath(QSettings::NativeFormat,
                      QSettings::SystemScope, "@CMAKE_INSTALL_PREFIX@/etc");
 
-  QApplication a(argc, argv);
+  SafeApplication a(argc, argv);
   a.setStyle(new QCleanlooksStyle);
   QIcon::setThemeName("oxygen");
 
