@@ -3,12 +3,12 @@
 #include <QDockWidget>
 
 #include <hpp/gui/mainwindow.h>
-#include <hpp/gui/tree-item.h>
 
 #include "pathplayer.h"
 #include "solverwidget.h"
 #include "jointtreewidget.h"
 #include "configurationlistwidget.h"
+#include "joint-tree-item.h"
 
 #define QSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.toStdString().c_str())
 #define STDSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.c_str())

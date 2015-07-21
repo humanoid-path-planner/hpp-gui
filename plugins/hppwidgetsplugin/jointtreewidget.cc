@@ -2,7 +2,8 @@
 #include "ui_jointtreewidget.h"
 
 #include <hpp/gui/mainwindow.h>
-#include <hpp/gui/tree-item.h>
+
+#include "joint-tree-item.h"
 
 JointTreeWidget::JointTreeWidget(HppWidgetsPlugin *plugin, QWidget *parent) :
   QWidget(parent),
@@ -13,7 +14,9 @@ JointTreeWidget::JointTreeWidget(HppWidgetsPlugin *plugin, QWidget *parent) :
   ui_->setupUi (this);
   ui_->jointTree->setModel(model_);
   ui_->jointTree->setItemDelegate (
-        new JointItemDelegate(ui_->button_forceVelocity, MainWindow::instance()));
+        new JointItemDelegate(ui_->button_forceVelocity,
+                              plugin_,
+                              MainWindow::instance()));
   reset ();
 
   connect(ui_->jointTree, SIGNAL (customContextMenuRequested(QPoint)),

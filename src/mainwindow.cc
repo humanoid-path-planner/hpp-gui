@@ -4,7 +4,6 @@
 #include <QPluginLoader>
 #include <QTextStream>
 
-#include <hpp/corbaserver/client.hh>
 #include <gepetto/viewer/corba/server.hh>
 
 #include "hpp/gui/windows-manager.h"
@@ -26,7 +25,6 @@ MainWindow::MainWindow(QWidget *parent) :
   osgViewerManagers_ (WindowsManager::create()),
   osgServer_ (new ViewerServerProcess (
                 new graphics::corbaServer::Server (osgViewerManagers_, 0, NULL, true))),
-  hppClient_ (new hpp::corbaServer::Client (0, 0)),
   backgroundQueue_(),
   worker_ ()
 {
@@ -55,8 +53,6 @@ MainWindow::MainWindow(QWidget *parent) :
   setupInterface();
 
   readSettings();
-
-  hppClient()->connect();
 }
 
 MainWindow::~MainWindow()
@@ -65,7 +61,6 @@ MainWindow::~MainWindow()
   worker_.quit();
   osgServer_.wait();
   worker_.wait();
-  delete hppClient_;
   delete ui_;
 }
 
@@ -80,11 +75,6 @@ void MainWindow::insertDockWidget(QDockWidget *dock, Qt::DockWidgetArea area, Qt
   dock->setVisible (false);
   dock->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(dock->toggleViewAction ());
-}
-
-hpp::corbaServer::Client *MainWindow::hppClient()
-{
-  return hppClient_;
 }
 
 BackgroundQueue& MainWindow::worker()
@@ -292,7 +282,7 @@ void MainWindow::showTreeContextMenu(const QPoint &point)
     }
 }
 
-void MainWindow::handleWorkerDone(int id)
+void MainWindow::handleWorkerDone(int /*id*/)
 {
 }
 

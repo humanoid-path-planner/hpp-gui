@@ -50,8 +50,6 @@ public:
                          Qt::DockWidgetArea area = Qt::AllDockWidgetAreas,
                          Qt::Orientation orientation = Qt::Horizontal);
 
-  hpp::corbaServer::Client* hppClient () HPP_GUI_DEPRECATED;
-
   BackgroundQueue &worker();
 
   WindowsManagerPtr_t osg () const;
@@ -109,7 +107,6 @@ private:
 
   WindowsManagerPtr_t osgViewerManagers_;
   CorbaServer osgServer_;
-  hpp::corbaServer::Client* hppClient_;
   BackgroundQueue backgroundQueue_;
   QThread worker_;
 

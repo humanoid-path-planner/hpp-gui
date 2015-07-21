@@ -56,16 +56,16 @@ void SolverWidget::update (Select s) {
 }
 
 void SolverWidget::selectPathPlanner (const QString& text) {
-  main_->hppClient()->problem()->selectPathPlanner (text.toStdString().c_str());
+  plugin_->client()->problem()->selectPathPlanner (text.toStdString().c_str());
 }
 
 void SolverWidget::selectPathOptimizer (const QString& text) {
-  main_->hppClient()->problem()->clearPathOptimizers();
-  main_->hppClient()->problem()->addPathOptimizer (text.toStdString().c_str());
+  plugin_->client()->problem()->clearPathOptimizers();
+  plugin_->client()->problem()->addPathOptimizer (text.toStdString().c_str());
 }
 
 void SolverWidget::selectPathProjector (int index) {
-  main_->hppClient()->problem()->selectPathProjector (
+  plugin_->client()->problem()->selectPathProjector (
         projector()->itemText(index).toStdString().c_str(),
         projector()->itemData(index).toDouble());
 }
@@ -74,7 +74,7 @@ void SolverWidget::solve()
 {
   /* double time = */
   WorkItem* item = new WorkItem_0 <hpp::corbaserver::_objref_Problem, CORBA::Double>
-      (main_->hppClient()->problem().in(), &hpp::corbaserver::_objref_Problem::solve);
+      (plugin_->client()->problem().in(), &hpp::corbaserver::_objref_Problem::solve);
   main_->emitSendToBackground(item);
   main_->logJobStarted(item->id(), "solve problem.");
   solveDoneId_ = item->id();
