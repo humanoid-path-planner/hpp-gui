@@ -1,6 +1,5 @@
 #include "hpp/gui/omniorb/omniorbthread.h"
 
-#include <hpp/corbaserver/common.hh>
 #include <gepetto/viewer/corba/server.hh>
 #include <QDebug>
 
@@ -104,8 +103,12 @@ void BackgroundQueue::perform(WorkItem *item)
     emit done (item->id ());
   } catch (std::exception& e) {
     emit failed (item->id(), QString (e.what()));
+#if 0
   } catch (hpp::Error& e) {
     emit failed (item->id(), QString (e.msg));
+#endif
+  } catch (...) {
+    emit failed (item->id(), QString ("Unkown error type"));
   }
   delete item;
 }

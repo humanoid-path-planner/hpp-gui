@@ -1,6 +1,8 @@
 #include "hpp/gui/dialog/pluginmanagerdialog.h"
 #include "ui_pluginmanagerdialog.h"
 
+#include <QDebug>
+
 #include "hpp/gui/plugin-interface.h"
 
 QList <QDir> PluginManager::pluginDirs_;
@@ -89,7 +91,8 @@ PluginManagerDialog::~PluginManagerDialog()
   delete ui_;
 }
 
-void PluginManagerDialog::onItemChanged(QTableWidgetItem *current, QTableWidgetItem *previous)
+void PluginManagerDialog::onItemChanged(QTableWidgetItem *current,
+                                        QTableWidgetItem */*previous*/)
 {
   if (!current) return;
   QString key = ui_->pluginList->item(current->row(), 0)->text();

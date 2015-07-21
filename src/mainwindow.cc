@@ -1,9 +1,6 @@
 #include "hpp/gui/mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QPluginLoader>
-#include <QTextStream>
-
 #include <gepetto/viewer/corba/server.hh>
 
 #include "hpp/gui/windows-manager.h"

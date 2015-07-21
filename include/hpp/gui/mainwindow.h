@@ -2,10 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QMdiArea>
 #include <QList>
-
-#include <hpp/corbaserver/fwd.hh>
 
 #include <hpp/gui/fwd.h>
 
@@ -28,19 +25,6 @@ class MainWindow : public QMainWindow
   Q_OBJECT
   
 public:
-  struct JointElement {
-    std::string name;
-    std::string bodyName;
-    JointTreeItem* item;
-    bool updateViewer;
-
-    JointElement ()
-      : name (), bodyName (), item (NULL), updateViewer (false) {}
-    JointElement (std::string n, std::string bn, JointTreeItem* i, bool updateV = true)
-      : name (n), bodyName (bn), item (i), updateViewer (updateV) {}
-  };
-  typedef QMap <std::string, JointElement> JointMap;
-
   explicit MainWindow(QWidget *parent = 0);
   ~MainWindow();
 

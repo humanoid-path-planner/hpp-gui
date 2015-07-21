@@ -63,8 +63,8 @@ void HppWidgetsPlugin::init()
   connect (jointTreeWidget_->refreshButton (), SIGNAL (clicked ()),
            main, SLOT (reload()));
   connect (main, SIGNAL (configurationValidation ()),
-           jointTreeWidget_, SLOT (configurationValidation ()));
-  connect (jointTreeWidget_, SIGNAL (configurationValidationStatus (bool)),
+           this, SLOT (configurationValidation ()));
+  connect (this, SIGNAL (configurationValidationStatus (bool)),
            main, SLOT (configurationValidationStatusChanged (bool)));
   connect (main, SIGNAL (applyCurrentConfiguration()),
            this, SLOT (applyCurrentConfiguration()));

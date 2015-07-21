@@ -7,7 +7,6 @@
 #include <QDir>
 #include <QPluginLoader>
 #include <QTableWidgetItem>
-#include <QDebug>
 
 namespace Ui {
   class PluginManagerDialog;

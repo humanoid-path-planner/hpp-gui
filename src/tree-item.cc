@@ -1,7 +1,5 @@
 #include "hpp/gui/tree-item.h"
 
-#include <iostream>
-
 #include <gepetto/viewer/group-node.h>
 
 #include "hpp/gui/mainwindow.h"
@@ -45,6 +43,9 @@ void VisibilityItem::update()
           break;
         case Qt::Unchecked:
           parent_->node_->setVisibilityMode(graphics::VISIBILITY_OFF);
+          break;
+        case Qt::PartiallyChecked:
+          qDebug () << "Not implemented";
           break;
         }
   }

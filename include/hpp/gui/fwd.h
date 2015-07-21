@@ -5,13 +5,6 @@
 
 class MainWindow;
 
-class JointTreeItem;
-
-class SolverWidget;
-class PathPlayer;
-class ConfigurationListWidget;
-
-class HppCorbaServer;
 class ViewerCorbaServer;
 
 class WindowsManager;

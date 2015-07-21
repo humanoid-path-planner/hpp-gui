@@ -295,6 +295,8 @@ void OSGWidget::mousePressEvent( QMouseEvent* event )
               selectedNode_ = list.front();
             }
           break;
+        default:
+          break;
         }
       break;
     }
