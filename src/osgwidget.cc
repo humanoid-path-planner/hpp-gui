@@ -317,7 +317,7 @@ void OSGWidget::mouseReleaseEvent(QMouseEvent* event)
       }
     if (!list.empty()) {
         MainWindow* mw = MainWindow::instance();
-        mw->selectJointFromBodyName (list.front()->getID());
+        mw->requestSelectJointFromBodyName (list.front()->getID());
       }
   }
 

@@ -17,6 +17,8 @@
 #include <hpp/gui/dialog/dialogloadenvironment.h>
 #include <hpp/gui/dialog/pluginmanagerdialog.h>
 
+#include <hpp/gui/deprecated.hh>
+
 namespace Ui {
   class MainWindow;
 }
@@ -48,7 +50,7 @@ public:
                          Qt::DockWidgetArea area = Qt::AllDockWidgetAreas,
                          Qt::Orientation orientation = Qt::Horizontal);
 
-  hpp::corbaServer::Client* hppClient ();
+  hpp::corbaServer::Client* hppClient () HPP_GUI_DEPRECATED;
 
   BackgroundQueue &worker();
 
@@ -56,9 +58,7 @@ public:
 
   OSGWidget* centralWidget() const;
 
-  const JointMap& jointMap () const {
-    return jointsMap_;
-  }
+  PluginManager* pluginManager ();
 
   void log (const QString& text);
   void logError (const QString& text);
@@ -68,6 +68,9 @@ public:
 signals:
   void sendToBackground (WorkItem* item);
   void createView (QString name);
+  void applyCurrentConfiguration();
+  void configurationValidation();
+  void selectJointFromBodyName(const std::string &bodyName);
 
 public slots:
   void logJobStarted (int id, const QString& text);
@@ -77,12 +80,10 @@ public slots:
   OSGWidget* delayedCreateView (QString name = "");
   void reload ();
   void addBodyToTree (graphics::GroupNodePtr_t group);
-  void addJointToTree (const std::string name, JointTreeItem *parent);
-  void updateRobotJoints (const QString robotName);
-  void applyCurrentConfiguration ();
+  void requestApplyCurrentConfiguration ();
   void requestConfigurationValidation ();
-  void selectJointFromBodyName (const std::string& bodyName);
-  void selectJoint (const std::string& jointName);
+  void configurationValidationStatusChanged (bool valid);
+  void requestSelectJointFromBodyName (const std::string& bodyName);
   void onOpenPluginManager ();
 
 private slots:
@@ -90,16 +91,13 @@ private slots:
   void openLoadRobotDialog ();
   void openLoadEnvironmentDialog ();
   void updateBodyTree (const QModelIndex& index);
-  void updateJointTree (const QModelIndex& index);
   void showTreeContextMenu (const QPoint& point);
 
   void handleWorkerDone (int id);
 
 private:
   void setupInterface ();
-  void resetJointTree ();
   void createCentralWidget ();
-  void computeObjectPosition ();
   void readSettings ();
   void writeSettings ();
 
@@ -117,36 +115,9 @@ private:
 
   LedIndicator* collisionIndicator_;
 
-  QStandardItemModel *bodyTreeModel_, *jointTreeModel_;
-
-  QMap <std::string, JointElement> jointsMap_;
+  QStandardItemModel *bodyTreeModel_;
 
   PluginManager pluginManager_;
-
-  struct LoadDoneStruct {
-    LoadDoneStruct () : id (-1), parent (MainWindow::instance()) {}
-    virtual ~LoadDoneStruct () {}
-    virtual void done ();
-    bool isValid () { return id >= 0; }
-    void invalidate () { id = -1; }
-    bool is (int ID) { return id == ID; }
-    int id;
-    QString what;
-    MainWindow* parent;
-  };
-  friend struct LoadDoneStruct;
-
-  struct LoadRobot : public LoadDoneStruct {
-    std::string name_, urdfSuf_, srdfSuf_,
-      package_, modelName_, rootJointType_;
-    DialogLoadRobot::RobotDefinition rd;
-    virtual void done ();
-  };
-  struct LoadEnvironment : public LoadDoneStruct {
-    std::string prefix_, urdfFilename_, package_;
-    virtual void done ();
-  };
-  QList <LoadDoneStruct*> loader_;
 
   QMutex delayedCreateView_;
 };

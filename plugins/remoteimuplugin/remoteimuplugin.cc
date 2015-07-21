@@ -50,6 +50,11 @@ void AttitudeDevice::start()
   if (lock_.isRunning()) stop ();
 
   MainWindow* m = MainWindow::instance();
+  ModelInterface* model = m->pluginManager()->getFirstOf <ModelInterface> ();
+  if (model == NULL) {
+      qDebug () << "No ModelInterface found";
+      return;
+    }
 
   // Initialize the constraints
   hpp::Transform__var transform = hpp_.robot()->getJointPosition(jn.c_str());
@@ -75,9 +80,9 @@ void AttitudeDevice::start()
 
   m->osg()->setVisibility("hpp-gui/attitudeControl", "ON");
   m->osg()->applyConfiguration("hpp-gui/attitudeControl", frameViz);
-  MainWindow::JointMap::const_iterator it = m->jointMap ().find (jn);
-  if (it != m->jointMap ().end())
-    m->osg()->addLandmark(it->bodyName.c_str (), 0.05f);
+  std::string bodyName = model->getBodyFromJoint (jn);
+  if (!jn.empty())
+    m->osg()->addLandmark(bodyName.c_str (), 0.05f);
   m->osg()->refresh();
   lock_ = QtConcurrent::run (&mouse_, &remoteimu::Mouse::handleEvents, true);
 }
@@ -86,10 +91,16 @@ void AttitudeDevice::stop()
 {
   mouse_.stopEventHandler();
   MainWindow* m = MainWindow::instance();
+  ModelInterface* model = m->pluginManager()->getFirstOf <ModelInterface> ();
+  if (model == NULL) {
+      qDebug () << "No ModelInterface found";
+      return;
+    }
+
   m->osg()->setVisibility("hpp-gui/attitudeControl", "OFF");
-  MainWindow::JointMap::const_iterator it = m->jointMap ().find (jn);
-  if (it != m->jointMap ().end())
-    m->osg()->deleteLandmark(it->bodyName.c_str ());
+  std::string bodyName = model->getBodyFromJoint (jn);
+  if (!jn.empty())
+    m->osg()->deleteLandmark(bodyName.c_str ());
   lock_.waitForFinished();
 }
 
@@ -128,7 +139,7 @@ void AttitudeDevice::updateJointAttitude(double w, double x, double y, double z)
   } else {
       hpp_.robot()->setCurrentConfig (qproj);
   }
-  m->applyCurrentConfiguration();
+  m->requestApplyCurrentConfiguration();
 }
 
 void AttitudeDevice::updateTargetPosition (double x, double y, double z) {

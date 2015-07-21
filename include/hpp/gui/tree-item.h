@@ -172,10 +172,9 @@ class JointItemDelegate : public QItemDelegate
   Q_OBJECT
 
 public:
-  static QPushButton* forceIntegrator;
-  static void updateTypeRole (JointTreeItem::ItemType& type);
+  JointItemDelegate (QPushButton* forceVelocity, MainWindow* parent);
 
-  JointItemDelegate (MainWindow* parent);
+  void updateTypeRole (JointTreeItem::ItemType& type) const;
 
   QWidget* createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
   void setEditorData(QWidget *editor, const QModelIndex &index) const;
@@ -184,6 +183,7 @@ public:
 
 private:
   MainWindow* main_;
+  QPushButton* forceIntegrator_;
 };
 
 #endif // TREEITEM_H

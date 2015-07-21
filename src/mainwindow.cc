@@ -38,13 +38,8 @@ MainWindow::MainWindow(QWidget *parent) :
   osg()->createScene("hpp-gui");
 
   // Setup the tree views
-  JointItemDelegate::forceIntegrator = ui_->button_forceVelocity;
   bodyTreeModel_  = new QStandardItemModel;
-  jointTreeModel_ = new QStandardItemModel;
   ui_->bodyTree ->setModel(bodyTreeModel_ );
-  ui_->jointTree->setModel(jointTreeModel_);
-  ui_->jointTree->setItemDelegate (new JointItemDelegate(this));
-  resetJointTree();
 
   // Setup the main OSG widget
   connect (this, SIGNAL (createView(QString)), SLOT (onCreateView()));
@@ -107,6 +102,11 @@ OSGWidget *MainWindow::centralWidget() const
   return centralWidget_;
 }
 
+PluginManager *MainWindow::pluginManager()
+{
+  return &pluginManager_;
+}
+
 void MainWindow::log(const QString &text)
 {
   ui_->logText->insertHtml("<hr/><font color=black>"+text+"</font>");
@@ -151,27 +151,13 @@ OSGWidget *MainWindow::delayedCreateView(QString name)
 
 void MainWindow::reload()
 {
-  resetJointTree();
-  jointsMap_.clear();
   bodyTreeModel_->clear();
-  char* robotName;
-  try {
-    robotName = hppClient()->robot()->getRobotName();
-  } catch (hpp::Error& e) {
-    logError(QString(e.msg));
-    return;
-  }
-  hpp::Names_t_var joints = hppClient()->robot()->getAllJointNames ();
-  std::string bjn (joints[0]);
-  updateRobotJoints(robotName);
-  addJointToTree(bjn, 0);
   std::vector <std::string> sceneNames = osgViewerManagers_->getSceneList ();
   for (unsigned int i = 0; i < sceneNames.size(); ++i) {
       graphics::GroupNodePtr_t group = osgViewerManagers_->getScene(sceneNames[i]);
       if (!group) continue;
       addBodyToTree(group);
     }
-  delete[] robotName;
 }
 
 OSGWidget *MainWindow::onCreateView()
@@ -205,38 +191,25 @@ void MainWindow::openLoadRobotDialog()
   DialogLoadRobot* d = new DialogLoadRobot (this);
   if (d->exec () == QDialog::Accepted) {
       createCentralWidget();
-      LoadRobot* lr = new LoadRobot;
-      LoadRobot& loadDone = *lr;
-      loader_.push_back(lr);
-      loadDone.rd = d->getSelectedRobotDescription();
-      DialogLoadRobot::RobotDefinition& rd = loadDone.rd;
-      loadDone.name_  = rd.name_.toStdString();
-      loadDone.urdfSuf_ = rd.urdfSuf_.toStdString();
-      loadDone.srdfSuf_ = rd.srdfSuf_.toStdString();
-      loadDone.package_ = rd.package_.toStdString();
-      loadDone.modelName_ = rd.modelName_.toStdString();
-      loadDone.rootJointType_ = rd.rootJointType_.toStdString();
-      loadDone.what = QString ("Loading robot ") + rd.name_;
-      WorkItem* item = new WorkItem_6 <
-          hpp::corbaserver::_objref_Robot, void,
-          const char*, const char*, const char*, const char*, const char*, const char*>
-          (hppClient()->robot (), &hpp::corbaserver::_objref_Robot::loadRobotModel,
-           STDSTRING_TO_CONSTCHARARRAY(loadDone.name_),
-           STDSTRING_TO_CONSTCHARARRAY(loadDone.rootJointType_),
-           STDSTRING_TO_CONSTCHARARRAY(loadDone.package_),
-           STDSTRING_TO_CONSTCHARARRAY(loadDone.modelName_),
-           STDSTRING_TO_CONSTCHARARRAY(loadDone.urdfSuf_),
-           STDSTRING_TO_CONSTCHARARRAY(loadDone.srdfSuf_));
-      loadDone.id = item->id();
-      logJobStarted(loadDone.id, loadDone.what);
-      emit sendToBackground(item);
+      DialogLoadRobot::RobotDefinition rd = d->getSelectedRobotDescription();
+
       QDir dir (rd.packagePath_); dir.cd("urdf");
       QString urdfFile = dir.absoluteFilePath(rd.modelName_ + rd.urdfSuf_ + ".urdf");
       try {
         centralWidget_->loadURDF(rd.robotName_, urdfFile, rd.mesh_);
       } catch (std::runtime_error& exc) {
-        log (exc.what ());
+        logError (exc.what ());
       }
+
+      QString what = QString ("Loading robot ") + rd.name_;
+      WorkItem* item;
+      foreach (ModelInterface* loader, pluginManager_.get <ModelInterface> ()) {
+          item = new WorkItem_1 <ModelInterface, void,
+              DialogLoadRobot::RobotDefinition>
+              (loader, &ModelInterface::loadRobotModel, rd);
+          logJobStarted(item->id(), what);
+          emit sendToBackground(item);
+        }
     }
   d->close();
   statusBar()->clearMessage();
@@ -249,36 +222,31 @@ void MainWindow::openLoadEnvironmentDialog()
   DialogLoadEnvironment* e = new DialogLoadEnvironment (this);
   if (e->exec() == QDialog::Accepted) {
       createCentralWidget();
-      LoadEnvironment* le = new LoadEnvironment;
-      loader_.push_back(le);
-      DialogLoadEnvironment::EnvironmentDefinition rd = e->getSelectedDescription();
-      le->prefix_ = rd.envName_.toStdString() + ("/");
-      le->urdfFilename_ = rd.urdfFilename_.toStdString();
-      le->package_ = rd.package_.toStdString();
-      le->what = QString ("Loading environment ") + rd.name_;
-      WorkItem* item = new WorkItem_3 <
-          hpp::corbaserver::_objref_Obstacle, void,
-          const char*, const char*, const char*>
-          (hppClient()->obstacle(), &hpp::corbaserver::_objref_Obstacle::loadObstacleModel,
-           STDSTRING_TO_CONSTCHARARRAY(le->package_),
-           STDSTRING_TO_CONSTCHARARRAY(le->urdfFilename_),
-           STDSTRING_TO_CONSTCHARARRAY(le->prefix_));
-      le->id = item->id();
-      logJobStarted(le->id, le->what);
-      emit sendToBackground(item);
-      QDir d (rd.packagePath_); d.cd("urdf");
-      QString urdfFile = d.absoluteFilePath(rd.urdfFilename_ + ".urdf");
+      DialogLoadEnvironment::EnvironmentDefinition ed = e->getSelectedDescription();
+
+      QDir d (ed.packagePath_); d.cd("urdf");
+      QString urdfFile = d.absoluteFilePath(ed.urdfFilename_ + ".urdf");
       try {
-        osgViewerManagers_->addUrdfObjects(QSTRING_TO_CONSTCHARARRAY (rd.envName_),
+        osgViewerManagers_->addUrdfObjects(QSTRING_TO_CONSTCHARARRAY (ed.envName_),
                                            QSTRING_TO_CONSTCHARARRAY (urdfFile),
-                                           QSTRING_TO_CONSTCHARARRAY (rd.mesh_),
+                                           QSTRING_TO_CONSTCHARARRAY (ed.mesh_),
                                            true);
-        osgViewerManagers_->addSceneToWindow(QSTRING_TO_CONSTCHARARRAY (rd.envName_),
+        osgViewerManagers_->addSceneToWindow(QSTRING_TO_CONSTCHARARRAY (ed.envName_),
                                              centralWidget_->windowID());
       } catch (std::runtime_error& exc) {
         log (exc.what ());
       }
-      addBodyToTree(osgViewerManagers_->getScene(rd.envName_.toStdString()));
+      addBodyToTree(osgViewerManagers_->getScene(ed.envName_.toStdString()));
+
+      QString what = QString ("Loading environment ") + ed.name_;
+      WorkItem* item;
+      foreach (ModelInterface* loader, pluginManager_.get <ModelInterface> ()) {
+          item = new WorkItem_1 <ModelInterface, void,
+              DialogLoadEnvironment::EnvironmentDefinition>
+              (loader, &ModelInterface::loadEnvironmentModel, ed);
+          logJobStarted(item->id(), what);
+          emit sendToBackground(item);
+        }
     }
   statusBar()->clearMessage();
   e->close();
@@ -289,10 +257,6 @@ void MainWindow::updateBodyTree(const QModelIndex &index)
 {
   VisibilityItem* vi = dynamic_cast <VisibilityItem*> (bodyTreeModel_->itemFromIndex(index));
   if (vi) vi->update();
-}
-
-void MainWindow::updateJointTree(const QModelIndex &/*index*/)
-{
 }
 
 void MainWindow::showTreeContextMenu(const QPoint &point)
@@ -326,35 +290,14 @@ void MainWindow::showTreeContextMenu(const QPoint &point)
         }
       return;
     }
-  index = ui_->jointTree->indexAt(point);
-  if(index.isValid()) {
-      JointModifierInterface* adi = pluginManager_.getFirstOf <JointModifierInterface> ();
-      if (!adi) return;
-      JointTreeItem *item =
-          dynamic_cast <JointTreeItem*> (jointTreeModel_->itemFromIndex(index));
-      if (!item) return;
-      contextMenu.addAction (adi->action (item->name()));
-      contextMenu.exec(ui_->jointTree->mapToGlobal(point));
-      return;
-    }
 }
 
 void MainWindow::handleWorkerDone(int id)
 {
-  foreach (LoadDoneStruct* d, loader_) {
-      if (d->is (id)) {
-          d->done();
-          loader_.removeOne(d);
-          delete d;
-          return;
-        }
-  }
 }
 
 void MainWindow::setupInterface()
 {
-  // Group dock widgets
-  this->tabifyDockWidget(ui_->dockWidget_jointTree, ui_->dockWidget_bodyTree);
   // Menu "Window"
   QMenu* toolbar = ui_->menuWindow->addMenu("Tool bar");
   toolbar->setIcon(QIcon::fromTheme("configure-toolbars"));
@@ -368,9 +311,6 @@ void MainWindow::setupInterface()
   ui_->dockWidget_bodyTree->setVisible (false);
   ui_->dockWidget_bodyTree->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_bodyTree->toggleViewAction ());
-  ui_->dockWidget_jointTree->setVisible (false);
-  ui_->dockWidget_jointTree->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
-  ui_->menuWindow->addAction(ui_->dockWidget_jointTree->toggleViewAction ());
   ui_->dockWidget_log->setVisible (false);
   ui_->dockWidget_log->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_log->toggleViewAction ());
@@ -382,34 +322,10 @@ void MainWindow::setupInterface()
   statusBar()->addPermanentWidget(collisionIndicator_);
 }
 
-void MainWindow::resetJointTree()
-{
-  jointTreeModel_->clear();
-  ui_->jointTree->header()->setVisible(true);
-  QStringList l; l << "Joint" << "Lower bound" << "Upper bound";
-  jointTreeModel_->setHorizontalHeaderLabels(l);
-  jointTreeModel_->setColumnCount(3);
-}
-
 void MainWindow::createCentralWidget()
 {
   if (!osgWindows_.empty()) return;
   onCreateView();
-}
-
-void MainWindow::computeObjectPosition()
-{
-  hpp::Names_t_var obs = hppClient()->obstacle()->getObstacleNames (true, false);
-  hpp::Transform__out cfg = hpp::Transform__alloc () ;
-  float d[7];
-  for (size_t i = 0; i < obs->length(); ++i) {
-      hppClient()->obstacle()->getObstaclePosition (obs[i], cfg);
-      for (size_t j = 0; j < 7; j++) d[j] = (float)cfg[j];
-      const char* name = obs[i];
-      osg ()->applyConfiguration(name, d);
-    }
-  osg()->refresh();
-  delete cfg;
 }
 
 void MainWindow::readSettings()
@@ -560,54 +476,15 @@ void MainWindow::addBodyToTree(graphics::GroupNodePtr_t group)
   bodyTreeModel_->appendRow(new BodyTreeItem (group));
 }
 
-void MainWindow::addJointToTree(const std::string name, JointTreeItem* parent)
+void MainWindow::requestApplyCurrentConfiguration()
 {
-  JointElement& je = jointsMap_ [name];
-  graphics::NodePtr_t node = osgViewerManagers_->getNode(je.bodyName);
-  if (!node) node = osgViewerManagers_->getScene(je.bodyName);
-  hpp::floatSeq_var c = hppClient()->robot ()->getJointConfig (name.c_str());
-  CORBA::Short nbDof = hppClient()->robot ()->getJointNumberDof (name.c_str());
-  hpp::corbaserver::jointBoundSeq_var b = hppClient()->robot ()->getJointBounds (name.c_str());
-
-  JointTreeItem* j = new JointTreeItem (name.c_str(), c.in(), b.in(), nbDof, node);
-  je.item = j;
-  if (parent) parent->appendRow(j);
-  else        jointTreeModel_->appendRow(j);
-  hpp::Names_t_var children = hppClient()->robot ()->getChildJointNames (name.c_str());
-  for (size_t i = 0; i < children->length(); ++i)
-    addJointToTree(std::string(children[i]),j);
+  emit applyCurrentConfiguration();
+  requestConfigurationValidation();
 }
 
-void MainWindow::updateRobotJoints(const QString robotName)
+void MainWindow::requestConfigurationValidation()
 {
-  hpp::Names_t_var joints = hppClient()->robot()->getAllJointNames ();
-  for (size_t i = 0; i < joints->length (); ++i) {
-      const char* jname = joints[i];
-      const char* lname = hppClient()->robot()->getLinkName (jname);
-      std::string linkName = robotName.toStdString() + "/" + std::string (lname);
-      jointsMap_[jname] = JointElement(jname, linkName, 0, true);
-      delete[] lname;
-    }
-}
-
-void MainWindow::selectJointFromBodyName (const std::string& bodyName) {
-  std::size_t slash = 0;
-  foreach (const JointElement& je, jointsMap_) {
-      if (bodyName.compare(slash, std::string::npos, je.bodyName) == 0) {
-          selectJoint (je.name);
-          return;
-        }
-    }
-}
-
-void MainWindow::selectJoint (const std::string& jointName) {
-  const JointElement& je = jointsMap_[jointName];
-  if (!je.item) return;
-  qDebug () << "Selected joint: " << QString::fromStdString(je.name);
-  ui_->jointTree->clearSelection();
-  ui_->jointTree->setCurrentIndex(je.item->index());
-  if (!ui_->dockWidget_jointTree->isVisible())
-    ui_->dockWidget_jointTree->setVisible(true);
+  emit configurationValidation();
 }
 
 void MainWindow::onOpenPluginManager()
@@ -616,55 +493,13 @@ void MainWindow::onOpenPluginManager()
   d.exec ();
 }
 
-void MainWindow::applyCurrentConfiguration()
+void MainWindow::configurationValidationStatusChanged (bool valid)
 {
-  statusBar()->showMessage("Applying current configuration...");
-  float T[7];
-  for (JointMap::iterator ite = jointsMap_.begin ();
-       ite != jointsMap_.end (); ite++) {
-      hpp::Transform__var t = hppClient()->robot()->getLinkPosition(ite->name.c_str());
-      for (size_t i = 0; i < 7; ++i) T[i] = (float)t[i];
-      if (ite->updateViewer)
-          ite->updateViewer = osgViewerManagers_->applyConfiguration(ite->bodyName.c_str(), T);
-      if (!ite->item) continue;
-      hpp::floatSeq_var c = hppClient()->robot ()->getJointConfig (ite->name.c_str());
-      ite->item->updateConfig (c.in());
-    }
-  osgViewerManagers_->refresh();
-  requestConfigurationValidation();
-  statusBar()->clearMessage();
+  collisionIndicator_->switchLed (valid);
+  if (!valid) log ("Current configuration is NOT valid.");
 }
 
-void MainWindow::requestConfigurationValidation()
+void MainWindow::requestSelectJointFromBodyName(const std::string &bodyName)
 {
-  hpp::floatSeq_var q = hppClient()->robot()->getCurrentConfig ();
-  bool bb = false;
-  CORBA::Boolean_out b = bb;
-  hppClient()->robot()->isConfigValid (q.in(), b);
-  collisionIndicator_->switchLed(b);
-  if (!b) log ("Current configuration is NOT valid.");
-}
-
-void MainWindow::LoadRobot::done()
-{
-  std::string bjn;
-  if (rd.rootJointType_.compare("freeflyer") == 0)   bjn = "base_joint_xyz";
-  else if (rd.rootJointType_.compare("planar") == 0) bjn = "base_joint_xy";
-  else if (rd.rootJointType_.compare("anchor") == 0) bjn = "base_joint";
-  parent->updateRobotJoints(rd.robotName_);
-  parent->addJointToTree(bjn, 0);
-  parent->applyCurrentConfiguration();
-  LoadDoneStruct::done();
-}
-
-void MainWindow::LoadEnvironment::done()
-{
-  parent->computeObjectPosition();
-  LoadDoneStruct::done();
-}
-
-void MainWindow::LoadDoneStruct::done()
-{
-  parent->logJobDone(id, what);
-  invalidate ();
+  emit selectJointFromBodyName(bodyName);
 }

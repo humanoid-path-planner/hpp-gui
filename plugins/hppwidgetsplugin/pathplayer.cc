@@ -125,7 +125,7 @@ void PathPlayer::updateConfiguration ()
   hpp::floatSeq_var config =
       plugin_->client()->problem()->configAtParam ((short unsigned int)pathIndex()->value(),currentParam_);
   plugin_->client()->robot()->setCurrentConfig (config.in());
-  MainWindow::instance()->applyCurrentConfiguration();
+  MainWindow::instance()->requestApplyCurrentConfiguration();
 }
 
 inline double PathPlayer::sliderToLength(int v) const

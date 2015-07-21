@@ -29,12 +29,14 @@ SET(${PLUGIN_NAME}_HEADERS
   ${PLUGIN_NAME}.hh
   pathplayer.h
   solverwidget.h
+  jointtreewidget.h
   configurationlistwidget.h
   )
 
 SET(${PLUGIN_NAME}_FORMS
   pathplayerwidget.ui
   solverwidget.ui
+  jointtreewidget.ui
   configurationlistwidget.ui
   )
 
@@ -56,6 +58,7 @@ SET (${PLUGIN_NAME}_SOURCES
   ${PLUGIN_NAME}.cc
   pathplayer.cc
   solverwidget.cc
+  jointtreewidget.cc
   configurationlistwidget.cc
   )
 

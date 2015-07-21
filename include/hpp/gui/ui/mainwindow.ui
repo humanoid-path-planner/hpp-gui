@@ -134,104 +134,6 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_jointTree">
-   <property name="windowTitle">
-    <string>Joint tree</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <property name="spacing">
-      <number>0</number>
-     </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="QWidget" name="widget_2" native="true">
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="button_forceVelocity">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When possible, force velocity mode.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;There are two modes available for editing the value of a joint:&lt;/p&gt;&lt;p&gt;- velocity: the user provides a speed to be integrated by HPP;&lt;/p&gt;&lt;p&gt;- position: the user provides the value of the joint.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>Force velocity</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="refreshButton">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset theme="view-refresh" resource="../../../../res/images.qrc">
-            <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>18</width>
-            <height>18</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QTreeView" name="jointTree">
-       <property name="contextMenuPolicy">
-        <enum>Qt::CustomContextMenu</enum>
-       </property>
-       <property name="headerHidden">
-        <bool>true</bool>
-       </property>
-       <attribute name="headerVisible">
-        <bool>false</bool>
-       </attribute>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
   <widget class="QToolBar" name="osgToolBar">
    <property name="windowTitle">
     <string>OSG</string>
@@ -364,9 +266,7 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="../../../../res/images.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>actionCreate_view</sender>
@@ -433,22 +333,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>jointTree</sender>
-   <signal>clicked(QModelIndex)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>updateJointTree(QModelIndex)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>593</x>
-     <y>219</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>319</x>
-     <y>239</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>bodyTree</sender>
    <signal>customContextMenuRequested(QPoint)</signal>
    <receiver>MainWindow</receiver>
@@ -465,22 +349,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>jointTree</sender>
-   <signal>doubleClicked(QModelIndex)</signal>
-   <receiver>jointTree</receiver>
-   <slot>expand(QModelIndex)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>502</x>
-     <y>139</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>502</x>
-     <y>139</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionLoad_environment</sender>
    <signal>activated()</signal>
    <receiver>MainWindow</receiver>
@@ -492,38 +360,6 @@
     </hint>
     <hint type="destinationlabel">
      <x>287</x>
-     <y>363</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>refreshButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>reload()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>728</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>376</x>
-     <y>363</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>jointTree</sender>
-   <signal>customContextMenuRequested(QPoint)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>showTreeContextMenu(QPoint)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>625</x>
-     <y>182</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>376</x>
      <y>363</y>
     </hint>
    </hints>

@@ -66,7 +66,7 @@ bool PluginManager::loadPlugin(const QString &name) {
 
 bool PluginManager::unloadPlugin(const QString &name)
 {
-    plugins_[name]->unload();
+    return plugins_[name]->unload();
 }
 
 PluginManagerDialog::PluginManagerDialog(PluginManager *pm, QWidget *parent) :

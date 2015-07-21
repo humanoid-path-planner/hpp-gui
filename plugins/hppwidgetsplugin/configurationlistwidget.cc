@@ -48,7 +48,7 @@ void ConfigurationListWidget::updateCurrentConfig (QListWidgetItem* item)
 {
   const hpp::floatSeq& c = *(item->data(ConfigRole).value <hpp::floatSeq*> ());
   plugin_->client()->robot()->setCurrentConfig (c);
-  emit main_->applyCurrentConfiguration();
+  main_->requestApplyCurrentConfiguration();
 }
 
 void ConfigurationListWidget::showListContextMenu (const QPoint& pos)

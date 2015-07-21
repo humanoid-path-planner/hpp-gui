@@ -13,17 +13,6 @@ const int JointTreeItem::UpperBoundRole = Qt::UserRole + 3;
 const int JointTreeItem::NumberDofRole  = Qt::UserRole + 4;
 const int JointTreeItem::TypeRole       = Qt::UserRole + 10;
 
-QPushButton* JointItemDelegate::forceIntegrator = 0;
-
-void JointItemDelegate::updateTypeRole (JointTreeItem::ItemType& type)
-{
-  if (forceIntegrator && forceIntegrator->isChecked () && (
-        type == JointTreeItem::UnboundedValueType
-        || type == JointTreeItem::BoundedValueType
-        ))
-    type = JointTreeItem::IntegratorType;
-}
-
 BodyTreeItem::BodyTreeItem(graphics::NodePtr_t node) :
   QStandardItem (QString (node->getID().c_str())),
   node_ (node)
@@ -158,9 +147,19 @@ void JointTreeItem::updateTypeRole()
   }
 }
 
-JointItemDelegate::JointItemDelegate(MainWindow *parent)
-  : QItemDelegate (parent), main_ (parent)
+JointItemDelegate::JointItemDelegate(QPushButton *forceVelocity, MainWindow *parent)
+  : QItemDelegate (parent), main_ (parent),
+    forceIntegrator_ (forceVelocity)
 {}
+
+void JointItemDelegate::updateTypeRole (JointTreeItem::ItemType& type) const
+{
+  if (forceIntegrator_ && forceIntegrator_->isChecked () && (
+        type == JointTreeItem::UnboundedValueType
+        || type == JointTreeItem::BoundedValueType
+        ))
+    type = JointTreeItem::IntegratorType;
+}
 
 QWidget *JointItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/*option*/, const QModelIndex &index) const
 {
@@ -280,7 +279,7 @@ void JointItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
     default:
       break;
     }
-  main_->applyCurrentConfiguration();
+  main_->requestApplyCurrentConfiguration();
 }
 
 void JointItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &/*index*/) const
@@ -311,7 +310,7 @@ void IntegratorWheel::timerEvent(QTimerEvent *)
   if (currentValue_ != 0) {
       dq_[index_] = currentValue_;
       main_->hppClient()->robot ()->jointIntegrate (jointName_.c_str(), dq_.in());
-      main_->applyCurrentConfiguration();
+      main_->requestApplyCurrentConfiguration();
     }
   timerId_ = startTimer(rate_);
 }
@@ -348,5 +347,5 @@ void SliderBoundedJoint::updateConfig(int value)
 {
   q_[index_] = m_ + (double)(value - 0) * (M_ - m_) / (double)100;
   main_->hppClient()->robot()->setJointConfig (jointName_.c_str(), q_.in());
-  main_->applyCurrentConfiguration();
+  main_->requestApplyCurrentConfiguration();
 }
