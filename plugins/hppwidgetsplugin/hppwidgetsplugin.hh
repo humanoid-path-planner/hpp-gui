@@ -6,6 +6,7 @@
 
 class SolverWidget;
 class PathPlayer;
+class ConfigurationListWidget;
 
 class HppWidgetsPlugin : public QObject, public PluginInterface
 {
@@ -32,6 +33,7 @@ public:
 
   PathPlayer* pathPlayer_;
   SolverWidget* solverWidget_;
+  ConfigurationListWidget* configListWidget_;
 
 private:
   HppClient* hpp_;

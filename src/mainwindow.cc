@@ -9,7 +9,6 @@
 
 #include "hpp/gui/windows-manager.h"
 #include "hpp/gui/osgwidget.h"
-#include "hpp/gui/pathplayer.h"
 #include "hpp/gui/tree-item.h"
 #include "hpp/gui/dialog/dialogloadrobot.h"
 #include "hpp/gui/dialog/dialogloadenvironment.h"
@@ -372,12 +371,10 @@ void MainWindow::setupInterface()
   ui_->dockWidget_jointTree->setVisible (false);
   ui_->dockWidget_jointTree->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_jointTree->toggleViewAction ());
-  ui_->dockWidget_configurations->setVisible (false);
-  ui_->dockWidget_configurations->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
-  ui_->menuWindow->addAction(ui_->dockWidget_configurations->toggleViewAction ());
   ui_->dockWidget_log->setVisible (false);
   ui_->dockWidget_log->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
   ui_->menuWindow->addAction(ui_->dockWidget_log->toggleViewAction ());
+
   ui_->menuWindow->addSeparator();
 
   // Setup the status bar

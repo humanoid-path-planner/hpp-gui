@@ -6,10 +6,12 @@
 
 #include "pathplayer.h"
 #include "solverwidget.h"
+#include "configurationlistwidget.h"
 
 HppWidgetsPlugin::HppWidgetsPlugin() :
   pathPlayer_ (NULL),
   solverWidget_ (NULL),
+  configListWidget_ (NULL),
   hpp_ (new hpp::corbaServer::Client (0,0))
 {
   hpp_->connect ();
@@ -37,6 +39,13 @@ void HppWidgetsPlugin::init()
   sw_dock->setWidget(solverWidget_);
   main->insertDockWidget (sw_dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
 
+  // Configuration list widget
+  QDockWidget* cl_dock = new QDockWidget ("Configuration List", main);
+  configListWidget_ = new ConfigurationListWidget (this, cl_dock);
+  cl_dock->setWidget(configListWidget_);
+  main->insertDockWidget (cl_dock, Qt::RightDockWidgetArea, Qt::Vertical);
+
+  // Connect widgets
   connect (solverWidget_, SIGNAL (problemSolved ()), pathPlayer_, SLOT (update()));
 }
 

@@ -53,7 +53,6 @@ SET (${PROJECT_NAME}_HEADERS
   include/hpp/gui/windows-manager.h
   include/hpp/gui/mainwindow.h
   include/hpp/gui/osgwidget.h
-  include/hpp/gui/configurationlistwidget.h
   include/hpp/gui/tree-item.h
   include/hpp/gui/ledindicator.h
   include/hpp/gui/plugin-interface.h
@@ -89,7 +88,6 @@ SET (${PROJECT_NAME}_SOURCES
   src/windows-manager.cc
   src/safeapplication.cc
   src/mainwindow.cc
-  src/configurationlistwidget.cc
   src/osgwidget.cc
   src/tree-item.cc
   src/omniorbthread.cc

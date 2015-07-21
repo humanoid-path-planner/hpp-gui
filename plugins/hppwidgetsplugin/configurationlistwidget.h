@@ -8,7 +8,13 @@
 
 #include "hpp/corbaserver/common.hh"
 
+#include <hppwidgetsplugin.hh>
+
 Q_DECLARE_METATYPE (hpp::floatSeq*)
+
+namespace Ui {
+  class ConfigurationListWidget;
+}
 
 class ConfigurationListWidget : public QWidget
 {
@@ -17,13 +23,9 @@ class ConfigurationListWidget : public QWidget
 public:
   static const int ConfigRole;
 
-  ConfigurationListWidget(QWidget* parent = 0);
+  ConfigurationListWidget(HppWidgetsPlugin* plugin, QWidget* parent = 0);
 
   virtual ~ConfigurationListWidget();
-
-  inline QListWidget* list () {
-    return findChild <QListWidget*> ("listConfigurations");
-  }
 
 public slots:
   void onSaveClicked ();
@@ -31,9 +33,11 @@ public slots:
   void showListContextMenu (const QPoint& pos);
 
 private:
-  inline QLineEdit* name () {
-    return findChild <QLineEdit*> ("lineEdit_configName");
-  }
+  inline QListWidget* list ();
+  inline QLineEdit* name ();
+
+  HppWidgetsPlugin* plugin_;
+  Ui::ConfigurationListWidget* ui_;
 
   MainWindow* main_;
   QString basename_;

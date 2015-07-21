@@ -29,11 +29,13 @@ SET(${PLUGIN_NAME}_HEADERS
   ${PLUGIN_NAME}.hh
   pathplayer.h
   solverwidget.h
+  configurationlistwidget.h
   )
 
 SET(${PLUGIN_NAME}_FORMS
   pathplayerwidget.ui
   solverwidget.ui
+  configurationlistwidget.ui
   )
 
 SET(${PLUGIN_NAME}_RESOURCES
@@ -54,6 +56,7 @@ SET (${PLUGIN_NAME}_SOURCES
   ${PLUGIN_NAME}.cc
   pathplayer.cc
   solverwidget.cc
+  configurationlistwidget.cc
   )
 
 ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}
