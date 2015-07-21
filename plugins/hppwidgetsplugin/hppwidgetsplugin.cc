@@ -49,6 +49,7 @@ void HppWidgetsPlugin::init()
   QDockWidget* jt_dock = new QDockWidget ("Joint Tree", main);
   jointTreeWidget_ = new JointTreeWidget (this, jt_dock);
   jt_dock->setWidget(jointTreeWidget_);
+  jointTreeWidget_->dockWidget (jt_dock);
   main->insertDockWidget (jt_dock, Qt::RightDockWidgetArea, Qt::Vertical);
 
   // Configuration list widget

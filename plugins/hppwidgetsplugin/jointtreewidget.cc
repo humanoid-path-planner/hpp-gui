@@ -9,7 +9,8 @@ JointTreeWidget::JointTreeWidget(HppWidgetsPlugin *plugin, QWidget *parent) :
   QWidget(parent),
   plugin_ (plugin),
   ui_ (new Ui::JointTreeWidget),
-  model_ (new QStandardItemModel)
+  model_ (new QStandardItemModel),
+  dock_ (NULL)
 {
   ui_->setupUi (this);
   ui_->jointTree->setModel(model_);
@@ -33,6 +34,11 @@ JointTreeWidget::~JointTreeWidget()
 const QPushButton *JointTreeWidget::refreshButton() const
 {
   return ui_->refreshButton;
+}
+
+void JointTreeWidget::dockWidget(QDockWidget *dock)
+{
+  dock_ = dock;
 }
 
 void JointTreeWidget::customContextMenu(const QPoint &pos)
@@ -80,8 +86,8 @@ void JointTreeWidget::selectJoint(const std::string &jointName)
   qDebug () << "Selected joint: " << QString::fromStdString(je.name);
   ui_->jointTree->clearSelection();
   ui_->jointTree->setCurrentIndex(je.item->index());
-//  if (!ui_->dockWidget_jointTree->isVisible())
-  //    ui_->dockWidget_jointTree->setVisible(true);
+  if (dock_ != NULL && !dock_->isVisible())
+      dock_->setVisible(true);
 }
 
 void JointTreeWidget::reload()

@@ -20,6 +20,8 @@ public:
 
   const QPushButton* refreshButton () const;
 
+  void dockWidget (QDockWidget* dock);
+
 signals:
 
 public slots:
@@ -36,6 +38,7 @@ private:
   Ui::JointTreeWidget* ui_;
 
   QStandardItemModel* model_;
+  QDockWidget* dock_;
 };
 
 #endif // JOINTTREEWIDGET_H
