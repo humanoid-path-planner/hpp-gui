@@ -74,6 +74,12 @@ void MainWindow::insertDockWidget(QDockWidget *dock, Qt::DockWidgetArea area, Qt
   ui_->menuWindow->addAction(dock->toggleViewAction ());
 }
 
+void MainWindow::removeDockWidget(QDockWidget *dock)
+{
+  ui_->menuWindow->removeAction(dock->toggleViewAction());
+  QMainWindow::removeDockWidget(dock);
+}
+
 BackgroundQueue& MainWindow::worker()
 {
   return backgroundQueue_;

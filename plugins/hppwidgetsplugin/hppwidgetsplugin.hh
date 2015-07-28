@@ -67,6 +67,7 @@ private:
   SolverWidget* solverWidget_;
   JointTreeWidget* jointTreeWidget_;
   ConfigurationListWidget* configListWidget_;
+  QList <QDockWidget*> dockWidgets_;
 
   HppClient* hpp_;
 

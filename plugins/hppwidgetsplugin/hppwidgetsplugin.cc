@@ -25,6 +25,11 @@ HppWidgetsPlugin::HppWidgetsPlugin() :
 
 HppWidgetsPlugin::~HppWidgetsPlugin()
 {
+  MainWindow* main = MainWindow::instance ();
+  foreach (QDockWidget* dock, dockWidgets_) {
+      main->removeDockWidget(dock);
+      delete dock;
+    }
   if (hpp_)
     delete hpp_;
 }
@@ -32,31 +37,36 @@ HppWidgetsPlugin::~HppWidgetsPlugin()
 void HppWidgetsPlugin::init()
 {
   MainWindow* main = MainWindow::instance ();
+  QDockWidget* dock;
 
   // Path player widget
-  QDockWidget* pp_dock = new QDockWidget ("Path player", main);
-  pathPlayer_ = new PathPlayer (this, pp_dock);
-  pp_dock->setWidget(pathPlayer_);
-  main->insertDockWidget (pp_dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
+  dock = new QDockWidget ("Path player", main);
+  pathPlayer_ = new PathPlayer (this, dock);
+  dock->setWidget(pathPlayer_);
+  main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
+  dockWidgets_.append(dock);
 
   // Solver widget
-  QDockWidget* sw_dock = new QDockWidget ("Problem solver", main);
-  solverWidget_ = new SolverWidget (this, sw_dock);
-  sw_dock->setWidget(solverWidget_);
-  main->insertDockWidget (sw_dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
+  dock = new QDockWidget ("Problem solver", main);
+  solverWidget_ = new SolverWidget (this, dock);
+  dock->setWidget(solverWidget_);
+  main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
+  dockWidgets_.append(dock);
 
   // Joint tree widget
-  QDockWidget* jt_dock = new QDockWidget ("Joint Tree", main);
-  jointTreeWidget_ = new JointTreeWidget (this, jt_dock);
-  jt_dock->setWidget(jointTreeWidget_);
-  jointTreeWidget_->dockWidget (jt_dock);
-  main->insertDockWidget (jt_dock, Qt::RightDockWidgetArea, Qt::Vertical);
+  dock = new QDockWidget ("Joint Tree", main);
+  jointTreeWidget_ = new JointTreeWidget (this, dock);
+  dock->setWidget(jointTreeWidget_);
+  jointTreeWidget_->dockWidget (dock);
+  main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
+  dockWidgets_.append(dock);
 
   // Configuration list widget
-  QDockWidget* cl_dock = new QDockWidget ("Configuration List", main);
-  configListWidget_ = new ConfigurationListWidget (this, cl_dock);
-  cl_dock->setWidget(configListWidget_);
-  main->insertDockWidget (cl_dock, Qt::RightDockWidgetArea, Qt::Vertical);
+  dock = new QDockWidget ("Configuration List", main);
+  configListWidget_ = new ConfigurationListWidget (this, dock);
+  dock->setWidget(configListWidget_);
+  main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
+  dockWidgets_.append(dock);
 
   // Connect widgets
   connect (solverWidget_, SIGNAL (problemSolved ()), pathPlayer_, SLOT (update()));

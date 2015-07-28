@@ -34,6 +34,8 @@ public:
                          Qt::DockWidgetArea area = Qt::AllDockWidgetAreas,
                          Qt::Orientation orientation = Qt::Horizontal);
 
+  void removeDockWidget (QDockWidget* dock);
+
   BackgroundQueue &worker();
 
   WindowsManagerPtr_t osg () const;
