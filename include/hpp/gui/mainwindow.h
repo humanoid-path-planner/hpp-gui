@@ -1,12 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
 #include <QList>
+#include <QStandardItemModel>
+#include <QMainWindow>
+
+#include <gepetto/viewer/group-node.h>
 
 #include <hpp/gui/fwd.h>
 
-#include <hpp/gui/osgwidget.h>
 #include <hpp/gui/ledindicator.h>
 
 #include <hpp/gui/omniorb/omniorbthread.h>

@@ -51,6 +51,7 @@ IF (HPP_DEBUG)
 ENDIF()
 
 SET (${PROJECT_NAME}_HEADERS
+  include/hpp/gui/fwd.h
   include/hpp/gui/safeapplication.h
   include/hpp/gui/windows-manager.h
   include/hpp/gui/mainwindow.h

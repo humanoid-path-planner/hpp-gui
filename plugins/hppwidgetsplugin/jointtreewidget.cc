@@ -2,6 +2,7 @@
 #include "ui_jointtreewidget.h"
 
 #include <hpp/gui/mainwindow.h>
+#include <hpp/gui/windows-manager.h>
 
 #include "joint-tree-item.h"
 

@@ -53,7 +53,6 @@ void ConfigurationListWidget::updateCurrentConfig (QListWidgetItem* item)
 
 void ConfigurationListWidget::showListContextMenu (const QPoint& pos)
 {
-  qDebug () << "Allo";
   QListWidgetItem* item = list()->itemAt(pos);
   if (!item) return;
   QMenu contextMenu(tr("Configuration"), this);

@@ -4,6 +4,7 @@
 #include <QtConcurrentRun>
 
 #include <hpp/gui/mainwindow.h>
+#include <hpp/gui/windows-manager.h>
 
 AttitudeEventSender::AttitudeEventSender()
 {

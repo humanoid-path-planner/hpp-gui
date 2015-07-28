@@ -4,7 +4,8 @@
 #include <hpp/corbaserver/client.hh>
 
 #include "hpp/gui/mainwindow.h"
-#include "hpp/gui/solverwidget.h"
+#include <hpp/gui/windows-manager.h>
+#include <hpp/gui/osgwidget.h>
 
 #include "ui_pathplayerwidget.h"
 

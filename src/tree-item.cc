@@ -1,5 +1,7 @@
 #include "hpp/gui/tree-item.h"
 
+#include <QDebug>
+
 #include <gepetto/viewer/group-node.h>
 
 #include "hpp/gui/mainwindow.h"

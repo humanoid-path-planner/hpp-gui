@@ -1,4 +1,7 @@
 #include <QtGui/QApplication>
+#include <QSettings>
+#include <QCleanlooksStyle>
+#include <QProcessEnvironment>
 
 #include "hpp/gui/safeapplication.h"
 #include "hpp/gui/mainwindow.h"
