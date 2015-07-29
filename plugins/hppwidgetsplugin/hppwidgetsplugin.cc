@@ -82,6 +82,8 @@ void HppWidgetsPlugin::init()
            this, SLOT (applyCurrentConfiguration()));
   connect (main, SIGNAL (selectJointFromBodyName (std::string)),
            this, SLOT (selectJointFromBodyName (std::string)));
+  connect (&main->worker(), SIGNAL (corbaException(const CORBA::Exception&)),
+           SLOT (corbaException(const CORBA::Exception&)));
 }
 
 QString HppWidgetsPlugin::name() const
@@ -167,6 +169,16 @@ void HppWidgetsPlugin::selectJointFromBodyName(const std::string &bodyName)
           return;
         }
     }
+}
+
+void HppWidgetsPlugin::corbaException(const CORBA::Exception &e)
+{
+  try {
+    const hpp::Error& error = dynamic_cast <const hpp::Error&> (e);
+    MainWindow::instance()->logError(QString(error.msg));
+  } catch (const std::exception& exp) {
+    qDebug () << exp.what();
+  }
 }
 
 HppWidgetsPlugin::HppClient *HppWidgetsPlugin::client() const

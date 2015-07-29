@@ -54,6 +54,8 @@ public slots:
   void configurationValidation ();
   void selectJointFromBodyName (const std::string& bodyName);
 
+  void corbaException (const CORBA::Exception& e);
+
 public:
   HppClient* client () const;
   JointMap& jointMap ();

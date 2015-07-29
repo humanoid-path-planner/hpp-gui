@@ -103,10 +103,11 @@ void BackgroundQueue::perform(WorkItem *item)
     emit done (item->id ());
   } catch (std::exception& e) {
     emit failed (item->id(), QString (e.what()));
-#if 0
-  } catch (hpp::Error& e) {
-    emit failed (item->id(), QString (e.msg));
-#endif
+  } catch (const CORBA::Exception& e) {
+    emit failed (item->id(), QString ("CORBA Exception %1").arg(e._name()));
+    /// Enable plugins to get corba errors.
+    /// hpp plugins can thus handle CORBA Exceptions (hpp::Error)
+    emit corbaException (e);
   } catch (...) {
     emit failed (item->id(), QString ("Unkown error type"));
   }
