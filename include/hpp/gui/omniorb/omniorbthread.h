@@ -201,7 +201,6 @@ public:
 signals:
   void done (int workId);
   void failed (int workId, const QString& text);
-  void corbaException (const CORBA::Exception& e);
 
 public slots:
   void perform(WorkItem* item);

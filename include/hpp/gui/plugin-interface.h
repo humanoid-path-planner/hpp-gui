@@ -7,6 +7,8 @@
 #include <hpp/gui/dialog/dialogloadrobot.h>
 #include <hpp/gui/dialog/dialogloadenvironment.h>
 
+#include <omniORB4/CORBA.h>
+
 class PluginInterface {
 public:
   virtual ~PluginInterface () {}
@@ -40,4 +42,13 @@ public:
 
 Q_DECLARE_INTERFACE (ModelInterface, "hpp-gui.plugin.model/0.0")
 
+class CorbaErrorInterface {
+public:
+  virtual ~CorbaErrorInterface () {}
+
+  /// return true if error was handled.
+  virtual bool corbaException (int jobId, const CORBA::Exception& excep) const = 0;
+};
+
+Q_DECLARE_INTERFACE (CorbaErrorInterface, "hpp-gui.plugin.corbaerror/0.0")
 #endif // PLUGININTERFACE_HH

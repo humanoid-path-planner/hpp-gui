@@ -11,10 +11,10 @@ class ConfigurationListWidget;
 class JointTreeItem;
 
 class HppWidgetsPlugin : public QObject, public PluginInterface,
-    public ModelInterface
+    public ModelInterface, public CorbaErrorInterface
 {
   Q_OBJECT
-  Q_INTERFACES (PluginInterface ModelInterface)
+  Q_INTERFACES (PluginInterface ModelInterface CorbaErrorInterface)
 
 public:
   struct JointElement {
@@ -45,16 +45,19 @@ public:
   void loadRobotModel (DialogLoadRobot::RobotDefinition rd);
   void loadEnvironmentModel (DialogLoadEnvironment::EnvironmentDefinition ed);
   std::string getBodyFromJoint (const std::string& jointName) const;
-
 signals:
   void configurationValidationStatus (bool valid);
+
+  // CorbaErrorInterface interface
+public:
+  virtual bool corbaException (int jobId, const CORBA::Exception &excep) const;
+signals:
+  void logJobFailed  (int id, const QString& text) const;
 
 public slots:
   void applyCurrentConfiguration ();
   void configurationValidation ();
   void selectJointFromBodyName (const std::string& bodyName);
-
-  void corbaException (const CORBA::Exception& e);
 
 public:
   HppClient* client () const;

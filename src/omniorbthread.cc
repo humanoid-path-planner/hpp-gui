@@ -3,6 +3,9 @@
 #include <gepetto/viewer/corba/server.hh>
 #include <QDebug>
 
+#include <hpp/gui/mainwindow.h>
+#include <hpp/gui/plugin-interface.h>
+
 int WorkItem::idGlobal = 0;
 
 ServerProcess::ServerProcess()
@@ -104,10 +107,17 @@ void BackgroundQueue::perform(WorkItem *item)
   } catch (std::exception& e) {
     emit failed (item->id(), QString (e.what()));
   } catch (const CORBA::Exception& e) {
-    emit failed (item->id(), QString ("CORBA Exception %1").arg(e._name()));
     /// Enable plugins to get corba errors.
     /// hpp plugins can thus handle CORBA Exceptions (hpp::Error)
-    emit corbaException (e);
+    bool handled = false;
+    foreach (CorbaErrorInterface* errorHandler, MainWindow::instance()->pluginManager()->get <CorbaErrorInterface>()) {
+        if (errorHandler->corbaException (item->id(), e)) {
+            handled = true;
+            break;
+          }
+      }
+    if (!handled)
+      emit failed (item->id(), QString ("CORBA Exception %1").arg(e._name()));
   } catch (...) {
     emit failed (item->id(), QString ("Unkown error type"));
   }
