@@ -35,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
   // Setup the tree views
   bodyTreeModel_  = new QStandardItemModel;
   ui_->bodyTree ->setModel(bodyTreeModel_ );
+  ui_->bodyTree->setSelectionMode(QAbstractItemView::SingleSelection);
 
   // Setup the main OSG widget
   connect (this, SIGNAL (createView(QString)), SLOT (onCreateView()));
@@ -44,6 +45,8 @@ MainWindow::MainWindow(QWidget *parent) :
            this, SLOT (logJobFailed(int, const QString&)));
   connect (this, SIGNAL (sendToBackground(WorkItem*)),
            &backgroundQueue_, SLOT (perform(WorkItem*)));
+  connect (ui_->bodyTree->selectionModel(), SIGNAL (selectionChanged(QItemSelection,QItemSelection)),
+           SLOT (bodySelectionChanged(QItemSelection,QItemSelection)));
   backgroundQueue_.moveToThread(&worker_);
   worker_.start();
 
@@ -98,6 +101,48 @@ OSGWidget *MainWindow::centralWidget() const
 PluginManager *MainWindow::pluginManager()
 {
   return &pluginManager_;
+}
+
+QItemSelectionModel *MainWindow::bodySelectionModel()
+{
+  return ui_->bodyTree->selectionModel();
+}
+
+void MainWindow::selectBodyByName(const QString &bodyName)
+{
+  QList<QStandardItem*> matches =
+      bodyTreeModel_->findItems(bodyName,
+                                Qt::MatchFixedString | Qt::MatchCaseSensitive | Qt::MatchRecursive);
+  if (matches.empty()) {
+      qDebug () << "Body" << bodyName << "not found.";
+      ui_->bodyTree->selectionModel()->clearSelection();
+    } else {
+      ui_->bodyTree->selectionModel()->select(matches.first()->index(), QItemSelectionModel::ClearAndSelect);
+    }
+}
+
+void MainWindow::bodySelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+{
+  QStringList sel, desel;
+  foreach (QModelIndex index, selected.indexes()) {
+      BodyTreeItem *item = dynamic_cast <BodyTreeItem*>
+          (bodyTreeModel_->itemFromIndex(index));
+      if (item) {
+          const std::string& s = item->node()->getID();
+          sel << QString::fromStdString(s);
+          osg ()->setHighlight(s.c_str(), 2);
+        }
+    }
+  foreach (QModelIndex index, deselected.indexes()) {
+      BodyTreeItem *item = dynamic_cast <BodyTreeItem*>
+          (bodyTreeModel_->itemFromIndex(index));
+      if (item) {
+          const std::string& s = item->node()->getID();
+          desel << QString::fromStdString(s);
+          osg ()->setHighlight(s.c_str(), 0);
+        }
+    }
+  emit selectedBodyChanged (sel, desel);
 }
 
 void MainWindow::log(const QString &text)
@@ -193,6 +238,7 @@ void MainWindow::openLoadRobotDialog()
       } catch (std::runtime_error& exc) {
         logError (exc.what ());
       }
+      robotNames_.append (rd.robotName_);
 
       QString what = QString ("Loading robot ") + rd.name_;
       WorkItem* item;
@@ -489,10 +535,17 @@ void MainWindow::onOpenPluginManager()
 void MainWindow::configurationValidationStatusChanged (bool valid)
 {
   collisionIndicator_->switchLed (valid);
-  if (!valid) log ("Current configuration is NOT valid.");
+  int state = (valid)?0:1;
+  foreach(const QString& s, robotNames_) {
+      osg ()->setHighlight(s.toLocal8Bit().data(), state);
+    }
+  if (!valid) {
+      log ("Current configuration is NOT valid.");
+    }
 }
 
 void MainWindow::requestSelectJointFromBodyName(const std::string &bodyName)
 {
+  selectBodyByName (QString::fromStdString(bodyName));
   emit selectJointFromBodyName(bodyName);
 }

@@ -46,6 +46,16 @@ public:
 
   PluginManager* pluginManager ();
 
+public:
+  QItemSelectionModel* bodySelectionModel ();
+signals:
+  void selectedBodyChanged (const QStringList& selected, const QStringList& deselected);
+public slots:
+  void selectBodyByName (const QString& bodyName);
+private slots:
+  void bodySelectionChanged (const QItemSelection & selected, const QItemSelection & deselected);
+
+public:
   void log (const QString& text);
   void logError (const QString& text);
 
@@ -105,6 +115,7 @@ private:
   PluginManager pluginManager_;
 
   QMutex delayedCreateView_;
+  QStringList robotNames_;
 };
 
 #endif // MAINWINDOW_H
