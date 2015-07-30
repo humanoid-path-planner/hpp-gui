@@ -60,7 +60,6 @@ protected:
 
 private:
   graphics::NodePtr_t node_;
-  std::string jointName_, linkName_;
 
   VisibilityItem* visibility_;
 
