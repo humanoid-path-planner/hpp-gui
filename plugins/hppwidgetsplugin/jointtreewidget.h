@@ -28,11 +28,13 @@ public slots:
   void customContextMenu (const QPoint& pos);
   void addJointToTree (const std::string name, JointTreeItem *parent);
   void selectJoint (const std::string& jointName);
+  void openJointBoundDialog (const std::string jointName);
 
   void reload ();
 
 private:
   void reset ();
+  JointAction* getOpenJointBoundDialogAction (const std::string &jointName);
 
   HppWidgetsPlugin* plugin_;
   Ui::JointTreeWidget* ui_;

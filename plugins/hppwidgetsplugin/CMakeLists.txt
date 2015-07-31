@@ -32,6 +32,7 @@ SET(${PLUGIN_NAME}_HEADERS
   jointtreewidget.h
   configurationlistwidget.h
   joint-tree-item.h
+  jointbounddialog.h
   )
 
 SET(${PLUGIN_NAME}_FORMS
@@ -62,6 +63,7 @@ SET (${PLUGIN_NAME}_SOURCES
   jointtreewidget.cc
   configurationlistwidget.cc
   joint-tree-item.cc
+  jointbounddialog.cc
   )
 
 ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}

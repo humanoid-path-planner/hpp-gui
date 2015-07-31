@@ -5,6 +5,7 @@
 #include <hpp/gui/windows-manager.h>
 
 #include "joint-tree-item.h"
+#include "jointbounddialog.h"
 
 JointTreeWidget::JointTreeWidget(HppWidgetsPlugin *plugin, QWidget *parent) :
   QWidget(parent),
@@ -49,6 +50,7 @@ void JointTreeWidget::customContextMenu(const QPoint &pos)
       QMenu contextMenu (tr("Node"), this);
       JointTreeItem *item =
           dynamic_cast <JointTreeItem*> (model_->itemFromIndex(index));
+      contextMenu.addAction (getOpenJointBoundDialogAction(item->name()));
       if (!item) return;
       foreach (JointModifierInterface* adi,
                MainWindow::instance()->pluginManager ()->get<JointModifierInterface> ()) {
@@ -89,7 +91,27 @@ void JointTreeWidget::selectJoint(const std::string &jointName)
   ui_->jointTree->clearSelection();
   ui_->jointTree->setCurrentIndex(je.item->index());
   if (dock_ != NULL && !dock_->isVisible())
-      dock_->setVisible(true);
+    dock_->setVisible(true);
+}
+
+void JointTreeWidget::openJointBoundDialog(const std::string jointName)
+{
+  try {
+    hpp::corbaserver::jointBoundSeq_var bounds =
+        plugin_->client()->robot()->getJointBounds(jointName.c_str());
+    int nbDof = plugin_->client()->robot()->getJointNumberDof(jointName.c_str());
+    if (nbDof > 0) {
+        JointBoundDialog dialog (QString::fromStdString(jointName), nbDof);
+        dialog.setBounds(bounds.in());
+        if (dialog.exec() == QDialog::Accepted) {
+            dialog.getBounds(bounds.out());
+            plugin_->client()->robot()->setJointBounds(jointName.c_str(), bounds.in());
+          }
+      }
+  } catch (const hpp::Error& e) {
+    MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
+    return;
+  }
 }
 
 void JointTreeWidget::reload()
@@ -117,4 +139,11 @@ void JointTreeWidget::reset()
   QStringList l; l << "Joint" << "Lower bound" << "Upper bound";
   model_->setHorizontalHeaderLabels(l);
   model_->setColumnCount(3);
+}
+
+JointAction *JointTreeWidget::getOpenJointBoundDialogAction(const std::string &jointName)
+{
+  JointAction* a = new JointAction (tr("Set bounds..."), jointName, 0);
+  connect (a, SIGNAL (triggered(std::string)), SLOT (openJointBoundDialog(std::string)));
+  return a;
 }
