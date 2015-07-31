@@ -106,10 +106,10 @@ class RemoteImuPlugin : public QObject,
 
     QString name () const;
 
-    QAction* action (const std::string &jointName) const;
+    JointAction* action (const std::string &jointName) const;
 
 public slots:
-    void newDevice ();
+    void newDevice (const std::string jointName);
 
   private:
     AttitudeDeviceMsgBox* msgBox_;

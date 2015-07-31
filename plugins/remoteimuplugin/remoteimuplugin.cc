@@ -231,19 +231,18 @@ QString RemoteImuPlugin::name() const
   return QString ("Remote IMU");
 }
 
-QAction* RemoteImuPlugin::action(const std::string &jointName) const
+JointAction *RemoteImuPlugin::action(const std::string &jointName) const
 {
-  QAction* action = new QAction (QIcon::fromTheme("smartphone"), "Attach to attitude device", NULL);
-  action->setObjectName(QString::fromStdString(jointName));
-  connect (action, SIGNAL (triggered()), this, SLOT (newDevice ()));
+  JointAction* action = new JointAction (tr("Attach to attitude device..."), jointName, NULL);
+  action->setIcon (QIcon::fromTheme("smartphone"));
+  connect (action, SIGNAL (triggered(std::string)), SLOT (newDevice (std::string)));
   return action;
 }
 
-void RemoteImuPlugin::newDevice()
+void RemoteImuPlugin::newDevice(const std::string jointName)
 {
-  QString name = QObject::sender()->objectName();
   msgBox_ = new AttitudeDeviceMsgBox (NULL);
-  msgBox_->setJointName (name.toStdString());
+  msgBox_->setJointName (jointName);
   msgBox_->show();
 }
 

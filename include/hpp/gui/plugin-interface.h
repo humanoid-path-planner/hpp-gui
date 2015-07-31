@@ -20,11 +20,36 @@ public:
 
 Q_DECLARE_INTERFACE (PluginInterface, "hpp-gui.plugins/0.0")
 
+
+class JointAction : public QAction
+{
+  Q_OBJECT
+
+public:
+  JointAction (const QString& actionName, const std::string& jointName, QObject* parent)
+    : QAction (actionName, parent)
+    , jointName_ (jointName)
+  {
+    connect (this, SIGNAL (triggered(bool)), SLOT(trigger()));
+  }
+
+signals:
+  void triggered (const std::string jointName);
+
+private slots:
+  void trigger () {
+    emit triggered(jointName_);
+  }
+
+private:
+  const std::string jointName_;
+};
+
 class JointModifierInterface {
 public:
   virtual ~JointModifierInterface () {}
 
-  virtual QAction* action (const std::string& jointName) const = 0;
+  virtual JointAction* action (const std::string& jointName) const = 0;
 };
 
 Q_DECLARE_INTERFACE (JointModifierInterface, "hpp-gui.plugin.joint-modifier/0.0")
