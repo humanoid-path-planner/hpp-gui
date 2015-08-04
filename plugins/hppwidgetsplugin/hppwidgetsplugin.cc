@@ -172,8 +172,9 @@ void HppWidgetsPlugin::configurationValidation()
   hpp::floatSeq_var q = client()->robot()->getCurrentConfig ();
   bool bb = false;
   CORBA::Boolean_out b = bb;
+  CORBA::String_var report;
   try {
-    client()->robot()->isConfigValid (q.in(), b);
+    client()->robot()->isConfigValid (q.in(), b, report);
   } catch (const hpp::Error& e) {
     MainWindow::instance()->logError(QString (e.msg));
     return;
