@@ -1,3 +1,4 @@
+#include <omniORB4/CORBA.h>
 #include "joint-tree-item.h"
 
 #include <iostream>
@@ -6,6 +7,8 @@
 #include <gepetto/viewer/group-node.h>
 
 #include "hpp/gui/mainwindow.h"
+
+using CORBA::ULong;
 
 const int JointTreeItem::IndexRole      = Qt::UserRole + 1;
 const int JointTreeItem::LowerBoundRole = Qt::UserRole + 2;
@@ -42,9 +45,9 @@ QStandardItem *JointTreeItem::clone() const
   hpp::corbaserver::jointBoundSeq b = hpp::corbaserver::jointBoundSeq();
   b.length (2*value_.size());
   for (size_t i = 0; i < q.length(); ++i) {
-      q[i] = value_[i][0]->data(Qt::EditRole).toFloat();
-      b[2*i] = value_[i][0]->data(LowerBoundRole).toFloat();
-      b[2*i+1] = value_[i][0]->data(UpperBoundRole).toFloat();
+    q[(ULong) i] = value_[(ULong) i][0]->data(Qt::EditRole).toFloat();
+      b[2*(ULong) i] = value_[(ULong) i][0]->data(LowerBoundRole).toFloat();
+      b[2*(ULong) i+1] = value_[(ULong) i][0]->data(UpperBoundRole).toFloat();
     }
   return new JointTreeItem (name_.c_str(), q, b, data (NumberDofRole).toInt(), node_);
 }
@@ -54,7 +57,7 @@ hpp::floatSeq JointTreeItem::config() const
   hpp::floatSeq q = hpp::floatSeq();
   q.length(value_.size());
   for (size_t i = 0; i < q.length(); ++i)
-      q[i] = value_[i][0]->data(Qt::EditRole).toFloat();
+      q[(ULong) i] = value_[(ULong) i][0]->data(Qt::EditRole).toFloat();
   return q;
 }
 
@@ -255,7 +258,7 @@ IntegratorWheel::IntegratorWheel(Qt::Orientation o, HppWidgetsPlugin *plugin, QW
   setMaximum(bound_);
   setValue (0);
   dq_->length (nbDof_);
-  for (size_t i = 0; i < dq_->length(); ++i) dq_[i] = 0;
+  for (size_t i = 0; i < dq_->length(); ++i) dq_[(ULong) i] = 0;
   connect(this, SIGNAL (sliderReleased()), this, SLOT (reset()));
   connect(this, SIGNAL (sliderMoved(int)), this, SLOT (updateIntegrator(int)));
   timerId_ = startTimer(rate_);

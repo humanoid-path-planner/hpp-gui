@@ -5,6 +5,8 @@
 #include <hpp/gui/mainwindow.h>
 #include <hpp/gui/windows-manager.h>
 
+#include <omniORB4/CORBA.h>
+
 #include "pathplayer.h"
 #include "solverwidget.h"
 #include "jointtreewidget.h"
@@ -13,6 +15,8 @@
 
 #define QSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.toStdString().c_str())
 #define STDSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.c_str())
+
+using CORBA::ULong;
 
 HppWidgetsPlugin::HppWidgetsPlugin() :
   pathPlayer_ (NULL),
@@ -152,7 +156,7 @@ void HppWidgetsPlugin::applyCurrentConfiguration()
   for (JointMap::iterator ite = jointMap_.begin ();
        ite != jointMap_.end (); ite++) {
       hpp::Transform__var t = client()->robot()->getLinkPosition(ite->name.c_str());
-      for (size_t i = 0; i < 7; ++i) T[i] = (float)t[i];
+      for (size_t i = 0; i < 7; ++i) T[i] = (float)t[(ULong)i];
       if (ite->updateViewer)
           ite->updateViewer = main->osg()->applyConfiguration(ite->bodyName.c_str(), T);
       if (!ite->item) continue;
@@ -202,7 +206,7 @@ void HppWidgetsPlugin::updateRobotJoints(const QString robotName)
 {
   hpp::Names_t_var joints = client()->robot()->getAllJointNames ();
   for (size_t i = 0; i < joints->length (); ++i) {
-      const char* jname = joints[i];
+    const char* jname = joints[(ULong) i];
       const char* lname = client()->robot()->getLinkName (jname);
       std::string linkName = robotName.toStdString() + "/" + std::string (lname);
       jointMap_[jname] = JointElement(jname, linkName, 0, true);
@@ -217,9 +221,9 @@ void HppWidgetsPlugin::computeObjectPosition()
   hpp::Transform__out cfg = hpp::Transform__alloc () ;
   float d[7];
   for (size_t i = 0; i < obs->length(); ++i) {
-      client()->obstacle()->getObstaclePosition (obs[i], cfg);
+      client()->obstacle()->getObstaclePosition (obs[(ULong) i], cfg);
       for (size_t j = 0; j < 7; j++) d[j] = (float)cfg[j];
-      const char* name = obs[i];
+      const char* name = obs[(ULong) i];
       main->osg ()->applyConfiguration(name, d);
     }
   main->osg()->refresh();

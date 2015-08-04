@@ -1,3 +1,5 @@
+#include <omniORB4/CORBA.h>
+
 #include "jointtreewidget.h"
 #include "ui_jointtreewidget.h"
 
@@ -6,6 +8,8 @@
 
 #include "joint-tree-item.h"
 #include "jointbounddialog.h"
+
+using CORBA::ULong;
 
 JointTreeWidget::JointTreeWidget(HppWidgetsPlugin *plugin, QWidget *parent) :
   QWidget(parent),
@@ -78,7 +82,7 @@ void JointTreeWidget::addJointToTree(const std::string name, JointTreeItem *pare
   else        model_->appendRow(j);
   hpp::Names_t_var children = plugin_->client()->robot ()->getChildJointNames (name.c_str());
   for (size_t i = 0; i < children->length(); ++i)
-    addJointToTree(std::string(children[i]),j);
+    addJointToTree(std::string(children[(ULong) i]),j);
 }
 
 void JointTreeWidget::selectJoint(const std::string &jointName)

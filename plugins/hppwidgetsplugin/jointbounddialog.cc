@@ -1,3 +1,4 @@
+#include <omniORB4/CORBA.h>
 #include "jointbounddialog.h"
 
 #include <QHBoxLayout>
@@ -5,6 +6,8 @@
 #include <QDialogButtonBox>
 
 #include <QDebug>
+
+using CORBA::ULong;
 
 JointBoundDialog::JointBoundDialog(QString name, std::size_t nbDof, QWidget *parent) :
   QDialog(parent, Qt::Dialog)
@@ -32,14 +35,14 @@ JointBoundDialog::JointBoundDialog(QString name, std::size_t nbDof, QWidget *par
 
 void JointBoundDialog::setBounds(const hpp::corbaserver::jointBoundSeq &bounds)
 {
-  if (bounds.length () != lines_.length() * 2) {
+  if (bounds.length () != (ULong) lines_.length() * 2) {
       qDebug () << "Wrong bounds dimensions";
       return;
     }
   std::size_t i = 0;
   foreach (const Line& l, lines_) {
-      l.min->setValue(bounds[i]); i++;
-      l.max->setValue(bounds[i]); i++;
+      l.min->setValue(bounds[(ULong) i]); i++;
+      l.max->setValue(bounds[(ULong) i]); i++;
     }
 }
 
@@ -48,8 +51,8 @@ void JointBoundDialog::getBounds(hpp::corbaserver::jointBoundSeq_out bounds) con
   bounds->length (lines_.length() * 2);
   std::size_t i = 0;
   foreach (const Line& l, lines_) {
-      bounds[i] = l.min->value(); i++;
-      bounds[i] = l.max->value(); i++;
+      bounds[(ULong) i] = l.min->value(); i++;
+      bounds[(ULong) i] = l.max->value(); i++;
     }
 }
 

@@ -464,7 +464,7 @@ std::list <graphics::NodePtr_t> OSGWidget::processPoint()
   qDebug () << "Selected node 1:";
   for(osgUtil::LineSegmentIntersector::Intersections::iterator it = intersections.begin();
       it != intersections.end(); ++it) {
-      for (int i = it->nodePath.size()-1; i >= 0 ; --i) {
+    for (int i = (int) it->nodePath.size()-1; i >= 0 ; --i) {
           graphics::NodePtr_t n = wsm_->getNode(it->nodePath[i]->getName ());
           if (n) {
               nodes.push_back(n);
@@ -515,7 +515,7 @@ std::list <graphics::NodePtr_t> OSGWidget::processSelection()
   qDebug () << "Selected nodes:";
   for(osgUtil::PolytopeIntersector::Intersections::iterator it = intersections.begin();
       it != intersections.end(); ++it) {
-      for (int i = it->nodePath.size()-1; i >= 0 ; --i) {
+    for (int i = (int) it->nodePath.size()-1; i >= 0 ; --i) {
           graphics::NodePtr_t n = wsm_->getNode(it->nodePath[i]->getName ());
           if (n) {
               nodes.push_back(n);
