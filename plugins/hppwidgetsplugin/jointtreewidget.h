@@ -34,7 +34,6 @@ public slots:
 
 private:
   void reset ();
-  JointAction* getOpenJointBoundDialogAction (const std::string &jointName);
 
   HppWidgetsPlugin* plugin_;
   Ui::JointTreeWidget* ui_;

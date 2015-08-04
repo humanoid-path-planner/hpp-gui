@@ -60,6 +60,9 @@ public slots:
   void selectJointFromBodyName (const std::string& bodyName);
 
 public:
+  QList <QAction*> getJointActions (const std::string &jointName);
+
+public:
   HppClient* client () const;
   JointMap& jointMap ();
 

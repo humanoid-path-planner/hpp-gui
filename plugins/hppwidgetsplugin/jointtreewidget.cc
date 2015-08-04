@@ -54,7 +54,7 @@ void JointTreeWidget::customContextMenu(const QPoint &pos)
       QMenu contextMenu (tr("Node"), this);
       JointTreeItem *item =
           dynamic_cast <JointTreeItem*> (model_->itemFromIndex(index));
-      contextMenu.addAction (getOpenJointBoundDialogAction(item->name()));
+      contextMenu.addActions (plugin_->getJointActions(item->name()));
       if (!item) return;
       foreach (JointModifierInterface* adi,
                MainWindow::instance()->pluginManager ()->get<JointModifierInterface> ()) {
@@ -143,11 +143,4 @@ void JointTreeWidget::reset()
   QStringList l; l << "Joint" << "Lower bound" << "Upper bound";
   model_->setHorizontalHeaderLabels(l);
   model_->setColumnCount(3);
-}
-
-JointAction *JointTreeWidget::getOpenJointBoundDialogAction(const std::string &jointName)
-{
-  JointAction* a = new JointAction (tr("Set bounds..."), jointName, 0);
-  connect (a, SIGNAL (triggered(std::string)), SLOT (openJointBoundDialog(std::string)));
-  return a;
 }

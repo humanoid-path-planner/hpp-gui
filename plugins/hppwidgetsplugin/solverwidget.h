@@ -33,6 +33,9 @@ public:
 signals:
   void problemSolved ();
 
+public slots:
+  void displayRoadmap (const std::string jointName);
+
 protected slots:
   void selectPathPlanner (const QString& text);
   void selectPathOptimizer (const QString& text);

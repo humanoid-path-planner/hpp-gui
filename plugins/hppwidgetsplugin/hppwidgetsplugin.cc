@@ -193,6 +193,19 @@ void HppWidgetsPlugin::selectJointFromBodyName(const std::string &bodyName)
     }
 }
 
+QList<QAction *> HppWidgetsPlugin::getJointActions(const std::string &jointName)
+{
+  QList <QAction*> l;
+  JointAction* a;
+  a= new JointAction (tr("Set bounds..."), jointName, 0);
+  connect (a, SIGNAL (triggered(std::string)), jointTreeWidget_, SLOT (openJointBoundDialog(std::string)));
+  l.append(a);
+  a = new JointAction (tr("Display roadmap"), jointName, 0);
+  connect (a, SIGNAL (triggered(std::string)), solverWidget_, SLOT (displayRoadmap(std::string)));
+  l.append(a);
+  return l;
+}
+
 HppWidgetsPlugin::HppClient *HppWidgetsPlugin::client() const
 {
   return hpp_;
