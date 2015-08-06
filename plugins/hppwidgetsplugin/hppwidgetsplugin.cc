@@ -184,13 +184,13 @@ void HppWidgetsPlugin::configurationValidation()
 
 void HppWidgetsPlugin::selectJointFromBodyName(const std::string &bodyName)
 {
-  std::size_t slash = 0;
   foreach (const JointElement& je, jointMap_) {
-      if (bodyName.compare(slash, std::string::npos, je.bodyName) == 0) {
+      if (bodyName.compare(je.bodyName) == 0) {
           jointTreeWidget_->selectJoint (je.name);
           return;
         }
     }
+  qDebug () << "Joint for body" << QString::fromStdString(bodyName) << "not found.";
 }
 
 QList<QAction *> HppWidgetsPlugin::getJointActions(const std::string &jointName)
