@@ -417,6 +417,18 @@ void OSGWidget::changeMode(Mode mode)
   infoBox_.setMode (mode);
 }
 
+void OSGWidget::selectionMode()
+{
+  mode_ = NODE_SELECTION;
+  infoBox_.setMode(NODE_SELECTION);
+}
+
+void OSGWidget::cameraManipulationMode()
+{
+  mode_ = CAMERA_MANIPULATION;
+  infoBox_.setMode(CAMERA_MANIPULATION);
+}
+
 void OSGWidget::onResize( int /*width*/, int /*height*/ )
 {
   osg::Camera* camera = viewer_->getCamera();

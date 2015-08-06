@@ -44,7 +44,10 @@ public slots:
                  const QString urdf_file_path,
                  const QString meshDataRootDir);
   virtual void onHome();
+
   void changeMode (Mode mode);
+  void selectionMode ();
+  void cameraManipulationMode ();
 
 protected:
 

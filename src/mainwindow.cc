@@ -215,6 +215,9 @@ OSGWidget *MainWindow::onCreateView()
       centralWidget_->setObjectName(objName);
       setCentralWidget(centralWidget_);
       connect(ui_->actionHome, SIGNAL (activated()), centralWidget_, SLOT (onHome()));
+      connect(ui_->actionSelection, SIGNAL (activated()), centralWidget_, SLOT (selectionMode()));
+      connect(ui_->actionCamera_control_mode, SIGNAL (activated()), centralWidget_, SLOT (cameraManipulationMode()));
+      ui_->osgToolBar->show();
 
       osg()->addSceneToWindow("hpp-gui", centralWidget_->windowID());
     }

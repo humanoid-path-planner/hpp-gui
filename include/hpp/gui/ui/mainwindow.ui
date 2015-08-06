@@ -148,11 +148,12 @@
     </size>
    </property>
    <attribute name="toolBarArea">
-    <enum>LeftToolBarArea</enum>
+    <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>false</bool>
+    <bool>true</bool>
    </attribute>
+   <addaction name="actionCamera_control_mode"/>
    <addaction name="actionSelection"/>
    <addaction name="actionHome"/>
   </widget>
@@ -242,7 +243,7 @@
     <string>Select</string>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter in select mode in the main OSG view&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>Enter in select mode in the main OSG view</string>
    </property>
   </action>
   <action name="actionHome">
@@ -266,6 +267,17 @@
    </property>
    <property name="text">
     <string>&amp;Plugins</string>
+   </property>
+  </action>
+  <action name="actionCamera_control_mode">
+   <property name="icon">
+    <iconset theme="transform-move"/>
+   </property>
+   <property name="text">
+    <string>Camera</string>
+   </property>
+   <property name="toolTip">
+    <string>Control the camera of the main OSG widget</string>
    </property>
   </action>
  </widget>
