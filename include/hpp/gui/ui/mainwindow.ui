@@ -64,6 +64,7 @@
     <property name="title">
      <string>&amp;Tools</string>
     </property>
+    <addaction name="actionRefresh"/>
     <addaction name="actionPlugins"/>
    </widget>
    <addaction name="menuFile"/>
@@ -285,7 +286,9 @@
   </action>
   <action name="actionRefresh">
    <property name="icon">
-    <iconset theme="view-refresh"/>
+    <iconset theme="view-refresh">
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>Refresh</string>
