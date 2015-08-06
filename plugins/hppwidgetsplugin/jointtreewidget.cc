@@ -28,6 +28,8 @@ JointTreeWidget::JointTreeWidget(HppWidgetsPlugin *plugin, QWidget *parent) :
 
   connect(ui_->jointTree, SIGNAL (customContextMenuRequested(QPoint)),
           SLOT (customContextMenu(QPoint)));
+  connect(ui_->jointTree, SIGNAL (expanded(QModelIndex)),
+          SLOT (resize(QModelIndex)));
 }
 
 JointTreeWidget::~JointTreeWidget()
@@ -136,4 +138,12 @@ void JointTreeWidget::reset()
   QStringList l; l << "Joint" << "Lower bound" << "Upper bound";
   model_->setHorizontalHeaderLabels(l);
   model_->setColumnCount(3);
+  ui_->jointTree->setColumnHidden(1,true);
+  ui_->jointTree->setColumnHidden(2,true);
+}
+
+void JointTreeWidget::resize(const QModelIndex index)
+{
+  Q_UNUSED (index);
+  ui_->jointTree->resizeColumnToContents(0);
 }

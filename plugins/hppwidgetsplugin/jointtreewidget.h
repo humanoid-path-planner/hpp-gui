@@ -30,6 +30,9 @@ public slots:
 
   void reload ();
 
+private slots:
+  void resize (const QModelIndex index);
+
 private:
   void reset ();
 
