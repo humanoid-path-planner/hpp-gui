@@ -18,8 +18,6 @@ public:
 
   virtual ~JointTreeWidget ();
 
-  const QPushButton* refreshButton () const;
-
   void dockWidget (QDockWidget* dock);
 
 signals:

@@ -156,6 +156,7 @@
    <addaction name="actionCamera_control_mode"/>
    <addaction name="actionSelection"/>
    <addaction name="actionHome"/>
+   <addaction name="actionRefresh"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_log">
    <property name="windowIcon">
@@ -271,13 +272,26 @@
   </action>
   <action name="actionCamera_control_mode">
    <property name="icon">
-    <iconset theme="transform-move"/>
+    <iconset theme="transform-move">
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>Camera</string>
    </property>
    <property name="toolTip">
     <string>Control the camera of the main OSG widget</string>
+   </property>
+  </action>
+  <action name="actionRefresh">
+   <property name="icon">
+    <iconset theme="view-refresh"/>
+   </property>
+   <property name="text">
+    <string>Refresh</string>
+   </property>
+   <property name="toolTip">
+    <string>Refresh the interface (required if you are also using the python interface)</string>
    </property>
   </action>
  </widget>

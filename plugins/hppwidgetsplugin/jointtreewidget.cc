@@ -27,19 +27,12 @@ JointTreeWidget::JointTreeWidget(HppWidgetsPlugin *plugin, QWidget *parent) :
   reset ();
 
   connect(ui_->jointTree, SIGNAL (customContextMenuRequested(QPoint)),
-          this, SLOT (customContextMenu(QPoint)));
-  connect (refreshButton (), SIGNAL (clicked ()),
-           this, SLOT (reload()));
+          SLOT (customContextMenu(QPoint)));
 }
 
 JointTreeWidget::~JointTreeWidget()
 {
   delete ui_;
-}
-
-const QPushButton *JointTreeWidget::refreshButton() const
-{
-  return ui_->refreshButton;
 }
 
 void JointTreeWidget::dockWidget(QDockWidget *dock)

@@ -64,6 +64,7 @@ public:
 signals:
   void sendToBackground (WorkItem* item);
   void createView (QString name);
+  void refresh ();
   void applyCurrentConfiguration();
   void configurationValidation();
   void selectJointFromBodyName(const std::string &bodyName);
@@ -74,7 +75,8 @@ public slots:
   void logJobFailed  (int id, const QString& text);
 
   OSGWidget* delayedCreateView (QString name = "");
-  void reload ();
+  void requestRefresh ();
+  void reloadBodyTree ();
   void addBodyToTree (graphics::GroupNodePtr_t group);
   void requestApplyCurrentConfiguration ();
   void requestConfigurationValidation ();

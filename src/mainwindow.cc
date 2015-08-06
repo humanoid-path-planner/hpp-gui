@@ -40,6 +40,9 @@ MainWindow::MainWindow(QWidget *parent) :
   // Setup the main OSG widget
   connect (this, SIGNAL (createView(QString)), SLOT (onCreateView()));
 
+  connect (ui_->actionRefresh, SIGNAL (activated()), SLOT (requestRefresh()));
+  connect (this, SIGNAL (refresh()), SLOT (reloadBodyTree()));
+
   connect (&backgroundQueue_, SIGNAL (done(int)), this, SLOT (handleWorkerDone(int)));
   connect (&backgroundQueue_, SIGNAL (failed(int,const QString&)),
            this, SLOT (logJobFailed(int, const QString&)));
@@ -187,7 +190,12 @@ OSGWidget *MainWindow::delayedCreateView(QString name)
   return osgWindows_.last();
 }
 
-void MainWindow::reload()
+void MainWindow::requestRefresh()
+{
+  emit refresh ();
+}
+
+void MainWindow::reloadBodyTree()
 {
   bodyTreeModel_->clear();
   std::vector <std::string> sceneNames = osgViewerManagers_->getSceneList ();
