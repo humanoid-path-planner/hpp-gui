@@ -1,6 +1,8 @@
 #include "hpp/gui/osgwidget.h"
 #include "hpp/gui/mainwindow.h"
 
+#include <boost/regex.hpp>
+
 #include <osg/Camera>
 
 #include <osg/DisplaySettings>
@@ -461,14 +463,14 @@ std::list <graphics::NodePtr_t> OSGWidget::processPoint()
 
   osgUtil::LineSegmentIntersector::Intersections intersections = intersector->getIntersections();
 
-  qDebug () << "Selected node 1:";
   for(osgUtil::LineSegmentIntersector::Intersections::iterator it = intersections.begin();
       it != intersections.end(); ++it) {
     for (int i = (int) it->nodePath.size()-1; i >= 0 ; --i) {
           graphics::NodePtr_t n = wsm_->getNode(it->nodePath[i]->getName ());
           if (n) {
+              if (boost::regex_match (n->getID(), boost::regex ("^.*_[0-9]+$")))
+                continue;
               nodes.push_back(n);
-              qDebug () << QString::fromStdString(n->getID());
               break;
             }
         }
@@ -512,14 +514,14 @@ std::list <graphics::NodePtr_t> OSGWidget::processSelection()
 
   osgUtil::PolytopeIntersector::Intersections intersections = polytopeIntersector->getIntersections();
 
-  qDebug () << "Selected nodes:";
   for(osgUtil::PolytopeIntersector::Intersections::iterator it = intersections.begin();
       it != intersections.end(); ++it) {
     for (int i = (int) it->nodePath.size()-1; i >= 0 ; --i) {
           graphics::NodePtr_t n = wsm_->getNode(it->nodePath[i]->getName ());
           if (n) {
+              if (boost::regex_match (n->getID().c_str(), boost::regex ("^.*_[0-9]+$")))
+                continue;
               nodes.push_back(n);
-              qDebug () << QString::fromStdString(n->getID());
               break;
             }
         }

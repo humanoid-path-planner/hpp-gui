@@ -115,9 +115,9 @@ void MainWindow::selectBodyByName(const QString &bodyName)
                                 Qt::MatchFixedString | Qt::MatchCaseSensitive | Qt::MatchRecursive);
   if (matches.empty()) {
       qDebug () << "Body" << bodyName << "not found.";
-      ui_->bodyTree->selectionModel()->clearSelection();
+      ui_->bodyTree->clearSelection();
     } else {
-      ui_->bodyTree->selectionModel()->select(matches.first()->index(), QItemSelectionModel::ClearAndSelect);
+      ui_->bodyTree->setCurrentIndex(matches.first()->index());
     }
 }
 
