@@ -66,6 +66,8 @@ JointBoundDialog::Line::Line(const QString &name, QWidget *parent)
   , min (new QDoubleSpinBox (parent))
   , max (new QDoubleSpinBox (parent))
 {
+  min->setRange (-100,100);
+  max->setRange (-100,100);
 }
 
 void JointBoundDialog::Line::addToLayout(QLayout *l)
