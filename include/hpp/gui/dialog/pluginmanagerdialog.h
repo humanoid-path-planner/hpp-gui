@@ -65,6 +65,11 @@ public slots:
   void unload (const QString& name);
 
 private:
+  static const std::size_t NAME;
+  static const std::size_t FILE;
+  static const std::size_t FULLPATH;
+  static const std::size_t VERSION;
+
   void updateList ();
 
   Ui::PluginManagerDialog *ui_;

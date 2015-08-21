@@ -39,6 +39,11 @@
        <string>Version</string>
       </property>
      </column>
+     <column>
+      <property name="text">
+       <string>FullPath</string>
+      </property>
+     </column>
     </widget>
    </item>
    <item>

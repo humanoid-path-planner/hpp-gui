@@ -80,6 +80,8 @@ PluginManagerDialog::PluginManagerDialog(PluginManager *pm, QWidget *parent) :
 
   updateList ();
 
+  ui_->pluginList->setColumnHidden(FILE, true);
+
   connect(ui_->pluginList, SIGNAL (currentItemChanged (QTableWidgetItem*,QTableWidgetItem*)),
           this, SLOT (onItemChanged(QTableWidgetItem*,QTableWidgetItem*)));
   connect(ui_->pluginList, SIGNAL(customContextMenuRequested(QPoint)),
@@ -95,7 +97,7 @@ void PluginManagerDialog::onItemChanged(QTableWidgetItem *current,
                                         QTableWidgetItem */*previous*/)
 {
   if (!current) return;
-  QString key = ui_->pluginList->item(current->row(), 0)->text();
+  QString key = ui_->pluginList->item(current->row(), FILE)->text();
   const QPluginLoader* pl = pm_->plugins()[key];
   ui_->pluginMessage->setText(pm_->status (pl));
 }
@@ -131,20 +133,29 @@ void PluginManagerDialog::unload(const QString &name)
     updateList ();
 }
 
+const std::size_t PluginManagerDialog::NAME = 0;
+const std::size_t PluginManagerDialog::FILE = 1;
+const std::size_t PluginManagerDialog::VERSION = 2;
+const std::size_t PluginManagerDialog::FULLPATH = 3;
+
 void PluginManagerDialog::updateList()
 {
     while (ui_->pluginList->rowCount() > 0)
         ui_->pluginList->removeRow(0);
     for (PluginManager::Map::const_iterator p = pm_->plugins ().constBegin();
          p != pm_->plugins().constEnd(); p++) {
-        QString name = p.key(),
-            filename = p.value()->fileName(),
+        PluginInterface* pi = qobject_cast <PluginInterface*> (p.value()->instance());
+        QString name = pi->name(),
+            filename = p.key(),
+            fullpath = p.value()->fileName(),
             version = "";
         QIcon icon = pm_->icon (p.value());
 
         ui_->pluginList->insertRow(ui_->pluginList->rowCount());
-        ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, 0, new QTableWidgetItem (icon, name));
-        ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, 1, new QTableWidgetItem (filename));
-        ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, 2, new QTableWidgetItem (version));
+        ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, NAME, new QTableWidgetItem (icon, name));
+        ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, FILE, new QTableWidgetItem (filename));
+        ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, VERSION, new QTableWidgetItem (version));
+        ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, FULLPATH, new QTableWidgetItem (fullpath));
       }
+    ui_->pluginList->resizeColumnsToContents();
 }
