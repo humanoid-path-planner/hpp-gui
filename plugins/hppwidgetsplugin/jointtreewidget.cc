@@ -49,8 +49,8 @@ void JointTreeWidget::customContextMenu(const QPoint &pos)
       QMenu contextMenu (tr("Node"), this);
       JointTreeItem *item =
           dynamic_cast <JointTreeItem*> (model_->itemFromIndex(index));
-      contextMenu.addActions (plugin_->getJointActions(item->name()));
       if (!item) return;
+      contextMenu.addActions (plugin_->getJointActions(item->name()));
       foreach (JointModifierInterface* adi,
                MainWindow::instance()->pluginManager ()->get<JointModifierInterface> ()) {
           if (!adi) continue;
