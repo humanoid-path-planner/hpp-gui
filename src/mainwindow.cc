@@ -551,9 +551,6 @@ void MainWindow::configurationValidationStatusChanged (bool valid)
   foreach(const QString& s, robotNames_) {
       osg ()->setHighlight(s.toLocal8Bit().data(), state);
     }
-  if (!valid) {
-      log ("Current configuration is NOT valid.");
-    }
 }
 
 void MainWindow::requestSelectJointFromBodyName(const std::string &bodyName)
