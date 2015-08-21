@@ -158,6 +158,7 @@
    <addaction name="actionSelection"/>
    <addaction name="actionHome"/>
    <addaction name="actionRefresh"/>
+   <addaction name="actionAdd_floor"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_log">
    <property name="windowIcon">
@@ -295,6 +296,14 @@
    </property>
    <property name="toolTip">
     <string>Refresh the interface (required if you are also using the python interface)</string>
+   </property>
+  </action>
+  <action name="actionAdd_floor">
+   <property name="text">
+    <string>Add floor</string>
+   </property>
+   <property name="toolTip">
+    <string>Add a floor</string>
    </property>
   </action>
  </widget>

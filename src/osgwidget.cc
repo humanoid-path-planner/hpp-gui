@@ -429,6 +429,11 @@ void OSGWidget::cameraManipulationMode()
   infoBox_.setMode(CAMERA_MANIPULATION);
 }
 
+void OSGWidget::addFloor()
+{
+  wsm_->addFloor("hpp-gui/floor");
+}
+
 void OSGWidget::onResize( int /*width*/, int /*height*/ )
 {
   osg::Camera* camera = viewer_->getCamera();

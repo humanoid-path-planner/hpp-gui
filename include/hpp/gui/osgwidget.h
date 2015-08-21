@@ -48,6 +48,7 @@ public slots:
   void changeMode (Mode mode);
   void selectionMode ();
   void cameraManipulationMode ();
+  void addFloor();
 
 protected:
 

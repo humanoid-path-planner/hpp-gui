@@ -228,7 +228,7 @@ OSGWidget *MainWindow::onCreateView()
       ui_->osgToolBar->show();
 
       osg()->addSceneToWindow("hpp-gui", centralWidget_->windowID());
-      osg()->addFloor("hpp-gui/floor");
+      connect(ui_->actionAdd_floor, SIGNAL (activated()), centralWidget_, SLOT (addFloor()));
     }
   osgWindows_.append(osgWidget);
   delayedCreateView_.unlock();
