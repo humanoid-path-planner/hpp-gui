@@ -31,6 +31,19 @@ int main(int argc, char *argv[])
   foreach (QString p, env.value("LD_LIBRARY_PATH").split(':')) {
       PluginManager::addPluginDir (p + "/hpp-gui-plugins");
     }
+  // Finally, add all the folders contained in the folder "plugins"
+  // in the executable directory. This is convenient for developpers. When
+  // running "hpp-gui" from the build directory, the current build plugins are
+  // loaded instead of the installed versions.
+  // Thus, they do not have to be installed before launching the GUI.
+  // TODO: A better way to achieve this would be to use environment variables.
+  QDir here (QCoreApplication::applicationDirPath ());
+  here.cd ("plugins");
+  if (here.exists () && here.isReadable ()) {
+    foreach (QString dir, here.entryList (QDir::AllDirs)) {
+      PluginManager::addPluginDir (here.absoluteFilePath(dir));
+    }
+  }
 
   QStringList args = a.arguments();
   if (args.contains("--help")) {
