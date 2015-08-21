@@ -97,7 +97,7 @@ QString HppWidgetsPlugin::name() const
 void HppWidgetsPlugin::loadRobotModel(DialogLoadRobot::RobotDefinition rd)
 {
   client()->robot()->loadRobotModel(
-        QSTRING_TO_CONSTCHARARRAY(rd.name_),
+        QSTRING_TO_CONSTCHARARRAY(rd.robotName_),
         QSTRING_TO_CONSTCHARARRAY(rd.rootJointType_),
         QSTRING_TO_CONSTCHARARRAY(rd.package_),
         QSTRING_TO_CONSTCHARARRAY(rd.modelName_),
