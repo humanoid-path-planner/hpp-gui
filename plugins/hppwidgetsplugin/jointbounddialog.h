@@ -15,7 +15,7 @@ public:
 
   void setBounds (const hpp::corbaserver::jointBoundSeq& bounds);
 
-  void getBounds (hpp::corbaserver::jointBoundSeq_out bounds) const;
+  void getBounds (hpp::corbaserver::jointBoundSeq& bounds) const;
 
   ~JointBoundDialog();
 

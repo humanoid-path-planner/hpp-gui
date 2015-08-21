@@ -46,9 +46,9 @@ void JointBoundDialog::setBounds(const hpp::corbaserver::jointBoundSeq &bounds)
     }
 }
 
-void JointBoundDialog::getBounds(hpp::corbaserver::jointBoundSeq_out bounds) const
+void JointBoundDialog::getBounds(hpp::corbaserver::jointBoundSeq& bounds) const
 {
-  bounds->length (lines_.length() * 2);
+  bounds.length (lines_.length() * 2);
   std::size_t i = 0;
   foreach (const Line& l, lines_) {
       bounds[(ULong) i] = l.min->value(); i++;

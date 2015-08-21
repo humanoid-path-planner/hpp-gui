@@ -103,7 +103,7 @@ void JointTreeWidget::openJointBoundDialog(const std::string jointName)
         JointBoundDialog dialog (QString::fromStdString(jointName), nbDof);
         dialog.setBounds(bounds.in());
         if (dialog.exec() == QDialog::Accepted) {
-            dialog.getBounds(bounds.out());
+            dialog.getBounds(bounds.inout());
             plugin_->client()->robot()->setJointBounds(jointName.c_str(), bounds.in());
           }
       }
