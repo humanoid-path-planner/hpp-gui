@@ -22,6 +22,7 @@ SolverWidget::SolverWidget (HppWidgetsPlugin *plugin, QWidget *parent) :
   solveDoneId_ (-1)
 {
   ui_->setupUi (this);
+  ui_->pushButtonInterrupt->setVisible(false);
   connect (&main_->worker(), SIGNAL (done(int)), this, SLOT (handleWorkerDone (int)));
 
   update ();
@@ -29,6 +30,7 @@ SolverWidget::SolverWidget (HppWidgetsPlugin *plugin, QWidget *parent) :
   connect(optimizer(), SIGNAL (currentIndexChanged(const QString&)), this, SLOT (selectPathOptimizer(const QString&)));
   connect(projector(), SIGNAL (currentIndexChanged(int)), this, SLOT (selectPathProjector(int)));
   connect(ui_->pushButtonSolve, SIGNAL (clicked ()), this, SLOT (solve ()));
+  connect(ui_->pushButtonInterrupt, SIGNAL (clicked ()), this, SLOT (interrupt ()));
 }
 
 SolverWidget::~SolverWidget()
@@ -120,6 +122,15 @@ void SolverWidget::solve()
   main_->emitSendToBackground(item);
   main_->logJobStarted(item->id(), "solve problem.");
   solveDoneId_ = item->id();
+  ui_->pushButtonSolve->setVisible(false);
+  ui_->pushButtonInterrupt->setVisible(true);
+}
+
+void SolverWidget::interrupt()
+{
+  plugin_->client()->problem()->interruptPathPlanning();
+  ui_->pushButtonInterrupt->setVisible(false);
+  ui_->pushButtonSolve->setVisible(true);
 }
 
 void SolverWidget::handleWorkerDone(int id)

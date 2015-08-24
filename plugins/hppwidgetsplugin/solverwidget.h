@@ -41,6 +41,7 @@ protected slots:
   void selectPathOptimizer (const QString& text);
   void selectPathProjector (int index);
   void solve ();
+  void interrupt ();
 
   void handleWorkerDone (int id);
 
