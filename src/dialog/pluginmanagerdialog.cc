@@ -108,7 +108,7 @@ void PluginManagerDialog::contextMenu(const QPoint &pos)
 {
     int row = ui_->pluginList->rowAt(pos.y());
     if (row == -1) return;
-    QString key = ui_->pluginList->item(row, 0)->text();
+    QString key = ui_->pluginList->item(row, FILE)->text();
     QMenu contextMenu (tr("Plugin"), ui_->pluginList);
     if (pm_->plugins()[key]->isLoaded()) {
         QAction* unload = contextMenu.addAction("&Unload", &signalMapper_, SLOT(map()));
