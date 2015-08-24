@@ -33,6 +33,7 @@ private slots:
   void recordToggled (bool toggled);
   void pathPulse ();
   void timerEvent(QTimerEvent *event);
+  void readyReadProcessOutput ();
 
 private:
   void updateConfiguration ();
@@ -55,6 +56,10 @@ private:
   double pathLength_;
   double currentParam_;
   int timerId_;
+
+  QProcess* process_;
+  QDialog* showPOutput_;
+  QTextBrowser* pOutput_;
 
   HppWidgetsPlugin* plugin_;
 };

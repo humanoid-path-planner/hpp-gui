@@ -13,6 +13,9 @@ PathPlayer::PathPlayer (HppWidgetsPlugin *plugin, QWidget *parent) :
   QWidget (parent)
 , ui_ (new Ui::PathPlayerWidget)
 , frameRate_ (25)
+, process_ (new QProcess (this))
+, showPOutput_ (new QDialog (this, Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint))
+, pOutput_ (new QTextBrowser())
 , plugin_ (plugin)
 {
   ui_->setupUi (this);
@@ -23,10 +26,22 @@ PathPlayer::PathPlayer (HppWidgetsPlugin *plugin, QWidget *parent) :
   connect (stop(), SIGNAL (clicked()), this, SLOT (stopClicked()));
   connect (record(), SIGNAL (toggled(bool)), this, SLOT (recordToggled(bool)));
   connect (ui_->refreshButton_path, SIGNAL (clicked()), this, SLOT (update()));
+
+  process_->setProcessChannelMode(QProcess::MergedChannels);
+  connect (process_, SIGNAL (readyReadStandardOutput ()), SLOT (readyReadProcessOutput()));
+
+  showPOutput_->setModal(false);
+  showPOutput_->setLayout(new QHBoxLayout ());
+  showPOutput_->layout()->addWidget(pOutput_);
 }
 
 PathPlayer::~PathPlayer()
 {
+  if (process_ != NULL) {
+      if (process_->state() == QProcess::Running)
+        process_->kill();
+      delete process_;
+    }
   delete ui_;
 }
 
@@ -88,13 +103,43 @@ void PathPlayer::stopClicked()
 
 void PathPlayer::recordToggled(bool toggled)
 {
+  MainWindow* main = MainWindow::instance();
   if (toggled) {
-      std::string path = "/tmp/hpp-gui/record/img";
-      std::string ext = "jpeg";
-      MainWindow::instance()->osg ()->startCapture(
-            MainWindow::instance()->centralWidget()->windowID(),
-            path.c_str(),
-            ext.c_str());
+      QDir tmp ("/tmp");
+      tmp.mkpath ("hpp-gui/record"); tmp.cd("hpp-gui/record");
+      foreach (QString f, tmp.entryList(QStringList() << "img_0_*.jpeg", QDir::Files))
+          tmp.remove(f);
+      QString path = tmp.absoluteFilePath("img");
+      QString ext = "jpeg";
+      main->osg ()->startCapture(
+            main->centralWidget()->windowID(),
+            path.toLocal8Bit().data(),
+            ext.toLocal8Bit().data());
+      main->log("Saving images to " + path + "_*." + ext);
+    } else {
+      main->osg()->stopCapture(main->centralWidget()->windowID());
+      QString outputFile = QFileDialog::getSaveFileName(this, tr("Save video to"), "untitled.mp4");
+      if (!outputFile.isNull()) {
+          if (QFile::exists(outputFile))
+               QFile::remove(outputFile);
+          QString avconv = "avconv";
+
+          QStringList args;
+          QString input = "/tmp/hpp-gui/record/img_0_%d.jpeg";
+          args << "-r" << "50"
+               << "-i" << input
+               << "-vf" << "scale=trunc(iw/2)*2:trunc(ih/2)*2"
+               << "-r" << "25"
+               << "-vcodec" << "libx264"
+               << outputFile;
+          qDebug () << args;
+
+          showPOutput_->setWindowTitle(avconv + " " + args.join(" "));
+          pOutput_->clear();
+          showPOutput_->resize(main->size() / 2);
+          showPOutput_->show();
+          process_->start(avconv, args);
+        }
     }
 }
 
@@ -119,6 +164,11 @@ void PathPlayer::timerEvent(QTimerEvent *event)
   if (timerId_ == event->timerId()) {
       pathPulse();
     }
+}
+
+void PathPlayer::readyReadProcessOutput()
+{
+  pOutput_->append(process_->readAll());
 }
 
 void PathPlayer::updateConfiguration ()
