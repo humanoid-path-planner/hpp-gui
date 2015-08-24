@@ -16,6 +16,7 @@ DialogLoadEnvironment::DialogLoadEnvironment(QWidget *parent) :
   ui_->setupUi(this);
   ui_->groupBox_details->setVisible (false);
   defs_  = ui_->comboBox_defs;
+  defs_->setFocus();
 
   foreach (EnvironmentDefinition r, definitions) {
       defs_->addItem(r.name_, QVariant::fromValue(r));
