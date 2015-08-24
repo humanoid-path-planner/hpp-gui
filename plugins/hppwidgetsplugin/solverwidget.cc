@@ -47,7 +47,7 @@ void SolverWidget::update (Select s) {
       if (s == Planner) break;
     case Optimizer:
       clearQComboBox(optimizer());
-      optimizer()->addItems(QStringList () << "RandomShortcut");
+      optimizer()->addItems(QStringList () << "None" << "RandomShortcut");
       if (s == Optimizer) break;
     case Projector:
       clearQComboBox(projector());
