@@ -84,6 +84,7 @@ void CorbaServer::start()
 
 void CorbaServer::timerEvent(QTimerEvent* event)
 {
+  Q_UNUSED (event);
   assert (event->timerId () == timerId_);
   emit process (false);
   killTimer(timerId_);
