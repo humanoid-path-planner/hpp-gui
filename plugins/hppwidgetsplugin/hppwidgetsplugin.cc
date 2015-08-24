@@ -44,10 +44,10 @@ void HppWidgetsPlugin::init()
   MainWindow* main = MainWindow::instance ();
   QDockWidget* dock;
 
-  // Path player widget
-  dock = new QDockWidget ("Path player", main);
-  pathPlayer_ = new PathPlayer (this, dock);
-  dock->setWidget(pathPlayer_);
+  // Configuration list widget
+  dock = new QDockWidget ("Configuration List", main);
+  configListWidget_ = new ConfigurationListWidget (this, dock);
+  dock->setWidget(configListWidget_);
   main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
   dockWidgets_.append(dock);
 
@@ -56,6 +56,15 @@ void HppWidgetsPlugin::init()
   solverWidget_ = new SolverWidget (this, dock);
   dock->setWidget(solverWidget_);
   main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
+  main->tabifyDockWidget(dockWidgets_.first(), dock);
+  dockWidgets_.append(dock);
+
+  // Path player widget
+  dock = new QDockWidget ("Path player", main);
+  pathPlayer_ = new PathPlayer (this, dock);
+  dock->setWidget(pathPlayer_);
+  main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
+  main->tabifyDockWidget(dockWidgets_.first(), dock);
   dockWidgets_.append(dock);
 
   // Joint tree widget
@@ -63,13 +72,6 @@ void HppWidgetsPlugin::init()
   jointTreeWidget_ = new JointTreeWidget (this, dock);
   dock->setWidget(jointTreeWidget_);
   jointTreeWidget_->dockWidget (dock);
-  main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
-  dockWidgets_.append(dock);
-
-  // Configuration list widget
-  dock = new QDockWidget ("Configuration List", main);
-  configListWidget_ = new ConfigurationListWidget (this, dock);
-  dock->setWidget(configListWidget_);
   main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
   dockWidgets_.append(dock);
 
