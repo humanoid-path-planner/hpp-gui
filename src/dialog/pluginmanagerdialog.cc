@@ -7,7 +7,8 @@
 
 QList <QDir> PluginManager::pluginDirs_;
 
-bool PluginManager::add(const QString &name, QWidget *parent, bool load) {
+bool PluginManager::add(const QString &name, QWidget *parent, bool load)
+{
   QString filename = name;
   if (!QDir::isAbsolutePath(name)) {
     foreach (QDir dir, pluginDirs_) {
@@ -52,7 +53,8 @@ void PluginManager::addPluginDir(const QString &path)
         pluginDirs_.append (can);
 }
 
-bool PluginManager::loadPlugin(const QString &name) {
+bool PluginManager::loadPlugin(const QString &name)
+{
   if (!plugins_[name]->load()) {
       qDebug() << name << ": " << plugins_[name]->errorString();
       return false;
@@ -144,11 +146,15 @@ void PluginManagerDialog::updateList()
         ui_->pluginList->removeRow(0);
     for (PluginManager::Map::const_iterator p = pm_->plugins ().constBegin();
          p != pm_->plugins().constEnd(); p++) {
-        PluginInterface* pi = qobject_cast <PluginInterface*> (p.value()->instance());
-        QString name = pi->name(),
+        QString name = p.value()->fileName(),
             filename = p.key(),
             fullpath = p.value()->fileName(),
             version = "";
+        if (p.value ()->isLoaded ()) {
+            PluginInterface* pi = qobject_cast <PluginInterface*> (p.value()->instance());
+            name = pi->name();
+            // version = pi->version();
+        }
         QIcon icon = pm_->icon (p.value());
 
         ui_->pluginList->insertRow(ui_->pluginList->rowCount());
