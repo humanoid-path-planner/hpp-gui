@@ -31,6 +31,8 @@ SolverWidget::SolverWidget (HppWidgetsPlugin *plugin, QWidget *parent) :
   connect(projector(), SIGNAL (currentIndexChanged(int)), this, SLOT (selectPathProjector(int)));
   connect(ui_->pushButtonSolve, SIGNAL (clicked ()), this, SLOT (solve ()));
   connect(ui_->pushButtonInterrupt, SIGNAL (clicked ()), this, SLOT (interrupt ()));
+  connect(ui_->loadRoadmap, SIGNAL (clicked()), SLOT (loadRoadmap()));
+  connect(ui_->saveRoadmap, SIGNAL (clicked()), SLOT (saveRoadmap()));
 }
 
 SolverWidget::~SolverWidget()
@@ -129,6 +131,28 @@ void SolverWidget::interrupt()
 {
   plugin_->client()->problem()->interruptPathPlanning();
   selectButtonSolve(true);
+}
+
+void SolverWidget::loadRoadmap()
+{
+  QString file = QFileDialog::getOpenFileName(this, tr ("Select a roadmap file"));
+  if (file.isNull()) return;
+  try {
+    plugin_->client()->problem()->readRoadmap (file.toLocal8Bit().data());
+  } catch (const hpp::Error& e) {
+    MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
+  }
+}
+
+void SolverWidget::saveRoadmap()
+{
+  QString file = QFileDialog::getSaveFileName(this, tr("Select a destination"));
+  if (file.isNull()) return;
+  try {
+    plugin_->client()->problem()->saveRoadmap (file.toLocal8Bit().data());
+  } catch (const hpp::Error& e) {
+    MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
+  }
 }
 
 void SolverWidget::handleWorkerDone(int id)

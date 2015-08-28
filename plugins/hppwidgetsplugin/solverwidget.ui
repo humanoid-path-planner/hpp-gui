@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>456</width>
+    <height>234</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,79 +15,127 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QFormLayout" name="formLayout">
-     <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Solve a problem</string>
      </property>
-     <item row="0" column="0">
-      <widget class="QLabel" name="pathPlannerLabel">
-       <property name="text">
-        <string>Path planner</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="pathPlannerComboBox"/>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="pathProjectorLabel">
-       <property name="text">
-        <string>Path projector</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="pathProjectorComboBox"/>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="pathOptimizerLabel">
-       <property name="text">
-        <string>Path optimizer</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QComboBox" name="pathOptimizerComboBox"/>
-     </item>
-    </layout>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QFormLayout" name="formLayout">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+        </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="pathPlannerLabel">
+          <property name="text">
+           <string>Path planner</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="pathPlannerComboBox"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="pathProjectorLabel">
+          <property name="text">
+           <string>Path projector</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="pathProjectorComboBox"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="pathOptimizerLabel">
+          <property name="text">
+           <string>Path optimizer</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="pathOptimizerComboBox"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonSolve">
+          <property name="text">
+           <string>&amp;Solve</string>
+          </property>
+          <property name="icon">
+           <iconset theme="games-solve">
+            <normaloff>../../include/hpp/gui/ui</normaloff>../../include/hpp/gui/ui</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonInterrupt">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>&amp;Interrupt</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+     <zorder></zorder>
+     <zorder>horizontalSpacer</zorder>
+     <zorder></zorder>
+    </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonSolve">
-       <property name="text">
-        <string>&amp;Solve</string>
-       </property>
-       <property name="icon">
-        <iconset theme="games-solve">
-         <normaloff>../../include/hpp/gui/ui</normaloff>../../include/hpp/gui/ui</iconset>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonInterrupt">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>&amp;Interrupt</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Roadmap</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="loadRoadmap">
+        <property name="text">
+         <string>Load</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="saveRoadmap">
+        <property name="text">
+         <string>Save</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>

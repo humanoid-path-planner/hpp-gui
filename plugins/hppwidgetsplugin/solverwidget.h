@@ -42,6 +42,8 @@ protected slots:
   void selectPathProjector (int index);
   void solve ();
   void interrupt ();
+  void loadRoadmap ();
+  void saveRoadmap ();
 
   void handleWorkerDone (int id);
 
