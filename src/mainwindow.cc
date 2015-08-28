@@ -17,6 +17,7 @@ MainWindow* MainWindow::instance_ = NULL;
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
+  autoWriteSettings_ (false),
   ui_(new Ui::MainWindow),
   centralWidget_ (),
   osgViewerManagers_ (WindowsManager::create()),
@@ -60,7 +61,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-  writeSettings();
+  if (autoWriteSettings_)
+    writeSettings();
   worker_.quit();
   osgServer_.wait();
   worker_.wait();
@@ -460,6 +462,11 @@ void MainWindow::readSettings()
           foreach (QString name, env.childKeys()) {
               pluginManager_.add(name, this, env.value(name, true).toBool());
           }
+          env.endGroup ();
+          env.beginGroup ("GUI");
+          autoWriteSettings_ = env.value ("autoWriteSettings",
+              autoWriteSettings_).toBool ();
+          env.endGroup ();
           log (QString ("Read configuration file ") + env.fileName());
         }
     } while (0);
@@ -520,6 +527,10 @@ void MainWindow::writeSettings()
             p != pluginManager_.plugins().constEnd(); p++) {
             env.setValue(p.key(), p.value()->isLoaded());
           }
+          env.endGroup ();
+          env.beginGroup ("GUI");
+          env.setValue ("autoWriteSettings", autoWriteSettings_);
+          env.endGroup ();
           log (QString ("Read configuration file ") + env.fileName());
         }
     } while (0);

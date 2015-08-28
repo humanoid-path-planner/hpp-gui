@@ -100,6 +100,7 @@ private:
   void writeSettings ();
 
   static MainWindow* instance_;
+  bool autoWriteSettings_;
 
   Ui::MainWindow* ui_;
   OSGWidget* centralWidget_;
