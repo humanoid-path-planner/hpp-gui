@@ -1,5 +1,7 @@
 #include "hppwidgetsplugin.hh"
 
+#include <boost/regex.hpp>
+
 #include <QDockWidget>
 
 #include <hpp/gui/mainwindow.h>
@@ -185,6 +187,26 @@ void HppWidgetsPlugin::configurationValidation()
 
 void HppWidgetsPlugin::selectJointFromBodyName(const std::string &bodyName)
 {
+  boost::regex roadmap ("^roadmap_(.*)/((node)|(edge))([0-9]+)$");
+  boost::cmatch what;
+  if (boost::regex_match (bodyName.c_str(), what, roadmap)) {
+      int n = std::atoi (what[what.size() - 1].first);
+      std::string type; type.assign(what[2].first, what[2].second);
+      std::string joint; joint.assign(what[1].first, what[1].second);
+      qDebug () << "Detected the roadmap" << type.c_str() << n << "of joint" << joint.c_str();
+      if (type == "node") {
+          try {
+            hpp::floatSeq_var q = hpp_->problem()->node(n);
+            hpp_->robot()->setCurrentConfig(q.in());
+            MainWindow::instance()->requestApplyCurrentConfiguration();
+          } catch (const hpp::Error& e) {
+            MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
+          }
+        } else if (type == "edge") {
+          // TODO
+        }
+      return;
+    }
   foreach (const JointElement& je, jointMap_) {
       if (bodyName.compare(je.bodyName) == 0) {
           jointTreeWidget_->selectJoint (je.name);
