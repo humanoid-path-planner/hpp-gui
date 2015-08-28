@@ -187,13 +187,14 @@ void HppWidgetsPlugin::configurationValidation()
 
 void HppWidgetsPlugin::selectJointFromBodyName(const std::string &bodyName)
 {
-  boost::regex roadmap ("^roadmap_(.*)/((node)|(edge))([0-9]+)$");
+  boost::regex roadmap ("^(roadmap|path[0-9]+)_(.*)/(node|edge)([0-9]+)$");
   boost::cmatch what;
   if (boost::regex_match (bodyName.c_str(), what, roadmap)) {
-      int n = std::atoi (what[what.size() - 1].first);
-      std::string type; type.assign(what[2].first, what[2].second);
-      std::string joint; joint.assign(what[1].first, what[1].second);
-      qDebug () << "Detected the roadmap" << type.c_str() << n << "of joint" << joint.c_str();
+      std::string group; group.assign(what[1].first, what[1].second);
+      std::string joint; joint.assign(what[2].first, what[2].second);
+      std::string type;  type .assign(what[3].first, what[3].second);
+      int n = std::atoi (what[4].first);
+      qDebug () << "Detected the" << group.c_str() << type.c_str() << n << "of joint" << joint.c_str();
       if (type == "node") {
           try {
             hpp::floatSeq_var q = hpp_->problem()->node(n);
@@ -225,6 +226,9 @@ QList<QAction *> HppWidgetsPlugin::getJointActions(const std::string &jointName)
   l.append(a);
   a = new JointAction (tr("Display roadmap"), jointName, 0);
   connect (a, SIGNAL (triggered(std::string)), solverWidget_, SLOT (displayRoadmap(std::string)));
+  l.append(a);
+  a = new JointAction (tr("Display selected path"), jointName, 0);
+  connect (a, SIGNAL (triggered(std::string)), pathPlayer_, SLOT (displayPath(std::string)));
   l.append(a);
   return l;
 }

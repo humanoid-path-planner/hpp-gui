@@ -22,6 +22,9 @@ public:
   PathPlayer (HppWidgetsPlugin* plugin, QWidget* parent = 0);
   ~PathPlayer();
 
+public slots:
+  void displayPath (const std::string jointName);
+
 private slots:
   void update ();
 

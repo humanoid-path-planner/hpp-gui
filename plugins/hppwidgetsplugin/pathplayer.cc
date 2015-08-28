@@ -45,6 +45,42 @@ PathPlayer::~PathPlayer()
   delete ui_;
 }
 
+void PathPlayer::displayPath(const std::string jointName)
+{
+  MainWindow* main = MainWindow::instance();
+  if (!pathIndex()->isEnabled())
+    main->logError("There is no path. Did you solve a problem ?");
+  int pid = pathIndex()->value();
+  std::stringstream ss; ss << "path" << pid << "_" << jointName;
+  std::string pn = ss.str();
+  float colorN[] = {0.f, 0.f, 1.f, 1.f};
+  float colorE[] = {1.f, 0.f, 0.f, 1.f};
+  WindowsManagerPtr_t wsm = main->osg();
+  HppWidgetsPlugin::HppClient* hpp = plugin_->client();
+  hpp::floatSeqSeq_var waypoints = hpp->problem()->getWaypoints(pid);
+  wsm->createScene (pn.c_str());
+  hpp::floatSeq_var curCfg = hpp->robot()->getCurrentConfig();
+  for (unsigned int i = 0; i < waypoints->length(); ++i) {
+      float pos[7];
+      float pos1[3], pos2[3];
+      hpp->robot()->setCurrentConfig(waypoints[i]);
+      hpp::Transform__var t = hpp->robot()->getLinkPosition(jointName.c_str());
+      for (int j = 0; j < 7; ++j) { pos[j] = (float)t.in()[j]; }
+      for (int j = 0; j < 3; ++j) { pos1[j] = pos2[j]; }
+      for (int j = 0; j < 3; ++j) { pos2[j] = (float)t.in()[j]; }
+      QString xyzName = QString::fromStdString(pn).append("/node%1").arg (i);
+      wsm->addXYZaxis(xyzName.toLocal8Bit().data(), colorN, 0.01f, 1.f);
+      wsm->applyConfiguration(xyzName.toLocal8Bit().data(), pos);
+      if  (i > 0) {
+          QString lineName = QString::fromStdString(pn).append("/edge%1").arg (i);
+          wsm->addLine(lineName.toLocal8Bit().data(), pos1, pos2, colorE);
+        }
+    }
+  hpp->robot()->setCurrentConfig(curCfg.in());
+  wsm->addToGroup(pn.c_str(), "hpp-gui");
+  wsm->refresh();
+}
+
 void PathPlayer::update ()
 {
   CORBA::Short nbPath = plugin_->client()->problem ()->numberPaths ();
