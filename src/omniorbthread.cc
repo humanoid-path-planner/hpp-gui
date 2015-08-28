@@ -118,7 +118,7 @@ void BackgroundQueue::perform(WorkItem *item)
           }
       }
     if (!handled)
-      emit failed (item->id(), QString ("CORBA Exception %1").arg(e._name()));
+      emit failed (item->id(), QString ("Unhandled CORBA Exception %1").arg(e._name()));
   } catch (...) {
     emit failed (item->id(), QString ("Unkown error type"));
   }
