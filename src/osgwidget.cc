@@ -243,10 +243,23 @@ void OSGWidget::mousePressEvent( QMouseEvent* event )
 {
   // Selection processing
   switch (mode_) {
+    case NODE_SELECTION: {
+        bool handled = false;
+        switch (event->button()) {
+          case Qt::LeftButton:
+            selectionStart_    = event->pos();
+            selectionEnd_      = selectionStart_; // Deletes the old selection
+            selectionFinished_ = false;           // As long as this is set, the rectangle will be drawn
+            handled = true;
+            break;
+          default:
+            break;
+          }
+        if (handled)
+          break;
+      }
     case CAMERA_MANIPULATION:{
-        // 1 = left mouse button
-        // 2 = middle mouse button
-        // 3 = right mouse button
+        selectionStart_ = event->pos();
 
         unsigned int button = 0;
         switch (event->button()) {
@@ -262,21 +275,10 @@ void OSGWidget::mousePressEvent( QMouseEvent* event )
           default:
             break;
           }
-        this->getEventQueue()->mouseButtonPress( static_cast<float>( event->x() ),
-                                                 static_cast<float>( event->y() ),
-                                                 button );
+        this->getEventQueue()->mouseButtonPress (static_cast<float> (event->x ()),
+                                                 static_cast<float> (event->y ()),
+                                                 button);
       }
-      break;
-    case NODE_SELECTION:
-      switch (event->button()) {
-        case Qt::LeftButton:
-          selectionStart_    = event->pos();
-          selectionEnd_      = selectionStart_; // Deletes the old selection
-          selectionFinished_ = false;           // As long as this is set, the rectangle will be drawn
-          break;
-        default:
-          break;
-        }
       break;
     case NODE_MOTION:
       selectionStart_ = event->pos();
@@ -308,54 +310,62 @@ void OSGWidget::mouseReleaseEvent(QMouseEvent* event)
 {
   // Selection processing: Store end position and obtain selected objects
   // through polytope intersection.
-  if( mode_ == NODE_SELECTION && event->button() == Qt::LeftButton ) {
-    selectionEnd_      = event->pos();
-    selectionFinished_ = true; // Will force the painter to stop drawing the
-                               // selection rectangle
+  switch (mode_) {
+    case NODE_SELECTION: {
+        bool handled = false;
+        if(event->button() == Qt::LeftButton ) {
+            selectionEnd_      = event->pos();
+            // Will force the painter to stop drawing the selection rectangle
+            selectionFinished_ = true;
 
-    NodeList list;
-    if ((selectionStart_ - selectionEnd_).isNull()) {
-        list = processPoint();
-      } else  {
-        list = processSelection();
+            NodeList list;
+            if ((selectionStart_ - selectionEnd_).isNull()) {
+                list = processPoint();
+              } else  {
+                list = processSelection();
+              }
+            if (!list.empty()) {
+                MainWindow* mw = MainWindow::instance();
+                mw->requestSelectJointFromBodyName (list.front()->getID());
+              }
+            handled = true;
+          }
+        if (handled)
+          break;
       }
-    if (!list.empty()) {
-        MainWindow* mw = MainWindow::instance();
-        mw->requestSelectJointFromBodyName (list.front()->getID());
+    case CAMERA_MANIPULATION:{
+        selectionEnd_ = event->pos();
+        if ((selectionStart_ - selectionEnd_).isNull()) {
+            NodeList list = processPoint();
+            MainWindow* mw = MainWindow::instance();
+            if (!list.empty()) {
+                mw->requestSelectJointFromBodyName (list.front()->getID());
+              } else {
+                mw->requestSelectJointFromBodyName("");
+              }
+          }
+        unsigned int button = 0;
+        switch (event->button()) {
+          case Qt::LeftButton:
+            button = 1;
+            break;
+          case Qt::MiddleButton:
+            button = 2;
+            break;
+          case Qt::RightButton:
+            button = 3;
+            break;
+          default:
+            break;
+          }
+        this->getEventQueue()->mouseButtonRelease (static_cast<float> (event->x ()),
+                                                   static_cast<float> (event->y ()),
+                                                   button);
+        break;
       }
-  }
-
-  // Normal processing
-  else
-  {
-    // 1 = left mouse button
-    // 2 = middle mouse button
-    // 3 = right mouse button
-
-    unsigned int button = 0;
-
-    switch( event->button() )
-    {
-    case Qt::LeftButton:
-      button = 1;
-      break;
-
-    case Qt::MiddleButton:
-      button = 2;
-      break;
-
-    case Qt::RightButton:
-      button = 3;
-      break;
-
     default:
       break;
     }
-
-    this->getEventQueue()->mouseButtonRelease( static_cast<float>( event->x() ),
-                                               static_cast<float>( event->y() ),
-                                               button );
-  }
 }
 
 void OSGWidget::wheelEvent( QWheelEvent* event )
