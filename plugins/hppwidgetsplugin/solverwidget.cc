@@ -22,7 +22,7 @@ SolverWidget::SolverWidget (HppWidgetsPlugin *plugin, QWidget *parent) :
   solveDoneId_ (-1)
 {
   ui_->setupUi (this);
-  ui_->pushButtonInterrupt->setVisible(false);
+  selectButtonSolve(true);
   connect (&main_->worker(), SIGNAL (done(int)), this, SLOT (handleWorkerDone (int)));
 
   update ();
@@ -122,22 +122,33 @@ void SolverWidget::solve()
   main_->emitSendToBackground(item);
   main_->logJobStarted(item->id(), "solve problem.");
   solveDoneId_ = item->id();
-  ui_->pushButtonSolve->setVisible(false);
-  ui_->pushButtonInterrupt->setVisible(true);
+  selectButtonSolve(false);
 }
 
 void SolverWidget::interrupt()
 {
   plugin_->client()->problem()->interruptPathPlanning();
-  ui_->pushButtonInterrupt->setVisible(false);
-  ui_->pushButtonSolve->setVisible(true);
+  selectButtonSolve(true);
 }
 
 void SolverWidget::handleWorkerDone(int id)
 {
   if (id == solveDoneId_) {
       emit problemSolved();
+      selectButtonSolve(true);
+      QMessageBox::information(this, "Problem solver", "Problem is solved.");
       main_->logJobDone(id, "Problem solved.");
+    }
+}
+
+void SolverWidget::selectButtonSolve(bool solve)
+{
+  if (solve) {
+      ui_->pushButtonInterrupt->setVisible(false);
+      ui_->pushButtonSolve->setVisible(true);
+    } else {
+      ui_->pushButtonInterrupt->setVisible(true);
+      ui_->pushButtonSolve->setVisible(false);
     }
 }
 

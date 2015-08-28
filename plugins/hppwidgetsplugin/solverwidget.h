@@ -46,6 +46,7 @@ protected slots:
   void handleWorkerDone (int id);
 
 private:
+  void selectButtonSolve (bool solve);
   QComboBox* planner ();
   QComboBox* projector ();
   QComboBox* optimizer ();
