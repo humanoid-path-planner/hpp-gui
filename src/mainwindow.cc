@@ -113,9 +113,12 @@ QItemSelectionModel *MainWindow::bodySelectionModel()
 
 void MainWindow::selectBodyByName(const QString &bodyName)
 {
-  QList<QStandardItem*> matches =
-      bodyTreeModel_->findItems(bodyName,
-                                Qt::MatchFixedString | Qt::MatchCaseSensitive | Qt::MatchRecursive);
+  QList<QStandardItem*> matches;
+  if (!bodyName.isEmpty() && !bodyName.isNull()) {
+      matches = bodyTreeModel_->findItems(bodyName, Qt::MatchFixedString
+                                          | Qt::MatchCaseSensitive
+                                          | Qt::MatchRecursive);
+    }
   if (matches.empty()) {
       qDebug () << "Body" << bodyName << "not found.";
       ui_->bodyTree->clearSelection();
