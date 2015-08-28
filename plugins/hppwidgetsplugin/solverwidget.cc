@@ -72,7 +72,7 @@ void SolverWidget::displayRoadmap(const std::string jointName)
       MainWindow::instance()->logError("There is no node in the roadmap.");
       return;
     }
-  wsm->createRoadmap (rn.c_str(), colorN, 0.01f, 1.f, colorE);
+  wsm->createScene (rn.c_str());
   hpp::floatSeq_var curCfg = hpp->robot()->getCurrentConfig();
   for (int i = 0; i < nbNodes; ++i) {
       float pos[7];
@@ -80,7 +80,9 @@ void SolverWidget::displayRoadmap(const std::string jointName)
       hpp->robot()->setCurrentConfig(n.in());
       hpp::Transform__var t = hpp->robot()->getLinkPosition(jointName.c_str());
       for (int j = 0; j < 7; ++j) { pos[j] = (float)t.in()[j]; }
-      wsm->addNodeToRoadmap (rn.c_str(), pos);
+      QString xyzName = QString::fromStdString(rn).append("/node%1").arg (i);
+      wsm->addXYZaxis(xyzName.toLocal8Bit().data(), colorN, 0.01f, 1.f);
+      wsm->applyConfiguration(xyzName.toLocal8Bit().data(), pos);
     }
   int nbEdges = hpp->problem()->numberEdges();
   for (int i = 0; i < nbEdges; ++i) {
@@ -94,7 +96,8 @@ void SolverWidget::displayRoadmap(const std::string jointName)
       hpp->robot()->setCurrentConfig(n2.in());
       t = hpp->robot()->getLinkPosition(jointName.c_str());
       for (int j = 0; j < 3; ++j) { pos2[j] = (float)t.in()[j]; }
-      wsm->addEdgeToRoadmap (rn.c_str(), pos1, pos2);
+      QString lineName = QString::fromStdString(rn).append("/edge%1").arg (i);
+      wsm->addLine(lineName.toLocal8Bit().data(), pos1, pos2, colorE);
     }
   hpp->robot()->setCurrentConfig(curCfg.in());
   wsm->addToGroup(rn.c_str(), "hpp-gui");
