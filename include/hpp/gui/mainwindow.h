@@ -81,6 +81,7 @@ public slots:
   void requestApplyCurrentConfiguration ();
   void requestConfigurationValidation ();
   void configurationValidationStatusChanged (bool valid);
+  void configurationValidationStatusChanged (QStringList bodiesInCollision);
   void requestSelectJointFromBodyName (const std::string& bodyName);
   void onOpenPluginManager ();
 
@@ -119,6 +120,7 @@ private:
 
   QMutex delayedCreateView_;
   QStringList robotNames_;
+  QStringList lastBodiesInCollision_;
 };
 
 #endif // MAINWINDOW_H

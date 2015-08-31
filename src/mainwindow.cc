@@ -567,6 +567,27 @@ void MainWindow::configurationValidationStatusChanged (bool valid)
     }
 }
 
+void MainWindow::configurationValidationStatusChanged (QStringList bodiesInCollision)
+{
+  QStringList lastBodiesInCollision = lastBodiesInCollision_;
+  lastBodiesInCollision_.clear();
+  collisionIndicator_->switchLed (bodiesInCollision.empty());
+  foreach (QString b, lastBodiesInCollision) {
+      if (bodiesInCollision.removeAll(b) == 0) {
+          /// This body is not in collision
+          osg ()->setHighlight(b.toLocal8Bit().data(), 0);
+        } else {
+          /// This body is still in collision
+          lastBodiesInCollision_.append(b);
+        }
+
+    }
+  foreach(const QString& b, bodiesInCollision) {
+      osg ()->setHighlight(b.toLocal8Bit().data(), 1);
+      lastBodiesInCollision_.append(b);
+    }
+}
+
 void MainWindow::requestSelectJointFromBodyName(const std::string &bodyName)
 {
   selectBodyByName (QString::fromStdString(bodyName));
