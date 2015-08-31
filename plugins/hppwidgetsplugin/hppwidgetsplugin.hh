@@ -47,6 +47,7 @@ public:
   std::string getBodyFromJoint (const std::string& jointName) const;
 signals:
   void configurationValidationStatus (bool valid);
+  void configurationValidationStatus (QStringList collision);
 
   // CorbaErrorInterface interface
 public:

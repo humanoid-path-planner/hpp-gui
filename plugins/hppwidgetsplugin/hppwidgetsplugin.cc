@@ -85,6 +85,8 @@ void HppWidgetsPlugin::init()
            this, SLOT (configurationValidation ()));
   connect (this, SIGNAL (configurationValidationStatus (bool)),
            main, SLOT (configurationValidationStatusChanged (bool)));
+  connect (this, SIGNAL (configurationValidationStatus (QStringList)),
+           main, SLOT (configurationValidationStatusChanged (QStringList)));
   connect (main, SIGNAL (applyCurrentConfiguration()),
            this, SLOT (applyCurrentConfiguration()));
   connect (main, SIGNAL (selectJointFromBodyName (std::string)),
@@ -182,7 +184,34 @@ void HppWidgetsPlugin::configurationValidation()
     MainWindow::instance()->logError(QString (e.msg));
     return;
   }
-  emit configurationValidationStatus (b);
+  QRegExp collision ("Collision between object (.*) and (.*)");
+  QStringList col;
+  if (!bb) {
+      if (collision.exactMatch(QString::fromLocal8Bit(report))) {
+          CORBA::String_var robotName = client ()->robot()->getRobotName();
+          size_t pos = strlen(robotName) + 1;
+          for (int i = 1; i < 3; ++i) {
+              std::string c = collision.cap (i).toStdString();
+              bool found = false;
+              foreach (const JointElement& je, jointMap_) {
+                  if (je.bodyName.length() <= pos)
+                    continue;
+                  size_t len = je.bodyName.length() - pos;
+                  if (je.bodyName.compare(pos, len, c, 0, len) == 0) {
+                      col.append(QString::fromStdString(je.bodyName));
+                      found = true;
+                      break;
+                    }
+                }
+              if (!found) col.append(collision.cap (i));
+            }
+        } else {
+          qDebug () << report;
+          col.append(QString::fromLocal8Bit(client ()->robot()->getRobotName()));
+        }
+      qDebug () << col;
+    }
+  emit configurationValidationStatus (col);
 }
 
 void HppWidgetsPlugin::selectJointFromBodyName(const std::string &bodyName)
