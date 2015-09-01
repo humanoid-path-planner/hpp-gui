@@ -26,7 +26,7 @@ QIcon PluginManager::icon(const QPluginLoader *pl)
 {
   if (pl->isLoaded()) {
       const PluginInterface* pi = const_instance_cast <PluginInterface> (pl);
-      if (pi) {
+      if (pi && pi->isInit ()) {
           return QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
         }
     }
@@ -37,9 +37,12 @@ QString PluginManager::status(const QPluginLoader *pl)
 {
   if (pl->isLoaded()) {
     const PluginInterface* pi = const_instance_cast <PluginInterface> (pl);
-    if (pi)
-      return QString ("Plugin loaded correctly");
-    else
+    if (pi) {
+      if (pi->isInit ())
+        return QString ("Plugin loaded correctly");
+      else
+        return pi->errorMsg ();
+    } else
       return QString ("Wrong interface");
   } else
       return pl->errorString();
@@ -64,8 +67,8 @@ bool PluginManager::loadPlugin(const QString &name)
       qDebug() << name << ": Wrong interface.";
       return false;
     }
-  pi->init();
-  return true;
+  pi->doInit();
+  return pi->isInit ();
 }
 
 bool PluginManager::unloadPlugin(const QString &name)

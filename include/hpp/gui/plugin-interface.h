@@ -13,9 +13,32 @@ class PluginInterface {
 public:
   virtual ~PluginInterface () {}
 
+  virtual QString name () const = 0;
+
+  void doInit ()
+  {
+    try {
+      init ();
+    } catch (const std::exception& e) {
+      errorMsg_ = QString (e.what ());
+    }
+  };
+
+  bool isInit () const
+  {
+    return errorMsg_.isNull ();
+  }
+
+  const QString& errorMsg () const
+  {
+    return errorMsg_;
+  }
+
+protected:
   virtual void init () = 0;
 
-  virtual QString name () const = 0;
+private:
+  QString errorMsg_;
 };
 
 Q_DECLARE_INTERFACE (PluginInterface, "hpp-gui.plugins/0.0")
