@@ -163,7 +163,11 @@ void MainWindow::logError(const QString &text)
   if (!ui_->dockWidget_log->isVisible()) {
       ui_->dockWidget_log->show();
     }
+  QScrollBar* sb = ui_->logText->verticalScrollBar();
+  bool SBwasAtBottom = sb->value() == sb->maximum();
   ui_->logText->insertHtml("<hr/><font color=red>"+text+"</font>");
+  if (SBwasAtBottom)
+      sb->setValue(sb->maximum());
 }
 
 void MainWindow::emitSendToBackground(WorkItem *item)
