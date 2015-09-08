@@ -120,14 +120,14 @@ void JointTreeWidget::reload()
   char* robotName;
   try {
     robotName = plugin_->client ()->robot()->getRobotName();
+    hpp::Names_t_var joints = plugin_->client()->robot()->getAllJointNames ();
+    std::string bjn (joints[0]);
+    plugin_->updateRobotJoints(robotName);
+    addJointToTree(bjn, 0);
   } catch (hpp::Error& e) {
     MainWindow::instance ()->logError(QString(e.msg));
     return;
   }
-  hpp::Names_t_var joints = plugin_->client()->robot()->getAllJointNames ();
-  std::string bjn (joints[0]);
-  plugin_->updateRobotJoints(robotName);
-  addJointToTree(bjn, 0);
   delete[] robotName;
 }
 
