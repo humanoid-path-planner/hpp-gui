@@ -7,6 +7,7 @@
 #include <QSlider>
 #include <QMenu>
 #include <QPushButton>
+#include <QSignalMapper>
 
 #include <hpp/gui/fwd.h>
 #include <gepetto/viewer/node.h>
@@ -42,8 +43,10 @@ private:
   BodyTreeItem* parent_;
 };
 
-class BodyTreeItem : public QStandardItem
+class BodyTreeItem : public QObject, public QStandardItem
 {
+  Q_OBJECT
+
 public:
   BodyTreeItem (graphics::NodePtr_t node);
 
@@ -55,13 +58,30 @@ public:
 
   graphics::NodePtr_t node () const;
 
+  void populateContextMenu (QMenu* menu);
+
+  void setParentGroup (const std::string& parent);
+
+public:
+  void attachToWindow (unsigned int windowID);
+
 protected:
   void init ();
 
+protected slots:
+  void setViewingMode (QString mode);
+  void removeFromGroup ();
+  void remove ();
+  void addLandmark ();
+  void deleteLandmark ();
+
 private:
   graphics::NodePtr_t node_;
+  std::string parentGroup_;
 
   VisibilityItem* visibility_;
+
+  QSignalMapper vmMapper_;
 
   friend class VisibilityItem;
 };
