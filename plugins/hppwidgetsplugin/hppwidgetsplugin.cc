@@ -80,6 +80,7 @@ void HppWidgetsPlugin::init()
   // Connect widgets
   connect (solverWidget_, SIGNAL (problemSolved ()), pathPlayer_, SLOT (update()));
   connect (main, SIGNAL (refresh()), jointTreeWidget_, SLOT (reload ()));
+  connect (main, SIGNAL (refresh()), pathPlayer_, SLOT (update()));
 
   connect (main, SIGNAL (configurationValidation ()),
            this, SLOT (configurationValidation ()));

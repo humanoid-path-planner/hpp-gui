@@ -24,10 +24,9 @@ public:
 
 public slots:
   void displayPath (const std::string jointName);
-
-private slots:
   void update ();
 
+private slots:
   void pathIndexChanged (int i);
   void pathSliderChanged (int value);
 //  void timeChanged (double d);
