@@ -31,6 +31,10 @@ SET(${PLUGIN_NAME}_HEADERS
   jointbounddialog.h
   )
 
+SET(${PLUGIN_NAME}_HEADERS_NO_MOC
+  roadmap.hh
+  )
+
 SET(${PLUGIN_NAME}_FORMS
   pathplayerwidget.ui
   solverwidget.ui
@@ -58,6 +62,7 @@ SET (${PLUGIN_NAME}_SOURCES
   configurationlistwidget.cc
   joint-tree-item.cc
   jointbounddialog.cc
+  roadmap.cc
   )
 
 ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}

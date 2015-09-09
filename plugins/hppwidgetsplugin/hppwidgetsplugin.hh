@@ -68,6 +68,9 @@ public:
 
   void updateRobotJoints (const QString robotName);
 
+protected slots:
+  virtual void displayRoadmap (const std::string& jointName);
+
 private:
   void computeObjectPosition();
 

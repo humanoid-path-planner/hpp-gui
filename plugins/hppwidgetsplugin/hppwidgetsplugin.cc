@@ -15,6 +15,8 @@
 #include "hppwidgetsplugin/configurationlistwidget.h"
 #include "hppwidgetsplugin/joint-tree-item.h"
 
+#include "hppwidgetsplugin/roadmap.hh"
+
 #define QSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.toStdString().c_str())
 #define STDSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.c_str())
 
@@ -226,7 +228,7 @@ QList<QAction *> HppWidgetsPlugin::getJointActions(const std::string &jointName)
   connect (a, SIGNAL (triggered(std::string)), jointTreeWidget_, SLOT (openJointBoundDialog(std::string)));
   l.append(a);
   a = new JointAction (tr("Display roadmap"), jointName, 0);
-  connect (a, SIGNAL (triggered(std::string)), solverWidget_, SLOT (displayRoadmap(std::string)));
+  connect (a, SIGNAL (triggered(std::string)), this, SLOT (displayRoadmap(std::string)));
   l.append(a);
   a = new JointAction (tr("Display selected path"), jointName, 0);
   connect (a, SIGNAL (triggered(std::string)), pathPlayer_, SLOT (displayPath(std::string)));
@@ -254,6 +256,13 @@ void HppWidgetsPlugin::updateRobotJoints(const QString robotName)
       jointMap_[jname] = JointElement(jname, linkName, 0, true);
       delete[] lname;
     }
+}
+
+void HppWidgetsPlugin::displayRoadmap(const std::string &jointName)
+{
+  Roadmap r (this);
+  r.initRoadmap(jointName);
+  r.displayRoadmap();
 }
 
 void HppWidgetsPlugin::computeObjectPosition()

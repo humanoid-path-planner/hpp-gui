@@ -7,8 +7,6 @@
 #include "hpp/gui/mainwindow.h"
 #include "hpp/gui/windows-manager.h"
 
-#include "hppwidgetsplugin/roadmap.hh"
-
 namespace {
   void clearQComboBox (QComboBox* c) {
     while (c->count() > 0) c->removeItem(0);
@@ -60,50 +58,6 @@ void SolverWidget::update (Select s) {
       projector()->addItem(QString("Dichotomy"), QVariant ((double)0.2));
       if (s == Projector) break;
     }
-}
-
-void SolverWidget::displayRoadmap(const std::string jointName)
-{
-  std::string rn = "roadmap_" + jointName;
-  float colorN[] = {1.f, 0.f, 0.f, 1.f};
-  float colorE[] = {0.f, 1.f, 0.f, 1.f};
-  WindowsManagerPtr_t wsm = MainWindow::instance()->osg();
-  HppWidgetsPlugin::HppClient* hpp = plugin_->client();
-  int nbNodes = hpp->problem()->numberNodes();
-  if (nbNodes == 0) {
-      MainWindow::instance()->logError("There is no node in the roadmap.");
-      return;
-    }
-  wsm->createScene (rn.c_str());
-  hpp::floatSeq_var curCfg = hpp->robot()->getCurrentConfig();
-  for (int i = 0; i < nbNodes; ++i) {
-      float pos[7];
-      hpp::floatSeq_var n = hpp->problem()->node(i);
-      hpp->robot()->setCurrentConfig(n.in());
-      hpp::Transform__var t = hpp->robot()->getLinkPosition(jointName.c_str());
-      for (int j = 0; j < 7; ++j) { pos[j] = (float)t.in()[j]; }
-      QString xyzName = QString::fromStdString(rn).append("/node%1").arg (i);
-      wsm->addXYZaxis(xyzName.toLocal8Bit().data(), colorN, 0.01f, 1.f);
-      wsm->applyConfiguration(xyzName.toLocal8Bit().data(), pos);
-    }
-  int nbEdges = hpp->problem()->numberEdges();
-  for (int i = 0; i < nbEdges; ++i) {
-      hpp::floatSeq_var n1, n2;
-      hpp::Transform__var t;
-      hpp->problem()->edge(i, n1.out(), n2.out());
-      float pos1[3], pos2[3];
-      hpp->robot()->setCurrentConfig(n1.in());
-      t = hpp->robot()->getLinkPosition(jointName.c_str());
-      for (int j = 0; j < 3; ++j) { pos1[j] = (float)t.in()[j]; }
-      hpp->robot()->setCurrentConfig(n2.in());
-      t = hpp->robot()->getLinkPosition(jointName.c_str());
-      for (int j = 0; j < 3; ++j) { pos2[j] = (float)t.in()[j]; }
-      QString lineName = QString::fromStdString(rn).append("/edge%1").arg (i);
-      wsm->addLine(lineName.toLocal8Bit().data(), pos1, pos2, colorE);
-    }
-  hpp->robot()->setCurrentConfig(curCfg.in());
-  wsm->addToGroup(rn.c_str(), "hpp-gui");
-  wsm->refresh();
 }
 
 void SolverWidget::selectPathPlanner (const QString& text) {
