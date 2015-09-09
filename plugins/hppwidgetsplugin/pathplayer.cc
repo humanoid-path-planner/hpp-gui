@@ -1,4 +1,4 @@
-#include "pathplayer.h"
+#include "hppwidgetsplugin/pathplayer.h"
 
 #include <hpp/corbaserver/common.hh>
 #include <hpp/corbaserver/client.hh>
@@ -7,7 +7,7 @@
 #include <hpp/gui/windows-manager.h>
 #include <hpp/gui/osgwidget.h>
 
-#include "ui_pathplayerwidget.h"
+#include "hppwidgetsplugin/ui_pathplayerwidget.h"
 
 PathPlayer::PathPlayer (HppWidgetsPlugin *plugin, QWidget *parent) :
   QWidget (parent)

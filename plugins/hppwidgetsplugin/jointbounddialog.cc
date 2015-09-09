@@ -1,5 +1,5 @@
 #include <omniORB4/CORBA.h>
-#include "jointbounddialog.h"
+#include "hppwidgetsplugin/jointbounddialog.h"
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>

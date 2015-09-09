@@ -1,5 +1,5 @@
 #include <omniORB4/CORBA.h>
-#include "joint-tree-item.h"
+#include "hppwidgetsplugin/joint-tree-item.h"
 
 #include <iostream>
 

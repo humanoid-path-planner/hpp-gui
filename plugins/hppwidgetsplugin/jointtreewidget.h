@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include <hppwidgetsplugin.hh>
+#include <hppwidgetsplugin/hppwidgetsplugin.hh>
 
 namespace Ui {
   class JointTreeWidget;

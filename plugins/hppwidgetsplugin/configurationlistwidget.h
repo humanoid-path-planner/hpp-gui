@@ -8,7 +8,7 @@
 
 #include "hpp/corbaserver/common.hh"
 
-#include <hppwidgetsplugin.hh>
+#include <hppwidgetsplugin/hppwidgetsplugin.hh>
 
 Q_DECLARE_METATYPE (hpp::floatSeq*)
 

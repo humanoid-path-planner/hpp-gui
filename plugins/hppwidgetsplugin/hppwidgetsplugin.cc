@@ -1,4 +1,4 @@
-#include "hppwidgetsplugin.hh"
+#include "hppwidgetsplugin/hppwidgetsplugin.hh"
 
 #include <boost/regex.hpp>
 
@@ -9,11 +9,11 @@
 
 #include <omniORB4/CORBA.h>
 
-#include "pathplayer.h"
-#include "solverwidget.h"
-#include "jointtreewidget.h"
-#include "configurationlistwidget.h"
-#include "joint-tree-item.h"
+#include "hppwidgetsplugin/pathplayer.h"
+#include "hppwidgetsplugin/solverwidget.h"
+#include "hppwidgetsplugin/jointtreewidget.h"
+#include "hppwidgetsplugin/configurationlistwidget.h"
+#include "hppwidgetsplugin/joint-tree-item.h"
 
 #define QSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.toStdString().c_str())
 #define STDSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.c_str())

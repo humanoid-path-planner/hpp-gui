@@ -6,7 +6,7 @@
 #include <QFormLayout>
 
 #include "hpp/gui/fwd.h"
-#include "hppwidgetsplugin.hh"
+#include "hppwidgetsplugin/hppwidgetsplugin.hh"
 
 namespace Ui {
   class SolverWidget;

@@ -1,11 +1,13 @@
-#include "solverwidget.h"
-#include "ui_solverwidget.h"
+#include "hppwidgetsplugin/solverwidget.h"
+#include "hppwidgetsplugin/ui_solverwidget.h"
 
 #include <hpp/corbaserver/client.hh>
 
 #include <QFormLayout>
 #include "hpp/gui/mainwindow.h"
 #include "hpp/gui/windows-manager.h"
+
+#include "hppwidgetsplugin/roadmap.hh"
 
 namespace {
   void clearQComboBox (QComboBox* c) {
