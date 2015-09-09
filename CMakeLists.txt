@@ -61,6 +61,7 @@ SET (${PROJECT_NAME}_HEADERS
   include/hpp/gui/osgwidget.h
   include/hpp/gui/tree-item.h
   include/hpp/gui/ledindicator.h
+  include/hpp/gui/color-map.h
   include/hpp/gui/plugin-interface.h
   include/hpp/gui/omniorb/omniorbthread.h
   include/hpp/gui/dialog/dialogloadrobot.h
