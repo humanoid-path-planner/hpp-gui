@@ -43,7 +43,6 @@ private:
 
 Q_DECLARE_INTERFACE (PluginInterface, "hpp-gui.plugins/0.0")
 
-
 class JointAction : public QAction
 {
   Q_OBJECT
@@ -99,4 +98,5 @@ public:
 };
 
 Q_DECLARE_INTERFACE (CorbaErrorInterface, "hpp-gui.plugin.corbaerror/0.0")
+
 #endif // PLUGININTERFACE_HH

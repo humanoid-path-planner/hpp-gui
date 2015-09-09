@@ -21,10 +21,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 SET(PLUGIN_NAME hppwidgetsplugin)
 
-#SET(${PLUGIN_NAME}_HEADERS_NO_MOC
-#../../include/hpp/gui/plugin-interface.h
-#)
-
 SET(${PLUGIN_NAME}_HEADERS
   ${PLUGIN_NAME}.hh
   pathplayer.h
