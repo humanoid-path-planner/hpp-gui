@@ -42,6 +42,19 @@ void JointTreeWidget::dockWidget(QDockWidget *dock)
   dock_ = dock;
 }
 
+std::string JointTreeWidget::selectedJoint()
+{
+  QItemSelectionModel* sm = ui_->jointTree->selectionModel();
+  JointTreeItem *item = NULL;
+  if (sm->currentIndex().isValid()) {
+      item = dynamic_cast <JointTreeItem*>
+               (model_->itemFromIndex(sm->currentIndex()));
+      if (item != NULL)
+        return item->name();
+    }
+  return std::string ();
+}
+
 void JointTreeWidget::customContextMenu(const QPoint &pos)
 {
   QModelIndex index = ui_->jointTree->indexAt(pos);

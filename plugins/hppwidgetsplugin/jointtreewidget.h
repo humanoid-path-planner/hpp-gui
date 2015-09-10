@@ -20,6 +20,8 @@ public:
 
   void dockWidget (QDockWidget* dock);
 
+  std::string selectedJoint ();
+
 signals:
 
 public slots:

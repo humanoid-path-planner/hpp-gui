@@ -258,6 +258,11 @@ void HppWidgetsPlugin::updateRobotJoints(const QString robotName)
     }
 }
 
+std::string HppWidgetsPlugin::getSelectedJoint()
+{
+  return jointTreeWidget_->selectedJoint();
+}
+
 Roadmap* HppWidgetsPlugin::createRoadmap(const std::string &jointName)
 {
   Roadmap* r = new Roadmap (this);

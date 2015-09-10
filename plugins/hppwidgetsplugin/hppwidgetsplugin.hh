@@ -68,6 +68,7 @@ public:
   JointMap& jointMap ();
 
   void updateRobotJoints (const QString robotName);
+  std::string getSelectedJoint ();
   virtual Roadmap* createRoadmap (const std::string& jointName);
 
 protected slots:
