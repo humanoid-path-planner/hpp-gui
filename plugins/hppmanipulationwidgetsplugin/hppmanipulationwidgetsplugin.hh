@@ -14,18 +14,6 @@ class HppManipulationWidgetsPlugin : public HppWidgetsPlugin
   Q_INTERFACES (PluginInterface ModelInterface CorbaErrorInterface)
 
 public:
-  struct JointElement {
-    std::string name;
-    std::string bodyName;
-    JointTreeItem* item;
-    bool updateViewer;
-
-    JointElement ()
-      : name (), bodyName (), item (NULL), updateViewer (false) {}
-    JointElement (std::string n, std::string bn, JointTreeItem* i, bool updateV = true)
-      : name (n), bodyName (bn), item (i), updateViewer (updateV) {}
-  };
-  typedef QMap <std::string, JointElement> JointMap;
   typedef hpp::corbaServer::manipulation::Client HppManipClient;
 
   explicit HppManipulationWidgetsPlugin ();
@@ -44,9 +32,6 @@ public:
   std::string getBodyFromJoint (const std::string& jointName) const;
 signals:
   void configurationValidationStatus (bool valid);
-
-public slots:
-  void selectJointFromBodyName (const std::string& bodyName);
 
 public:
   HppManipClient* manipClient () const;

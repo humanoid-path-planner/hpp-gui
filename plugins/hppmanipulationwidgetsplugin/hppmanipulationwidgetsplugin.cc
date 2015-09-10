@@ -48,12 +48,6 @@ std::string HppManipulationWidgetsPlugin::getBodyFromJoint(const std::string &jo
   return HppWidgetsPlugin::getBodyFromJoint (jointName);
 }
 
-void HppManipulationWidgetsPlugin::selectJointFromBodyName(const std::string &bodyName)
-{
-  /// TODO: fix this
-  HppWidgetsPlugin::selectJointFromBodyName (bodyName);
-}
-
 HppManipulationWidgetsPlugin::HppManipClient *HppManipulationWidgetsPlugin::manipClient() const
 {
   return hpp_;
@@ -61,8 +55,13 @@ HppManipulationWidgetsPlugin::HppManipClient *HppManipulationWidgetsPlugin::mani
 
 void HppManipulationWidgetsPlugin::updateRobotJoints(const QString robotName)
 {
-  /// TODO: fix this
-  HppWidgetsPlugin::updateRobotJoints (robotName);
+  Q_UNUSED (robotName);
+  hpp::Names_t_var joints = client()->robot()->getAllJointNames ();
+  for (size_t i = 0; i < joints->length (); ++i) {
+    const char* jname = joints[(ULong) i];
+      std::string linkName (client()->robot()->getLinkName (jname));
+      jointMap_[jname] = JointElement(jname, linkName, 0, true);
+    }
 }
 
 Roadmap *HppManipulationWidgetsPlugin::createRoadmap(const std::string &jointName)

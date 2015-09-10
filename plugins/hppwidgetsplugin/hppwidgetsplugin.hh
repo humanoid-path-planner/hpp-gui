@@ -67,7 +67,7 @@ public:
   HppClient* client () const;
   JointMap& jointMap ();
 
-  void updateRobotJoints (const QString robotName);
+  virtual void updateRobotJoints (const QString robotName);
   std::string getSelectedJoint ();
   virtual Roadmap* createRoadmap (const std::string& jointName);
 
@@ -85,6 +85,7 @@ private:
 
   HppClient* hpp_;
 
+protected:
   JointMap jointMap_;
 };
 
