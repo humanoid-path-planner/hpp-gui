@@ -38,6 +38,8 @@ protected slots:
   void selectPathOptimizer (const QString& text);
   void selectPathProjector (int index);
   void solve ();
+  void solveAndDisplay ();
+  void solveAndDisplayDone ();
   void interrupt ();
   void loadRoadmap ();
   void saveRoadmap ();
@@ -45,6 +47,21 @@ protected slots:
   void handleWorkerDone (int id);
 
 private:
+  class SolveAndDisplay {
+  public:
+    bool interrupt;
+    bool isSolved;
+    QFuture <void> status;
+    QFutureWatcher <void> watcher;
+    HppWidgetsPlugin* plugin;
+    SolverWidget* parent;
+    void solve ();
+    SolveAndDisplay (HppWidgetsPlugin* p, SolverWidget* par) :
+      interrupt (false), isSolved (false),
+      plugin (p), parent (par)
+    {}
+  };
+
   void selectButtonSolve (bool solve);
   QComboBox* planner ();
   QComboBox* projector ();
@@ -57,6 +74,7 @@ private:
   QComboBox *planner_, *projector_, *optimizer_;
 
   int solveDoneId_;
+  SolveAndDisplay solveAndDisplay_;
 };
 
 #endif // SOLVERWIDGET_H

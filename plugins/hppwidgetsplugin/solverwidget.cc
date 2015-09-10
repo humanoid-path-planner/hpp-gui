@@ -4,8 +4,11 @@
 #include <hpp/corbaserver/client.hh>
 
 #include <QFormLayout>
+#include <QMessageBox>
 #include "hpp/gui/mainwindow.h"
 #include "hpp/gui/windows-manager.h"
+
+#include "hppwidgetsplugin/roadmap.hh"
 
 namespace {
   void clearQComboBox (QComboBox* c) {
@@ -19,7 +22,8 @@ SolverWidget::SolverWidget (HppWidgetsPlugin *plugin, QWidget *parent) :
   plugin_ (plugin),
   main_(MainWindow::instance()),
   planner_ (0), projector_ (0), optimizer_ (0),
-  solveDoneId_ (-1)
+  solveDoneId_ (-1),
+  solveAndDisplay_ (plugin, this)
 {
   ui_->setupUi (this);
   selectButtonSolve(true);
@@ -31,6 +35,10 @@ SolverWidget::SolverWidget (HppWidgetsPlugin *plugin, QWidget *parent) :
   connect(projector(), SIGNAL (currentIndexChanged(int)), this, SLOT (selectPathProjector(int)));
   connect(ui_->pushButtonSolve, SIGNAL (clicked ()), this, SLOT (solve ()));
   connect(ui_->pushButtonInterrupt, SIGNAL (clicked ()), this, SLOT (interrupt ()));
+  connect(ui_->pushButtonSolveAndDisplay, SIGNAL (clicked ()),
+          SLOT (solveAndDisplay ()));
+  connect(&solveAndDisplay_.watcher, SIGNAL (finished()),
+          SLOT(solveAndDisplayDone ()));
   connect(ui_->loadRoadmap, SIGNAL (clicked()), SLOT (loadRoadmap()));
   connect(ui_->saveRoadmap, SIGNAL (clicked()), SLOT (saveRoadmap()));
 }
@@ -86,9 +94,32 @@ void SolverWidget::solve()
   selectButtonSolve(false);
 }
 
+void SolverWidget::solveAndDisplay()
+{
+  solveAndDisplay_.interrupt = false;
+  solveAndDisplay_.status = QtConcurrent::run (&solveAndDisplay_, &SolveAndDisplay::solve);
+  solveAndDisplay_.watcher.setFuture (solveAndDisplay_.status);
+  selectButtonSolve (false);
+}
+
+void SolverWidget::solveAndDisplayDone()
+{
+  qDebug () << "Step by step done";
+  selectButtonSolve (true);
+  if (solveAndDisplay_.isSolved) {
+      emit problemSolved ();
+      QMessageBox::information(this, "Problem solver", "Problem is solved.");
+    }
+}
+
 void SolverWidget::interrupt()
 {
-  plugin_->client()->problem()->interruptPathPlanning();
+  if (solveAndDisplay_.status.isRunning ()) {
+      solveAndDisplay_.interrupt = true;
+      solveAndDisplay_.status.waitForFinished ();
+    } else {
+      plugin_->client()->problem()->interruptPathPlanning();
+    }
   selectButtonSolve(true);
 }
 
@@ -124,14 +155,37 @@ void SolverWidget::handleWorkerDone(int id)
     }
 }
 
+void SolverWidget::SolveAndDisplay::solve()
+{
+  HppWidgetsPlugin::HppClient* hpp = plugin->client();
+  std::string jn = plugin->getSelectedJoint();
+  if (jn.empty()) {
+      QMessageBox::information(parent, "Select a joint",
+                               "Please, select a joint in the joint tree window.");
+      return;
+    }
+  isSolved = hpp->problem()->prepareSolveStepByStep();
+  Roadmap* r = plugin->createRoadmap(plugin->getSelectedJoint());
+  while (!isSolved) {
+      isSolved = hpp->problem()->executeOneStep();
+      r->displayRoadmap();
+      if (interrupt) break;
+    }
+  if (isSolved)
+      hpp->problem()->finishSolveStepByStep();
+  delete r;
+}
+
 void SolverWidget::selectButtonSolve(bool solve)
 {
   if (solve) {
       ui_->pushButtonInterrupt->setVisible(false);
       ui_->pushButtonSolve->setVisible(true);
+      ui_->pushButtonSolveAndDisplay->setVisible(true);
     } else {
       ui_->pushButtonInterrupt->setVisible(true);
       ui_->pushButtonSolve->setVisible(false);
+      ui_->pushButtonSolveAndDisplay->setVisible(false);
     }
 }
 

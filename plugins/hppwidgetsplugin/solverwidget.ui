@@ -84,6 +84,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="pushButtonSolveAndDisplay">
+          <property name="text">
+           <string>Solve and display</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="pushButtonInterrupt">
           <property name="enabled">
            <bool>true</bool>
@@ -97,7 +104,6 @@
       </item>
      </layout>
      <zorder></zorder>
-     <zorder>horizontalSpacer</zorder>
      <zorder></zorder>
     </widget>
    </item>
