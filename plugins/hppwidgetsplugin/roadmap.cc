@@ -3,6 +3,8 @@
 #include <string>
 #include <sstream>
 
+#include <QDebug>
+
 #include <hpp/gui/mainwindow.h>
 #include <hpp/gui/windows-manager.h>
 
@@ -20,6 +22,13 @@ void Roadmap::initRoadmap(const std::string jointName)
   int nbCC = hpp->problem()->numberConnectedComponents();
   nodeColorMap_ = ColorMap (nbCC);
   edgeColorMap_ = ColorMap (nbCC);
+  try {
+    WindowsManagerPtr_t wsm = MainWindow::instance()->osg();
+    wsm->createScene (roadmapName().c_str());
+  } catch (const gepetto::Error&) {
+    qDebug () << "Roadmap" <<
+      QString::fromStdString (roadmapName ()) << "already exists.";
+  }
 }
 
 void Roadmap::displayRoadmap ()
@@ -36,7 +45,6 @@ void Roadmap::displayRoadmap ()
       return;
     }
   beforeDisplay ();
-  wsm->createScene (rn.c_str());
   for (; currentNodeId_ < nbNodes; ++currentNodeId_) {
       Frame pos;
       nodePosition (currentNodeId_, pos);
