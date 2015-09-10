@@ -53,8 +53,7 @@ public:
 
   void updateRobotJoints (const QString robotName);
 
-protected:
-  void displayRoadmap (const std::string& jointName);
+  virtual Roadmap* createRoadmap (const std::string& jointName);
 
 private:
   HppManipClient* hpp_;

@@ -9,6 +9,7 @@ class PathPlayer;
 class JointTreeWidget;
 class ConfigurationListWidget;
 class JointTreeItem;
+class Roadmap;
 
 class HppWidgetsPlugin : public QObject, public PluginInterface,
     public ModelInterface, public CorbaErrorInterface
@@ -67,6 +68,7 @@ public:
   JointMap& jointMap ();
 
   void updateRobotJoints (const QString robotName);
+  virtual Roadmap* createRoadmap (const std::string& jointName);
 
 protected slots:
   virtual void displayRoadmap (const std::string& jointName);

@@ -258,11 +258,18 @@ void HppWidgetsPlugin::updateRobotJoints(const QString robotName)
     }
 }
 
+Roadmap* HppWidgetsPlugin::createRoadmap(const std::string &jointName)
+{
+  Roadmap* r = new Roadmap (this);
+  r->initRoadmap(jointName);
+  return r;
+}
+
 void HppWidgetsPlugin::displayRoadmap(const std::string &jointName)
 {
-  Roadmap r (this);
-  r.initRoadmap(jointName);
-  r.displayRoadmap();
+  Roadmap* r = createRoadmap (jointName);
+  r->displayRoadmap();
+  delete r;
 }
 
 void HppWidgetsPlugin::computeObjectPosition()

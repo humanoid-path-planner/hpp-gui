@@ -65,11 +65,11 @@ void HppManipulationWidgetsPlugin::updateRobotJoints(const QString robotName)
   HppWidgetsPlugin::updateRobotJoints (robotName);
 }
 
-void HppManipulationWidgetsPlugin::displayRoadmap (const std::string& jointName)
+Roadmap *HppManipulationWidgetsPlugin::createRoadmap(const std::string &jointName)
 {
-  ManipulationRoadmap r (this);
-  r.initRoadmap (jointName);
-  r.displayRoadmap ();
+  ManipulationRoadmap* r = new ManipulationRoadmap(this);
+  r->initRoadmap(jointName);
+  return r;
 }
 
 Q_EXPORT_PLUGIN2 (hppmanipulationwidgetsplugin, HppManipulationWidgetsPlugin)
