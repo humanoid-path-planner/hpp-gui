@@ -73,6 +73,7 @@ public:
 
 protected slots:
   virtual void displayRoadmap (const std::string& jointName);
+  void showHideJointFrame (const std::string& jointName);
 
 private:
   void computeObjectPosition();
@@ -87,6 +88,7 @@ private:
 
 protected:
   JointMap jointMap_;
+  std::list <std::string> jointFrames_;
 };
 
 #endif // HPPWIDGETSPLUGIN_HH
