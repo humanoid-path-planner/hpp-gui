@@ -10,11 +10,13 @@
 BodyTreeItem::BodyTreeItem(graphics::NodePtr_t node) :
   QStandardItem (QString (node->getID().c_str())),
   node_ (node),
-  vmMapper_ ()
+  vmMapper_ (),
+  vizMapper_ ()
 {
   init();
   setEditable(false);
   connect (&vmMapper_, SIGNAL (mapped (QString)), SLOT(setViewingMode(QString)));
+  connect (&vizMapper_, SIGNAL (mapped (QString)), SLOT(setVisibilityMode(QString)));
 }
 
 QStandardItem* BodyTreeItem::clone() const
@@ -53,6 +55,17 @@ void BodyTreeItem::populateContextMenu(QMenu *contextMenu)
   connect (f , SIGNAL(triggered()), &vmMapper_, SLOT (map()));
   connect (w , SIGNAL(triggered()), &vmMapper_, SLOT (map()));
   connect (fw, SIGNAL(triggered()), &vmMapper_, SLOT (map()));
+  /// Visibility mode
+  QMenu* vizmode = contextMenu->addMenu(tr("Visibility mode"));
+  QAction* on  = vizmode->addAction ("On");
+  QAction* aot = vizmode->addAction ("Always on top");
+  QAction* off = vizmode->addAction ("OFF");
+  vmMapper_.setMapping (on , QString ("ON"));
+  vmMapper_.setMapping (aot, QString ("ALWAYS_ON_TOP"));
+  vmMapper_.setMapping (off, QString ("OFF"));
+  connect (on , SIGNAL(triggered()), &vizMapper_, SLOT (map()));
+  connect (aot, SIGNAL(triggered()), &vizMapper_, SLOT (map()));
+  connect (off, SIGNAL(triggered()), &vizMapper_, SLOT (map()));
 }
 
 void BodyTreeItem::setParentGroup(const std::string &parent)
@@ -78,6 +91,12 @@ void BodyTreeItem::setViewingMode(QString mode)
 {
   MainWindow::instance()->osg()->setWireFrameMode (node_->getID().c_str(),
                                                    mode.toLocal8Bit().data());
+}
+
+void BodyTreeItem::setVisibilityMode(QString mode)
+{
+  MainWindow::instance()->osg()->setVisibility (node_->getID().c_str(),
+                                                mode.toLocal8Bit().data());
 }
 
 void BodyTreeItem::attachToWindow(unsigned int windowID)

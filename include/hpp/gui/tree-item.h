@@ -70,6 +70,7 @@ protected:
 
 protected slots:
   void setViewingMode (QString mode);
+  void setVisibilityMode (QString mode);
   void removeFromGroup ();
   void remove ();
   void addLandmark ();
@@ -82,6 +83,7 @@ private:
   VisibilityItem* visibility_;
 
   QSignalMapper vmMapper_;
+  QSignalMapper vizMapper_;
 
   friend class VisibilityItem;
 };
