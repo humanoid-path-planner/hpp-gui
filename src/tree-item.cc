@@ -104,7 +104,7 @@ void BodyTreeItem::remove()
 
 void BodyTreeItem::addLandmark()
 {
-  MainWindow::instance()->osg()->addLandmark(node_->getID().c_str(), 0.05);
+  MainWindow::instance()->osg()->addLandmark(node_->getID().c_str(), 0.05f);
 }
 
 void BodyTreeItem::deleteLandmark()

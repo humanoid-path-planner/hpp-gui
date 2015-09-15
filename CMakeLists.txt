@@ -54,20 +54,26 @@ IF (HPP_DEBUG)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHPP_DEBUG")
 ENDIF()
 
-SET (${PROJECT_NAME}_HEADERS
-  include/hpp/gui/fwd.h
-  include/hpp/gui/safeapplication.h
-  include/hpp/gui/windows-manager.h
+SET (${PROJECT_NAME}_HEADERS_MOC
   include/hpp/gui/mainwindow.h
   include/hpp/gui/osgwidget.h
   include/hpp/gui/tree-item.h
   include/hpp/gui/ledindicator.h
-  include/hpp/gui/color-map.h
   include/hpp/gui/plugin-interface.h
   include/hpp/gui/omniorb/omniorbthread.h
   include/hpp/gui/dialog/dialogloadrobot.h
   include/hpp/gui/dialog/dialogloadenvironment.h
   include/hpp/gui/dialog/pluginmanagerdialog.h
+  )
+SET (${PROJECT_NAME}_HEADERS_NO_MOC
+  include/hpp/gui/fwd.h
+  include/hpp/gui/safeapplication.h
+  include/hpp/gui/windows-manager.h
+  include/hpp/gui/color-map.h
+  )
+SET (${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_HEADERS_MOC}
+  ${${PROJECT_NAME}_HEADERS_NO_MOC}
   )
 
 SET(${PROJECT_NAME}_FORMS
@@ -79,7 +85,7 @@ SET(${PROJECT_NAME}_FORMS
 
 SET(${PROJECT_NAME}_RESOURCES res/images.qrc)
 
-QT4_WRAP_CPP(${PROJECT_NAME}_HEADERS_MOC ${${PROJECT_NAME}_HEADERS})
+QT4_WRAP_CPP(${PROJECT_NAME}_HEADERS_MOCED ${${PROJECT_NAME}_HEADERS_MOC})
 QT4_WRAP_UI(${PROJECT_NAME}_FORMS_HEADERS ${${PROJECT_NAME}_FORMS})
 QT4_ADD_RESOURCES(${PROJECT_NAME}_RESOURCES_RCC ${${PROJECT_NAME}_RESOURCES})
 
@@ -110,7 +116,8 @@ SET (${PROJECT_NAME}_SOURCES
   )
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_HEADERS_MOC}
+  ${${PROJECT_NAME}_HEADERS_MOCED}
+  ${${PROJECT_NAME}_HEADERS_NO_MOC}
   ${${PROJECT_NAME}_FORMS_HEADERS}
   ${${PROJECT_NAME}_RESOURCES_RCC}
   )
