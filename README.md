@@ -66,6 +66,8 @@ libremoteimuplugin.so=true
 libhppwidgetsplugin.so=true
 ```
 
+The plugins are looked for in the directory `${CMAKE_INSTALL_PREFIX}/lib/hpp-gui-plugins`
+
 #### For HPP developpers
 As [HPP], the *GUI* can be controlled using a python interface. When the *GUI* starts, it launches a server for both [HPP] and the Gepetto Viewer exactly as if you were manually launching the two commands `hppcorbaserver` and `gepetto-viewer-server`. This means that **you can run the same python scripts** and it will work !
 
