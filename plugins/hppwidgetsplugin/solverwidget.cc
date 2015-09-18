@@ -86,7 +86,7 @@ void SolverWidget::selectPathProjector (int index) {
 void SolverWidget::solve()
 {
   /* double time = */
-  WorkItem* item = new WorkItem_0 <hpp::corbaserver::_objref_Problem, CORBA::Double>
+  WorkItem* item = new WorkItem_0 <hpp::corbaserver::_objref_Problem, hpp::intSeq*>
       (plugin_->client()->problem().in(), &hpp::corbaserver::_objref_Problem::solve);
   main_->emitSendToBackground(item);
   main_->logJobStarted(item->id(), "solve problem.");
