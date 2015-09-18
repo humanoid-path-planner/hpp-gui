@@ -302,11 +302,12 @@ void HppWidgetsPlugin::showHideJointFrame (const std::string& jointName)
       hpp::Transform__var t = client()->robot()->getJointPosition(jointName.c_str());
       for (std::size_t i = 0; i < 7; ++i) p[i] = (float)t[i];
       main->osg()->applyConfiguration (n.c_str (), p);
+      main->osg()->setVisibility (n.c_str (), "ALWAYS_ON_TOP");
       main->osg()->refresh();
       jointFrames_.insert (it, jointName);
       return;
     } else {
-      main->osg()->setVisibility (n.c_str (), "ON");
+      main->osg()->setVisibility (n.c_str (), "ALWAYS_ON_TOP");
     }
   } else {
     // Hide
