@@ -372,6 +372,8 @@ void MainWindow::setupInterface()
   // Setup the status bar
   collisionIndicator_ = new LedIndicator (statusBar());
   statusBar()->addPermanentWidget(collisionIndicator_);
+
+  connect (collisionIndicator_, SIGNAL (mouseClickEvent()), SLOT(requestConfigurationValidation()));
 }
 
 void MainWindow::createCentralWidget()

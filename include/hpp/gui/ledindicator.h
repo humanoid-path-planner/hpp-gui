@@ -12,6 +12,7 @@ public:
 
 signals:
   void switched (bool on);
+  void mouseClickEvent ();
 
 public slots:
   void switchLed();
@@ -19,6 +20,7 @@ public slots:
 
 protected:
   void paintEvent(QPaintEvent *);
+  void mouseReleaseEvent(QMouseEvent* event);
 
 private:
   bool lit;
