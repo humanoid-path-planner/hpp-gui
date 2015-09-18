@@ -371,6 +371,10 @@ void MainWindow::setupInterface()
 
   // Setup the status bar
   collisionIndicator_ = new LedIndicator (statusBar());
+  collisionValidationActivated_ = new QCheckBox ();
+  collisionValidationActivated_->setToolTip (tr("Automatically validate configurations."));
+  collisionValidationActivated_->setCheckState (Qt::Checked);
+  statusBar()->addPermanentWidget(collisionValidationActivated_);
   statusBar()->addPermanentWidget(collisionIndicator_);
 
   connect (collisionIndicator_, SIGNAL (mouseClickEvent()), SLOT(requestConfigurationValidation()));
@@ -542,7 +546,8 @@ void MainWindow::addBodyToTree(graphics::GroupNodePtr_t group)
 void MainWindow::requestApplyCurrentConfiguration()
 {
   emit applyCurrentConfiguration();
-  requestConfigurationValidation();
+  if (collisionValidationActivated_->isChecked ())
+    requestConfigurationValidation();
 }
 
 void MainWindow::requestConfigurationValidation()
