@@ -1,13 +1,13 @@
 #include <omniORB4/CORBA.h>
 
-#include "jointtreewidget.h"
-#include "ui_jointtreewidget.h"
+#include "hppwidgetsplugin/jointtreewidget.h"
+#include "hppwidgetsplugin/ui_jointtreewidget.h"
 
 #include <hpp/gui/mainwindow.h>
 #include <hpp/gui/windows-manager.h>
 
-#include "joint-tree-item.h"
-#include "jointbounddialog.h"
+#include "hppwidgetsplugin/joint-tree-item.h"
+#include "hppwidgetsplugin/jointbounddialog.h"
 
 using CORBA::ULong;
 
@@ -40,6 +40,19 @@ JointTreeWidget::~JointTreeWidget()
 void JointTreeWidget::dockWidget(QDockWidget *dock)
 {
   dock_ = dock;
+}
+
+std::string JointTreeWidget::selectedJoint()
+{
+  QItemSelectionModel* sm = ui_->jointTree->selectionModel();
+  JointTreeItem *item = NULL;
+  if (sm->currentIndex().isValid()) {
+      item = dynamic_cast <JointTreeItem*>
+               (model_->itemFromIndex(sm->currentIndex()));
+      if (item != NULL)
+        return item->name();
+    }
+  return std::string ();
 }
 
 void JointTreeWidget::customContextMenu(const QPoint &pos)
@@ -120,14 +133,14 @@ void JointTreeWidget::reload()
   char* robotName;
   try {
     robotName = plugin_->client ()->robot()->getRobotName();
+    hpp::Names_t_var joints = plugin_->client()->robot()->getAllJointNames ();
+    std::string bjn (joints[0]);
+    plugin_->updateRobotJoints(robotName);
+    addJointToTree(bjn, 0);
   } catch (hpp::Error& e) {
     MainWindow::instance ()->logError(QString(e.msg));
     return;
   }
-  hpp::Names_t_var joints = plugin_->client()->robot()->getAllJointNames ();
-  std::string bjn (joints[0]);
-  plugin_->updateRobotJoints(robotName);
-  addJointToTree(bjn, 0);
   delete[] robotName;
 }
 

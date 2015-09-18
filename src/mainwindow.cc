@@ -163,7 +163,11 @@ void MainWindow::logError(const QString &text)
   if (!ui_->dockWidget_log->isVisible()) {
       ui_->dockWidget_log->show();
     }
+  QScrollBar* sb = ui_->logText->verticalScrollBar();
+  bool SBwasAtBottom = sb->value() == sb->maximum();
   ui_->logText->insertHtml("<hr/><font color=red>"+text+"</font>");
+  if (SBwasAtBottom)
+      sb->setValue(sb->maximum());
 }
 
 void MainWindow::emitSendToBackground(WorkItem *item)
@@ -323,26 +327,18 @@ void MainWindow::showTreeContextMenu(const QPoint &point)
       BodyTreeItem *item =
           dynamic_cast <BodyTreeItem*> (bodyTreeModel_->itemFromIndex(index));
       if (!item) return;
-      QMenu* viewmode = contextMenu.addMenu(tr("Viewing mode"));
+      item->populateContextMenu (&contextMenu);
       QMenu* windows = contextMenu.addMenu(tr("Attach to window"));
-      /*QAction* fill = */viewmode->addAction ("FILL");
-      /*QAction* wireframe = */viewmode->addAction ("WIREFRAME");
-      /*QAction* f_and_w = */viewmode->addAction ("FILL_AND_WIREFRAME");
       foreach (OSGWidget* w, osgWindows_) {
           QAction* aw = windows->addAction(w->objectName());
           aw->setUserData(0, (QObjectUserData*)w);
         }
       QAction* toDo = contextMenu.exec(ui_->bodyTree->mapToGlobal(point));
       if (!toDo) return;
-      if (toDo->parent() == viewmode)
-        osgViewerManagers_->setWireFrameMode(
-              item->node()->getID().c_str(),
-              QSTRING_TO_CONSTCHARARRAY (toDo->text()));
-      else if (toDo->parent() == windows) {
+      if (toDo->parent() == windows) {
           OSGWidget* w = (OSGWidget*)toDo->userData(0);
           if (!w) return;
-          osgViewerManagers_->addSceneToWindow(item->node()->getID().c_str(),
-                                               w->windowID());
+          item->attachToWindow(w->windowID());
         }
       return;
     }
@@ -375,7 +371,13 @@ void MainWindow::setupInterface()
 
   // Setup the status bar
   collisionIndicator_ = new LedIndicator (statusBar());
+  collisionValidationActivated_ = new QCheckBox ();
+  collisionValidationActivated_->setToolTip (tr("Automatically validate configurations."));
+  collisionValidationActivated_->setCheckState (Qt::Checked);
+  statusBar()->addPermanentWidget(collisionValidationActivated_);
   statusBar()->addPermanentWidget(collisionIndicator_);
+
+  connect (collisionIndicator_, SIGNAL (mouseClickEvent()), SLOT(requestConfigurationValidation()));
 }
 
 void MainWindow::createCentralWidget()
@@ -544,7 +546,8 @@ void MainWindow::addBodyToTree(graphics::GroupNodePtr_t group)
 void MainWindow::requestApplyCurrentConfiguration()
 {
   emit applyCurrentConfiguration();
-  requestConfigurationValidation();
+  if (collisionValidationActivated_->isChecked ())
+    requestConfigurationValidation();
 }
 
 void MainWindow::requestConfigurationValidation()

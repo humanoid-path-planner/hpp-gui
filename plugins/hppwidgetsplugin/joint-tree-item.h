@@ -12,7 +12,7 @@
 #include <hpp/gui/fwd.h>
 #include <gepetto/viewer/node.h>
 
-#include "hppwidgetsplugin.hh"
+#include "hppwidgetsplugin/hppwidgetsplugin.hh"
 
 class IntegratorWheel : public QSlider
 {

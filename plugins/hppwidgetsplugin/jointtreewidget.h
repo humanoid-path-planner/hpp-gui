@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include <hppwidgetsplugin.hh>
+#include <hppwidgetsplugin/hppwidgetsplugin.hh>
 
 namespace Ui {
   class JointTreeWidget;
@@ -19,6 +19,8 @@ public:
   virtual ~JointTreeWidget ();
 
   void dockWidget (QDockWidget* dock);
+
+  std::string selectedJoint ();
 
 signals:
 

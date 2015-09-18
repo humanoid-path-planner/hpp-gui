@@ -1,4 +1,4 @@
-#include "hppwidgetsplugin.hh"
+#include "hppwidgetsplugin/hppwidgetsplugin.hh"
 
 #include <boost/regex.hpp>
 
@@ -9,11 +9,13 @@
 
 #include <omniORB4/CORBA.h>
 
-#include "pathplayer.h"
-#include "solverwidget.h"
-#include "jointtreewidget.h"
-#include "configurationlistwidget.h"
-#include "joint-tree-item.h"
+#include "hppwidgetsplugin/pathplayer.h"
+#include "hppwidgetsplugin/solverwidget.h"
+#include "hppwidgetsplugin/jointtreewidget.h"
+#include "hppwidgetsplugin/configurationlistwidget.h"
+#include "hppwidgetsplugin/joint-tree-item.h"
+
+#include "hppwidgetsplugin/roadmap.hh"
 
 #define QSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.toStdString().c_str())
 #define STDSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.c_str())
@@ -80,6 +82,7 @@ void HppWidgetsPlugin::init()
   // Connect widgets
   connect (solverWidget_, SIGNAL (problemSolved ()), pathPlayer_, SLOT (update()));
   connect (main, SIGNAL (refresh()), jointTreeWidget_, SLOT (reload ()));
+  connect (main, SIGNAL (refresh()), pathPlayer_, SLOT (update()));
 
   connect (main, SIGNAL (configurationValidation ()),
            this, SLOT (configurationValidation ()));
@@ -168,6 +171,13 @@ void HppWidgetsPlugin::applyCurrentConfiguration()
       hpp::floatSeq_var c = client()->robot ()->getJointConfig (ite->name.c_str());
       ite->item->updateConfig (c.in());
     }
+  for (std::list<std::string>::const_iterator it = jointFrames_.begin ();
+      it != jointFrames_.end (); ++it) {
+    std::string n = *it + "_frame";
+    hpp::Transform__var t = client()->robot()->getJointPosition(it->c_str());
+    for (size_t i = 0; i < 7; ++i) T[i] = (float)t[i];
+    main->osg()->applyConfiguration (n.c_str (), T);
+  }
   main->osg()->refresh();
   main->statusBar()->clearMessage();
 }
@@ -253,8 +263,11 @@ QList<QAction *> HppWidgetsPlugin::getJointActions(const std::string &jointName)
   a= new JointAction (tr("Set bounds..."), jointName, 0);
   connect (a, SIGNAL (triggered(std::string)), jointTreeWidget_, SLOT (openJointBoundDialog(std::string)));
   l.append(a);
+  a= new JointAction (tr("Show/hide joint frame"), jointName, 0);
+  connect (a, SIGNAL (triggered(std::string)), SLOT (showHideJointFrame(std::string)));
+  l.append(a);
   a = new JointAction (tr("Display roadmap"), jointName, 0);
-  connect (a, SIGNAL (triggered(std::string)), solverWidget_, SLOT (displayRoadmap(std::string)));
+  connect (a, SIGNAL (triggered(std::string)), this, SLOT (displayRoadmap(std::string)));
   l.append(a);
   a = new JointAction (tr("Display selected path"), jointName, 0);
   connect (a, SIGNAL (triggered(std::string)), pathPlayer_, SLOT (displayPath(std::string)));
@@ -282,6 +295,58 @@ void HppWidgetsPlugin::updateRobotJoints(const QString robotName)
       jointMap_[jname] = JointElement(jname, linkName, 0, true);
       delete[] lname;
     }
+}
+
+std::string HppWidgetsPlugin::getSelectedJoint()
+{
+  return jointTreeWidget_->selectedJoint();
+}
+
+Roadmap* HppWidgetsPlugin::createRoadmap(const std::string &jointName)
+{
+  Roadmap* r = new Roadmap (this);
+  r->initRoadmap(jointName);
+  return r;
+}
+
+void HppWidgetsPlugin::displayRoadmap(const std::string &jointName)
+{
+  Roadmap* r = createRoadmap (jointName);
+  r->displayRoadmap();
+  delete r;
+}
+
+void HppWidgetsPlugin::showHideJointFrame (const std::string& jointName)
+{
+  std::list <std::string>::iterator it =
+    std::lower_bound (jointFrames_.begin (), jointFrames_.end (), jointName);
+  MainWindow* main = MainWindow::instance ();
+  std::string n = jointName + "_frame";
+  const float color[4] = {1,0,0,1};
+  if (*it != jointName) {
+    // Show
+    /// This returns false if the frame already exists
+    if (main->osg()->addXYZaxis (n.c_str(), color, 0.005f, 1.f)) {
+      float p[7];
+      hpp::Transform__var t = client()->robot()->getJointPosition(jointName.c_str());
+      for (std::size_t i = 0; i < 7; ++i) p[i] = (float)t[i];
+      main->osg()->applyConfiguration (n.c_str (), p);
+      main->osg()->setVisibility (n.c_str (), "ALWAYS_ON_TOP");
+      main->osg()->refresh();
+      jointFrames_.insert (it, jointName);
+      return;
+    } else {
+      main->osg()->setVisibility (n.c_str (), "ALWAYS_ON_TOP");
+    }
+  } else {
+    // Hide
+    jointFrames_.erase (it);
+    try {
+      main->osg()->setVisibility (n.c_str (), "OFF");
+    } catch (const gepetto::Error& e) {
+      qDebug () << "Caught a graphics error";
+    }
+  }
 }
 
 void HppWidgetsPlugin::computeObjectPosition()

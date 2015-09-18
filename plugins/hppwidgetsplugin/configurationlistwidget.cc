@@ -1,5 +1,5 @@
-#include "configurationlistwidget.h"
-#include "ui_configurationlistwidget.h"
+#include "hppwidgetsplugin/configurationlistwidget.h"
+#include "hppwidgetsplugin/ui_configurationlistwidget.h"
 
 #include "hpp/corbaserver/common.hh"
 #include "hpp/corbaserver/client.hh"

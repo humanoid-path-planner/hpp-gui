@@ -19,16 +19,10 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-SET(PLUGIN_NAME hppwidgetsplugin)
+SET(PLUGIN_NAME hppmanipulationwidgetsplugin)
 
 SET(${PLUGIN_NAME}_HEADERS
   ${PLUGIN_NAME}.hh
-  pathplayer.h
-  solverwidget.h
-  jointtreewidget.h
-  configurationlistwidget.h
-  joint-tree-item.h
-  jointbounddialog.h
   )
 
 SET(${PLUGIN_NAME}_HEADERS_NO_MOC
@@ -36,10 +30,6 @@ SET(${PLUGIN_NAME}_HEADERS_NO_MOC
   )
 
 SET(${PLUGIN_NAME}_FORMS
-  pathplayerwidget.ui
-  solverwidget.ui
-  jointtreewidget.ui
-  configurationlistwidget.ui
   )
 
 SET(${PLUGIN_NAME}_RESOURCES
@@ -56,12 +46,6 @@ ADD_DEFINITIONS(-DQT_SHARED)
 
 SET (${PLUGIN_NAME}_SOURCES
   ${PLUGIN_NAME}.cc
-  pathplayer.cc
-  solverwidget.cc
-  jointtreewidget.cc
-  configurationlistwidget.cc
-  joint-tree-item.cc
-  jointbounddialog.cc
   roadmap.cc
   )
 
@@ -73,6 +57,7 @@ ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}
   )
 
 TARGET_LINK_LIBRARIES(${PLUGIN_NAME} ${QT_LIBRARIES})
-TARGET_LINK_LIBRARIES(${PLUGIN_NAME} "hpp-corbaserver")
+TARGET_LINK_LIBRARIES(${PLUGIN_NAME} "hppwidgetsplugin" "hpp-manipulation-corba")
 
 INSTALL(TARGETS ${PLUGIN_NAME} DESTINATION lib/hpp-gui-plugins)
+

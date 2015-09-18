@@ -112,6 +112,7 @@ private:
   BackgroundQueue backgroundQueue_;
   QThread worker_;
 
+  QCheckBox* collisionValidationActivated_;
   LedIndicator* collisionIndicator_;
 
   QStandardItemModel *bodyTreeModel_;

@@ -8,6 +8,8 @@
 #include <QPluginLoader>
 #include <QTableWidgetItem>
 
+#include <hpp/gui/plugin-interface.h>
+
 namespace Ui {
   class PluginManagerDialog;
 }
@@ -82,8 +84,13 @@ template <typename Interface>
 Interface* PluginManager::getFirstOf ()
 {
   foreach (QPluginLoader* p, plugins_) {
-      Interface* pi = qobject_cast <Interface*> (p->instance());
-      if (pi) return pi;
+      if (p->isLoaded()) {
+          PluginInterface* check = qobject_cast <PluginInterface*> (p->instance());
+          if (check && check->isInit ()) {
+              Interface* pi = qobject_cast <Interface*> (p->instance());
+              if (pi) return pi;
+            }
+        }
     }
   return NULL;
 }
@@ -93,8 +100,14 @@ QList <Interface*> PluginManager::get ()
 {
   QList <Interface*> list;
   foreach (QPluginLoader* p, plugins_) {
-      Interface* pi = qobject_cast <Interface*> (p->instance());
-      if (pi) list.append(pi);
+      if (p->isLoaded()) {
+          PluginInterface* check = qobject_cast <PluginInterface*> (p->instance());
+          if (check && check->isInit ()) {
+              Interface* pi = qobject_cast <Interface*> (p->instance());
+              if (pi)
+                list.append(pi);
+            }
+        }
     }
   return list;
 }

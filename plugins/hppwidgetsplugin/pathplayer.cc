@@ -1,4 +1,4 @@
-#include "pathplayer.h"
+#include "hppwidgetsplugin/pathplayer.h"
 
 #include <hpp/corbaserver/common.hh>
 #include <hpp/corbaserver/client.hh>
@@ -7,7 +7,7 @@
 #include <hpp/gui/windows-manager.h>
 #include <hpp/gui/osgwidget.h>
 
-#include "ui_pathplayerwidget.h"
+#include "hppwidgetsplugin/ui_pathplayerwidget.h"
 
 PathPlayer::PathPlayer (HppWidgetsPlugin *plugin, QWidget *parent) :
   QWidget (parent)
@@ -57,7 +57,7 @@ void PathPlayer::displayPath(const std::string jointName)
   float colorE[] = {1.f, 0.f, 0.f, 1.f};
   WindowsManagerPtr_t wsm = main->osg();
   HppWidgetsPlugin::HppClient* hpp = plugin_->client();
-  hpp::floatSeqSeq_var waypoints = hpp->problem()->getWaypoints(pid);
+  hpp::floatSeqSeq_var waypoints = hpp->problem()->getWaypoints((CORBA::UShort)pid);
   wsm->createScene (pn.c_str());
   hpp::floatSeq_var curCfg = hpp->robot()->getCurrentConfig();
   for (unsigned int i = 0; i < waypoints->length(); ++i) {

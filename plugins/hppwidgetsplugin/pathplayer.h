@@ -8,7 +8,7 @@
 
 #include <hpp/gui/fwd.h>
 
-#include <hppwidgetsplugin.hh>
+#include <hppwidgetsplugin/hppwidgetsplugin.hh>
 
 namespace Ui {
   class PathPlayerWidget;
@@ -24,10 +24,9 @@ public:
 
 public slots:
   void displayPath (const std::string jointName);
-
-private slots:
   void update ();
 
+private slots:
   void pathIndexChanged (int i);
   void pathSliderChanged (int value);
 //  void timeChanged (double d);

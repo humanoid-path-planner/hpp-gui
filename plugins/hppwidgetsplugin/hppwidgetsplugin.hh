@@ -9,6 +9,7 @@ class PathPlayer;
 class JointTreeWidget;
 class ConfigurationListWidget;
 class JointTreeItem;
+class Roadmap;
 
 class HppWidgetsPlugin : public QObject, public PluginInterface,
     public ModelInterface, public CorbaErrorInterface
@@ -67,7 +68,13 @@ public:
   HppClient* client () const;
   JointMap& jointMap ();
 
-  void updateRobotJoints (const QString robotName);
+  virtual void updateRobotJoints (const QString robotName);
+  std::string getSelectedJoint ();
+  virtual Roadmap* createRoadmap (const std::string& jointName);
+
+protected slots:
+  virtual void displayRoadmap (const std::string& jointName);
+  void showHideJointFrame (const std::string& jointName);
 
 private:
   void computeObjectPosition();
@@ -80,7 +87,9 @@ private:
 
   HppClient* hpp_;
 
+protected:
   JointMap jointMap_;
+  std::list <std::string> jointFrames_;
 };
 
 #endif // HPPWIDGETSPLUGIN_HH

@@ -43,6 +43,7 @@ SET(BOOST_COMPONENTS
 SEARCH_FOR_BOOST ()
 
 ADD_OPTIONAL_DEPENDENCY("hpp-corbaserver")
+ADD_OPTIONAL_DEPENDENCY("hpp-manipulation-corba")
 ADD_OPTIONAL_DEPENDENCY("remoteimu")
 
 FIND_PACKAGE("X11")
@@ -53,10 +54,7 @@ IF (HPP_DEBUG)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHPP_DEBUG")
 ENDIF()
 
-SET (${PROJECT_NAME}_HEADERS
-  include/hpp/gui/fwd.h
-  include/hpp/gui/safeapplication.h
-  include/hpp/gui/windows-manager.h
+SET (${PROJECT_NAME}_HEADERS_MOC
   include/hpp/gui/mainwindow.h
   include/hpp/gui/osgwidget.h
   include/hpp/gui/tree-item.h
@@ -66,6 +64,16 @@ SET (${PROJECT_NAME}_HEADERS
   include/hpp/gui/dialog/dialogloadrobot.h
   include/hpp/gui/dialog/dialogloadenvironment.h
   include/hpp/gui/dialog/pluginmanagerdialog.h
+  )
+SET (${PROJECT_NAME}_HEADERS_NO_MOC
+  include/hpp/gui/fwd.h
+  include/hpp/gui/safeapplication.h
+  include/hpp/gui/windows-manager.h
+  include/hpp/gui/color-map.h
+  )
+SET (${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_HEADERS_MOC}
+  ${${PROJECT_NAME}_HEADERS_NO_MOC}
   )
 
 SET(${PROJECT_NAME}_FORMS
@@ -77,7 +85,7 @@ SET(${PROJECT_NAME}_FORMS
 
 SET(${PROJECT_NAME}_RESOURCES res/images.qrc)
 
-QT4_WRAP_CPP(${PROJECT_NAME}_HEADERS_MOC ${${PROJECT_NAME}_HEADERS})
+QT4_WRAP_CPP(${PROJECT_NAME}_HEADERS_MOCED ${${PROJECT_NAME}_HEADERS_MOC})
 QT4_WRAP_UI(${PROJECT_NAME}_FORMS_HEADERS ${${PROJECT_NAME}_FORMS})
 QT4_ADD_RESOURCES(${PROJECT_NAME}_RESOURCES_RCC ${${PROJECT_NAME}_RESOURCES})
 
@@ -86,6 +94,10 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 CONFIGURE_FILE (src/main.cc
   ${CMAKE_BINARY_DIR}/src/main.cc
+  @ONLY
+)
+CONFIGURE_FILE (src/hpp-gui.in
+  ${CMAKE_BINARY_DIR}/bin/hpp-gui
   @ONLY
 )
 
@@ -104,7 +116,8 @@ SET (${PROJECT_NAME}_SOURCES
   )
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_HEADERS_MOC}
+  ${${PROJECT_NAME}_HEADERS_MOCED}
+  ${${PROJECT_NAME}_HEADERS_NO_MOC}
   ${${PROJECT_NAME}_FORMS_HEADERS}
   ${${PROJECT_NAME}_RESOURCES_RCC}
   )
@@ -116,7 +129,11 @@ PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} gepetto-viewer-corba)
 PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} openscenegraph-osgQt)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${X11_LIBRARIES} ${Boost_LIBRARIES})
 
-INSTALL(TARGETS ${PROJECT_NAME} DESTINATION bin)
+INSTALL(TARGETS ${PROJECT_NAME} DESTINATION lib)
+
+INSTALL(FILES ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME} DESTINATION bin
+  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  )
 
 ADD_SUBDIRECTORY(plugins)
 
