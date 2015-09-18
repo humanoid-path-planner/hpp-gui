@@ -583,12 +583,14 @@ void MainWindow::configurationValidationStatusChanged (QStringList bodiesInColli
           /// This body is still in collision
           lastBodiesInCollision_.append(b);
         }
-
     }
+  QString tooltip ("Collision between ");
+  tooltip += bodiesInCollision.join (", ");
   foreach(const QString& b, bodiesInCollision) {
       osg ()->setHighlight(b.toLocal8Bit().data(), 1);
       lastBodiesInCollision_.append(b);
     }
+  collisionIndicator_->setToolTip (tooltip);
 }
 
 void MainWindow::requestSelectJointFromBodyName(const std::string &bodyName)
