@@ -94,6 +94,8 @@ private slots:
 
   void handleWorkerDone (int id);
 
+  void about ();
+
 private:
   void setupInterface ();
   void createCentralWidget ();
