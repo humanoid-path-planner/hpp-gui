@@ -110,7 +110,7 @@ make install
 ```
 
 ## Version
-0
+0.1
 
 ## Development
 
