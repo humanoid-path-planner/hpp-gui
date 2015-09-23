@@ -111,7 +111,7 @@ void BackgroundQueue::perform(WorkItem *item)
     /// Enable plugins to get corba errors.
     /// hpp plugins can thus handle CORBA Exceptions (hpp::Error)
     bool handled = false;
-    foreach (CorbaErrorInterface* errorHandler, MainWindow::instance()->pluginManager()->get <CorbaErrorInterface>()) {
+    foreach (CorbaInterface* errorHandler, MainWindow::instance()->pluginManager()->get <CorbaInterface>()) {
         if (errorHandler->corbaException (item->id(), e)) {
             handled = true;
             break;

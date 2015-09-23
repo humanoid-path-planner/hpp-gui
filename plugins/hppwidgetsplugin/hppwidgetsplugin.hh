@@ -12,10 +12,10 @@ class JointTreeItem;
 class Roadmap;
 
 class HppWidgetsPlugin : public QObject, public PluginInterface,
-    public ModelInterface, public CorbaErrorInterface
+    public ModelInterface, public CorbaInterface
 {
   Q_OBJECT
-  Q_INTERFACES (PluginInterface ModelInterface CorbaErrorInterface)
+  Q_INTERFACES (PluginInterface ModelInterface CorbaInterface)
 
 public:
   struct JointElement {
@@ -50,9 +50,12 @@ signals:
   void configurationValidationStatus (bool valid);
   void configurationValidationStatus (QStringList collision);
 
-  // CorbaErrorInterface interface
+  // CorbaInterface interface
 public:
   virtual bool corbaException (int jobId, const CORBA::Exception &excep) const;
+
+  virtual void openConnection ();
+  virtual void closeConnection ();
 signals:
   void logJobFailed  (int id, const QString& text) const;
 

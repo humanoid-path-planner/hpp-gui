@@ -89,14 +89,18 @@ public:
 
 Q_DECLARE_INTERFACE (ModelInterface, "hpp-gui.plugin.model/0.0")
 
-class CorbaErrorInterface {
+class CorbaInterface {
 public:
-  virtual ~CorbaErrorInterface () {}
+  virtual ~CorbaInterface () {}
+
+  virtual void openConnection () = 0;
+
+  virtual void closeConnection () = 0;
 
   /// return true if error was handled.
   virtual bool corbaException (int jobId, const CORBA::Exception& excep) const = 0;
 };
 
-Q_DECLARE_INTERFACE (CorbaErrorInterface, "hpp-gui.plugin.corbaerror/0.0")
+Q_DECLARE_INTERFACE (CorbaInterface, "hpp-gui.plugin.corba/0.0")
 
 #endif // PLUGININTERFACE_HH

@@ -348,6 +348,13 @@ void MainWindow::handleWorkerDone(int /*id*/)
 {
 }
 
+void MainWindow::resetConnection()
+{
+  foreach (CorbaInterface* e, pluginManager_.get <CorbaInterface> ()) {
+      e->openConnection ();
+    }
+}
+
 void MainWindow::about()
 {
   QString devString;
@@ -404,6 +411,7 @@ void MainWindow::setupInterface()
 
   connect (collisionIndicator_, SIGNAL (mouseClickEvent()), SLOT(requestConfigurationValidation()));
   connect (ui_->actionAbout, SIGNAL (activated ()), SLOT(about()));
+  connect (ui_->actionReconnect, SIGNAL (activated ()), SLOT(resetConnection()));
 }
 
 void MainWindow::createCentralWidget()

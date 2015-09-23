@@ -11,7 +11,7 @@ class HppManipulationWidgetsPlugin : public HppWidgetsPlugin
                                      // , public PluginInterface, public ModelInterface, public CorbaErrorInterface
 {
   Q_OBJECT
-  Q_INTERFACES (PluginInterface ModelInterface CorbaErrorInterface)
+  Q_INTERFACES (PluginInterface ModelInterface CorbaInterface)
 
 public:
   typedef hpp::corbaServer::manipulation::Client HppManipClient;
@@ -32,6 +32,11 @@ public:
   std::string getBodyFromJoint (const std::string& jointName) const;
 signals:
   void configurationValidationStatus (bool valid);
+
+  // CorbaInterface
+public:
+  virtual void openConnection ();
+  virtual void closeConnection();
 
 public:
   HppManipClient* manipClient () const;

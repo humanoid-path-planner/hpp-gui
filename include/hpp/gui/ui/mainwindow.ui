@@ -66,6 +66,7 @@
     </property>
     <addaction name="actionRefresh"/>
     <addaction name="actionPlugins"/>
+    <addaction name="actionReconnect"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -316,6 +317,11 @@
   <action name="actionAbout">
    <property name="text">
     <string>About...</string>
+   </property>
+  </action>
+  <action name="actionReconnect">
+   <property name="text">
+    <string>Reset connection</string>
    </property>
   </action>
  </widget>

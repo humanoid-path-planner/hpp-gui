@@ -16,9 +16,11 @@ bool SafeApplication::notify(QObject *receiver, QEvent *e)
     return QApplication::notify(receiver, e);
   } catch (const std::exception& e) {
     qDebug () << e.what();
+  } catch (const CORBA::TRANSIENT& e) {
+    MainWindow::instance()->logError(QString ("CORBA Exception %1 - %2.\nYou may need to reset the connections (see Tools menu)").arg(e._name()).arg(e._rep_id()));
   } catch (const CORBA::Exception& e) {
     bool handled = false;
-    foreach (CorbaErrorInterface* errorHandler, MainWindow::instance()->pluginManager()->get <CorbaErrorInterface>()) {
+    foreach (CorbaInterface* errorHandler, MainWindow::instance()->pluginManager()->get <CorbaInterface>()) {
         if (errorHandler->corbaException (0, e)) {
             handled = true;
             break;

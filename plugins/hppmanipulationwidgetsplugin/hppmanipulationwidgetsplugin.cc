@@ -9,15 +9,12 @@ using CORBA::ULong;
 
 HppManipulationWidgetsPlugin::HppManipulationWidgetsPlugin() :
   HppWidgetsPlugin (),
-  hpp_ (new HppManipClient (0,0))
+  hpp_ (NULL)
 {
-  hpp_->connect ();
 }
 
 HppManipulationWidgetsPlugin::~HppManipulationWidgetsPlugin()
 {
-  if (hpp_)
-    delete hpp_;
 }
 
 void HppManipulationWidgetsPlugin::init()
@@ -46,6 +43,20 @@ std::string HppManipulationWidgetsPlugin::getBodyFromJoint(const std::string &jo
 {
   /// TODO: fix this
   return HppWidgetsPlugin::getBodyFromJoint (jointName);
+}
+
+void HppManipulationWidgetsPlugin::openConnection()
+{
+  HppWidgetsPlugin::openConnection();
+  hpp_ = new HppManipClient (0,0);
+  hpp_->connect ();
+}
+
+void HppManipulationWidgetsPlugin::closeConnection()
+{
+  HppWidgetsPlugin::closeConnection();
+  if (hpp_) delete hpp_;
+  hpp_ = NULL;
 }
 
 HppManipulationWidgetsPlugin::HppManipClient *HppManipulationWidgetsPlugin::manipClient() const

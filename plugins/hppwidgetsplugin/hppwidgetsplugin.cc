@@ -27,9 +27,8 @@ HppWidgetsPlugin::HppWidgetsPlugin() :
   solverWidget_ (NULL),
   jointTreeWidget_ (NULL),
   configListWidget_ (NULL),
-  hpp_ (new hpp::corbaServer::Client (0,0))
+  hpp_ (NULL)
 {
-  hpp_->connect ();
 }
 
 HppWidgetsPlugin::~HppWidgetsPlugin()
@@ -39,12 +38,13 @@ HppWidgetsPlugin::~HppWidgetsPlugin()
       main->removeDockWidget(dock);
       delete dock;
     }
-  if (hpp_)
-    delete hpp_;
+  closeConnection ();
 }
 
 void HppWidgetsPlugin::init()
 {
+  openConnection();
+
   MainWindow* main = MainWindow::instance ();
   QDockWidget* dock;
 
@@ -150,6 +150,19 @@ bool HppWidgetsPlugin::corbaException(int jobId, const CORBA::Exception &excep) 
     qDebug () << exp.what();
   }
   return false;
+}
+
+void HppWidgetsPlugin::openConnection ()
+{
+  closeConnection ();
+  hpp_ = new hpp::corbaServer::Client (0,0);
+  hpp_->connect ();
+}
+
+void HppWidgetsPlugin::closeConnection ()
+{
+  if (hpp_) delete hpp_;
+  hpp_ = NULL;
 }
 
 void HppWidgetsPlugin::applyCurrentConfiguration()

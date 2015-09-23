@@ -94,6 +94,7 @@ private slots:
 
   void handleWorkerDone (int id);
 
+  void resetConnection ();
   void about ();
 
 private:
