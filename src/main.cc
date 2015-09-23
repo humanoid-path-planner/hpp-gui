@@ -2,6 +2,7 @@
 #include <QSettings>
 #include <QCleanlooksStyle>
 #include <QProcessEnvironment>
+#include <QSplashScreen>
 
 #include "hpp/gui/safeapplication.h"
 #include "hpp/gui/mainwindow.h"
@@ -13,6 +14,14 @@ int main(int argc, char *argv[])
 {
   XInitThreads();
 
+  SafeApplication a(argc, argv);
+  a.setStyle(new QCleanlooksStyle);
+  QIcon::setThemeName("oxygen");
+
+  QPixmap pixmap(":/img/gepetto.png");
+  QSplashScreen splash(pixmap);
+  splash.show();
+
   QCoreApplication::setOrganizationName("@PROJECT_NAME@");
   QCoreApplication::setOrganizationDomain("@PROJECT_URL@");
   QCoreApplication::setApplicationName("@PROJECT_NAME@");
@@ -22,10 +31,6 @@ int main(int argc, char *argv[])
                      QSettings::SystemScope, "@CMAKE_INSTALL_PREFIX@/etc");
   QSettings::setPath(QSettings::NativeFormat,
                      QSettings::SystemScope, "@CMAKE_INSTALL_PREFIX@/etc");
-
-  SafeApplication a(argc, argv);
-  a.setStyle(new QCleanlooksStyle);
-  QIcon::setThemeName("oxygen");
 
   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
   foreach (QString p, env.value("LD_LIBRARY_PATH").split(':')) {
@@ -53,6 +58,6 @@ int main(int argc, char *argv[])
 
   MainWindow w;
   w.show();
-
+  splash.finish(&w);
   return a.exec();
 }
