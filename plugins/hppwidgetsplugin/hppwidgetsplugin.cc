@@ -287,6 +287,9 @@ QList<QAction *> HppWidgetsPlugin::getJointActions(const std::string &jointName)
   a = new JointAction (tr("Display &roadmap"), jointName, 0);
   connect (a, SIGNAL (triggered(std::string)), this, SLOT (displayRoadmap(std::string)));
   l.append(a);
+  a = new JointAction (tr("Display &waypoints of selected path"), jointName, 0);
+  connect (a, SIGNAL (triggered(std::string)), pathPlayer_, SLOT (displayWaypointsOfPath(std::string)));
+  l.append(a);
   a = new JointAction (tr("Display selected &path"), jointName, 0);
   connect (a, SIGNAL (triggered(std::string)), pathPlayer_, SLOT (displayPath(std::string)));
   l.append(a);

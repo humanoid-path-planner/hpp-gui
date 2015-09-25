@@ -45,7 +45,7 @@ PathPlayer::~PathPlayer()
   delete ui_;
 }
 
-void PathPlayer::displayPath(const std::string jointName)
+void PathPlayer::displayWaypointsOfPath(const std::string jointName)
 {
   MainWindow* main = MainWindow::instance();
   if (!pathIndex()->isEnabled())
@@ -76,6 +76,36 @@ void PathPlayer::displayPath(const std::string jointName)
           wsm->addLine(lineName.toLocal8Bit().data(), pos1, pos2, colorE);
         }
     }
+  hpp->robot()->setCurrentConfig(curCfg.in());
+  wsm->addToGroup(pn.c_str(), "hpp-gui");
+  wsm->refresh();
+}
+
+void PathPlayer::displayPath(const std::string jointName)
+{
+  MainWindow* main = MainWindow::instance();
+  if (!pathIndex()->isEnabled())
+    main->logError("There is no path. Did you solve a problem ?");
+  CORBA::UShort pid = (CORBA::UShort) pathIndex()->value();
+  std::stringstream ss; ss << "curvedpath_" << pid << "_" << jointName;
+  std::string pn = ss.str();
+  float colorE[] = {1.f, 0.f, 0.f, 1.f};
+  WindowsManagerPtr_t wsm = main->osg();
+  HppWidgetsPlugin::HppClient* hpp = plugin_->client();
+  hpp::floatSeq_var curCfg = hpp->robot()->getCurrentConfig();
+  CORBA::Double length = hpp->problem()->pathLength(pid);
+  double dt = lengthBetweenRefresh();
+  std::size_t nbPos = (std::size_t)(length / dt) + 1;
+  gepetto::corbaserver::PositionSeq_var posSeq = new gepetto::corbaserver::PositionSeq (nbPos);
+  posSeq->length(nbPos);
+  for (std::size_t i = 0; i < nbPos; ++i) {
+      double t = std::min (i * dt, length);
+      hpp::floatSeq_var q = hpp->problem()->configAtParam(pid, t);
+      hpp->robot()->setCurrentConfig(q);
+      hpp::Transform__var transform = hpp->robot()->getLinkPosition(jointName.c_str());
+      for (int j = 0; j < 3; ++j) { posSeq[i][j] = (float)transform.in()[j]; }
+    }
+  wsm->addLines(pn.c_str(), posSeq.in(), colorE);
   hpp->robot()->setCurrentConfig(curCfg.in());
   wsm->addToGroup(pn.c_str(), "hpp-gui");
   wsm->refresh();

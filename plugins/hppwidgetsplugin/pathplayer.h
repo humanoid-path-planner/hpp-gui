@@ -23,6 +23,7 @@ public:
   ~PathPlayer();
 
 public slots:
+  void displayWaypointsOfPath (const std::string jointName);
   void displayPath (const std::string jointName);
   void update ();
 
