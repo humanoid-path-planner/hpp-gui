@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
   QPixmap pixmap(":/img/gepetto.png");
   QSplashScreen splash(pixmap);
   splash.show();
+  a.processEvents ();
 
   QCoreApplication::setOrganizationName("@PROJECT_NAME@");
   QCoreApplication::setOrganizationDomain("@PROJECT_URL@");
