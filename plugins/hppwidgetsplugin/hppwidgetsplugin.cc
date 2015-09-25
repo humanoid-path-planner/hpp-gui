@@ -49,34 +49,38 @@ void HppWidgetsPlugin::init()
   QDockWidget* dock;
 
   // Configuration list widget
-  dock = new QDockWidget ("Configuration List", main);
+  dock = new QDockWidget ("&Configuration List", main);
   configListWidget_ = new ConfigurationListWidget (this, dock);
   dock->setWidget(configListWidget_);
   main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
+  dock->toggleViewAction()->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_C);
   dockWidgets_.append(dock);
 
   // Solver widget
-  dock = new QDockWidget ("Problem solver", main);
+  dock = new QDockWidget ("Problem &solver", main);
   solverWidget_ = new SolverWidget (this, dock);
   dock->setWidget(solverWidget_);
   main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
   main->tabifyDockWidget(dockWidgets_.first(), dock);
+  dock->toggleViewAction()->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_S);
   dockWidgets_.append(dock);
 
   // Path player widget
-  dock = new QDockWidget ("Path player", main);
+  dock = new QDockWidget ("&Path player", main);
   pathPlayer_ = new PathPlayer (this, dock);
   dock->setWidget(pathPlayer_);
   main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
   main->tabifyDockWidget(dockWidgets_.first(), dock);
+  dock->toggleViewAction()->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_P);
   dockWidgets_.append(dock);
 
   // Joint tree widget
-  dock = new QDockWidget ("Joint Tree", main);
+  dock = new QDockWidget ("&Joint Tree", main);
   jointTreeWidget_ = new JointTreeWidget (this, dock);
   dock->setWidget(jointTreeWidget_);
   jointTreeWidget_->dockWidget (dock);
   main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
+  dock->toggleViewAction()->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_J);
   dockWidgets_.append(dock);
 
   // Connect widgets
@@ -274,16 +278,16 @@ QList<QAction *> HppWidgetsPlugin::getJointActions(const std::string &jointName)
 {
   QList <QAction*> l;
   JointAction* a;
-  a= new JointAction (tr("Set bounds..."), jointName, 0);
+  a= new JointAction (tr("Set &bounds..."), jointName, 0);
   connect (a, SIGNAL (triggered(std::string)), jointTreeWidget_, SLOT (openJointBoundDialog(std::string)));
   l.append(a);
-  a= new JointAction (tr("Show/hide joint frame"), jointName, 0);
+  a= new JointAction (tr("Show/hide joint &frame"), jointName, 0);
   connect (a, SIGNAL (triggered(std::string)), SLOT (showHideJointFrame(std::string)));
   l.append(a);
-  a = new JointAction (tr("Display roadmap"), jointName, 0);
+  a = new JointAction (tr("Display &roadmap"), jointName, 0);
   connect (a, SIGNAL (triggered(std::string)), this, SLOT (displayRoadmap(std::string)));
   l.append(a);
-  a = new JointAction (tr("Display selected path"), jointName, 0);
+  a = new JointAction (tr("Display selected &path"), jointName, 0);
   connect (a, SIGNAL (triggered(std::string)), pathPlayer_, SLOT (displayPath(std::string)));
   l.append(a);
   return l;

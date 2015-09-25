@@ -70,7 +70,7 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
@@ -95,6 +95,8 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionPlugins"/>
+   <addaction name="actionReconnect"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget_bodyTree">
@@ -105,7 +107,7 @@
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Body tree</string>
+    <string>&amp;Body tree</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -175,7 +177,7 @@
     </iconset>
    </property>
    <property name="windowTitle">
-    <string>Log</string>
+    <string>&amp;Log</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -223,6 +225,9 @@
    <property name="text">
     <string>Load &amp;robot from file</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
   </action>
   <action name="actionQuit">
    <property name="icon">
@@ -233,6 +238,9 @@
    <property name="text">
     <string>&amp;Quit</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
   </action>
   <action name="actionLoad_environment">
    <property name="icon">
@@ -242,6 +250,9 @@
    </property>
    <property name="text">
     <string>Load &amp;environment</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
    </property>
   </action>
   <action name="actionSelection">
@@ -279,6 +290,9 @@
    <property name="text">
     <string>&amp;Plugins</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
   </action>
   <action name="actionCamera_control_mode">
    <property name="icon">
@@ -305,6 +319,9 @@
    <property name="toolTip">
     <string>Refresh the interface (required if you are also using the python interface)</string>
    </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
   </action>
   <action name="actionAdd_floor">
    <property name="text">
@@ -316,12 +333,18 @@
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>About...</string>
+    <string>&amp;About...</string>
    </property>
   </action>
   <action name="actionReconnect">
+   <property name="icon">
+    <iconset theme="network-connect"/>
+   </property>
    <property name="text">
     <string>Reset connection</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F5</string>
    </property>
   </action>
  </widget>

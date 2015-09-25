@@ -394,9 +394,11 @@ void MainWindow::setupInterface()
 
   ui_->dockWidget_bodyTree->setVisible (false);
   ui_->dockWidget_bodyTree->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
+  ui_->dockWidget_bodyTree->toggleViewAction ()->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_B);
   ui_->menuWindow->addAction(ui_->dockWidget_bodyTree->toggleViewAction ());
   ui_->dockWidget_log->setVisible (false);
   ui_->dockWidget_log->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
+  ui_->dockWidget_log->toggleViewAction ()->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_L);
   ui_->menuWindow->addAction(ui_->dockWidget_log->toggleViewAction ());
 
   ui_->menuWindow->addSeparator();
