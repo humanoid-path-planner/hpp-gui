@@ -27,7 +27,6 @@ INCLUDE(cmake/boost.cmake)
 SET(PROJECT_NAME "hpp-gui")
 SET(PROJECT_URL "https://github.com/jmirabel/hpp-gui")
 SET(PROJECT_DESCRIPTION "Graphical interface for HPP ")
-SET(PROJECT_VERSION "0")
 
 SETUP_PROJECT()
 
