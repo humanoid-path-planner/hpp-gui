@@ -48,8 +48,10 @@ PathPlayer::~PathPlayer()
 void PathPlayer::displayWaypointsOfPath(const std::string jointName)
 {
   MainWindow* main = MainWindow::instance();
-  if (!pathIndex()->isEnabled())
-    main->logError("There is no path. Did you solve a problem ?");
+  if (!pathIndex()->isEnabled()) {
+      main->logError("There is no path. Did you solve a problem ?");
+      return;
+    }
   int pid = pathIndex()->value();
   std::stringstream ss; ss << "path" << pid << "_" << jointName;
   std::string pn = ss.str();
@@ -83,9 +85,25 @@ void PathPlayer::displayWaypointsOfPath(const std::string jointName)
 
 void PathPlayer::displayPath(const std::string jointName)
 {
+  QFutureWatcher <void>* fw = new QFutureWatcher<void>(this);
+  QProgressDialog* pd = new QProgressDialog ("Computing curved path. Please wait...", "Cancel", 0, 100, this);
+  connect(this, SIGNAL(displayPath_status(int)), pd, SLOT (setValue(int)));
+  pd->setCancelButton(0);
+  pd->setRange(0, 100);
+  pd->show();
+  fw->setFuture(QtConcurrent::run (this, &PathPlayer::displayPath_impl, jointName));
+  connect (fw, SIGNAL (finished()), pd, SLOT (deleteLater()));
+  connect (fw, SIGNAL (finished()), fw, SLOT (deleteLater()));
+}
+
+void PathPlayer::displayPath_impl(const std::string jointName)
+{
   MainWindow* main = MainWindow::instance();
-  if (!pathIndex()->isEnabled())
-    main->logError("There is no path. Did you solve a problem ?");
+  if (!pathIndex()->isEnabled()) {
+      main->logError("There is no path. Did you solve a problem ?");
+      emit displayPath_status(100);
+      return;
+    }
   CORBA::UShort pid = (CORBA::UShort) pathIndex()->value();
   std::stringstream ss; ss << "curvedpath_" << pid << "_" << jointName;
   std::string pn = ss.str();
@@ -98,17 +116,21 @@ void PathPlayer::displayPath(const std::string jointName)
   std::size_t nbPos = (std::size_t)(length / dt) + 1;
   gepetto::corbaserver::PositionSeq_var posSeq = new gepetto::corbaserver::PositionSeq (nbPos);
   posSeq->length(nbPos);
+  float statusStep = 100.f / (float) nbPos;
+  emit displayPath_status(0);
   for (std::size_t i = 0; i < nbPos; ++i) {
       double t = std::min (i * dt, length);
       hpp::floatSeq_var q = hpp->problem()->configAtParam(pid, t);
       hpp->robot()->setCurrentConfig(q);
       hpp::Transform__var transform = hpp->robot()->getLinkPosition(jointName.c_str());
       for (int j = 0; j < 3; ++j) { posSeq[i][j] = (float)transform.in()[j]; }
+      emit displayPath_status(qFloor ((float)i * statusStep));
     }
-  wsm->addLines(pn.c_str(), posSeq.in(), colorE);
+  wsm->addCurve(pn.c_str(), posSeq.in(), colorE);
   hpp->robot()->setCurrentConfig(curCfg.in());
   wsm->addToGroup(pn.c_str(), "hpp-gui");
   wsm->refresh();
+  emit displayPath_status (100);
 }
 
 void PathPlayer::update ()

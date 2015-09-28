@@ -27,6 +27,11 @@ public slots:
   void displayPath (const std::string jointName);
   void update ();
 
+protected:
+  virtual void displayPath_impl (const std::string jointName);
+signals:
+  void displayPath_status (int progress);
+
 private slots:
   void pathIndexChanged (int i);
   void pathSliderChanged (int value);
