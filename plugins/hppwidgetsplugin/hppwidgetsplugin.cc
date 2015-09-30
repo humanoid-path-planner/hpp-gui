@@ -176,7 +176,7 @@ void HppWidgetsPlugin::applyCurrentConfiguration()
   main->statusBar()->showMessage("Applying current configuration...");
   if (jointMap_.isEmpty()) {
       main->logError("The current configuration cannot be applied. This is probably because you are using external commands (python interface) and you did not refresh this GUI."
-                     " Use the refresh button of the \"Joint Tree\" widget.");
+                     " Use the refresh button \"Tools\" menu.");
     }
   float T[7];
   for (JointMap::iterator ite = jointMap_.begin ();
