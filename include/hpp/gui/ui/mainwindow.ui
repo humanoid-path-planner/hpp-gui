@@ -162,7 +162,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="actionCamera_control_mode"/>
    <addaction name="actionSelection"/>
