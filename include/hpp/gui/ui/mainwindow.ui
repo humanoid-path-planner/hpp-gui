@@ -97,6 +97,7 @@
    </attribute>
    <addaction name="actionPlugins"/>
    <addaction name="actionReconnect"/>
+   <addaction name="actionFetch_configuration"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget_bodyTree">
@@ -338,13 +339,20 @@
   </action>
   <action name="actionReconnect">
    <property name="icon">
-    <iconset theme="network-connect"/>
+    <iconset theme="network-connect">
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>Reset connection</string>
    </property>
    <property name="shortcut">
     <string>Shift+F5</string>
+   </property>
+  </action>
+  <action name="actionFetch_configuration">
+   <property name="text">
+    <string>Fetch configuration</string>
    </property>
   </action>
  </widget>

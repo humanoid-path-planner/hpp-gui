@@ -414,6 +414,7 @@ void MainWindow::setupInterface()
   connect (collisionIndicator_, SIGNAL (mouseClickEvent()), SLOT(requestConfigurationValidation()));
   connect (ui_->actionAbout, SIGNAL (activated ()), SLOT(about()));
   connect (ui_->actionReconnect, SIGNAL (activated ()), SLOT(resetConnection()));
+  connect (ui_->actionFetch_configuration, SIGNAL (activated()), SLOT(requestApplyCurrentConfiguration()));
 }
 
 void MainWindow::createCentralWidget()
