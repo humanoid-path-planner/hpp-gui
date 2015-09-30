@@ -1,6 +1,7 @@
 #include "hppwidgetsplugin/hppwidgetsplugin.hh"
 
 #include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <QDockWidget>
 
@@ -190,7 +191,9 @@ void HppWidgetsPlugin::applyCurrentConfiguration()
     }
   for (std::list<std::string>::const_iterator it = jointFrames_.begin ();
       it != jointFrames_.end (); ++it) {
-    std::string n = "hpp-gui/" + *it + "_frame";
+      std::string target = *it;
+      boost::replace_all (target, "/", "__");
+    std::string n = "hpp-gui/" + target + "_frame";
     hpp::Transform__var t = client()->robot()->getJointPosition(it->c_str());
     for (size_t i = 0; i < 7; ++i) T[i] = (float)t[i];
     main->osg()->applyConfiguration (n.c_str (), T);
@@ -342,7 +345,9 @@ void HppWidgetsPlugin::showHideJointFrame (const std::string& jointName)
   std::list <std::string>::iterator it =
     std::lower_bound (jointFrames_.begin (), jointFrames_.end (), jointName);
   MainWindow* main = MainWindow::instance ();
-  std::string n = "hpp-gui/" + jointName + "_frame";
+  std::string target = jointName;
+  boost::replace_all (target, "/", "__");
+  std::string n = "hpp-gui/" + target + "_frame";
   const float color[4] = {1,0,0,1};
   if (it == jointFrames_.end () || *it != jointName) {
     // Show
