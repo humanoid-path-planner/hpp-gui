@@ -370,7 +370,7 @@ void HppWidgetsPlugin::showHideJointFrame (const std::string& jointName)
     try {
       main->osg()->setVisibility (n.c_str (), "OFF");
     } catch (const gepetto::Error& e) {
-      qDebug () << "Caught a graphics error";
+      qDebug () << "Caught a graphics error:" << e.msg;
     }
   }
 }

@@ -59,10 +59,10 @@ void BodyTreeItem::populateContextMenu(QMenu *contextMenu)
   QMenu* vizmode = contextMenu->addMenu(tr("Visibility mode"));
   QAction* on  = vizmode->addAction ("On");
   QAction* aot = vizmode->addAction ("Always on top");
-  QAction* off = vizmode->addAction ("OFF");
-  vmMapper_.setMapping (on , QString ("ON"));
-  vmMapper_.setMapping (aot, QString ("ALWAYS_ON_TOP"));
-  vmMapper_.setMapping (off, QString ("OFF"));
+  QAction* off = vizmode->addAction ("Off");
+  vizMapper_.setMapping (on , QString ("ON"));
+  vizMapper_.setMapping (aot, QString ("ALWAYS_ON_TOP"));
+  vizMapper_.setMapping (off, QString ("OFF"));
   connect (on , SIGNAL(triggered()), &vizMapper_, SLOT (map()));
   connect (aot, SIGNAL(triggered()), &vizMapper_, SLOT (map()));
   connect (off, SIGNAL(triggered()), &vizMapper_, SLOT (map()));
@@ -116,9 +116,9 @@ void BodyTreeItem::removeFromGroup()
 void BodyTreeItem::remove()
 {
   MainWindow::instance()->osg()->deleteNode(node_->getID().c_str());
-  QStandardItem::parent()->removeRow(visibility_->row());
-  QStandardItem::parent()->removeRow(row());
-//  MainWindow::instance()->reloadBodyTree();
+//  QStandardItem::parent()->removeRow(visibility_->row());
+//  QStandardItem::parent()->removeRow(row());
+  MainWindow::instance()->reloadBodyTree();
 }
 
 void BodyTreeItem::addLandmark()
