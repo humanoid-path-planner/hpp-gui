@@ -127,8 +127,10 @@ void AttitudeDevice::updateJointAttitude(double w, double x, double y, double z)
         q, mask.in());
   hpp_.problem()->resetConstraints ();
   hpp::Names_t n; n.length(2);
+  hpp::intSeq prior; prior.length(2);
   n[0] = "attitudeDeviceControl/ori"; n[1] = "attitudeDeviceControl/pos";
-  hpp_.problem()->setNumericalConstraints ("attitudeDeviceControl", n);
+  prior[0] = 0; prior[1] = 0;
+  hpp_.problem()->setNumericalConstraints ("attitudeDeviceControl", n, prior);
   hpp::floatSeq_var qin = hpp_.robot()->getCurrentConfig ();
   hpp::floatSeq_var qproj;
   hpp::floatSeq_out qp_out (qproj);
