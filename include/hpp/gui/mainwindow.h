@@ -16,7 +16,7 @@
 #include <hpp/gui/dialog/dialogloadenvironment.h>
 #include <hpp/gui/dialog/pluginmanagerdialog.h>
 
-#include <hpp/gui/deprecated.hh>
+#include <hpp/gui/settings.hh>
 
 namespace Ui {
   class MainWindow;
@@ -27,7 +27,7 @@ class MainWindow : public QMainWindow
   Q_OBJECT
   
 public:
-  explicit MainWindow(QWidget *parent = 0);
+  explicit MainWindow(Settings settings, QWidget *parent = 0);
   ~MainWindow();
 
   static MainWindow* instance ();
@@ -104,7 +104,7 @@ private:
   void writeSettings ();
 
   static MainWindow* instance_;
-  bool autoWriteSettings_;
+  Settings settings_;
 
   Ui::MainWindow* ui_;
   OSGWidget* centralWidget_;

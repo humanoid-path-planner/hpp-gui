@@ -37,7 +37,7 @@ ADD_REQUIRED_DEPENDENCY("openscenegraph-osgQt")
 ADD_REQUIRED_DEPENDENCY("openthreads >= 3.2")
 ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba")
 
-SET(BOOST_COMPONENTS system regex)
+SET(BOOST_COMPONENTS program_options system regex)
 SEARCH_FOR_BOOST ()
 
 ADD_OPTIONAL_DEPENDENCY("hpp-corbaserver")
@@ -65,6 +65,7 @@ SET (${PROJECT_NAME}_HEADERS_MOC
   )
 SET (${PROJECT_NAME}_HEADERS_NO_MOC
   include/hpp/gui/fwd.h
+  include/hpp/gui/settings.hh
   include/hpp/gui/safeapplication.h
   include/hpp/gui/windows-manager.h
   include/hpp/gui/color-map.h
@@ -101,6 +102,7 @@ CONFIGURE_FILE (src/hpp-gui.in
 
 SET (${PROJECT_NAME}_SOURCES
   ${CMAKE_BINARY_DIR}/src/main.cc
+  src/settings.cc
   src/windows-manager.cc
   src/safeapplication.cc
   src/mainwindow.cc

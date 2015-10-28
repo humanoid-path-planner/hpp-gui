@@ -15,9 +15,9 @@
 
 MainWindow* MainWindow::instance_ = NULL;
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(Settings settings, QWidget *parent) :
   QMainWindow(parent),
-  autoWriteSettings_ (false),
+  settings_ (settings),
   ui_(new Ui::MainWindow),
   centralWidget_ (),
   osgViewerManagers_ (WindowsManager::create()),
@@ -61,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-  if (autoWriteSettings_)
+  if (settings_.autoWriteSettings)
     writeSettings();
   worker_.quit();
   osgServer_.wait();
@@ -427,7 +427,9 @@ void MainWindow::readSettings()
 {
   do {
       QSettings robot (QSettings::SystemScope,
-                       QCoreApplication::organizationName(), "robots", this);
+                       QCoreApplication::organizationName(),
+                       QString::fromStdString(settings_.predifinedRobotConf),
+                       this);
       if (robot.status() != QSettings::NoError) {
           logError(QString ("Enable to open configuration file ") + robot.fileName());
           break;
@@ -461,7 +463,9 @@ void MainWindow::readSettings()
     } while (0);
   do {
       QSettings env (QSettings::SystemScope,
-                     QCoreApplication::organizationName(), "environments", this);
+                     QCoreApplication::organizationName(),
+                     QString::fromStdString(settings_.predifinedEnvConf),
+                     this);
       if (env.status() != QSettings::NoError) {
           logError(QString ("Enable to open configuration file ") + env.fileName());
           break;
@@ -492,19 +496,19 @@ void MainWindow::readSettings()
     } while (0);
   do {
       QSettings env (QSettings::SystemScope,
-                     QCoreApplication::organizationName(), "settings", this);
+                     QCoreApplication::organizationName(),
+                     QString::fromStdString(settings_.configurationFile),
+                     this);
       if (env.status() != QSettings::NoError) {
           logError(QString ("Enable to open configuration file ") + env.fileName());
           break;
         } else {
           env.beginGroup("plugins");
           foreach (QString name, env.childKeys()) {
-              pluginManager_.add(name, this, env.value(name, true).toBool());
+              pluginManager_.add(name, this,
+                  (settings_.noPlugin)?false:env.value(name, true).toBool()
+                  );
           }
-          env.endGroup ();
-          env.beginGroup ("GUI");
-          autoWriteSettings_ = env.value ("autoWriteSettings",
-              autoWriteSettings_).toBool ();
           env.endGroup ();
           log (QString ("Read configuration file ") + env.fileName());
         }
@@ -515,7 +519,9 @@ void MainWindow::writeSettings()
 {
   do {
       QSettings robot (QSettings::SystemScope,
-                       QCoreApplication::organizationName(), "robots", this);
+                       QCoreApplication::organizationName(),
+                       QString::fromStdString(settings_.predifinedRobotConf),
+                       this);
       if (!robot.isWritable()) {
           log (QString("Configuration file ") + robot.fileName() + QString(" is not writable."));
           break;
@@ -537,7 +543,9 @@ void MainWindow::writeSettings()
     } while (0);
   do {
       QSettings env (QSettings::SystemScope,
-                     QCoreApplication::organizationName(), "environments", this);
+                     QCoreApplication::organizationName(),
+                     QString::fromStdString(settings_.predifinedEnvConf),
+                     this);
       if (!env.isWritable()) {
           log(QString ("Configuration file") + env.fileName() + QString("is not writable."));
           break;
@@ -556,7 +564,9 @@ void MainWindow::writeSettings()
     } while (0);
   do {
       QSettings env (QSettings::SystemScope,
-                     QCoreApplication::organizationName(), "settings", this);
+                     QCoreApplication::organizationName(),
+                     QString::fromStdString(settings_.configurationFile),
+                     this);
       if (env.status() != QSettings::NoError) {
           logError(QString ("Enable to open configuration file ") + env.fileName());
           break;
@@ -564,11 +574,9 @@ void MainWindow::writeSettings()
           env.beginGroup("plugins");
           for (PluginManager::Map::const_iterator p = pluginManager_.plugins ().constBegin();
             p != pluginManager_.plugins().constEnd(); p++) {
-            env.setValue(p.key(), p.value()->isLoaded());
+            env.setValue(p.key(),
+                  (settings_.noPlugin)?false:p.value()->isLoaded());
           }
-          env.endGroup ();
-          env.beginGroup ("GUI");
-          env.setValue ("autoWriteSettings", autoWriteSettings_);
           env.endGroup ();
           log (QString ("Read configuration file ") + env.fileName());
         }
