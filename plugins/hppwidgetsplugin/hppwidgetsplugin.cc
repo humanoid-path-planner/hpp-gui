@@ -101,6 +101,9 @@ void HppWidgetsPlugin::init()
            this, SLOT (selectJointFromBodyName (std::string)));
   connect (this, SIGNAL (logJobFailed(int,QString)),
            main, SLOT (logJobFailed(int, QString)));
+
+  main->osg()->createGroup("joints");
+  main->osg()->addToGroup("joints", "hpp-gui");
 }
 
 QString HppWidgetsPlugin::name() const
@@ -190,14 +193,12 @@ void HppWidgetsPlugin::applyCurrentConfiguration()
       ite->item->updateConfig (c.in());
     }
   for (std::list<std::string>::const_iterator it = jointFrames_.begin ();
-      it != jointFrames_.end (); ++it) {
-      std::string target = *it;
-      boost::replace_all (target, "/", "__");
-    std::string n = "hpp-gui/" + target + "_frame";
-    hpp::Transform__var t = client()->robot()->getJointPosition(it->c_str());
-    for (size_t i = 0; i < 7; ++i) T[i] = (float)t[i];
-    main->osg()->applyConfiguration (n.c_str (), T);
-  }
+       it != jointFrames_.end (); ++it) {
+      std::string n = escapeJointName(*it);
+      hpp::Transform__var t = client()->robot()->getJointPosition(it->c_str());
+      for (size_t i = 0; i < 7; ++i) T[i] = (float)t[i];
+      main->osg()->applyConfiguration (n.c_str (), T);
+    }
   main->osg()->refresh();
   main->statusBar()->clearMessage();
 }
@@ -284,8 +285,8 @@ QList<QAction *> HppWidgetsPlugin::getJointActions(const std::string &jointName)
   a= new JointAction (tr("Set &bounds..."), jointName, 0);
   connect (a, SIGNAL (triggered(std::string)), jointTreeWidget_, SLOT (openJointBoundDialog(std::string)));
   l.append(a);
-  a= new JointAction (tr("Show/hide joint &frame"), jointName, 0);
-  connect (a, SIGNAL (triggered(std::string)), SLOT (showHideJointFrame(std::string)));
+  a= new JointAction (tr("Add joint &frame"), jointName, 0);
+  connect (a, SIGNAL (triggered(std::string)), SLOT (addJointFrame(std::string)));
   l.append(a);
   a = new JointAction (tr("Display &roadmap"), jointName, 0);
   connect (a, SIGNAL (triggered(std::string)), this, SLOT (displayRoadmap(std::string)));
@@ -340,39 +341,20 @@ void HppWidgetsPlugin::displayRoadmap(const std::string &jointName)
   delete r;
 }
 
-void HppWidgetsPlugin::showHideJointFrame (const std::string& jointName)
+void HppWidgetsPlugin::addJointFrame (const std::string& jointName)
 {
-  std::list <std::string>::iterator it =
-    std::lower_bound (jointFrames_.begin (), jointFrames_.end (), jointName);
   MainWindow* main = MainWindow::instance ();
-  std::string target = jointName;
-  boost::replace_all (target, "/", "__");
-  std::string n = "hpp-gui/" + target + "_frame";
+  std::string target = createJointGroup(jointName);
+  const std::string n = target + "/XYZ";
   const float color[4] = {1,0,0,1};
-  if (it == jointFrames_.end () || *it != jointName) {
-    // Show
-    /// This returns false if the frame already exists
-    if (main->osg()->addXYZaxis (n.c_str(), color, 0.005f, 1.f)) {
-      float p[7];
-      hpp::Transform__var t = client()->robot()->getJointPosition(jointName.c_str());
-      for (std::size_t i = 0; i < 7; ++i) p[i] = (float)t[i];
-      main->osg()->applyConfiguration (n.c_str (), p);
-      main->osg()->setVisibility (n.c_str (), "ALWAYS_ON_TOP");
-      main->osg()->refresh();
-      jointFrames_.insert (it, jointName);
+
+  /// This returns false if the frame already exists
+  if (main->osg()->addXYZaxis (n.c_str(), color, 0.005f, 1.f)) {
+      main->osg()->setVisibility (n.c_str(), "ALWAYS_ON_TOP");
       return;
     } else {
-      main->osg()->setVisibility (n.c_str (), "ALWAYS_ON_TOP");
+      main->osg()->setVisibility (n.c_str(), "ALWAYS_ON_TOP");
     }
-  } else {
-    // Hide
-    jointFrames_.erase (it);
-    try {
-      main->osg()->setVisibility (n.c_str (), "OFF");
-    } catch (const gepetto::Error& e) {
-      qDebug () << "Caught a graphics error:" << e.msg;
-    }
-  }
 }
 
 void HppWidgetsPlugin::computeObjectPosition()
@@ -389,6 +371,31 @@ void HppWidgetsPlugin::computeObjectPosition()
     }
   main->osg()->refresh();
   delete cfg;
+}
+
+std::string HppWidgetsPlugin::escapeJointName(const std::string jn)
+{
+  std::string target = jn;
+  boost::replace_all (target, "/", "__");
+  return target;
+}
+
+std::string HppWidgetsPlugin::createJointGroup(const std::string jn)
+{
+  MainWindow* main = MainWindow::instance ();
+  std::string target = escapeJointName(jn);
+  if (main->osg()->createGroup(target.c_str())) {
+      main->osg()->addToGroup(target.c_str(), "joints");
+
+      hpp::Transform__var t = client()->robot()->getJointPosition
+          (jn.c_str());
+      float p[7];
+      for (std::size_t i = 0; i < 7; ++i) p[i] = (float)t[i];
+      jointFrames_.push_back(jn);
+      main->osg()->applyConfiguration (target.c_str(), p);
+      main->osg()->refresh();
+    }
+  return target;
 }
 
 Q_EXPORT_PLUGIN2 (hppwidgetsplugin, HppWidgetsPlugin)

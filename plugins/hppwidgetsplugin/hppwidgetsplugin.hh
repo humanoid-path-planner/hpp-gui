@@ -77,7 +77,7 @@ public:
 
 protected slots:
   virtual void displayRoadmap (const std::string& jointName);
-  void showHideJointFrame (const std::string& jointName);
+  void addJointFrame (const std::string& jointName);
 
 private:
   void computeObjectPosition();
@@ -91,6 +91,9 @@ private:
   HppClient* hpp_;
 
 protected:
+  static std::string escapeJointName (const std::string jn);
+  std::string createJointGroup (const std::string jn);
+
   JointMap jointMap_;
   std::list <std::string> jointFrames_;
 };

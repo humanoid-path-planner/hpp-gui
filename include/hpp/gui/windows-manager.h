@@ -2,7 +2,7 @@
 #define WINDOWSMANAGER_H
 
 #include <hpp/gui/fwd.h>
-#include <gepetto/viewer/corba/windows-manager.h>
+#include <gepetto/viewer/corba/windows-manager.hh>
 
 class WindowsManager : public graphics::WindowsManager
 {

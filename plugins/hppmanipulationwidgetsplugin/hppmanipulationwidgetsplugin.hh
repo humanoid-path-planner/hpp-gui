@@ -1,6 +1,8 @@
 #ifndef HPPMANIPULATIONWIDGETSPLUGIN_HH
 #define HPPMANIPULATIONWIDGETSPLUGIN_HH
 
+#include <QToolBar>
+
 #include <hpp/gui/plugin-interface.h>
 #include <hpp/corbaserver/manipulation/client.hh>
 #undef __robot_hh__
@@ -45,8 +47,13 @@ public:
 
   virtual Roadmap* createRoadmap (const std::string& jointName);
 
+public slots:
+  void drawContacts ();
+
 private:
   HppManipClient* hpp_;
+
+  QToolBar *toolBar_;
 };
 
 #endif // HPPMANIPULATIONWIDGETSPLUGIN_HH
