@@ -1,30 +1,35 @@
-#ifndef HPPCORBASERVERPLUGIN_HH
-#define HPPCORBASERVERPLUGIN_HH
+#ifndef HPP_GUI_HPPCORBASERVERPLUGIN_HH
+#define HPP_GUI_HPPCORBASERVERPLUGIN_HH
 
-#include <hpp/gui/plugin-interface.h>
-#include <hpp/gui/omniorb/omniorbthread.h>
+#include <hpp/gui/plugin-interface.hh>
+#include <hpp/gui/omniorb/omniorbthread.hh>
 
-class HppCorbaserverPlugin : public QObject, public PluginInterface
-{
-  Q_OBJECT
-  Q_INTERFACES (PluginInterface)
+namespace hpp {
+  namespace gui {
+    class HppCorbaserverPlugin : public QObject,
+    public PluginInterface
+    {
+      Q_OBJECT
+        Q_INTERFACES (hpp::gui::PluginInterface)
 
-public:
-  explicit HppCorbaserverPlugin ();
+      public:
+        explicit HppCorbaserverPlugin ();
 
-  virtual ~HppCorbaserverPlugin ();
+        virtual ~HppCorbaserverPlugin ();
 
 signals:
 
-public slots:
+        public slots:
 
-  // PluginInterface interface
-public:
-  void init();
-  QString name() const;
+          // PluginInterface interface
+      public:
+          void init();
+          QString name() const;
 
-private:
-  CorbaServer* server_;
-};
+      private:
+          CorbaServer* server_;
+    };
+  } // namespace gui
+} // namespace hpp
 
-#endif // HPPCORBASERVERPLUGIN_HH
+#endif // HPP_GUI_HPPCORBASERVERPLUGIN_HH

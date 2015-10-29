@@ -1,162 +1,164 @@
-#include "hpp/gui/dialog/pluginmanagerdialog.h"
+#include "hpp/gui/dialog/pluginmanagerdialog.hh"
 #include "ui_pluginmanagerdialog.h"
 
 #include <QDebug>
 
-#include "hpp/gui/plugin-interface.h"
+#include "hpp/gui/plugin-interface.hh"
 
-QList <QDir> PluginManager::pluginDirs_;
+namespace hpp {
+  namespace gui {
+    QList <QDir> PluginManager::pluginDirs_;
 
-bool PluginManager::add(const QString &name, QWidget *parent, bool load)
-{
-  QString filename = name;
-  if (!QDir::isAbsolutePath(name)) {
-    foreach (QDir dir, pluginDirs_) {
-        if (dir.exists(name)) {
+    bool PluginManager::add(const QString &name, QWidget *parent, bool load)
+    {
+      QString filename = name;
+      if (!QDir::isAbsolutePath(name)) {
+        foreach (QDir dir, pluginDirs_) {
+          if (dir.exists(name)) {
             filename = dir.absoluteFilePath(name);
+          }
         }
+      }
+      plugins_[name] = new QPluginLoader (filename, parent);
+      if (load) return loadPlugin(name);
+      return false;
     }
-  }
-  plugins_[name] = new QPluginLoader (filename, parent);
-  if (load) return loadPlugin(name);
-  return false;
-}
 
-QIcon PluginManager::icon(const QPluginLoader *pl)
-{
-  if (pl->isLoaded()) {
-      const PluginInterface* pi = const_instance_cast <PluginInterface> (pl);
-      if (pi && pi->isInit ()) {
+    QIcon PluginManager::icon(const QPluginLoader *pl)
+    {
+      if (pl->isLoaded()) {
+        const PluginInterface* pi = const_instance_cast <PluginInterface> (pl);
+        if (pi && pi->isInit ()) {
           return QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
         }
+      }
+      return QApplication::style()->standardIcon(QStyle::SP_MessageBoxCritical);
     }
-  return QApplication::style()->standardIcon(QStyle::SP_MessageBoxCritical);
-}
 
-QString PluginManager::status(const QPluginLoader *pl)
-{
-  if (pl->isLoaded()) {
-    const PluginInterface* pi = const_instance_cast <PluginInterface> (pl);
-    if (pi) {
-      if (pi->isInit ())
-        return QString ("Plugin loaded correctly");
-      else
-        return pi->errorMsg ();
-    } else
-      return QString ("Wrong interface");
-  } else
-      return pl->errorString();
-}
+    QString PluginManager::status(const QPluginLoader *pl)
+    {
+      if (pl->isLoaded()) {
+        const PluginInterface* pi = const_instance_cast <PluginInterface> (pl);
+        if (pi) {
+          if (pi->isInit ())
+            return QString ("Plugin loaded correctly");
+          else
+            return pi->errorMsg ();
+        } else
+          return QString ("Wrong interface");
+      } else
+        return pl->errorString();
+    }
 
-void PluginManager::addPluginDir(const QString &path)
-{
-    QDir dir (QDir::cleanPath(path));
-    QDir can (dir.canonicalPath());
-    if (can.exists() && can.isReadable())
+    void PluginManager::addPluginDir(const QString &path)
+    {
+      QDir dir (QDir::cleanPath(path));
+      QDir can (dir.canonicalPath());
+      if (can.exists() && can.isReadable())
         pluginDirs_.append (can);
-}
-
-bool PluginManager::loadPlugin(const QString &name)
-{
-  if (!plugins_[name]->load()) {
-      qDebug() << name << ": " << plugins_[name]->errorString();
-      return false;
     }
-  PluginInterface* pi = qobject_cast <PluginInterface*> (plugins_[name]->instance());
-  if (!pi) {
-      qDebug() << name << ": Wrong interface.";
-      return false;
+
+    bool PluginManager::loadPlugin(const QString &name)
+    {
+      if (!plugins_[name]->load()) {
+        qDebug() << name << ": " << plugins_[name]->errorString();
+        return false;
+      }
+      PluginInterface* pi = qobject_cast <PluginInterface*> (plugins_[name]->instance());
+      if (!pi) {
+        qDebug() << name << ": Wrong interface.";
+        return false;
+      }
+      pi->doInit();
+      return pi->isInit ();
     }
-  pi->doInit();
-  return pi->isInit ();
-}
 
-bool PluginManager::unloadPlugin(const QString &name)
-{
-    return plugins_[name]->unload();
-}
+    bool PluginManager::unloadPlugin(const QString &name)
+    {
+      return plugins_[name]->unload();
+    }
 
-PluginManagerDialog::PluginManagerDialog(PluginManager *pm, QWidget *parent) :
-  QDialog(parent),
-  ui_(new Ui::PluginManagerDialog),
-  pm_ (pm)
-{
-  ui_->setupUi(this);
+    PluginManagerDialog::PluginManagerDialog(PluginManager *pm, QWidget *parent) :
+      QDialog(parent),
+      ui_(new ::Ui::PluginManagerDialog),
+      pm_ (pm)
+    {
+      ui_->setupUi(this);
 
-  updateList ();
+      updateList ();
 
-  ui_->pluginList->setColumnHidden(FILE, true);
+      ui_->pluginList->setColumnHidden(FILE, true);
 
-  connect(ui_->pluginList, SIGNAL (currentItemChanged (QTableWidgetItem*,QTableWidgetItem*)),
+      connect(ui_->pluginList, SIGNAL (currentItemChanged (QTableWidgetItem*,QTableWidgetItem*)),
           this, SLOT (onItemChanged(QTableWidgetItem*,QTableWidgetItem*)));
-  connect(ui_->pluginList, SIGNAL(customContextMenuRequested(QPoint)),
+      connect(ui_->pluginList, SIGNAL(customContextMenuRequested(QPoint)),
           this, SLOT(contextMenu(QPoint)));
-}
+    }
 
-PluginManagerDialog::~PluginManagerDialog()
-{
-  delete ui_;
-}
+    PluginManagerDialog::~PluginManagerDialog()
+    {
+      delete ui_;
+    }
 
-void PluginManagerDialog::onItemChanged(QTableWidgetItem *current,
-                                        QTableWidgetItem */*previous*/)
-{
-  if (!current) return;
-  QString key = ui_->pluginList->item(current->row(), FILE)->text();
-  const QPluginLoader* pl = pm_->plugins()[key];
-  ui_->pluginMessage->setText(pm_->status (pl));
-}
+    void PluginManagerDialog::onItemChanged(QTableWidgetItem *current,
+        QTableWidgetItem */*previous*/)
+    {
+      if (!current) return;
+      QString key = ui_->pluginList->item(current->row(), FILE)->text();
+      const QPluginLoader* pl = pm_->plugins()[key];
+      ui_->pluginMessage->setText(pm_->status (pl));
+    }
 
-void PluginManagerDialog::contextMenu(const QPoint &pos)
-{
-    int row = ui_->pluginList->rowAt(pos.y());
-    if (row == -1) return;
-    QString key = ui_->pluginList->item(row, FILE)->text();
-    QMenu contextMenu (tr("Plugin"), ui_->pluginList);
-    if (pm_->plugins()[key]->isLoaded()) {
+    void PluginManagerDialog::contextMenu(const QPoint &pos)
+    {
+      int row = ui_->pluginList->rowAt(pos.y());
+      if (row == -1) return;
+      QString key = ui_->pluginList->item(row, FILE)->text();
+      QMenu contextMenu (tr("Plugin"), ui_->pluginList);
+      if (pm_->plugins()[key]->isLoaded()) {
         QAction* unload = contextMenu.addAction("&Unload", &signalMapper_, SLOT(map()));
         signalMapper_.setMapping (unload, key);
         connect(&signalMapper_, SIGNAL (mapped(QString)), this, SLOT(unload(QString)));
         contextMenu.exec(ui_->pluginList->mapToGlobal(pos));
-    } else {
+      } else {
         QAction* load = contextMenu.addAction("&Load", &signalMapper_, SLOT(map()));
         signalMapper_.setMapping (load, key);
         connect(&signalMapper_, SIGNAL (mapped(QString)), this, SLOT(load(QString)));
         contextMenu.exec(ui_->pluginList->mapToGlobal(pos));
+      }
     }
-}
 
-void PluginManagerDialog::load(const QString &name)
-{
-    pm_->loadPlugin(name);
-    updateList ();
-}
+    void PluginManagerDialog::load(const QString &name)
+    {
+      pm_->loadPlugin(name);
+      updateList ();
+    }
 
-void PluginManagerDialog::unload(const QString &name)
-{
-    pm_->unloadPlugin (name);
-    updateList ();
-}
+    void PluginManagerDialog::unload(const QString &name)
+    {
+      pm_->unloadPlugin (name);
+      updateList ();
+    }
 
-const std::size_t PluginManagerDialog::NAME = 0;
-const std::size_t PluginManagerDialog::FILE = 1;
-const std::size_t PluginManagerDialog::VERSION = 2;
-const std::size_t PluginManagerDialog::FULLPATH = 3;
+    const std::size_t PluginManagerDialog::NAME = 0;
+    const std::size_t PluginManagerDialog::FILE = 1;
+    const std::size_t PluginManagerDialog::VERSION = 2;
+    const std::size_t PluginManagerDialog::FULLPATH = 3;
 
-void PluginManagerDialog::updateList()
-{
-    while (ui_->pluginList->rowCount() > 0)
+    void PluginManagerDialog::updateList()
+    {
+      while (ui_->pluginList->rowCount() > 0)
         ui_->pluginList->removeRow(0);
-    for (PluginManager::Map::const_iterator p = pm_->plugins ().constBegin();
-         p != pm_->plugins().constEnd(); p++) {
+      for (PluginManager::Map::const_iterator p = pm_->plugins ().constBegin();
+          p != pm_->plugins().constEnd(); p++) {
         QString name = p.value()->fileName(),
-            filename = p.key(),
-            fullpath = p.value()->fileName(),
-            version = "";
+                filename = p.key(),
+                fullpath = p.value()->fileName(),
+                version = "";
         if (p.value ()->isLoaded ()) {
-            PluginInterface* pi = qobject_cast <PluginInterface*> (p.value()->instance());
-            name = pi->name();
-            // version = pi->version();
+          PluginInterface* pi = qobject_cast <PluginInterface*> (p.value()->instance());
+          name = pi->name();
+          // version = pi->version();
         }
         QIcon icon = pm_->icon (p.value());
 
@@ -166,5 +168,7 @@ void PluginManagerDialog::updateList()
         ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, VERSION, new QTableWidgetItem (version));
         ui_->pluginList->setItem(ui_->pluginList->rowCount() - 1, FULLPATH, new QTableWidgetItem (fullpath));
       }
-    ui_->pluginList->resizeColumnsToContents();
-}
+      ui_->pluginList->resizeColumnsToContents();
+    }
+  } // namespace gui
+} // namespace hpp

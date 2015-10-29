@@ -53,22 +53,22 @@ IF (HPP_DEBUG)
 ENDIF()
 
 SET (${PROJECT_NAME}_HEADERS_MOC
-  include/hpp/gui/mainwindow.h
-  include/hpp/gui/osgwidget.h
-  include/hpp/gui/tree-item.h
-  include/hpp/gui/ledindicator.h
-  include/hpp/gui/plugin-interface.h
-  include/hpp/gui/omniorb/omniorbthread.h
-  include/hpp/gui/dialog/dialogloadrobot.h
-  include/hpp/gui/dialog/dialogloadenvironment.h
-  include/hpp/gui/dialog/pluginmanagerdialog.h
+  include/hpp/gui/mainwindow.hh
+  include/hpp/gui/osgwidget.hh
+  include/hpp/gui/tree-item.hh
+  include/hpp/gui/ledindicator.hh
+  include/hpp/gui/plugin-interface.hh
+  include/hpp/gui/omniorb/omniorbthread.hh
+  include/hpp/gui/dialog/dialogloadrobot.hh
+  include/hpp/gui/dialog/dialogloadenvironment.hh
+  include/hpp/gui/dialog/pluginmanagerdialog.hh
   )
 SET (${PROJECT_NAME}_HEADERS_NO_MOC
-  include/hpp/gui/fwd.h
+  include/hpp/gui/fwd.hh
   include/hpp/gui/settings.hh
-  include/hpp/gui/safeapplication.h
-  include/hpp/gui/windows-manager.h
-  include/hpp/gui/color-map.h
+  include/hpp/gui/safeapplication.hh
+  include/hpp/gui/windows-manager.hh
+  include/hpp/gui/color-map.hh
   )
 SET (${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}

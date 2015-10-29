@@ -6,14 +6,15 @@
 
 #include <boost/program_options.hpp>
 
-#include "hpp/gui/safeapplication.h"
-#include "hpp/gui/mainwindow.h"
-#include "hpp/gui/dialog/pluginmanagerdialog.h"
+#include "hpp/gui/safeapplication.hh"
+#include "hpp/gui/mainwindow.hh"
+#include "hpp/gui/dialog/pluginmanagerdialog.hh"
 #include "hpp/gui/settings.hh"
 
 #include <X11/Xlib.h>
 
 namespace po = boost::program_options;
+using namespace hpp::gui
 
 bool setupProgramOptions (int argc, char *argv[], Settings& s) {
   bool help = false;

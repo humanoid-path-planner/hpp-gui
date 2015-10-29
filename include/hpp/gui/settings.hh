@@ -1,19 +1,23 @@
-#ifndef SETTINGS_HH
-#define SETTINGS_HH
+#ifndef HPP_GUI_SETTINGS_HH
+#define HPP_GUI_SETTINGS_HH
 
 #include <ostream>
 #include <string>
 
-struct Settings {
-  std::string configurationFile;
-  std::string predifinedRobotConf;
-  std::string predifinedEnvConf;
+namespace hpp {
+  namespace gui {
+    struct Settings {
+      std::string configurationFile;
+      std::string predifinedRobotConf;
+      std::string predifinedEnvConf;
 
-  bool verbose;
-  bool noPlugin;
-  bool autoWriteSettings;
+      bool verbose;
+      bool noPlugin;
+      bool autoWriteSettings;
 
-  std::ostream& print (std::ostream& os);
-};
+      std::ostream& print (std::ostream& os);
+    };
+  } // namespace gui
+} // namespace hpp
 
-#endif // SETTINGS_HH
+#endif // HPP_GUI_SETTINGS_HH

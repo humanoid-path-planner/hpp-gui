@@ -1,27 +1,31 @@
-#ifndef MANIPULATION_ROADMAP_HH
-#define MANIPULATION_ROADMAP_HH
+#ifndef HPP_GUI_MANIPULATION_ROADMAP_HH
+#define HPP_GUI_MANIPULATION_ROADMAP_HH
 
-#include <hpp/gui/color-map.h>
+#include <hpp/gui/color-map.hh>
 #include <hppmanipulationwidgetsplugin/hppmanipulationwidgetsplugin.hh>
 #include <hppwidgetsplugin/roadmap.hh>
 
-class ManipulationRoadmap : public Roadmap
-{
-public:
-  typedef Roadmap::NodeID NodeID;
-  typedef Roadmap::Color Color;
+namespace hpp {
+  namespace gui {
+    class ManipulationRoadmap : public Roadmap
+    {
+      public:
+        typedef Roadmap::NodeID NodeID;
+        typedef Roadmap::Color Color;
 
-  ManipulationRoadmap (HppManipulationWidgetsPlugin* plugin_);
+        ManipulationRoadmap (HppManipulationWidgetsPlugin* plugin_);
 
-  virtual ~ManipulationRoadmap () {}
+        virtual ~ManipulationRoadmap () {}
 
-  virtual void initRoadmap (const std::string jointName);
+        virtual void initRoadmap (const std::string jointName);
 
-  virtual void nodeColor (NodeID nodeId, Color& color);
+        virtual void nodeColor (NodeID nodeId, Color& color);
 
-private:
-  HppManipulationWidgetsPlugin* plugin_;
-  ColorMap nodeColorMap_;
-};
+      private:
+        HppManipulationWidgetsPlugin* plugin_;
+        ColorMap nodeColorMap_;
+    };
+  } // namespace gui
+} // namespace hpp
 
-#endif // MANIPULATION_ROADMAP_HH
+#endif // HPP_GUI_MANIPULATION_ROADMAP_HH
