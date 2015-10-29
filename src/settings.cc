@@ -16,12 +16,16 @@
 
 #include <hpp/gui/settings.hh>
 
-std::ostream& Settings::print (std::ostream& os) {
-  return os
-    <<   "Configuration file:     \t" << configurationFile
-    << "\nPredefined robots:      \t" << predifinedRobotConf
-    << "\nPredefined environments:\t" << predifinedEnvConf
-    << "\nVerbose:                \t" << verbose
-    << "\nNo plugin:              \t" << noPlugin
-    ;
-}
+namespace hpp {
+  namespace gui {
+    std::ostream& Settings::print (std::ostream& os) {
+      return os
+        <<   "Configuration file:     \t" << configurationFile
+        << "\nPredefined robots:      \t" << predifinedRobotConf
+        << "\nPredefined environments:\t" << predifinedEnvConf
+        << "\nVerbose:                \t" << verbose
+        << "\nNo plugin:              \t" << noPlugin
+        ;
+    }
+  } // namespace gui
+} // namespace hpp

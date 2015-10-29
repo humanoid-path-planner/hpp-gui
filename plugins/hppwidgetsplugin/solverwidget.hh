@@ -12,69 +12,73 @@ namespace Ui {
   class SolverWidget;
 }
 
-class SolverWidget : public QWidget
-{
-  Q_OBJECT
+namespace hpp {
+  namespace gui {
+    class SolverWidget : public QWidget
+    {
+      Q_OBJECT
 
-public:
-  enum Select {
-    Planner,
-    Optimizer,
-    Projector,
-    All
-  };
+      public:
+        enum Select {
+          Planner,
+          Optimizer,
+          Projector,
+          All
+        };
 
-  SolverWidget (HppWidgetsPlugin* plugin, QWidget* parent = 0);
+        SolverWidget (HppWidgetsPlugin* plugin, QWidget* parent = 0);
 
-  ~SolverWidget ();
+        ~SolverWidget ();
 
-  virtual void update (Select s = All);
+        virtual void update (Select s = All);
 
 signals:
-  void problemSolved ();
+        void problemSolved ();
 
-protected slots:
-  void selectPathPlanner (const QString& text);
-  void selectPathOptimizer (const QString& text);
-  void selectPathProjector (int index);
-  void solve ();
-  void solveAndDisplay ();
-  void solveAndDisplayDone ();
-  void interrupt ();
-  void loadRoadmap ();
-  void saveRoadmap ();
+        protected slots:
+          void selectPathPlanner (const QString& text);
+        void selectPathOptimizer (const QString& text);
+        void selectPathProjector (int index);
+        void solve ();
+        void solveAndDisplay ();
+        void solveAndDisplayDone ();
+        void interrupt ();
+        void loadRoadmap ();
+        void saveRoadmap ();
 
-  void handleWorkerDone (int id);
+        void handleWorkerDone (int id);
 
-private:
-  class SolveAndDisplay {
-  public:
-    bool interrupt;
-    bool isSolved;
-    QFuture <void> status;
-    QFutureWatcher <void> watcher;
-    HppWidgetsPlugin* plugin;
-    SolverWidget* parent;
-    void solve ();
-    SolveAndDisplay (HppWidgetsPlugin* p, SolverWidget* par) :
-      interrupt (false), isSolved (false),
-      plugin (p), parent (par)
-    {}
-  };
+      private:
+        class SolveAndDisplay {
+          public:
+            bool interrupt;
+            bool isSolved;
+            QFuture <void> status;
+            QFutureWatcher <void> watcher;
+            HppWidgetsPlugin* plugin;
+            SolverWidget* parent;
+            void solve ();
+            SolveAndDisplay (HppWidgetsPlugin* p, SolverWidget* par) :
+              interrupt (false), isSolved (false),
+              plugin (p), parent (par)
+          {}
+        };
 
-  void selectButtonSolve (bool solve);
-  QComboBox* planner ();
-  QComboBox* projector ();
-  QComboBox* optimizer ();
+        void selectButtonSolve (bool solve);
+        QComboBox* planner ();
+        QComboBox* projector ();
+        QComboBox* optimizer ();
 
-  Ui::SolverWidget* ui_;
-  HppWidgetsPlugin* plugin_;
-  MainWindow* main_;
+        ::Ui::SolverWidget* ui_;
+        HppWidgetsPlugin* plugin_;
+        MainWindow* main_;
 
-  QComboBox *planner_, *projector_, *optimizer_;
+        QComboBox *planner_, *projector_, *optimizer_;
 
-  int solveDoneId_;
-  SolveAndDisplay solveAndDisplay_;
-};
+        int solveDoneId_;
+        SolveAndDisplay solveAndDisplay_;
+    };
+  } // namespace gui
+} // namespace hpp
 
 #endif // HPP_GUI_SOLVERWIDGET_HH

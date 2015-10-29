@@ -12,80 +12,84 @@
 #include <hpp/gui/fwd.hh>
 #include <gepetto/viewer/node.h>
 
-class BodyTreeItem;
+namespace hpp {
+  namespace gui {
+    class BodyTreeItem;
 
-class VisibilityItem :public QStandardItem
-{
-public:
-  VisibilityItem (BodyTreeItem* parent, Qt::CheckState state = Qt::Checked) :
-    QStandardItem ("Visible"),
-    state_ (state),
-    parent_ (parent)
-  {
-    setEditable(false);
-    setCheckable(true);
-    setCheckState(state_);
-  }
+    class VisibilityItem :public QStandardItem
+    {
+      public:
+        VisibilityItem (BodyTreeItem* parent, Qt::CheckState state = Qt::Checked) :
+          QStandardItem ("Visible"),
+          state_ (state),
+          parent_ (parent)
+      {
+        setEditable(false);
+        setCheckable(true);
+        setCheckState(state_);
+      }
 
-  virtual int type() {
-    return QStandardItem::UserType+2;
-  }
+        virtual int type() {
+          return QStandardItem::UserType+2;
+        }
 
-  virtual QStandardItem* clone () const
-  {
-    return new VisibilityItem (parent_);
-  }
+        virtual QStandardItem* clone () const
+        {
+          return new VisibilityItem (parent_);
+        }
 
-  void update ();
+        void update ();
 
-private:
-  Qt::CheckState state_;
-  BodyTreeItem* parent_;
-};
+      private:
+        Qt::CheckState state_;
+        BodyTreeItem* parent_;
+    };
 
-class BodyTreeItem : public QObject, public QStandardItem
-{
-  Q_OBJECT
+    class BodyTreeItem : public QObject, public QStandardItem
+    {
+      Q_OBJECT
 
-public:
-  BodyTreeItem (graphics::NodePtr_t node);
+      public:
+        BodyTreeItem (graphics::NodePtr_t node);
 
-  virtual QStandardItem* clone () const;
+        virtual QStandardItem* clone () const;
 
-  virtual int type() {
-    return QStandardItem::UserType+1;
-  }
+        virtual int type() {
+          return QStandardItem::UserType+1;
+        }
 
-  graphics::NodePtr_t node () const;
+        graphics::NodePtr_t node () const;
 
-  void populateContextMenu (QMenu* menu);
+        void populateContextMenu (QMenu* menu);
 
-  void setParentGroup (const std::string& parent);
+        void setParentGroup (const std::string& parent);
 
-public:
-  void attachToWindow (unsigned int windowID);
+      public:
+        void attachToWindow (unsigned int windowID);
 
-protected:
-  void init ();
+      protected:
+        void init ();
 
-protected slots:
-  void setViewingMode (QString mode);
-  void setVisibilityMode (QString mode);
-  void removeFromGroup ();
-  void remove ();
-  void addLandmark ();
-  void deleteLandmark ();
+        protected slots:
+          void setViewingMode (QString mode);
+        void setVisibilityMode (QString mode);
+        void removeFromGroup ();
+        void remove ();
+        void addLandmark ();
+        void deleteLandmark ();
 
-private:
-  graphics::NodePtr_t node_;
-  std::string parentGroup_;
+      private:
+        graphics::NodePtr_t node_;
+        std::string parentGroup_;
 
-  VisibilityItem* visibility_;
+        VisibilityItem* visibility_;
 
-  QSignalMapper vmMapper_;
-  QSignalMapper vizMapper_;
+        QSignalMapper vmMapper_;
+        QSignalMapper vizMapper_;
 
-  friend class VisibilityItem;
-};
+        friend class VisibilityItem;
+    };
+  } // namespace gui
+} // namespace hpp
 
 #endif // HPP_GUI_TREEITEM_HH

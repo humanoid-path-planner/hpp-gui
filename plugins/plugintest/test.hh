@@ -5,10 +5,14 @@
 
 #include <hpp/gui/plugin-interface.hh>
 
-class TestPlugin : public QObject, public PluginInterface {
-  Q_OBJECT
-  Q_INTERFACES (PluginInterface)
+namespace hpp {
+  namespace gui {
+    class TestPlugin : public QObject, public PluginInterface {
+      Q_OBJECT
+        Q_INTERFACES (PluginInterface)
 
-public:
-  void init();
-};
+      public:
+        void init();
+    };
+  } // namespace gui
+} // namespace hpp

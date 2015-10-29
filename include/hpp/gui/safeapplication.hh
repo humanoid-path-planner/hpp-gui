@@ -3,17 +3,21 @@
 
 #include <QApplication>
 
-class SafeApplication : public QApplication
-{
-public:
-  explicit SafeApplication (int& argc, char ** argv);
+namespace hpp {
+  namespace gui {
+    class SafeApplication : public QApplication
+    {
+      public:
+        explicit SafeApplication (int& argc, char ** argv);
 
-  virtual bool notify(QObject* receiver, QEvent* e);
+        virtual bool notify(QObject* receiver, QEvent* e);
 
-signals:
+      signals:
 
-public slots:
+      public slots:
 
-};
+    };
+  } // namespace gui
+} // namespace hpp
 
 #endif // HPP_GUI_SAFEAPPLICATION_HH

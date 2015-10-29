@@ -9,51 +9,57 @@
 #undef __problem_hh__
 #include <hppwidgetsplugin/hppwidgetsplugin.hh>
 
-class HppManipulationWidgetsPlugin : public HppWidgetsPlugin
-                                     // , public PluginInterface, public ModelInterface, public CorbaErrorInterface
-{
-  Q_OBJECT
-  Q_INTERFACES (PluginInterface ModelInterface CorbaInterface)
+namespace hpp {
+  namespace gui {
+    class HppManipulationWidgetsPlugin : public HppWidgetsPlugin
+                                         // , public PluginInterface, public ModelInterface, public CorbaErrorInterface
+    {
+      Q_OBJECT
+        Q_INTERFACES (hpp::gui::PluginInterface
+            hpp::gui::ModelInterface
+            hpp::gui::CorbaInterface)
 
-public:
-  typedef hpp::corbaServer::manipulation::Client HppManipClient;
+      public:
+        typedef hpp::corbaServer::manipulation::Client HppManipClient;
 
-  explicit HppManipulationWidgetsPlugin ();
+        explicit HppManipulationWidgetsPlugin ();
 
-  virtual ~HppManipulationWidgetsPlugin ();
+        virtual ~HppManipulationWidgetsPlugin ();
 
-  // PluginInterface interface
-public:
-  void init();
-  QString name() const;
+        // PluginInterface interface
+      public:
+        void init();
+        QString name() const;
 
-  // ModelInterface interface
-public:
-  void loadRobotModel (DialogLoadRobot::RobotDefinition rd);
-  void loadEnvironmentModel (DialogLoadEnvironment::EnvironmentDefinition ed);
-  std::string getBodyFromJoint (const std::string& jointName) const;
+        // ModelInterface interface
+      public:
+        void loadRobotModel (DialogLoadRobot::RobotDefinition rd);
+        void loadEnvironmentModel (DialogLoadEnvironment::EnvironmentDefinition ed);
+        std::string getBodyFromJoint (const std::string& jointName) const;
 signals:
-  void configurationValidationStatus (bool valid);
+        void configurationValidationStatus (bool valid);
 
-  // CorbaInterface
-public:
-  virtual void openConnection ();
-  virtual void closeConnection();
+        // CorbaInterface
+      public:
+        virtual void openConnection ();
+        virtual void closeConnection();
 
-public:
-  HppManipClient* manipClient () const;
+      public:
+        HppManipClient* manipClient () const;
 
-  void updateRobotJoints (const QString robotName);
+        void updateRobotJoints (const QString robotName);
 
-  virtual Roadmap* createRoadmap (const std::string& jointName);
+        virtual Roadmap* createRoadmap (const std::string& jointName);
 
-public slots:
-  void drawContacts ();
+        public slots:
+          void drawContacts ();
 
-private:
-  HppManipClient* hpp_;
+      private:
+        HppManipClient* hpp_;
 
-  QToolBar *toolBar_;
-};
+        QToolBar *toolBar_;
+    };
+  } // namespace gui
+} // namespace hpp
 
 #endif // HPP_GUI_HPPMANIPULATIONWIDGETSPLUGIN_HH

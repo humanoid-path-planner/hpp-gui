@@ -9,98 +9,100 @@
 
 #include <omniORB4/CORBA.h>
 
-class PluginInterface {
-public:
-  virtual ~PluginInterface () {}
+namespace hpp {
+  namespace gui {
+    class PluginInterface {
+      public:
+        virtual ~PluginInterface () {}
 
-  virtual QString name () const = 0;
+        virtual QString name () const = 0;
 
-  void doInit ()
-  {
-    try {
-      init ();
-    } catch (const std::exception& e) {
-      errorMsg_ = QString (e.what ());
-    }
-  };
+        void doInit ()
+        {
+          try {
+            init ();
+          } catch (const std::exception& e) {
+            errorMsg_ = QString (e.what ());
+          }
+        };
 
-  bool isInit () const
-  {
-    return errorMsg_.isNull ();
-  }
+        bool isInit () const
+        {
+          return errorMsg_.isNull ();
+        }
 
-  const QString& errorMsg () const
-  {
-    return errorMsg_;
-  }
+        const QString& errorMsg () const
+        {
+          return errorMsg_;
+        }
 
-protected:
-  virtual void init () = 0;
+      protected:
+        virtual void init () = 0;
 
-private:
-  QString errorMsg_;
-};
+      private:
+        QString errorMsg_;
+    };
 
-Q_DECLARE_INTERFACE (PluginInterface, "hpp-gui.plugins/0.0")
+      class JointAction : public QAction {
+      Q_OBJECT
 
-class JointAction : public QAction
-{
-  Q_OBJECT
-
-public:
-  JointAction (const QString& actionName, const std::string& jointName, QObject* parent)
-    : QAction (actionName, parent)
-    , jointName_ (jointName)
-  {
-    connect (this, SIGNAL (triggered(bool)), SLOT(trigger()));
-  }
+      public:
+        JointAction (const QString& actionName, const std::string& jointName, QObject* parent)
+          : QAction (actionName, parent)
+            , jointName_ (jointName)
+      {
+        connect (this, SIGNAL (triggered(bool)), SLOT(trigger()));
+      }
 
 signals:
-  void triggered (const std::string jointName);
+        void triggered (const std::string jointName);
 
-private slots:
-  void trigger () {
-    emit triggered(jointName_);
-  }
+        private slots:
+          void trigger () {
+            emit triggered(jointName_);
+          }
 
-private:
-  const std::string jointName_;
-};
+      private:
+        const std::string jointName_;
+    };
 
-class JointModifierInterface {
-public:
-  virtual ~JointModifierInterface () {}
+    class JointModifierInterface {
+      public:
+        virtual ~JointModifierInterface () {}
 
-  virtual JointAction* action (const std::string& jointName) const = 0;
-};
+        virtual JointAction* action (const std::string& jointName) const = 0;
+    };
 
-Q_DECLARE_INTERFACE (JointModifierInterface, "hpp-gui.plugin.joint-modifier/0.0")
+      class ModelInterface {
+        public:
+          virtual ~ModelInterface () {}
 
-class ModelInterface {
-public:
-  virtual ~ModelInterface () {}
+          virtual void loadRobotModel (DialogLoadRobot::RobotDefinition rd) = 0;
 
-  virtual void loadRobotModel (DialogLoadRobot::RobotDefinition rd) = 0;
+          virtual void loadEnvironmentModel (DialogLoadEnvironment::EnvironmentDefinition ed) = 0;
 
-  virtual void loadEnvironmentModel (DialogLoadEnvironment::EnvironmentDefinition ed) = 0;
+          virtual std::string getBodyFromJoint (const std::string& jointName) const = 0;
+      };
 
-  virtual std::string getBodyFromJoint (const std::string& jointName) const = 0;
-};
+      class CorbaInterface {
+        public:
+          virtual ~CorbaInterface () {}
 
-Q_DECLARE_INTERFACE (ModelInterface, "hpp-gui.plugin.model/0.0")
+          virtual void openConnection () = 0;
 
-class CorbaInterface {
-public:
-  virtual ~CorbaInterface () {}
+          virtual void closeConnection () = 0;
 
-  virtual void openConnection () = 0;
+          /// return true if error was handled.
+          virtual bool corbaException (int jobId, const CORBA::Exception& excep) const = 0;
+      };
+  } // namespace gui
+} // namespace hpp
 
-  virtual void closeConnection () = 0;
+Q_DECLARE_INTERFACE (hpp::gui::PluginInterface, "hpp-gui.plugins/0.0")
+Q_DECLARE_INTERFACE (hpp::gui::JointModifierInterface, "hpp-gui.plugin.joint-modifier/0.0")
+Q_DECLARE_INTERFACE (hpp::gui::ModelInterface, "hpp-gui.plugin.model/0.0")
+Q_DECLARE_INTERFACE (hpp::gui::CorbaInterface, "hpp-gui.plugin.corba/0.0")
 
-  /// return true if error was handled.
-  virtual bool corbaException (int jobId, const CORBA::Exception& excep) const = 0;
-};
 
-Q_DECLARE_INTERFACE (CorbaInterface, "hpp-gui.plugin.corba/0.0")
 
 #endif // HPP_GUI_PLUGININTERFACE_HH

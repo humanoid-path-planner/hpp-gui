@@ -4,31 +4,35 @@
 #include <hpp/corbaserver/server.hh>
 #include <hppserverprocess.hh>
 
-HppCorbaserverPlugin::HppCorbaserverPlugin() :
-  server_ (NULL)
-{
-}
-
-HppCorbaserverPlugin::~HppCorbaserverPlugin()
-{
-  if (server_) {
-      server_->wait();
-      delete server_;
+namespace hpp {
+  namespace gui {
+    HppCorbaserverPlugin::HppCorbaserverPlugin() :
+      server_ (NULL)
+    {
     }
-}
 
-void HppCorbaserverPlugin::init()
-{
-  hpp::core::ProblemSolverPtr_t ps = hpp::core::ProblemSolver::create ();
-  server_ = new CorbaServer (new HppServerProcess (
-          new hpp::corbaServer::Server (ps, 0, NULL, true)));
-  server_->start();
-  server_->waitForInitDone();
-}
+    HppCorbaserverPlugin::~HppCorbaserverPlugin()
+    {
+      if (server_) {
+        server_->wait();
+        delete server_;
+      }
+    }
 
-QString HppCorbaserverPlugin::name() const
-{
-  return QString ("hpp-corbaserver plugin");
-}
+    void HppCorbaserverPlugin::init()
+    {
+      hpp::core::ProblemSolverPtr_t ps = hpp::core::ProblemSolver::create ();
+      server_ = new CorbaServer (new HppServerProcess (
+            new hpp::corbaServer::Server (ps, 0, NULL, true)));
+      server_->start();
+      server_->waitForInitDone();
+    }
 
-Q_EXPORT_PLUGIN2 (hppcorbaserverplugin, HppCorbaserverPlugin)
+    QString HppCorbaserverPlugin::name() const
+    {
+      return QString ("hpp-corbaserver plugin");
+    }
+
+    Q_EXPORT_PLUGIN2 (hppcorbaserverplugin, HppCorbaserverPlugin)
+  } // namespace gui
+} // namespace hpp

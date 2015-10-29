@@ -3,12 +3,16 @@
 
 #include <boost/shared_ptr.hpp>
 
-class MainWindow;
-class OSGWidget;
+namespace hpp {
+  namespace gui {
+    class MainWindow;
+    class OSGWidget;
 
-class ViewerCorbaServer;
+    class ViewerCorbaServer;
 
-class WindowsManager;
-typedef boost::shared_ptr <WindowsManager> WindowsManagerPtr_t;
+    class WindowsManager;
+    typedef boost::shared_ptr <WindowsManager> WindowsManagerPtr_t;
+  } // namespace gui
+} // namespace hpp
 
 #endif // HPP_GUI_FWD_HH

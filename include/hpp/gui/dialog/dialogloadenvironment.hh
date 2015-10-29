@@ -8,51 +8,55 @@ namespace Ui {
   class DialogLoadEnvironment;
 }
 
-class DialogLoadEnvironment : public QDialog
-{
-  Q_OBJECT
-  
-public:
-  explicit DialogLoadEnvironment(QWidget *parent = 0);
-  ~DialogLoadEnvironment();
+namespace hpp {
+  namespace gui {
+    class DialogLoadEnvironment : public QDialog
+    {
+      Q_OBJECT
 
-  struct EnvironmentDefinition {
-    QString name_, envName_, urdfFilename_, mesh_, package_, packagePath_;
-    EnvironmentDefinition () {}
-    EnvironmentDefinition (QString name, QString envName,
-                           QString package, QString packagePath,
-                           QString urdfFilename, QString meshDirectory) :
-      name_(name), envName_ (envName), urdfFilename_(urdfFilename),
-      mesh_(meshDirectory), package_ (package), packagePath_ (packagePath)
-    {}
-  };
+      public:
+        explicit DialogLoadEnvironment(QWidget *parent = 0);
+        ~DialogLoadEnvironment();
 
-  static void addEnvironmentDefinition (QString name,
-                                        QString envName,
-                                        QString package,
-                                        QString packagePath,
-                                        QString urdfFilename,
-                                        QString meshDirectory);
-  static QList <EnvironmentDefinition> getEnvironmentDefinitions ();
+        struct EnvironmentDefinition {
+          QString name_, envName_, urdfFilename_, mesh_, package_, packagePath_;
+          EnvironmentDefinition () {}
+          EnvironmentDefinition (QString name, QString envName,
+              QString package, QString packagePath,
+              QString urdfFilename, QString meshDirectory) :
+            name_(name), envName_ (envName), urdfFilename_(urdfFilename),
+            mesh_(meshDirectory), package_ (package), packagePath_ (packagePath)
+          {}
+        };
 
-  EnvironmentDefinition getSelectedDescription () {
-    return selected_;
-  }
+        static void addEnvironmentDefinition (QString name,
+            QString envName,
+            QString package,
+            QString packagePath,
+            QString urdfFilename,
+            QString meshDirectory);
+        static QList <EnvironmentDefinition> getEnvironmentDefinitions ();
 
-private slots:
-  void accept();
-  void meshSelect();
-  void packagePathSelect();
-  void envSelect(int index);
+        EnvironmentDefinition getSelectedDescription () {
+          return selected_;
+        }
 
-private:
-  Ui::DialogLoadEnvironment *ui_;
-  QComboBox* defs_;
-  EnvironmentDefinition selected_;
+        private slots:
+          void accept();
+        void meshSelect();
+        void packagePathSelect();
+        void envSelect(int index);
 
-  static QList <EnvironmentDefinition> definitions;
-};
+      private:
+        ::Ui::DialogLoadEnvironment *ui_;
+        QComboBox* defs_;
+        EnvironmentDefinition selected_;
 
-Q_DECLARE_METATYPE (DialogLoadEnvironment::EnvironmentDefinition)
+        static QList <EnvironmentDefinition> definitions;
+    };
+  } // namespace gui
+} // namespace hpp
+
+Q_DECLARE_METATYPE (hpp::gui::DialogLoadEnvironment::EnvironmentDefinition)
 
 #endif // HPP_GUI_DIALOGLOADENVIRONMENT_HH

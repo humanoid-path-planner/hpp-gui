@@ -14,6 +14,7 @@
 #include <X11/Xlib.h>
 
 namespace po = boost::program_options;
+using namespace hpp::gui
 
 bool setupProgramOptions (int argc, char *argv[], Settings& s) {
   bool help = false;
