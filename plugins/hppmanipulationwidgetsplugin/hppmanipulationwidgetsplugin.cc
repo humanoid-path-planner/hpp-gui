@@ -105,7 +105,7 @@ namespace hpp {
         CORBA::Long iPts = 0;
         for (CORBA::ULong j = 0; j < cjs->length(); ++j) {
           /// Create group
-          std::string target = createJointGroup(std::string(cjs[i]));
+          std::string target = createJointGroup(std::string(cjs[j]));
 
           /// Add the contacts
           std::stringstream ssname;
