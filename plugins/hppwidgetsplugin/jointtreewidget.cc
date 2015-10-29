@@ -104,8 +104,6 @@ namespace hpp {
       qDebug () << "Selected joint: " << QString::fromStdString(je.name);
       ui_->jointTree->clearSelection();
       ui_->jointTree->setCurrentIndex(je.item->index());
-      if (dock_ != NULL && !dock_->isVisible())
-        dock_->setVisible(true);
     }
 
     void JointTreeWidget::openJointBoundDialog(const std::string jointName)
