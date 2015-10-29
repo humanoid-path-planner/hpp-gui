@@ -1,5 +1,5 @@
-#ifndef REMOTEIMUPLUGIN_HH
-#define REMOTEIMUPLUGIN_HH
+#ifndef HPP_GUI_REMOTEIMUPLUGIN_HH
+#define HPP_GUI_REMOTEIMUPLUGIN_HH
 
 #include <QObject>
 #include <QDebug>
@@ -115,4 +115,4 @@ public slots:
     AttitudeDeviceMsgBox* msgBox_;
 };
 
-#endif // REMOTEIMUPLUGIN_HH
+#endif // HPP_GUI_REMOTEIMUPLUGIN_HH

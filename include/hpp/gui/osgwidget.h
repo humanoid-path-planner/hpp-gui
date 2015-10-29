@@ -1,5 +1,5 @@
-#ifndef OSGWIDGET_H
-#define OSGWIDGET_H
+#ifndef HPP_GUI_OSGWIDGET_HH
+#define HPP_GUI_OSGWIDGET_HH
 
 #include <QtOpenGL>
 #include <QString>
@@ -104,4 +104,4 @@ private:
   InfoBox infoBox_;
 };
 
-#endif // OSGWIDGET_H
+#endif // HPP_GUI_OSGWIDGET_HH

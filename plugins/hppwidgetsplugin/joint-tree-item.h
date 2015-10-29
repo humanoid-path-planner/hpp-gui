@@ -1,5 +1,5 @@
-#ifndef JOINTTREEITEM_H
-#define JOINTTREEITEM_H
+#ifndef HPP_GUI_JOINTTREEITEM_HH
+#define HPP_GUI_JOINTTREEITEM_HH
 
 #include <QStandardItem>
 #include <QItemDelegate>
@@ -135,4 +135,4 @@ private:
   QPushButton* forceIntegrator_;
 };
 
-#endif // JOINTTREEITEM_H
+#endif // HPP_GUI_JOINTTREEITEM_HH

@@ -1,5 +1,5 @@
-#ifndef SETTINGS_HH
-#define SETTINGS_HH
+#ifndef HPP_GUI_SETTINGS_HH
+#define HPP_GUI_SETTINGS_HH
 
 #include <ostream>
 #include <string>
@@ -16,4 +16,4 @@ struct Settings {
   std::ostream& print (std::ostream& os);
 };
 
-#endif // SETTINGS_HH
+#endif // HPP_GUI_SETTINGS_HH

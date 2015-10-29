@@ -1,5 +1,5 @@
-#ifndef PLUGININTERFACE_HH
-#define PLUGININTERFACE_HH
+#ifndef HPP_GUI_PLUGININTERFACE_HH
+#define HPP_GUI_PLUGININTERFACE_HH
 
 #include <QtGui>
 #include <QWidget>
@@ -103,4 +103,4 @@ public:
 
 Q_DECLARE_INTERFACE (CorbaInterface, "hpp-gui.plugin.corba/0.0")
 
-#endif // PLUGININTERFACE_HH
+#endif // HPP_GUI_PLUGININTERFACE_HH

@@ -1,5 +1,5 @@
-#ifndef PATHPLAYER_H
-#define PATHPLAYER_H
+#ifndef HPP_GUI_PATHPLAYER_HH
+#define HPP_GUI_PATHPLAYER_HH
 
 #include <QWidget>
 #include <QSpinBox>
@@ -72,4 +72,4 @@ private:
   HppWidgetsPlugin* plugin_;
 };
 
-#endif // PATHPLAYER_H
+#endif // HPP_GUI_PATHPLAYER_HH

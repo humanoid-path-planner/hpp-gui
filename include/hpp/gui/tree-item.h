@@ -1,5 +1,5 @@
-#ifndef TREEITEM_H
-#define TREEITEM_H
+#ifndef HPP_GUI_TREEITEM_HH
+#define HPP_GUI_TREEITEM_HH
 
 #include <QStandardItem>
 #include <QItemDelegate>
@@ -88,4 +88,4 @@ private:
   friend class VisibilityItem;
 };
 
-#endif // TREEITEM_H
+#endif // HPP_GUI_TREEITEM_HH

@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef HPP_GUI_MAINWINDOW_HH
+#define HPP_GUI_MAINWINDOW_HH
 
 #include <QList>
 #include <QStandardItemModel>
@@ -127,4 +127,4 @@ private:
   QStringList lastBodiesInCollision_;
 };
 
-#endif // MAINWINDOW_H
+#endif // HPP_GUI_MAINWINDOW_HH

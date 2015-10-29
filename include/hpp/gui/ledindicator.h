@@ -1,5 +1,5 @@
-#ifndef LEDINDICATOR_H
-#define LEDINDICATOR_H
+#ifndef HPP_GUI_LEDINDICATOR_HH
+#define HPP_GUI_LEDINDICATOR_HH
 
 #include <QWidget>
 
@@ -27,4 +27,4 @@ private:
   const int width, height;
 };
 
-#endif // LEDINDICATOR_H
+#endif // HPP_GUI_LEDINDICATOR_HH

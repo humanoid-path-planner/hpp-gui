@@ -1,5 +1,5 @@
-#ifndef HPPCORBASERVERPLUGIN_HH
-#define HPPCORBASERVERPLUGIN_HH
+#ifndef HPP_GUI_HPPCORBASERVERPLUGIN_HH
+#define HPP_GUI_HPPCORBASERVERPLUGIN_HH
 
 #include <hpp/gui/plugin-interface.h>
 #include <hpp/gui/omniorb/omniorbthread.h>
@@ -27,4 +27,4 @@ private:
   CorbaServer* server_;
 };
 
-#endif // HPPCORBASERVERPLUGIN_HH
+#endif // HPP_GUI_HPPCORBASERVERPLUGIN_HH

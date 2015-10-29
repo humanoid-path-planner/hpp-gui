@@ -1,5 +1,5 @@
-#ifndef PLUGINMANAGERDIALOG_H
-#define PLUGINMANAGERDIALOG_H
+#ifndef HPP_GUI_PLUGINMANAGERDIALOG_HH
+#define HPP_GUI_PLUGINMANAGERDIALOG_HH
 
 #include <QDialog>
 #include <QMap>
@@ -118,4 +118,4 @@ const Interface* PluginManager::const_instance_cast (const QPluginLoader* pl)
     return (const Interface*) qobject_cast <Interface*> (const_cast <QPluginLoader*>(pl)->instance());
 }
 
-#endif // PLUGINMANAGERDIALOG_H
+#endif // HPP_GUI_PLUGINMANAGERDIALOG_HH

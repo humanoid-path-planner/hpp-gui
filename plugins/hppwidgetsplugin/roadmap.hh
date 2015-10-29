@@ -1,5 +1,5 @@
-#ifndef ROADMAP_HH
-#define ROADMAP_HH
+#ifndef HPP_GUI_ROADMAP_HH
+#define HPP_GUI_ROADMAP_HH
 
 #include <hpp/corbaserver/common.hh>
 #include <hpp/gui/color-map.h>
@@ -62,4 +62,4 @@ private:
   ColorMap nodeColorMap_, edgeColorMap_;
 };
 
-#endif // ROADMAP_HH
+#endif // HPP_GUI_ROADMAP_HH

@@ -1,5 +1,5 @@
-#ifndef MANIPULATION_ROADMAP_HH
-#define MANIPULATION_ROADMAP_HH
+#ifndef HPP_GUI_MANIPULATION_ROADMAP_HH
+#define HPP_GUI_MANIPULATION_ROADMAP_HH
 
 #include <hpp/gui/color-map.h>
 #include <hppmanipulationwidgetsplugin/hppmanipulationwidgetsplugin.hh>
@@ -24,4 +24,4 @@ private:
   ColorMap nodeColorMap_;
 };
 
-#endif // MANIPULATION_ROADMAP_HH
+#endif // HPP_GUI_MANIPULATION_ROADMAP_HH

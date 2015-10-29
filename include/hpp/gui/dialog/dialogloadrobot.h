@@ -1,5 +1,5 @@
-#ifndef DIALOGLOADROBOT_H
-#define DIALOGLOADROBOT_H
+#ifndef HPP_GUI_DIALOGLOADROBOT_HH
+#define HPP_GUI_DIALOGLOADROBOT_HH
 
 #include <QDialog>
 #include <QComboBox>
@@ -65,4 +65,4 @@ private:
 
 Q_DECLARE_METATYPE (DialogLoadRobot::RobotDefinition)
 
-#endif // DIALOGLOADROBOT_H
+#endif // HPP_GUI_DIALOGLOADROBOT_HH

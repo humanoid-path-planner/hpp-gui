@@ -1,5 +1,5 @@
-#ifndef HPPWIDGETSPLUGIN_HH
-#define HPPWIDGETSPLUGIN_HH
+#ifndef HPP_GUI_HPPWIDGETSPLUGIN_HH
+#define HPP_GUI_HPPWIDGETSPLUGIN_HH
 
 #include <hpp/gui/plugin-interface.h>
 #include <hpp/corbaserver/client.hh>
@@ -98,4 +98,4 @@ protected:
   std::list <std::string> jointFrames_;
 };
 
-#endif // HPPWIDGETSPLUGIN_HH
+#endif // HPP_GUI_HPPWIDGETSPLUGIN_HH

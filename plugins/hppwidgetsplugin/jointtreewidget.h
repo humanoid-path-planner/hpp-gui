@@ -1,5 +1,5 @@
-#ifndef JOINTTREEWIDGET_H
-#define JOINTTREEWIDGET_H
+#ifndef HPP_GUI_JOINTTREEWIDGET_HH
+#define HPP_GUI_JOINTTREEWIDGET_HH
 
 #include <QWidget>
 
@@ -45,4 +45,4 @@ private:
   QDockWidget* dock_;
 };
 
-#endif // JOINTTREEWIDGET_H
+#endif // HPP_GUI_JOINTTREEWIDGET_HH

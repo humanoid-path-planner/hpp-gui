@@ -1,5 +1,5 @@
-#ifndef WINDOWSMANAGER_H
-#define WINDOWSMANAGER_H
+#ifndef HPP_GUI_WINDOWSMANAGER_HH
+#define HPP_GUI_WINDOWSMANAGER_HH
 
 #include <hpp/gui/fwd.h>
 #include <gepetto/viewer/corba/windows-manager.hh>
@@ -18,4 +18,4 @@ protected:
   WindowsManager ();
 };
 
-#endif // WINDOWSMANAGER_H
+#endif // HPP_GUI_WINDOWSMANAGER_HH

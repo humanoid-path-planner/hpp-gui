@@ -1,5 +1,5 @@
-#ifndef HPP_GUI_COLORMAP_H
-#define HPP_GUI_COLORMAP_H
+#ifndef HPP_GUI_COLORMAP_HH
+#define HPP_GUI_COLORMAP_HH
 
 #include <QColor>
 
@@ -42,4 +42,4 @@ private:
   std::size_t currentIndex_;
 };
 
-#endif // HPP_GUI_COLORMAP_H
+#endif // HPP_GUI_COLORMAP_HH

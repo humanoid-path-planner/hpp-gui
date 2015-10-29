@@ -1,5 +1,5 @@
-#ifndef JOINTBOUNDDIALOG_H
-#define JOINTBOUNDDIALOG_H
+#ifndef HPP_GUI_JOINTBOUNDDIALOG_HH
+#define HPP_GUI_JOINTBOUNDDIALOG_HH
 
 #include <hpp/corbaserver/robot.hh>
 #include <QDialog>
@@ -30,4 +30,4 @@ private:
   QList <Line> lines_;
 };
 
-#endif // JOINTBOUNDDIALOG_H
+#endif // HPP_GUI_JOINTBOUNDDIALOG_HH

@@ -1,5 +1,5 @@
-#ifndef DIALOGLOADENVIRONMENT_H
-#define DIALOGLOADENVIRONMENT_H
+#ifndef HPP_GUI_DIALOGLOADENVIRONMENT_HH
+#define HPP_GUI_DIALOGLOADENVIRONMENT_HH
 
 #include <QDialog>
 #include <QComboBox>
@@ -55,4 +55,4 @@ private:
 
 Q_DECLARE_METATYPE (DialogLoadEnvironment::EnvironmentDefinition)
 
-#endif // DIALOGLOADENVIRONMENT_H
+#endif // HPP_GUI_DIALOGLOADENVIRONMENT_HH

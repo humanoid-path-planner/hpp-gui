@@ -1,5 +1,5 @@
-#ifndef OMNIORBTHREAD_H
-#define OMNIORBTHREAD_H
+#ifndef HPP_GUI_OMNIORBTHREAD_HH
+#define HPP_GUI_OMNIORBTHREAD_HH
 
 #include <assert.h>
 
@@ -206,4 +206,4 @@ public slots:
   void perform(WorkItem* item);
 };
 
-#endif // OMNIORBTHREAD_H
+#endif // HPP_GUI_OMNIORBTHREAD_HH

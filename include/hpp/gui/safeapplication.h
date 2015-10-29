@@ -1,5 +1,5 @@
-#ifndef SAFEAPPLICATION_H
-#define SAFEAPPLICATION_H
+#ifndef HPP_GUI_SAFEAPPLICATION_HH
+#define HPP_GUI_SAFEAPPLICATION_HH
 
 #include <QApplication>
 
@@ -16,4 +16,4 @@ public slots:
 
 };
 
-#endif // SAFEAPPLICATION_H
+#endif // HPP_GUI_SAFEAPPLICATION_HH

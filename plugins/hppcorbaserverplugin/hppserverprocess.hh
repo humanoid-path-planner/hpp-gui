@@ -1,5 +1,5 @@
-#ifndef HPPSERVERPROCESS_HH
-#define HPPSERVERPROCESS_HH
+#ifndef HPP_GUI_HPPSERVERPROCESS_HH
+#define HPP_GUI_HPPSERVERPROCESS_HH
 
 #include <hpp/corbaserver/fwd.hh>
 
@@ -22,4 +22,4 @@ private:
   hpp::corbaServer::Server* server_;
 };
 
-#endif // HPPSERVERPROCESS_HH
+#endif // HPP_GUI_HPPSERVERPROCESS_HH

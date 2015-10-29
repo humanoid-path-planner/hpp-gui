@@ -1,5 +1,5 @@
-#ifndef SOLVERWIDGET_H
-#define SOLVERWIDGET_H
+#ifndef HPP_GUI_SOLVERWIDGET_HH
+#define HPP_GUI_SOLVERWIDGET_HH
 
 #include <QWidget>
 #include <QComboBox>
@@ -77,4 +77,4 @@ private:
   SolveAndDisplay solveAndDisplay_;
 };
 
-#endif // SOLVERWIDGET_H
+#endif // HPP_GUI_SOLVERWIDGET_HH
