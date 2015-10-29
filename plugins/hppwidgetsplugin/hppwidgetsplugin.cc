@@ -5,16 +5,16 @@
 
 #include <QDockWidget>
 
-#include <hpp/gui/mainwindow.h>
-#include <hpp/gui/windows-manager.h>
+#include <hpp/gui/mainwindow.hh>
+#include <hpp/gui/windows-manager.hh>
 
 #include <omniORB4/CORBA.h>
 
-#include "hppwidgetsplugin/pathplayer.h"
-#include "hppwidgetsplugin/solverwidget.h"
-#include "hppwidgetsplugin/jointtreewidget.h"
-#include "hppwidgetsplugin/configurationlistwidget.h"
-#include "hppwidgetsplugin/joint-tree-item.h"
+#include "hppwidgetsplugin/pathplayer.hh"
+#include "hppwidgetsplugin/solverwidget.hh"
+#include "hppwidgetsplugin/jointtreewidget.hh"
+#include "hppwidgetsplugin/configurationlistwidget.hh"
+#include "hppwidgetsplugin/joint-tree-item.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
 

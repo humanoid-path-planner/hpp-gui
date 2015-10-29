@@ -1,7 +1,7 @@
 #ifndef HPP_GUI_WINDOWSMANAGER_HH
 #define HPP_GUI_WINDOWSMANAGER_HH
 
-#include <hpp/gui/fwd.h>
+#include <hpp/gui/fwd.hh>
 #include <gepetto/viewer/corba/windows-manager.hh>
 
 class WindowsManager : public graphics::WindowsManager

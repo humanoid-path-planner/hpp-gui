@@ -7,14 +7,14 @@
 
 #include <gepetto/viewer/group-node.h>
 
-#include <hpp/gui/fwd.h>
+#include <hpp/gui/fwd.hh>
 
-#include <hpp/gui/ledindicator.h>
+#include <hpp/gui/ledindicator.hh>
 
-#include <hpp/gui/omniorb/omniorbthread.h>
-#include <hpp/gui/dialog/dialogloadrobot.h>
-#include <hpp/gui/dialog/dialogloadenvironment.h>
-#include <hpp/gui/dialog/pluginmanagerdialog.h>
+#include <hpp/gui/omniorb/omniorbthread.hh>
+#include <hpp/gui/dialog/dialogloadrobot.hh>
+#include <hpp/gui/dialog/dialogloadenvironment.hh>
+#include <hpp/gui/dialog/pluginmanagerdialog.hh>
 
 #include <hpp/gui/settings.hh>
 

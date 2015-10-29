@@ -1,7 +1,7 @@
 #ifndef HPP_GUI_MANIPULATION_ROADMAP_HH
 #define HPP_GUI_MANIPULATION_ROADMAP_HH
 
-#include <hpp/gui/color-map.h>
+#include <hpp/gui/color-map.hh>
 #include <hppmanipulationwidgetsplugin/hppmanipulationwidgetsplugin.hh>
 #include <hppwidgetsplugin/roadmap.hh>
 

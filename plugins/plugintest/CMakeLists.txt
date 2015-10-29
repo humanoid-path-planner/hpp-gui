@@ -20,7 +20,7 @@
 SET(PLUGIN_NAME plugintest)
 
 SET(${PLUGIN_NAME}_HEADERS_NO_MOC
-  ../../include/hpp/gui/plugin-interface.h
+  ../../include/hpp/gui/plugin-interface.hh
   )
 
 SET(${PLUGIN_NAME}_HEADERS

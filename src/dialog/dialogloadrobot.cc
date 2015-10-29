@@ -1,4 +1,4 @@
-#include "hpp/gui/dialog/dialogloadrobot.h"
+#include "hpp/gui/dialog/dialogloadrobot.hh"
 #include "ui_dialogloadrobot.h"
 
 #include <QDir>

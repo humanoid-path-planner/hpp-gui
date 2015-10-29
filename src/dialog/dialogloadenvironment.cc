@@ -1,4 +1,4 @@
-#include "hpp/gui/dialog/dialogloadenvironment.h"
+#include "hpp/gui/dialog/dialogloadenvironment.hh"
 #include "ui_dialogloadenvironment.h"
 
 #include <QDir>

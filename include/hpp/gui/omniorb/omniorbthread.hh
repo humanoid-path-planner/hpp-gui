@@ -8,7 +8,7 @@
 #include <QTimerEvent>
 #include <QElapsedTimer>
 
-#include "hpp/gui/fwd.h"
+#include "hpp/gui/fwd.hh"
 #include "gepetto/viewer/corba/fwd.hh"
 
 class WorkItem {

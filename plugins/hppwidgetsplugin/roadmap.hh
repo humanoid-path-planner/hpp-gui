@@ -2,7 +2,7 @@
 #define HPP_GUI_ROADMAP_HH
 
 #include <hpp/corbaserver/common.hh>
-#include <hpp/gui/color-map.h>
+#include <hpp/gui/color-map.hh>
 #include <hppwidgetsplugin/hppwidgetsplugin.hh>
 
 class Roadmap {

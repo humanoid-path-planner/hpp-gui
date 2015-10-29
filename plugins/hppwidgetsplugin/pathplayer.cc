@@ -1,11 +1,11 @@
-#include "hppwidgetsplugin/pathplayer.h"
+#include "hppwidgetsplugin/pathplayer.hh"
 
 #include <hpp/corbaserver/common.hh>
 #include <hpp/corbaserver/client.hh>
 
-#include "hpp/gui/mainwindow.h"
-#include <hpp/gui/windows-manager.h>
-#include <hpp/gui/osgwidget.h>
+#include "hpp/gui/mainwindow.hh"
+#include <hpp/gui/windows-manager.hh>
+#include <hpp/gui/osgwidget.hh>
 
 #include "hppwidgetsplugin/ui_pathplayerwidget.h"
 

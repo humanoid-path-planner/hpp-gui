@@ -1,5 +1,5 @@
-#include "hpp/gui/osgwidget.h"
-#include "hpp/gui/mainwindow.h"
+#include "hpp/gui/osgwidget.hh"
+#include "hpp/gui/mainwindow.hh"
 
 #include <boost/regex.hpp>
 
@@ -32,7 +32,7 @@
 
 #include <gepetto/viewer/urdf-parser.h>
 
-#include <hpp/gui/windows-manager.h>
+#include <hpp/gui/windows-manager.hh>
 
 namespace
 {

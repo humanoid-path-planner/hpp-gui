@@ -3,8 +3,8 @@
 
 #include <QWidget>
 
-#include "hpp/gui/fwd.h"
-#include "hpp/gui/mainwindow.h"
+#include "hpp/gui/fwd.hh"
+#include "hpp/gui/mainwindow.hh"
 
 #include "hpp/corbaserver/common.hh"
 

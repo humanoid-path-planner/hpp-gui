@@ -3,7 +3,7 @@
 
 #include <hpp/corbaserver/fwd.hh>
 
-#include <hpp/gui/omniorb/omniorbthread.h>
+#include <hpp/gui/omniorb/omniorbthread.hh>
 
 class HppServerProcess : public ServerProcess
 {

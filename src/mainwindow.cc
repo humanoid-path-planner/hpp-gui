@@ -1,14 +1,14 @@
-#include "hpp/gui/mainwindow.h"
+#include "hpp/gui/mainwindow.hh"
 #include "ui_mainwindow.h"
 
 #include <gepetto/viewer/corba/server.hh>
 
-#include "hpp/gui/windows-manager.h"
-#include "hpp/gui/osgwidget.h"
-#include "hpp/gui/tree-item.h"
-#include "hpp/gui/dialog/dialogloadrobot.h"
-#include "hpp/gui/dialog/dialogloadenvironment.h"
-#include "hpp/gui/plugin-interface.h"
+#include "hpp/gui/windows-manager.hh"
+#include "hpp/gui/osgwidget.hh"
+#include "hpp/gui/tree-item.hh"
+#include "hpp/gui/dialog/dialogloadrobot.hh"
+#include "hpp/gui/dialog/dialogloadenvironment.hh"
+#include "hpp/gui/plugin-interface.hh"
 
 #define QSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.toStdString().c_str())
 #define STDSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.c_str())

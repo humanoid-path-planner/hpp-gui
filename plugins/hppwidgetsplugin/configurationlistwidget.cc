@@ -1,4 +1,4 @@
-#include "hppwidgetsplugin/configurationlistwidget.h"
+#include "hppwidgetsplugin/configurationlistwidget.hh"
 #include "hppwidgetsplugin/ui_configurationlistwidget.h"
 
 #include "hpp/corbaserver/common.hh"

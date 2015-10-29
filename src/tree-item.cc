@@ -1,11 +1,11 @@
-#include "hpp/gui/tree-item.h"
+#include "hpp/gui/tree-item.hh"
 
 #include <QDebug>
 
 #include <gepetto/viewer/group-node.h>
 
-#include "hpp/gui/mainwindow.h"
-#include "hpp/gui/windows-manager.h"
+#include "hpp/gui/mainwindow.hh"
+#include "hpp/gui/windows-manager.hh"
 
 BodyTreeItem::BodyTreeItem(graphics::NodePtr_t node) :
   QStandardItem (QString (node->getID().c_str())),

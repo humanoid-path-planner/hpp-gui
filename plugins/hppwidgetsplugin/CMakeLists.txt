@@ -23,12 +23,12 @@ SET(PLUGIN_NAME hppwidgetsplugin)
 
 SET(${PLUGIN_NAME}_HEADERS
   ${PLUGIN_NAME}.hh
-  pathplayer.h
-  solverwidget.h
-  jointtreewidget.h
-  configurationlistwidget.h
-  joint-tree-item.h
-  jointbounddialog.h
+  pathplayer.hh
+  solverwidget.hh
+  jointtreewidget.hh
+  configurationlistwidget.hh
+  joint-tree-item.hh
+  jointbounddialog.hh
   )
 
 SET(${PLUGIN_NAME}_HEADERS_NO_MOC

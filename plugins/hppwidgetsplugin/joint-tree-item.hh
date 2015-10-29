@@ -9,7 +9,7 @@
 #include <QPushButton>
 
 #include <hpp/corbaserver/robot.hh>
-#include <hpp/gui/fwd.h>
+#include <hpp/gui/fwd.hh>
 #include <gepetto/viewer/node.h>
 
 #include "hppwidgetsplugin/hppwidgetsplugin.hh"

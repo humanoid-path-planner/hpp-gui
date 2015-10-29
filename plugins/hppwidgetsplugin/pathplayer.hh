@@ -6,7 +6,7 @@
 #include <QSlider>
 #include <QPushButton>
 
-#include <hpp/gui/fwd.h>
+#include <hpp/gui/fwd.hh>
 
 #include <hppwidgetsplugin/hppwidgetsplugin.hh>
 

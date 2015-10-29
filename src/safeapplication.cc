@@ -1,9 +1,9 @@
-#include "hpp/gui/safeapplication.h"
+#include "hpp/gui/safeapplication.hh"
 
 #include <QDebug>
 #include <omniORB4/CORBA.h>
-#include <hpp/gui/mainwindow.h>
-#include <hpp/gui/plugin-interface.h>
+#include <hpp/gui/mainwindow.hh>
+#include <hpp/gui/plugin-interface.hh>
 
 SafeApplication::SafeApplication(int& argc, char** argv) :
   QApplication(argc, argv)

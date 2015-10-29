@@ -1,13 +1,13 @@
 #include <omniORB4/CORBA.h>
 
-#include "hppwidgetsplugin/jointtreewidget.h"
+#include "hppwidgetsplugin/jointtreewidget.hh"
 #include "hppwidgetsplugin/ui_jointtreewidget.h"
 
-#include <hpp/gui/mainwindow.h>
-#include <hpp/gui/windows-manager.h>
+#include <hpp/gui/mainwindow.hh>
+#include <hpp/gui/windows-manager.hh>
 
-#include "hppwidgetsplugin/joint-tree-item.h"
-#include "hppwidgetsplugin/jointbounddialog.h"
+#include "hppwidgetsplugin/joint-tree-item.hh"
+#include "hppwidgetsplugin/jointbounddialog.hh"
 
 using CORBA::ULong;
 

@@ -9,7 +9,7 @@
 #include <QtConcurrentRun>
 #include <QWidget>
 
-#include <hpp/gui/plugin-interface.h>
+#include <hpp/gui/plugin-interface.hh>
 
 #include <iostream>
 

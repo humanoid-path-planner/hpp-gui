@@ -5,7 +5,7 @@
 #include <QComboBox>
 #include <QFormLayout>
 
-#include "hpp/gui/fwd.h"
+#include "hpp/gui/fwd.hh"
 #include "hppwidgetsplugin/hppwidgetsplugin.hh"
 
 namespace Ui {

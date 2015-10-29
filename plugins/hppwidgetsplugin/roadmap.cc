@@ -5,8 +5,8 @@
 
 #include <QDebug>
 
-#include <hpp/gui/mainwindow.h>
-#include <hpp/gui/windows-manager.h>
+#include <hpp/gui/mainwindow.hh>
+#include <hpp/gui/windows-manager.hh>
 
 Roadmap::Roadmap(HppWidgetsPlugin *plugin):
   radius (0.01f), axisSize (1.f),

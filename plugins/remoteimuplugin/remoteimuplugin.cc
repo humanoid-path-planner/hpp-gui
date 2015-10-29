@@ -3,8 +3,8 @@
 #include <QtPlugin>
 #include <QtConcurrentRun>
 
-#include <hpp/gui/mainwindow.h>
-#include <hpp/gui/windows-manager.h>
+#include <hpp/gui/mainwindow.hh>
+#include <hpp/gui/windows-manager.hh>
 
 AttitudeEventSender::AttitudeEventSender()
 {

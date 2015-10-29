@@ -1,12 +1,12 @@
-#include "hppwidgetsplugin/solverwidget.h"
+#include "hppwidgetsplugin/solverwidget.hh"
 #include "hppwidgetsplugin/ui_solverwidget.h"
 
 #include <hpp/corbaserver/client.hh>
 
 #include <QFormLayout>
 #include <QMessageBox>
-#include "hpp/gui/mainwindow.h"
-#include "hpp/gui/windows-manager.h"
+#include "hpp/gui/mainwindow.hh"
+#include "hpp/gui/windows-manager.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
 

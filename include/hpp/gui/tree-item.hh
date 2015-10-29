@@ -9,7 +9,7 @@
 #include <QPushButton>
 #include <QSignalMapper>
 
-#include <hpp/gui/fwd.h>
+#include <hpp/gui/fwd.hh>
 #include <gepetto/viewer/node.h>
 
 class BodyTreeItem;

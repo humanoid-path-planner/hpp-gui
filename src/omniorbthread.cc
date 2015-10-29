@@ -1,10 +1,10 @@
-#include "hpp/gui/omniorb/omniorbthread.h"
+#include "hpp/gui/omniorb/omniorbthread.hh"
 
 #include <gepetto/viewer/corba/server.hh>
 #include <QDebug>
 
-#include <hpp/gui/mainwindow.h>
-#include <hpp/gui/plugin-interface.h>
+#include <hpp/gui/mainwindow.hh>
+#include <hpp/gui/plugin-interface.hh>
 
 int WorkItem::idGlobal = 0;
 

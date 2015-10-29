@@ -4,8 +4,8 @@
 #include <QtGui>
 #include <QWidget>
 
-#include <hpp/gui/dialog/dialogloadrobot.h>
-#include <hpp/gui/dialog/dialogloadenvironment.h>
+#include <hpp/gui/dialog/dialogloadrobot.hh>
+#include <hpp/gui/dialog/dialogloadenvironment.hh>
 
 #include <omniORB4/CORBA.h>
 

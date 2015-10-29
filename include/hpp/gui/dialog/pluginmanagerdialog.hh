@@ -8,7 +8,7 @@
 #include <QPluginLoader>
 #include <QTableWidgetItem>
 
-#include <hpp/gui/plugin-interface.h>
+#include <hpp/gui/plugin-interface.hh>
 
 namespace Ui {
   class PluginManagerDialog;

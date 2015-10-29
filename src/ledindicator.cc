@@ -1,4 +1,4 @@
-#include "hpp/gui/ledindicator.h"
+#include "hpp/gui/ledindicator.hh"
 
 #include <QPainter>
 #include <QPalette>

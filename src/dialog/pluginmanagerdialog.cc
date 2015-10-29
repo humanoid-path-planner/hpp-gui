@@ -1,9 +1,9 @@
-#include "hpp/gui/dialog/pluginmanagerdialog.h"
+#include "hpp/gui/dialog/pluginmanagerdialog.hh"
 #include "ui_pluginmanagerdialog.h"
 
 #include <QDebug>
 
-#include "hpp/gui/plugin-interface.h"
+#include "hpp/gui/plugin-interface.hh"
 
 QList <QDir> PluginManager::pluginDirs_;
 

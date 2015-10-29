@@ -1,9 +1,9 @@
-#include "hpp/gui/windows-manager.h"
+#include "hpp/gui/windows-manager.hh"
 
 #include <gepetto/viewer/window-manager.h>
 
-#include "hpp/gui/osgwidget.h"
-#include "hpp/gui/mainwindow.h"
+#include "hpp/gui/osgwidget.hh"
+#include "hpp/gui/mainwindow.hh"
 
 WindowsManagerPtr_t WindowsManager::create()
 {

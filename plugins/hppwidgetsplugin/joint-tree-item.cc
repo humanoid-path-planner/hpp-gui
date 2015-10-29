@@ -1,12 +1,12 @@
 #include <omniORB4/CORBA.h>
-#include "hppwidgetsplugin/joint-tree-item.h"
+#include "hppwidgetsplugin/joint-tree-item.hh"
 
 #include <iostream>
 
 #include <hpp/corbaserver/client.hh>
 #include <gepetto/viewer/group-node.h>
 
-#include "hpp/gui/mainwindow.h"
+#include "hpp/gui/mainwindow.hh"
 
 using CORBA::ULong;
 

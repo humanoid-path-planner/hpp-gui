@@ -9,8 +9,8 @@
 #include <osgQt/GraphicsWindowQt>
 #include <gepetto/viewer/window-manager.h>
 
-#include <hpp/gui/fwd.h>
-#include <hpp/gui/windows-manager.h>
+#include <hpp/gui/fwd.hh>
+#include <hpp/gui/windows-manager.hh>
 
 class OSGWidget : public QGLWidget
 {

@@ -1,8 +1,8 @@
 #include "hppmanipulationwidgetsplugin/hppmanipulationwidgetsplugin.hh"
 
 #include "hppmanipulationwidgetsplugin/roadmap.hh"
-#include "hpp/gui/mainwindow.h"
-#include "hpp/gui/windows-manager.h"
+#include "hpp/gui/mainwindow.hh"
+#include "hpp/gui/windows-manager.hh"
 
 #define QSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.toStdString().c_str())
 #define STDSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.c_str())

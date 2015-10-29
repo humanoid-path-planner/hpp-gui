@@ -1,7 +1,7 @@
 #ifndef HPP_GUI_HPPWIDGETSPLUGIN_HH
 #define HPP_GUI_HPPWIDGETSPLUGIN_HH
 
-#include <hpp/gui/plugin-interface.h>
+#include <hpp/gui/plugin-interface.hh>
 #include <hpp/corbaserver/client.hh>
 
 class SolverWidget;

@@ -3,7 +3,7 @@
 
 #include <QToolBar>
 
-#include <hpp/gui/plugin-interface.h>
+#include <hpp/gui/plugin-interface.hh>
 #include <hpp/corbaserver/manipulation/client.hh>
 #undef __robot_hh__
 #undef __problem_hh__

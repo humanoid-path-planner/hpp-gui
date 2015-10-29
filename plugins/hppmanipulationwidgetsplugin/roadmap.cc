@@ -3,8 +3,8 @@
 #include <string>
 #include <sstream>
 
-#include <hpp/gui/mainwindow.h>
-#include <hpp/gui/windows-manager.h>
+#include <hpp/gui/mainwindow.hh>
+#include <hpp/gui/windows-manager.hh>
 
 ManipulationRoadmap::ManipulationRoadmap(HppManipulationWidgetsPlugin *plugin):
   Roadmap (plugin),
