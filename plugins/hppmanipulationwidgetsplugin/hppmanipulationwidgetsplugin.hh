@@ -52,7 +52,8 @@ signals:
         virtual Roadmap* createRoadmap (const std::string& jointName);
 
         public slots:
-          void drawContacts ();
+          void drawRobotContacts ();
+          void drawEnvironmentContacts ();
 
       private:
         HppManipClient* hpp_;

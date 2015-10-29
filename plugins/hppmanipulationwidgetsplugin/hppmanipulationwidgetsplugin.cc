@@ -27,9 +27,12 @@ namespace hpp {
       HppWidgetsPlugin::init ();
 
       toolBar_ = MainWindow::instance()->addToolBar("Manipulation tools");
-      QAction* drawContact = new QAction ("Draw contacts",toolBar_);
-      toolBar_->addAction (drawContact);
-      connect (drawContact, SIGNAL(triggered()), SLOT (drawContacts()));
+      QAction* drawRContact = new QAction ("Draw robot contacts",toolBar_);
+      QAction* drawEContact = new QAction ("Draw environment contacts",toolBar_);
+      toolBar_->addAction (drawRContact);
+      toolBar_->addAction (drawEContact);
+      connect (drawRContact, SIGNAL(triggered()), SLOT (drawRobotContacts()));
+      connect (drawEContact, SIGNAL(triggered()), SLOT (drawEnvironmentContacts()));
     }
 
     QString HppManipulationWidgetsPlugin::name() const
@@ -92,7 +95,7 @@ namespace hpp {
       return r;
     }
 
-    void HppManipulationWidgetsPlugin::drawContacts()
+    void HppManipulationWidgetsPlugin::drawRobotContacts()
     {
       MainWindow* main = MainWindow::instance ();
       hpp::Names_t_var rcs = hpp_->problem()->getRobotContactNames();
@@ -110,6 +113,36 @@ namespace hpp {
           /// Add the contacts
           std::stringstream ssname;
           ssname <<  target << "/contact_"
+            << escapeJointName(std::string (rcs[i])) << "_" << j;
+          std::string name = ssname.str ();
+          gepetto::corbaserver::PositionSeq ps; ps.length (indexes[j] - iPts);
+          for (CORBA::Long k = iPts; k < indexes[j]; ++k) {
+            ps[k - iPts][0] = (float)points[k][0];
+            ps[k - iPts][1] = (float)points[k][1];
+            ps[k - iPts][2] = (float)points[k][2];
+          }
+          iPts = indexes[j];
+          main->osg()->addCurve (name.c_str(), ps, color);
+          main->osg()->setCurveMode (name.c_str(), GL_POLYGON);
+        }
+      }
+    }
+
+    void HppManipulationWidgetsPlugin::drawEnvironmentContacts()
+    {
+      MainWindow* main = MainWindow::instance ();
+      hpp::Names_t_var rcs = hpp_->problem()->getEnvironmentContactNames();
+      hpp::floatSeqSeq_var points;
+      hpp::intSeq_var indexes;
+      const float color[] = {0, 1, 0, 1};
+      for (CORBA::ULong i = 0; i < rcs->length(); ++i) {
+        hpp::Names_t_var cjs = hpp_->problem()->getEnvironmentContact (
+            rcs[i], indexes.out(), points.out());
+        CORBA::Long iPts = 0;
+        for (CORBA::ULong j = 0; j < cjs->length(); ++j) {
+          /// Add the contacts
+          std::stringstream ssname;
+          ssname << "hpp-gui/contact_"
             << escapeJointName(std::string (rcs[i])) << "_" << j;
           std::string name = ssname.str ();
           gepetto::corbaserver::PositionSeq ps; ps.length (indexes[j] - iPts);
