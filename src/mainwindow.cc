@@ -35,24 +35,19 @@ namespace hpp {
       // This scene contains elements required for User Interaction.
       osg()->createScene("hpp-gui");
 
-      // Setup the tree views
-      bodyTreeModel_  = new QStandardItemModel;
-      ui_->bodyTree ->setModel(bodyTreeModel_ );
-      ui_->bodyTree->setSelectionMode(QAbstractItemView::SingleSelection);
+      // Setup the body tree view
+      ui_->bodyTreeContent->init(ui_->bodyTree, ui_->toolBox);
 
       // Setup the main OSG widget
       connect (this, SIGNAL (createView(QString)), SLOT (onCreateView()));
 
       connect (ui_->actionRefresh, SIGNAL (activated()), SLOT (requestRefresh()));
-      connect (this, SIGNAL (refresh()), SLOT (reloadBodyTree()));
 
       connect (&backgroundQueue_, SIGNAL (done(int)), this, SLOT (handleWorkerDone(int)));
       connect (&backgroundQueue_, SIGNAL (failed(int,const QString&)),
           this, SLOT (logJobFailed(int, const QString&)));
       connect (this, SIGNAL (sendToBackground(WorkItem*)),
           &backgroundQueue_, SLOT (perform(WorkItem*)));
-      connect (ui_->bodyTree->selectionModel(), SIGNAL (selectionChanged(QItemSelection,QItemSelection)),
-          SLOT (bodySelectionChanged(QItemSelection,QItemSelection)));
       backgroundQueue_.moveToThread(&worker_);
       worker_.start();
 
@@ -105,54 +100,19 @@ namespace hpp {
       return centralWidget_;
     }
 
+    BodyTreeWidget *MainWindow::bodyTree() const
+    {
+      return ui_->bodyTreeContent;
+    }
+
+    QList<OSGWidget *> MainWindow::osgWindows() const
+    {
+      return osgWindows_;
+    }
+
     PluginManager *MainWindow::pluginManager()
     {
       return &pluginManager_;
-    }
-
-    QItemSelectionModel *MainWindow::bodySelectionModel()
-    {
-      return ui_->bodyTree->selectionModel();
-    }
-
-    void MainWindow::selectBodyByName(const QString &bodyName)
-    {
-      QList<QStandardItem*> matches;
-      if (!bodyName.isEmpty() && !bodyName.isNull()) {
-        matches = bodyTreeModel_->findItems(bodyName, Qt::MatchFixedString
-            | Qt::MatchCaseSensitive
-            | Qt::MatchRecursive);
-      }
-      if (matches.empty()) {
-        qDebug () << "Body" << bodyName << "not found.";
-        ui_->bodyTree->clearSelection();
-      } else {
-        ui_->bodyTree->setCurrentIndex(matches.first()->index());
-      }
-    }
-
-    void MainWindow::bodySelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
-    {
-      QStringList sel, desel;
-      foreach (QModelIndex index, selected.indexes()) {
-        BodyTreeItem *item = dynamic_cast <BodyTreeItem*>
-          (bodyTreeModel_->itemFromIndex(index));
-        if (item) {
-          const std::string& s = item->node()->getID();
-          sel << QString::fromStdString(s);
-          osg ()->setHighlight(s.c_str(), 2);
-        }
-      }
-      foreach (QModelIndex index, deselected.indexes()) {
-        BodyTreeItem *item = dynamic_cast <BodyTreeItem*>
-          (bodyTreeModel_->itemFromIndex(index));
-        if (item) {
-          const std::string& s = item->node()->getID();
-          desel << QString::fromStdString(s);
-          osg ()->setHighlight(s.c_str(), 0);
-        }
-      }
-      emit selectedBodyChanged (sel, desel);
     }
 
     void MainWindow::log(const QString &text)
@@ -204,17 +164,6 @@ namespace hpp {
     void MainWindow::requestRefresh()
     {
       emit refresh ();
-    }
-
-    void MainWindow::reloadBodyTree()
-    {
-      bodyTreeModel_->clear();
-      std::vector <std::string> sceneNames = osgViewerManagers_->getSceneList ();
-      for (unsigned int i = 0; i < sceneNames.size(); ++i) {
-        graphics::GroupNodePtr_t group = osgViewerManagers_->getScene(sceneNames[i]);
-        if (!group) continue;
-        addBodyToTree(group);
-      }
     }
 
     OSGWidget *MainWindow::onCreateView()
@@ -298,7 +247,7 @@ namespace hpp {
         } catch (std::runtime_error& exc) {
           log (exc.what ());
         }
-        addBodyToTree(osgViewerManagers_->getScene(ed.envName_.toStdString()));
+        bodyTree()->addBodyToTree(osgViewerManagers_->getScene(ed.envName_.toStdString()));
 
         QString what = QString ("Loading environment ") + ed.name_;
         WorkItem* item;
@@ -313,37 +262,6 @@ namespace hpp {
       statusBar()->clearMessage();
       e->close();
       e->deleteLater();
-    }
-
-    void MainWindow::updateBodyTree(const QModelIndex &index)
-    {
-      VisibilityItem* vi = dynamic_cast <VisibilityItem*> (bodyTreeModel_->itemFromIndex(index));
-      if (vi) vi->update();
-    }
-
-    void MainWindow::showTreeContextMenu(const QPoint &point)
-    {
-      QMenu contextMenu (tr("Node"), this);
-      QModelIndex index = ui_->bodyTree->indexAt(point);
-      if(index.isValid()) {
-        BodyTreeItem *item =
-          dynamic_cast <BodyTreeItem*> (bodyTreeModel_->itemFromIndex(index));
-        if (!item) return;
-        item->populateContextMenu (&contextMenu);
-        QMenu* windows = contextMenu.addMenu(tr("Attach to window"));
-        foreach (OSGWidget* w, osgWindows_) {
-          QAction* aw = windows->addAction(w->objectName());
-          aw->setUserData(0, (QObjectUserData*)w);
-        }
-        QAction* toDo = contextMenu.exec(ui_->bodyTree->mapToGlobal(point));
-        if (!toDo) return;
-        if (toDo->parent() == windows) {
-          OSGWidget* w = (OSGWidget*)toDo->userData(0);
-          if (!w) return;
-          item->attachToWindow(w->windowID());
-        }
-        return;
-      }
     }
 
     void MainWindow::handleWorkerDone(int /*id*/)
@@ -585,11 +503,6 @@ namespace hpp {
       } while (0);
     }
 
-    void MainWindow::addBodyToTree(graphics::GroupNodePtr_t group)
-    {
-      bodyTreeModel_->appendRow(new BodyTreeItem (group));
-    }
-
     void MainWindow::requestApplyCurrentConfiguration()
     {
       emit applyCurrentConfiguration();
@@ -642,7 +555,7 @@ namespace hpp {
 
     void MainWindow::requestSelectJointFromBodyName(const std::string &bodyName)
     {
-      selectBodyByName (QString::fromStdString(bodyName));
+      ui_->bodyTreeContent->selectBodyByName (QString::fromStdString(bodyName));
       emit selectJointFromBodyName(bodyName);
     }
   } // namespace gui

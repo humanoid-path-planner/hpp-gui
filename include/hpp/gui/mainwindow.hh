@@ -46,16 +46,11 @@ namespace hpp {
 
         OSGWidget* centralWidget() const;
 
-        PluginManager* pluginManager ();
+        QList <OSGWidget*> osgWindows () const;
 
-      public:
-        QItemSelectionModel* bodySelectionModel ();
-signals:
-        void selectedBodyChanged (const QStringList& selected, const QStringList& deselected);
-        public slots:
-          void selectBodyByName (const QString& bodyName);
-        private slots:
-          void bodySelectionChanged (const QItemSelection & selected, const QItemSelection & deselected);
+        BodyTreeWidget* bodyTree () const;
+
+        PluginManager* pluginManager ();
 
       public:
         void log (const QString& text);
@@ -78,8 +73,6 @@ signals:
 
         OSGWidget* delayedCreateView (QString name = "");
         void requestRefresh ();
-        void reloadBodyTree ();
-        void addBodyToTree (graphics::GroupNodePtr_t group);
         void requestApplyCurrentConfiguration ();
         void requestConfigurationValidation ();
         void configurationValidationStatusChanged (bool valid);
@@ -91,8 +84,6 @@ signals:
           OSGWidget* onCreateView();
         void openLoadRobotDialog ();
         void openLoadEnvironmentDialog ();
-        void updateBodyTree (const QModelIndex& index);
-        void showTreeContextMenu (const QPoint& point);
 
         void handleWorkerDone (int id);
 

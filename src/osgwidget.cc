@@ -33,6 +33,7 @@
 #include <gepetto/viewer/urdf-parser.h>
 
 #include <hpp/gui/windows-manager.hh>
+#include <hpp/gui/bodytreewidget.hh>
 
 namespace hpp {
   namespace gui {
@@ -149,7 +150,7 @@ namespace hpp {
       wsm_->addSceneToWindow(rn.constData(), wid_);
       MainWindow* w = dynamic_cast <MainWindow*> (parentWidget());
       if (w) {
-        w->addBodyToTree (wsm_->getScene (robotName.toStdString()));
+        w->bodyTree()->addBodyToTree (wsm_->getScene (robotName.toStdString()));
       }
     }
 

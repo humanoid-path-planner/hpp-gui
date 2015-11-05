@@ -6,6 +6,7 @@
 
 #include "hpp/gui/mainwindow.hh"
 #include "hpp/gui/windows-manager.hh"
+#include <hpp/gui/bodytreewidget.hh>
 
 namespace hpp {
   namespace gui {
@@ -78,8 +79,6 @@ namespace hpp {
     void BodyTreeItem::init ()
     {
       graphics::GroupNodePtr_t gn = boost::dynamic_pointer_cast <graphics::GroupNode> (node_);
-      visibility_ = new VisibilityItem (this, Qt::Checked);
-      appendRow(visibility_);
       if (gn) {
         for (size_t i = 0; i < gn->getNumOfChildren(); ++i) {
           BodyTreeItem* item = new BodyTreeItem (gn->getChild(i));
@@ -111,16 +110,14 @@ namespace hpp {
       if (parentGroup_.empty()) return;
       MainWindow::instance()->osg()->removeFromGroup (node_->getID().c_str(),
           parentGroup_.c_str());
-      QStandardItem::parent()->removeRow(visibility_->row());
       QStandardItem::parent()->removeRow(row());
     }
 
     void BodyTreeItem::remove()
     {
-      MainWindow::instance()->osg()->deleteNode(node_->getID().c_str());
-      //  QStandardItem::parent()->removeRow(visibility_->row());
-      //  QStandardItem::parent()->removeRow(row());
-      MainWindow::instance()->reloadBodyTree();
+      MainWindow* main = MainWindow::instance();
+      main->osg()->deleteNode(node_->getID().c_str());
+      main->bodyTree()->reloadBodyTree();
     }
 
     void BodyTreeItem::addLandmark()
@@ -131,24 +128,6 @@ namespace hpp {
     void BodyTreeItem::deleteLandmark()
     {
       MainWindow::instance()->osg()->deleteLandmark(node_->getID().c_str());
-    }
-
-    void VisibilityItem::update()
-    {
-      if (checkState() != state_) {
-        state_ = checkState();
-        switch (state_) {
-          case Qt::Checked:
-            parent_->node_->setVisibilityMode(graphics::VISIBILITY_ON);
-            break;
-          case Qt::Unchecked:
-            parent_->node_->setVisibilityMode(graphics::VISIBILITY_OFF);
-            break;
-          case Qt::PartiallyChecked:
-            qDebug () << "Not implemented";
-            break;
-        }
-      }
     }
   } // namespace gui
 } // namespace hpp

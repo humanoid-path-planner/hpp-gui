@@ -56,6 +56,7 @@ SET (${PROJECT_NAME}_HEADERS_MOC
   include/hpp/gui/mainwindow.hh
   include/hpp/gui/osgwidget.hh
   include/hpp/gui/tree-item.hh
+  include/hpp/gui/bodytreewidget.hh
   include/hpp/gui/ledindicator.hh
   include/hpp/gui/plugin-interface.hh
   include/hpp/gui/omniorb/omniorbthread.hh
@@ -65,6 +66,7 @@ SET (${PROJECT_NAME}_HEADERS_MOC
   )
 SET (${PROJECT_NAME}_HEADERS_NO_MOC
   include/hpp/gui/fwd.hh
+  include/hpp/gui/meta.hh
   include/hpp/gui/settings.hh
   include/hpp/gui/safeapplication.hh
   include/hpp/gui/windows-manager.hh
@@ -109,6 +111,7 @@ SET (${PROJECT_NAME}_SOURCES
   src/osgwidget.cc
   src/tree-item.cc
   src/omniorbthread.cc
+  src/bodytreewidget.cc
   src/ledindicator.cc
   src/dialog/dialogloadrobot.cc
   src/dialog/dialogloadenvironment.cc
