@@ -15,6 +15,14 @@ namespace hpp {
       typedef CORBA::String_var CORBA_t;
       static inline CORBA_t to_corba (const std::string& s) { return s.c_str(); }
     };
+    template <typename In, typename Out, std::size_t Size>
+    inline void convertSequence (const In* in, Out (&out)[Size]) {
+      for (size_t i = 0; i < Size; ++i) out[i] = (Out)in[i];
+    }
+    template <typename In, typename Out>
+    inline void convertSequence (const In* in, Out*& out, const std::size_t& s) {
+      for (size_t i = 0; i < s; ++i) out[i] = (Out)in[i];
+    }
   }
 }
 

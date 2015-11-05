@@ -10,8 +10,7 @@
 #include "hpp/gui/dialog/dialogloadenvironment.hh"
 #include "hpp/gui/plugin-interface.hh"
 
-#define QSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.toStdString().c_str())
-#define STDSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.c_str())
+#include <hpp/gui/meta.hh>
 
 namespace hpp {
   namespace gui {
@@ -238,11 +237,13 @@ namespace hpp {
         QDir d (ed.packagePath_); d.cd("urdf");
         QString urdfFile = d.absoluteFilePath(ed.urdfFilename_ + ".urdf");
         try {
-          osgViewerManagers_->addUrdfObjects(QSTRING_TO_CONSTCHARARRAY (ed.envName_),
-              QSTRING_TO_CONSTCHARARRAY (urdfFile),
-              QSTRING_TO_CONSTCHARARRAY (ed.mesh_),
+          osgViewerManagers_->addUrdfObjects(
+              Traits<QString>::to_corba(ed.envName_).in(),
+              Traits<QString>::to_corba(urdfFile   ).in(),
+              Traits<QString>::to_corba(ed.mesh_   ).in(),
               true);
-          osgViewerManagers_->addSceneToWindow(QSTRING_TO_CONSTCHARARRAY (ed.envName_),
+          osgViewerManagers_->addSceneToWindow(
+              Traits<QString>::to_corba(ed.envName_).in(),
               centralWidget_->windowID());
         } catch (std::runtime_error& exc) {
           log (exc.what ());

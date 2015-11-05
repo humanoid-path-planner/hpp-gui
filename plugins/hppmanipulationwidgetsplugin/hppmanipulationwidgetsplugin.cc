@@ -4,8 +4,6 @@
 #include "hpp/gui/mainwindow.hh"
 #include "hpp/gui/windows-manager.hh"
 
-#define QSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.toStdString().c_str())
-#define STDSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.c_str())
 
 using CORBA::ULong;
 

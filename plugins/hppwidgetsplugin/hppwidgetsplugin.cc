@@ -17,9 +17,7 @@
 #include "hppwidgetsplugin/joint-tree-item.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
-
-#define QSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.toStdString().c_str())
-#define STDSTRING_TO_CONSTCHARARRAY(qs) ((const char*)qs.c_str())
+#include <hpp/gui/meta.hh>
 
 using CORBA::ULong;
 
@@ -116,12 +114,12 @@ namespace hpp {
     void HppWidgetsPlugin::loadRobotModel(DialogLoadRobot::RobotDefinition rd)
     {
       client()->robot()->loadRobotModel(
-          QSTRING_TO_CONSTCHARARRAY(rd.robotName_),
-          QSTRING_TO_CONSTCHARARRAY(rd.rootJointType_),
-          QSTRING_TO_CONSTCHARARRAY(rd.package_),
-          QSTRING_TO_CONSTCHARARRAY(rd.modelName_),
-          QSTRING_TO_CONSTCHARARRAY(rd.urdfSuf_),
-          QSTRING_TO_CONSTCHARARRAY(rd.srdfSuf_));
+          Traits<QString>::to_corba(rd.robotName_    ).in(),
+          Traits<QString>::to_corba(rd.rootJointType_).in(),
+          Traits<QString>::to_corba(rd.package_      ).in(),
+          Traits<QString>::to_corba(rd.modelName_    ).in(),
+          Traits<QString>::to_corba(rd.urdfSuf_      ).in(),
+          Traits<QString>::to_corba(rd.srdfSuf_      ).in());
       std::string bjn;
       if (rd.rootJointType_.compare("freeflyer") == 0)   bjn = "base_joint_xyz";
       else if (rd.rootJointType_.compare("planar") == 0) bjn = "base_joint_xy";
@@ -136,9 +134,9 @@ namespace hpp {
     {
       QString prefix = ed.envName_ + "/";
       client()->obstacle()->loadObstacleModel(
-          QSTRING_TO_CONSTCHARARRAY(ed.package_),
-          QSTRING_TO_CONSTCHARARRAY(ed.urdfFilename_),
-          QSTRING_TO_CONSTCHARARRAY(prefix));
+          Traits<QString>::to_corba(ed.package_     ).in(),
+          Traits<QString>::to_corba(ed.urdfFilename_).in(),
+          Traits<QString>::to_corba(prefix          ).in());
       computeObjectPosition ();
       MainWindow::instance()->logJobDone (0, "Environment " + ed.name_ + " loaded");
     }
@@ -187,7 +185,7 @@ namespace hpp {
       for (JointMap::iterator ite = jointMap_.begin ();
           ite != jointMap_.end (); ite++) {
         hpp::Transform__var t = client()->robot()->getLinkPosition(ite->name.c_str());
-        for (size_t i = 0; i < 7; ++i) T[i] = (float)t[(ULong)i];
+        convertSequence < ::CORBA::Double, float, 7> (t.in(), T);
         if (ite->updateViewer)
           ite->updateViewer = main->osg()->applyConfiguration(ite->bodyName.c_str(), T);
         if (!ite->item) continue;
@@ -198,7 +196,7 @@ namespace hpp {
           it != jointFrames_.end (); ++it) {
         std::string n = escapeJointName(*it);
         hpp::Transform__var t = client()->robot()->getJointPosition(it->c_str());
-        for (size_t i = 0; i < 7; ++i) T[i] = (float)t[i];
+        convertSequence < ::CORBA::Double, float, 7> (t.in(), T);
         main->osg()->applyConfiguration (n.c_str (), T);
       }
       main->osg()->refresh();
@@ -367,9 +365,8 @@ namespace hpp {
       float d[7];
       for (size_t i = 0; i < obs->length(); ++i) {
         client()->obstacle()->getObstaclePosition (obs[(ULong) i], cfg);
-        for (size_t j = 0; j < 7; j++) d[j] = (float)cfg[j];
-        const char* name = obs[(ULong) i];
-        main->osg ()->applyConfiguration(name, d);
+        convertSequence < ::CORBA::Double, float, 7> (cfg, d);
+        main->osg ()->applyConfiguration(obs[(ULong) i], d);
       }
       main->osg()->refresh();
       delete cfg;
@@ -392,7 +389,7 @@ namespace hpp {
         hpp::Transform__var t = client()->robot()->getJointPosition
           (jn.c_str());
         float p[7];
-        for (std::size_t i = 0; i < 7; ++i) p[i] = (float)t[i];
+        convertSequence < ::CORBA::Double, float, 7> (t.in(), p);
         jointFrames_.push_back(jn);
         main->osg()->applyConfiguration (target.c_str(), p);
         main->osg()->refresh();

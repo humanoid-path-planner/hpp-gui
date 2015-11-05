@@ -8,6 +8,8 @@
 #include <hpp/gui/mainwindow.hh>
 #include <hpp/gui/windows-manager.hh>
 
+#include <hpp/gui/meta.hh>
+
 namespace hpp {
   namespace gui {
     Roadmap::Roadmap(HppWidgetsPlugin *plugin):
@@ -113,7 +115,7 @@ namespace hpp {
       hpp::floatSeq_var n = hpp->problem()->node(nodeId);
       hpp->robot()->setCurrentConfig(n.in());
       hpp::Transform__var t = hpp->robot()->getLinkPosition(jointName_.c_str());
-      for (int j = 0; j < 7; ++j) { frame[j] = (float)t.in()[j]; }
+      convertSequence < ::CORBA::Double, float, 7> (t.in(), frame);
     }
 
     void Roadmap::edgePositions (EdgeID edgeId, Position& start, Position& end)
@@ -124,10 +126,10 @@ namespace hpp {
       hpp->problem()->edge(edgeId, n1.out(), n2.out());
       hpp->robot()->setCurrentConfig(n1.in());
       t = hpp->robot()->getLinkPosition(jointName_.c_str());
-      for (int j = 0; j < 3; ++j) { start[j] = (float)t.in()[j]; }
+      convertSequence < ::CORBA::Double, float, 3> (t.in(), start);
       hpp->robot()->setCurrentConfig(n2.in());
       t = hpp->robot()->getLinkPosition(jointName_.c_str());
-      for (int j = 0; j < 3; ++j) { end[j] = (float)t.in()[j]; }
+      convertSequence < ::CORBA::Double, float, 3> (t.in(), end);
     }
 
     void Roadmap::nodeColor (NodeID nodeId, Color& color)
