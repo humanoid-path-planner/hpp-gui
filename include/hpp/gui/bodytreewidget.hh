@@ -5,14 +5,14 @@
 #define HPP_GUI_BODYTREE_DECL_FEATURE(func, ArgType) \
   public slots: \
     void func (ArgType arg)
-#define HPP_GUI_BODYTREE_IMPL_FEATURE(func, ArgType, WindowsManagerFunc) \
+#define HPP_GUI_BODYTREE_IMPL_FEATURE(func, ArgType, CorbaType, WindowsManagerFunc) \
   void BodyTreeWidget::func (ArgType arg) { \
     WindowsManagerPtr_t wsm = MainWindow::instance()->osg(); \
     foreach (const QModelIndex& index, view_->selectionModel ()->selectedIndexes ()) { \
       const BodyTreeItem *item = dynamic_cast <const BodyTreeItem*> \
         (model_->itemFromIndex (index)); \
       if (item) wsm->WindowsManagerFunc (item->node()->getID().c_str(), \
-                                         Traits<ArgType>::to_corba (arg).in()); \
+                                         Traits<CorbaType>::from (arg).in()); \
     } \
   }
 
@@ -20,6 +20,7 @@
 #include <QTreeView>
 #include <QToolBox>
 #include <QStandardItemModel>
+#include <QVector3D>
 
 #include <gepetto/viewer/group-node.h>
 
@@ -58,9 +59,8 @@ namespace hpp {
     public slots:
       void setVisibilityMode (QString arg);
       void setWireFrameMode (QString arg);
-//      HPP_GUI_BODYTREE_DECL_FEATURE (setVisibilityMode, QString);
-//      HPP_GUI_BODYTREE_DECL_FEATURE (setWireFrameMode, QString);
-//      HPP_GUI_BODYTREE_DECL_FEATURE (setAlpha, QString);
+      void setColor (QColor color);
+      void setScale (int scale);
 
     private:
       QTreeView* view_;

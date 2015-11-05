@@ -143,8 +143,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>282</width>
-           <height>177</height>
+           <width>254</width>
+           <height>134</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -153,27 +153,19 @@
             <property name="currentIndex">
              <number>0</number>
             </property>
-            <widget class="QWidget" name="transparency">
+            <widget class="QWidget" name="Info">
              <property name="geometry">
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>266</width>
-               <height>133</height>
+               <width>238</width>
+               <height>90</height>
               </rect>
              </property>
              <attribute name="label">
               <string>Transparency</string>
              </attribute>
-             <layout class="QHBoxLayout" name="horizontalLayout">
-              <item>
-               <widget class="QSlider" name="horizontalSlider">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <layout class="QHBoxLayout" name="horizontalLayout"/>
             </widget>
            </widget>
           </item>

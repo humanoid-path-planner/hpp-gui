@@ -7,6 +7,7 @@
 #include <hpp/gui/meta.hh>
 
 #include <QSignalMapper>
+#include <QColorDialog>
 
 static void addSelector (QToolBox* tb, QString title, QStringList display, QStringList command,
                          QObject* receiver, const char* slot) {
@@ -24,8 +25,39 @@ static void addSelector (QToolBox* tb, QString title, QStringList display, QStri
       mapper->setMapping(button, command[i]);
       QObject::connect (button, SIGNAL(clicked(bool)), mapper, SLOT(map()));
     }
-  QObject::connect (mapper, SIGNAL(mapped(QString)), receiver, slot);
+  receiver->connect (mapper, SIGNAL(mapped(QString)), slot);
   tb->addItem(newW, title);
+}
+
+static void addColorSelector (QToolBox* tb, QString title, QObject* receiver, const char* slot) {
+  QWidget* newW = new QWidget();
+  newW->setObjectName(title);
+  QHBoxLayout* layout = new QHBoxLayout();
+  layout->setSpacing(6);
+  layout->setContentsMargins(11, 11, 11, 11);
+  layout->setObjectName(title + "_layout");
+  QPushButton* button = new QPushButton("Select color", newW);
+  button->setObjectName(title + "_buttonSelect");
+  layout->addWidget (button);
+
+  QColorDialog* colorDialog = new QColorDialog(newW);
+  colorDialog->setObjectName(title + "_colorDialog");
+  colorDialog->setOption(QColorDialog::ShowAlphaChannel, true);
+  layout->addWidget (colorDialog);
+
+  colorDialog->connect(button, SIGNAL(clicked()), SLOT(open()));
+  receiver->connect (colorDialog, SIGNAL(colorSelected(QColor)), slot);
+  tb->addItem(newW, title);
+}
+
+static void addSlider (QToolBox* tb, QString title, QObject* receiver, const char* slot) {
+  QSlider* slider = new QSlider (Qt::Horizontal);
+  slider->setMinimum(0);
+  slider->setMaximum(100);
+  slider->setObjectName(title);
+
+  receiver->connect (slider, SIGNAL(valueChanged(int)), slot);
+  tb->addItem(slider, title);
 }
 
 namespace hpp {
@@ -53,6 +85,8 @@ namespace hpp {
                    QStringList () << "Fill" << "Both" << "Wireframe",
                    QStringList () << "FILL" << "FILL_AND_WIREFRAME" << "WIREFRAME",
                    this, SLOT(setWireFrameMode(QString)));
+      addColorSelector(toolBox_, "Color", this, SLOT(setColor(QColor)));
+      addSlider(toolBox_, "Scale", this, SLOT(setScale(int)));
     }
 
     void BodyTreeWidget::selectBodyByName(const QString &bodyName)
@@ -137,8 +171,9 @@ namespace hpp {
       }
     }
 
-    HPP_GUI_BODYTREE_IMPL_FEATURE (setVisibilityMode, QString, setVisibility)
-    HPP_GUI_BODYTREE_IMPL_FEATURE (setWireFrameMode, QString, setWireFrameMode)
-//      HPP_GUI_BODYTREE_IMPL_FEATURE (setAlpha, QString, setAlpha)
+    HPP_GUI_BODYTREE_IMPL_FEATURE (setVisibilityMode, QString, CORBA::String_var, setVisibility)
+    HPP_GUI_BODYTREE_IMPL_FEATURE (setWireFrameMode, QString, CORBA::String_var, setWireFrameMode)
+    HPP_GUI_BODYTREE_IMPL_FEATURE (setColor, QColor, gepetto::corbaserver::Color_var, setColor)
+    HPP_GUI_BODYTREE_IMPL_FEATURE (setScale, int, gepetto::corbaserver::Position_var, setScale)
   }
 }
