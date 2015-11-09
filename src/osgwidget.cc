@@ -193,9 +193,6 @@ namespace hpp {
 
     void OSGWidget::keyPressEvent( QKeyEvent* event )
     {
-      QString keyString   = event->text();
-      const char* keyData = keyString.toAscii().data();
-
       switch (event->key()) {
         case Qt::Key_S:
           changeMode(NODE_SELECTION);
@@ -210,16 +207,15 @@ namespace hpp {
           this->onHome();
           break;
         default:
-          this->getEventQueue()->keyPress( osgGA::GUIEventAdapter::KeySymbol( *keyData ) );
+          char keyData = event->text()[0].toAscii();
+          this->getEventQueue()->keyPress( osgGA::GUIEventAdapter::KeySymbol( keyData ) );
       }
     }
 
     void OSGWidget::keyReleaseEvent( QKeyEvent* event )
     {
-      QString keyString   = event->text();
-      const char* keyData = keyString.toAscii().data();
-
-      this->getEventQueue()->keyRelease( osgGA::GUIEventAdapter::KeySymbol( *keyData ) );
+      char keyData = event->text()[0].toAscii();
+      this->getEventQueue()->keyRelease( osgGA::GUIEventAdapter::KeySymbol( keyData ) );
     }
 
     void OSGWidget::mouseMoveEvent( QMouseEvent* event )

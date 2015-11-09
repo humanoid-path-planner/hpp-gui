@@ -33,6 +33,7 @@ static void addColorSelector (QToolBox* tb, QString title, QObject* receiver, co
   QWidget* newW = new QWidget();
   newW->setObjectName(title);
   QHBoxLayout* layout = new QHBoxLayout();
+  newW->setLayout(layout);
   layout->setSpacing(6);
   layout->setContentsMargins(11, 11, 11, 11);
   layout->setObjectName(title + "_layout");
@@ -43,7 +44,6 @@ static void addColorSelector (QToolBox* tb, QString title, QObject* receiver, co
   QColorDialog* colorDialog = new QColorDialog(newW);
   colorDialog->setObjectName(title + "_colorDialog");
   colorDialog->setOption(QColorDialog::ShowAlphaChannel, true);
-  layout->addWidget (colorDialog);
 
   colorDialog->connect(button, SIGNAL(clicked()), SLOT(open()));
   receiver->connect (colorDialog, SIGNAL(colorSelected(QColor)), slot);
@@ -68,7 +68,7 @@ namespace hpp {
       osg_ = main->osg();
       view_ = view;
       toolBox_ = toolBox;
-      model_  = new QStandardItemModel;
+      model_  = new QStandardItemModel (this);
       view_->setModel(model_);
       view_->setSelectionMode(QAbstractItemView::SingleSelection);
 
@@ -118,7 +118,7 @@ namespace hpp {
 
     void BodyTreeWidget::addBodyToTree(graphics::GroupNodePtr_t group)
     {
-      model_->appendRow(new BodyTreeItem (group));
+      model_->appendRow(new BodyTreeItem (this, group));
     }
 
     void BodyTreeWidget::bodySelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
@@ -147,26 +147,27 @@ namespace hpp {
 
     void BodyTreeWidget::customContextMenu(const QPoint &pos)
     {
-      QMenu contextMenu (tr("Node"), this);
       QModelIndex index = view_->indexAt(pos);
       if(index.isValid()) {
           BodyTreeItem *item = dynamic_cast <BodyTreeItem*>
               (model_->itemFromIndex(index));
           if (!item) return;
           MainWindow* main = MainWindow::instance ();
-          item->populateContextMenu (&contextMenu);
-          QMenu* windows = contextMenu.addMenu(tr("Attach to window"));
+          QMenu* contextMenu = new QMenu (tr("Node"), this);
+          item->populateContextMenu (contextMenu);
+          QMenu* windows = contextMenu->addMenu(tr("Attach to window"));
           foreach (OSGWidget* w, main->osgWindows ()) {
               QAction* aw = windows->addAction(w->objectName());
               aw->setUserData(0, (QObjectUserData*)w);
             }
-          QAction* toDo = contextMenu.exec(view_->mapToGlobal(pos));
+          QAction* toDo = contextMenu->exec(view_->mapToGlobal(pos));
           if (!toDo) return;
           if (toDo->parent() == windows) {
               OSGWidget* w = (OSGWidget*)toDo->userData(0);
               if (!w) return;
               item->attachToWindow(w->windowID());
         }
+        contextMenu->deleteLater();
         return;
       }
     }

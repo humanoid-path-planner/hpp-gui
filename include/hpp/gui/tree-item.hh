@@ -21,7 +21,7 @@ namespace hpp {
       Q_OBJECT
 
       public:
-        BodyTreeItem (graphics::NodePtr_t node);
+        BodyTreeItem (QObject* parent, graphics::NodePtr_t node);
 
         virtual QStandardItem* clone () const;
 

@@ -10,7 +10,8 @@
 
 namespace hpp {
   namespace gui {
-    BodyTreeItem::BodyTreeItem(graphics::NodePtr_t node) :
+    BodyTreeItem::BodyTreeItem(QObject *parent, graphics::NodePtr_t node) :
+      QObject (parent),
       QStandardItem (QString (node->getID().c_str())),
       node_ (node),
       vmMapper_ (),
@@ -24,7 +25,7 @@ namespace hpp {
 
     QStandardItem* BodyTreeItem::clone() const
     {
-      return new BodyTreeItem (node_);
+      return new BodyTreeItem (QObject::parent(), node_);
     }
 
     graphics::NodePtr_t BodyTreeItem::node() const
@@ -81,7 +82,7 @@ namespace hpp {
       graphics::GroupNodePtr_t gn = boost::dynamic_pointer_cast <graphics::GroupNode> (node_);
       if (gn) {
         for (size_t i = 0; i < gn->getNumOfChildren(); ++i) {
-          BodyTreeItem* item = new BodyTreeItem (gn->getChild(i));
+          BodyTreeItem* item = new BodyTreeItem (this, gn->getChild(i));
           item->setParentGroup (gn->getID());
           appendRow(item);
         }
