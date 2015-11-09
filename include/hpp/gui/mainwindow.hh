@@ -103,7 +103,7 @@ signals:
         QList <OSGWidget*> osgWindows_;
 
         WindowsManagerPtr_t osgViewerManagers_;
-        CorbaServer osgServer_;
+        CorbaServer* osgServer_;
         BackgroundQueue backgroundQueue_;
         QThread worker_;
 

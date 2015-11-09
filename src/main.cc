@@ -40,6 +40,8 @@ bool setupProgramOptions (int argc, char *argv[], Settings& s) {
     ("no-plugin,P", "do not load any plugin")
 
     ("auto-write-settings,w", "write the settings in the configuration file")
+
+    ("no-viewer-server", "do not start the Gepetto Viewer server")
     ;
 
   po::variables_map vm;
@@ -57,6 +59,7 @@ bool setupProgramOptions (int argc, char *argv[], Settings& s) {
   s.verbose = (vm.count ("verbose") > 0);
   s.noPlugin = (vm.count ("no-plugin") > 0);
   s.autoWriteSettings = (vm.count ("autoWriteSettings") > 0);
+  s.startGepettoCorbaServer = (vm.count ("no-viewer-server") == 0);
 
   if (unrecognized.size () > 0) {
     std::cout << "Unrecognized options:\n";

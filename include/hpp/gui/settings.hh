@@ -14,6 +14,7 @@ namespace hpp {
       bool verbose;
       bool noPlugin;
       bool autoWriteSettings;
+      bool startGepettoCorbaServer;
 
       std::ostream& print (std::ostream& os);
     };

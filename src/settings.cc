@@ -25,6 +25,7 @@ namespace hpp {
         << "\nPredefined environments:\t" << predifinedEnvConf
         << "\nVerbose:                \t" << verbose
         << "\nNo plugin:              \t" << noPlugin
+        << "\nStart corba server:     \t" << startGepettoCorbaServer
         ;
     }
   } // namespace gui

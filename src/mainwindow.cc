@@ -22,15 +22,19 @@ namespace hpp {
       ui_(new ::Ui::MainWindow),
       centralWidget_ (),
       osgViewerManagers_ (WindowsManager::create()),
-      osgServer_ (new ViewerServerProcess (
-            new graphics::corbaServer::Server (osgViewerManagers_, 0, NULL, true))),
+      osgServer_ (NULL),
       backgroundQueue_(),
       worker_ ()
     {
       MainWindow::instance_ = this;
       ui_->setupUi(this);
 
-      osgServer_.start();
+      if (settings_.startGepettoCorbaServer) {
+        osgServer_ = new CorbaServer (new ViewerServerProcess (
+              new graphics::corbaServer::Server (
+                osgViewerManagers_, 0, NULL, true)));
+        osgServer_->start();
+      }
       // This scene contains elements required for User Interaction.
       osg()->createScene("hpp-gui");
 
@@ -60,7 +64,10 @@ namespace hpp {
       if (settings_.autoWriteSettings)
         writeSettings();
       worker_.quit();
-      osgServer_.wait();
+      if (osgServer_ != NULL) {
+        osgServer_->wait();
+        delete osgServer_;
+      }
       worker_.wait();
       delete ui_;
     }
