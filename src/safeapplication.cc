@@ -19,7 +19,7 @@ namespace hpp {
       } catch (const std::exception& e) {
         qDebug () << e.what();
       } catch (const CORBA::TRANSIENT& e) {
-        MainWindow::instance()->logError(QString ("CORBA Exception %1 - %2.\nYou may need to reset the connections (see Tools menu)").arg(e._name()).arg(e._rep_id()));
+        emit log (QString ("CORBA Exception %1 - %2.\nYou may need to reset the connections (see Tools menu)").arg(e._name()).arg(e._rep_id()));
       } catch (const CORBA::Exception& e) {
         bool handled = false;
         foreach (CorbaInterface* errorHandler, MainWindow::instance()->pluginManager()->get <CorbaInterface>()) {
@@ -29,7 +29,7 @@ namespace hpp {
           }
         }
         if (!handled)
-          MainWindow::instance ()->logError(QString ("Unhandled CORBA Exception %1 - %2").arg(e._name()).arg(e._rep_id()));
+          emit log (QString ("Unhandled CORBA Exception %1 - %2").arg(e._name()).arg(e._rep_id()));
       } catch (...) {
         qDebug() << "Unknown exception";
         qDebug() << "Catch it in SafeApplication::notify";

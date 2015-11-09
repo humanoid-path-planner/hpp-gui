@@ -52,10 +52,6 @@ namespace hpp {
 
         PluginManager* pluginManager ();
 
-      public:
-        void log (const QString& text);
-        void logError (const QString& text);
-
         void emitSendToBackground (WorkItem* item);
 
 signals:
@@ -67,6 +63,9 @@ signals:
         void selectJointFromBodyName(const std::string &bodyName);
 
         public slots:
+        void log (const QString& text);
+        void logError (const QString& text);
+
           void logJobStarted (int id, const QString& text);
         void logJobDone    (int id, const QString& text);
         void logJobFailed  (int id, const QString& text);

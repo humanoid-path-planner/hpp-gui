@@ -7,15 +7,15 @@ namespace hpp {
   namespace gui {
     class SafeApplication : public QApplication
     {
+      Q_OBJECT
+
       public:
         explicit SafeApplication (int& argc, char ** argv);
 
         virtual bool notify(QObject* receiver, QEvent* e);
 
       signals:
-
-      public slots:
-
+        void log (QString text);
     };
   } // namespace gui
 } // namespace hpp

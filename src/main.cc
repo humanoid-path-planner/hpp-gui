@@ -118,6 +118,7 @@ int main(int argc, char *argv[])
   }
 
   MainWindow w (settings);
+  w.connect (&a, SIGNAL (log(QString)), SLOT (logError(const QString&)));
   w.show();
   splash.finish(&w);
   return a.exec();

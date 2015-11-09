@@ -54,6 +54,7 @@ ENDIF()
 
 SET (${PROJECT_NAME}_HEADERS_MOC
   include/hpp/gui/mainwindow.hh
+  include/hpp/gui/safeapplication.hh
   include/hpp/gui/osgwidget.hh
   include/hpp/gui/tree-item.hh
   include/hpp/gui/bodytreewidget.hh
@@ -68,7 +69,6 @@ SET (${PROJECT_NAME}_HEADERS_NO_MOC
   include/hpp/gui/fwd.hh
   include/hpp/gui/meta.hh
   include/hpp/gui/settings.hh
-  include/hpp/gui/safeapplication.hh
   include/hpp/gui/windows-manager.hh
   include/hpp/gui/color-map.hh
   )
