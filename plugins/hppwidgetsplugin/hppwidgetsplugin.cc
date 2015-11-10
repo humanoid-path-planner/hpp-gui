@@ -363,15 +363,14 @@ namespace hpp {
     {
       MainWindow* main = MainWindow::instance ();
       hpp::Names_t_var obs = client()->obstacle()->getObstacleNames (true, false);
-      hpp::Transform__out cfg = hpp::Transform__alloc () ;
+      hpp::Transform__var cfg = hpp::Transform__alloc () ;
       float d[7];
       for (size_t i = 0; i < obs->length(); ++i) {
-        client()->obstacle()->getObstaclePosition (obs[(ULong) i], cfg);
-        convertSequence < ::CORBA::Double, float, 7> (cfg, d);
+        client()->obstacle()->getObstaclePosition (obs[(ULong) i], cfg.out());
+        convertSequence < ::CORBA::Double, float, 7> (cfg.inout(), d);
         main->osg ()->applyConfiguration(obs[(ULong) i], d);
       }
       main->osg()->refresh();
-      delete cfg;
     }
 
     std::string HppWidgetsPlugin::escapeJointName(const std::string jn)
