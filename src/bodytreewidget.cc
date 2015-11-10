@@ -157,18 +157,12 @@ namespace hpp {
           item->populateContextMenu (&contextMenu);
           QMenu* windows = contextMenu.addMenu(tr("Attach to window"));
           foreach (OSGWidget* w, main->osgWindows ()) {
-              QAction* aw = windows->addAction(w->objectName());
-              aw->setUserData(0, (QObjectUserData*)w);
+              JointAction* ja = new JointAction (w->objectName(), item->node()->getID(), windows);
+              windows->addAction (ja);
+              w->connect(ja, SIGNAL(triggered(std::string)), SLOT(attachToWindow(std::string)));
             }
-          QAction* toDo = contextMenu.exec(view_->mapToGlobal(pos));
-          if (!toDo) return;
-          if (toDo->parent() == windows) {
-              OSGWidget* w = (OSGWidget*)toDo->userData(0);
-              if (!w) return;
-              item->attachToWindow(w->windowID());
+          contextMenu.exec(view_->mapToGlobal(pos));
         }
-        return;
-      }
     }
 
     HPP_GUI_BODYTREE_IMPL_FEATURE (setVisibilityMode, QString, CORBA::String_var, setVisibility)

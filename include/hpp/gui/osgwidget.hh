@@ -51,6 +51,7 @@ signals:
         void selectionMode ();
         void cameraManipulationMode ();
         void addFloor();
+        void attachToWindow (const std::string nodeName);
 
       protected:
 

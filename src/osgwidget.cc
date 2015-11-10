@@ -443,6 +443,11 @@ namespace hpp {
       wsm_->addFloor("hpp-gui/floor");
     }
 
+    void OSGWidget::attachToWindow(const std::string nodeName)
+    {
+      wsm_->addSceneToWindow(nodeName.c_str(), wid_);
+    }
+
     void OSGWidget::onResize( int /*width*/, int /*height*/ )
     {
       osg::Camera* camera = viewer_->getCamera();
