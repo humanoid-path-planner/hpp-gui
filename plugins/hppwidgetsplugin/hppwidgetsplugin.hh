@@ -79,6 +79,10 @@ signals:
         std::string getSelectedJoint ();
         virtual Roadmap* createRoadmap (const std::string& jointName);
 
+      signals:
+        void logSuccess (const QString& text);
+        void logFailure (const QString& text);
+
         protected slots:
           virtual void displayRoadmap (const std::string& jointName);
         void addJointFrame (const std::string& jointName);

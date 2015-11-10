@@ -90,17 +90,19 @@ namespace hpp {
       connect (main, SIGNAL (refresh()), pathPlayer_, SLOT (update()));
 
       connect (main, SIGNAL (configurationValidation ()),
-          this, SLOT (configurationValidation ()));
-      connect (this, SIGNAL (configurationValidationStatus (bool)),
-          main, SLOT (configurationValidationStatusChanged (bool)));
-      connect (this, SIGNAL (configurationValidationStatus (QStringList)),
-          main, SLOT (configurationValidationStatusChanged (QStringList)));
+          SLOT (configurationValidation ()));
+      main->connect (this, SIGNAL (configurationValidationStatus (bool)),
+          SLOT (configurationValidationStatusChanged (bool)));
+      main->connect (this, SIGNAL (configurationValidationStatus (QStringList)),
+          SLOT (configurationValidationStatusChanged (QStringList)));
       connect (main, SIGNAL (applyCurrentConfiguration()),
-          this, SLOT (applyCurrentConfiguration()));
+          SLOT (applyCurrentConfiguration()));
       connect (main, SIGNAL (selectJointFromBodyName (std::string)),
-          this, SLOT (selectJointFromBodyName (std::string)));
-      connect (this, SIGNAL (logJobFailed(int,QString)),
-          main, SLOT (logJobFailed(int, QString)));
+          SLOT (selectJointFromBodyName (std::string)));
+      main->connect (this, SIGNAL (logJobFailed(int,QString)),
+          SLOT (logJobFailed(int, QString)));
+      main->connect (this, SIGNAL (logSuccess(QString)), SLOT (log(QString)));
+      main->connect (this, SIGNAL (logFailure(QString)), SLOT (logError(QString)));
 
       main->osg()->createGroup("joints");
       main->osg()->addToGroup("joints", "hpp-gui");
@@ -127,7 +129,7 @@ namespace hpp {
       updateRobotJoints (rd.robotName_);
       jointTreeWidget_->addJointToTree(bjn, 0);
       applyCurrentConfiguration();
-      MainWindow::instance()->logJobDone (0, "Robot " + rd.name_ + " loaded");
+      emit logSuccess ("Robot " + rd.name_ + " loaded");
     }
 
     void HppWidgetsPlugin::loadEnvironmentModel(DialogLoadEnvironment::EnvironmentDefinition ed)
@@ -138,7 +140,7 @@ namespace hpp {
           Traits<QString>::to_corba(ed.urdfFilename_).in(),
           Traits<QString>::to_corba(prefix          ).in());
       computeObjectPosition ();
-      MainWindow::instance()->logJobDone (0, "Environment " + ed.name_ + " loaded");
+      emit logSuccess ("Environment " + ed.name_ + " loaded");
     }
 
     std::string HppWidgetsPlugin::getBodyFromJoint(const std::string &jointName) const
@@ -176,10 +178,11 @@ namespace hpp {
     void HppWidgetsPlugin::applyCurrentConfiguration()
     {
       MainWindow * main = MainWindow::instance ();
-      main->statusBar()->showMessage("Applying current configuration...");
       if (jointMap_.isEmpty()) {
-        main->logError("The current configuration cannot be applied. This is probably because you are using external commands (python interface) and you did not refresh this GUI."
-            " Use the refresh button \"Tools\" menu.");
+        emit logFailure("The current configuration cannot be applied. "
+            "This is probably because you are using external commands (python "
+            "interface) and you did not refresh this GUI. "
+            "Use the refresh button \"Tools\" menu.");
       }
       float T[7];
       for (JointMap::iterator ite = jointMap_.begin ();
@@ -200,7 +203,6 @@ namespace hpp {
         main->osg()->applyConfiguration (n.c_str (), T);
       }
       main->osg()->refresh();
-      main->statusBar()->clearMessage();
     }
 
     void HppWidgetsPlugin::configurationValidation()
@@ -212,7 +214,7 @@ namespace hpp {
       try {
         client()->robot()->isConfigValid (q.in(), b, report);
       } catch (const hpp::Error& e) {
-        MainWindow::instance()->logError(QString (e.msg));
+        emit logFailure(QString (e.msg));
         return;
       }
       QRegExp collision ("Collision between object (.*) and (.*)");
@@ -261,7 +263,7 @@ namespace hpp {
             hpp_->robot()->setCurrentConfig(q.in());
             MainWindow::instance()->requestApplyCurrentConfiguration();
           } catch (const hpp::Error& e) {
-            MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
+            emit logFailure(QString::fromLocal8Bit(e.msg));
           }
         } else if (type == "edge") {
           // TODO
