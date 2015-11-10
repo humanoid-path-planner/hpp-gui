@@ -44,7 +44,7 @@ namespace hpp {
       // Setup the main OSG widget
       connect (this, SIGNAL (createView(QString)), SLOT (onCreateView()));
 
-      connect (ui_->actionRefresh, SIGNAL (activated()), SLOT (requestRefresh()));
+      connect (ui_->actionRefresh, SIGNAL (triggered()), SLOT (requestRefresh()));
 
       connect (&backgroundQueue_, SIGNAL (done(int)), this, SLOT (handleWorkerDone(int)));
       connect (&backgroundQueue_, SIGNAL (failed(int,const QString&)),
@@ -188,13 +188,13 @@ namespace hpp {
         centralWidget_ = osgWidget;
         centralWidget_->setObjectName(objName);
         setCentralWidget(centralWidget_);
-        connect(ui_->actionHome, SIGNAL (activated()), centralWidget_, SLOT (onHome()));
-        connect(ui_->actionSelection, SIGNAL (activated()), centralWidget_, SLOT (selectionMode()));
-        connect(ui_->actionCamera_control_mode, SIGNAL (activated()), centralWidget_, SLOT (cameraManipulationMode()));
+        connect(ui_->actionHome, SIGNAL (triggered()), centralWidget_, SLOT (onHome()));
+        connect(ui_->actionSelection, SIGNAL (triggered()), centralWidget_, SLOT (selectionMode()));
+        connect(ui_->actionCamera_control_mode, SIGNAL (triggered()), centralWidget_, SLOT (cameraManipulationMode()));
         ui_->osgToolBar->show();
 
         osg()->addSceneToWindow("hpp-gui", centralWidget_->windowID());
-        connect(ui_->actionAdd_floor, SIGNAL (activated()), centralWidget_, SLOT (addFloor()));
+        connect(ui_->actionAdd_floor, SIGNAL (triggered()), centralWidget_, SLOT (addFloor()));
       }
       osgWindows_.append(osgWidget);
       delayedCreateView_.unlock();
@@ -340,9 +340,9 @@ namespace hpp {
       statusBar()->addPermanentWidget(collisionIndicator_);
 
       connect (collisionIndicator_, SIGNAL (mouseClickEvent()), SLOT(requestConfigurationValidation()));
-      connect (ui_->actionAbout, SIGNAL (activated ()), SLOT(about()));
-      connect (ui_->actionReconnect, SIGNAL (activated ()), SLOT(resetConnection()));
-      connect (ui_->actionFetch_configuration, SIGNAL (activated()), SLOT(requestApplyCurrentConfiguration()));
+      connect (ui_->actionAbout, SIGNAL (triggered ()), SLOT(about()));
+      connect (ui_->actionReconnect, SIGNAL (triggered ()), SLOT(resetConnection()));
+      connect (ui_->actionFetch_configuration, SIGNAL (triggered ()), SLOT(requestApplyCurrentConfiguration()));
     }
 
     void MainWindow::createCentralWidget()

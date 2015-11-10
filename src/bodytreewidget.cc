@@ -153,21 +153,20 @@ namespace hpp {
               (model_->itemFromIndex(index));
           if (!item) return;
           MainWindow* main = MainWindow::instance ();
-          QMenu* contextMenu = new QMenu (tr("Node"), this);
-          item->populateContextMenu (contextMenu);
-          QMenu* windows = contextMenu->addMenu(tr("Attach to window"));
+          QMenu contextMenu (tr("Node"));
+          item->populateContextMenu (&contextMenu);
+          QMenu* windows = contextMenu.addMenu(tr("Attach to window"));
           foreach (OSGWidget* w, main->osgWindows ()) {
               QAction* aw = windows->addAction(w->objectName());
               aw->setUserData(0, (QObjectUserData*)w);
             }
-          QAction* toDo = contextMenu->exec(view_->mapToGlobal(pos));
+          QAction* toDo = contextMenu.exec(view_->mapToGlobal(pos));
           if (!toDo) return;
           if (toDo->parent() == windows) {
               OSGWidget* w = (OSGWidget*)toDo->userData(0);
               if (!w) return;
               item->attachToWindow(w->windowID());
         }
-        contextMenu->deleteLater();
         return;
       }
     }

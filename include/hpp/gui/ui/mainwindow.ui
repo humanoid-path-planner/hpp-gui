@@ -403,7 +403,7 @@
  <connections>
   <connection>
    <sender>actionCreate_view</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>onCreateView()</slot>
    <hints>
@@ -419,7 +419,7 @@
   </connection>
   <connection>
    <sender>actionLoad_robot_from_file</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>openLoadRobotDialog()</slot>
    <hints>
@@ -435,7 +435,7 @@
   </connection>
   <connection>
    <sender>actionQuit</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>
    <hints>
@@ -451,7 +451,7 @@
   </connection>
   <connection>
    <sender>actionLoad_environment</sender>
-   <signal>activated()</signal>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>openLoadEnvironmentDialog()</slot>
    <hints>
