@@ -17,10 +17,12 @@ namespace hpp {
       return MainWindow::instance()->delayedCreateView(QString (windowNameCorba))->windowID();
     }
 
-    WindowsManager::WindowID WindowsManager::createWindow(const char *windowNameCorba, osg::GraphicsContext *gc)
+    WindowsManager::WindowID WindowsManager::createWindow(const char *windowNameCorba,
+                                                          osgViewer::Viewer *viewer,
+                                                          osg::GraphicsContext *gc)
     {
       std::string wn (windowNameCorba);
-      graphics::WindowManagerPtr_t newWindow = graphics::WindowManager::create (gc);
+      graphics::WindowManagerPtr_t newWindow = graphics::WindowManager::create (viewer, gc);
       WindowID windowId = addWindow (wn, newWindow);
       return windowId;
     }

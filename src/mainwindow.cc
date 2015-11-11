@@ -176,7 +176,7 @@ namespace hpp {
     {
       QString objName = "hpp_gui_window_" + QString::number(osgWindows_.size());
       OSGWidget* osgWidget = new OSGWidget (osgViewerManagers_, objName.toStdString(),
-          this, centralWidget_, 0);
+          this, 0);
       if (!osgWindows_.empty()) {
         QDockWidget* dockOSG = new QDockWidget (
             tr("OSG Viewer") + " " + QString::number (osgWindows_.size()), this);

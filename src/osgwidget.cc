@@ -71,16 +71,16 @@ namespace hpp {
 
     }
 
-    OSGWidget::OSGWidget( WindowsManagerPtr_t wm,
+    OSGWidget::OSGWidget(WindowsManagerPtr_t wm,
         std::string name,
-        QWidget *parent,
-        const QGLWidget *shareWidget, Qt::WindowFlags f )
-      : QGLWidget( parent, shareWidget, f )
+        QWidget *parent, Qt::WindowFlags f ,
+        osgViewer::ViewerBase::ThreadingModel threadingModel)
+      : QWidget( parent, f )
         , graphicsWindow_()
         , wsm_ (wm)
         , wid_ (-1)
         , wm_ ()
-        , viewer_ ()
+        , viewer_ (new osgViewer::Viewer)
         , mode_ (CAMERA_MANIPULATION)
         , selectionFinished_( true )
         , infoBox_ (this)
@@ -104,14 +104,25 @@ namespace hpp {
       traits_ptr->sampleBuffers = ds->getMultiSamples();
       traits_ptr->samples = ds->getNumMultiSamples();
 
-      graphicsWindow_ = new osgViewer::GraphicsWindowEmbedded ( traits_ptr );
-      wid_ = wm->createWindow (name.c_str(), graphicsWindow_.get());
-      wm_ = wsm_->getWindowManager (wid_);
-      viewer_ = wm_->getViewerClone();
-      osgQt::initQtWindowingSystem();
-      viewer_->setThreadingModel( osgViewer::Viewer::SingleThreaded);
+      graphicsWindow_ = new osgQt::GraphicsWindowQt ( traits_ptr );
+
+      osg::Camera* camera = viewer_->getCamera();
+      camera->setGraphicsContext( graphicsWindow_ );
+
+      camera->setClearColor( osg::Vec4(0.2f, 0.2f, 0.6f, 1.0f) );
+      camera->setViewport( new osg::Viewport(0, 0, traits_ptr->width, traits_ptr->height) );
+      camera->setProjectionMatrixAsPerspective(30.0f, static_cast<double>(traits_ptr->width)/static_cast<double>(traits_ptr->height), 1.0f, 10000.0f );
+
+      viewer_->setKeyEventSetsDone(0);
+
       viewer_->addEventHandler(new osgViewer::WindowSizeHandler);
-      viewer_->addEventHandler(new osgViewer::StatsHandler);
+      viewer_->addEventHandler( new osgViewer::StatsHandler );
+      viewer_->setCameraManipulator( new osgGA::TrackballManipulator );
+
+      wid_ = wm->createWindow (name.c_str(), viewer_, graphicsWindow_.get());
+      wm_ = wsm_->getWindowManager (wid_);
+
+      viewer_->setThreadingModel(threadingModel);
 
       // This ensures that the widget will receive keyboard events. This focus
       // policy is not set by default. The default, Qt::NoFocus, will result in
@@ -123,6 +134,11 @@ namespace hpp {
       // mouse button has been pressed. We require this in order to let the
       // graphics window switch viewports properly.
       this->setMouseTracking( true );
+
+      QGLWidget* glWidget = graphicsWindow_->getGLWidget();
+      QHBoxLayout* hblayout = new QHBoxLayout (this);
+      setLayout (hblayout);
+      hblayout->addWidget(glWidget);
 
       connect( &timer_, SIGNAL(timeout()), this, SLOT(update()));
       timer_.start (30);
@@ -156,39 +172,7 @@ namespace hpp {
 
     void OSGWidget::paintEvent( QPaintEvent* /* paintEvent */ )
     {
-      this->makeCurrent();
-
-      QPainter painter( this );
-      painter.setRenderHint( QPainter::Antialiasing );
-
-      this->paintGL();
-
-      if( mode_ == NODE_SELECTION && !selectionFinished_ )
-      {
-        painter.setPen( Qt::black );
-        painter.setBrush( Qt::transparent );
-        painter.drawRect( makeRectangle( selectionStart_, selectionEnd_ ) );
-      }
-
-      painter.end();
-
-      this->swapBuffers();
-      this->doneCurrent();
-    }
-
-    void OSGWidget::paintGL()
-    {
-      wsm_->lock ().lock ();
-      viewer_->frame();
-      wsm_->lock ().unlock ();
-    }
-
-    void OSGWidget::resizeGL( int width, int height )
-    {
-      this->getEventQueue()->windowResize( this->x(), this->y(), width, height );
-      graphicsWindow_->resized( this->x(), this->y(), width, height );
-
-      this->onResize( width, height );
+        viewer_->frame();
     }
 
     void OSGWidget::keyPressEvent( QKeyEvent* event )
@@ -208,14 +192,14 @@ namespace hpp {
           break;
         default:
           char keyData = event->text()[0].toAscii();
-          this->getEventQueue()->keyPress( osgGA::GUIEventAdapter::KeySymbol( keyData ) );
+          getEventQueue()->keyPress( osgGA::GUIEventAdapter::KeySymbol( keyData ) );
       }
     }
 
     void OSGWidget::keyReleaseEvent( QKeyEvent* event )
     {
       char keyData = event->text()[0].toAscii();
-      this->getEventQueue()->keyRelease( osgGA::GUIEventAdapter::KeySymbol( keyData ) );
+      getEventQueue()->keyRelease( osgGA::GUIEventAdapter::KeySymbol( keyData ) );
     }
 
     void OSGWidget::mouseMoveEvent( QMouseEvent* event )
@@ -233,7 +217,7 @@ namespace hpp {
       }
       else
       {
-        this->getEventQueue()->mouseMotion( static_cast<float>( event->x() ),
+        getEventQueue()->mouseMotion( static_cast<float>( event->x() ),
             static_cast<float>( event->y() ) );
       }
     }
@@ -274,7 +258,7 @@ namespace hpp {
                                      default:
                                        break;
                                    }
-                                   this->getEventQueue()->mouseButtonPress (static_cast<float> (event->x ()),
+                                   getEventQueue()->mouseButtonPress (static_cast<float> (event->x ()),
                                        static_cast<float> (event->y ()),
                                        button);
                                  }
@@ -357,7 +341,7 @@ namespace hpp {
                                      default:
                                        break;
                                    }
-                                   this->getEventQueue()->mouseButtonRelease (static_cast<float> (event->x ()),
+                                   getEventQueue()->mouseButtonRelease (static_cast<float> (event->x ()),
                                        static_cast<float> (event->y ()),
                                        button);
                                    break;
@@ -379,45 +363,12 @@ namespace hpp {
       osgGA::GUIEventAdapter::ScrollingMotion motion = delta > 0 ?   osgGA::GUIEventAdapter::SCROLL_UP
         : osgGA::GUIEventAdapter::SCROLL_DOWN;
 
-      this->getEventQueue()->mouseScroll( motion );
-    }
-
-    bool OSGWidget::event( QEvent* event )
-    {
-      bool handled = QGLWidget::event( event );
-
-      // This ensures that the OSG widget is always going to be repainted after the
-      // user performed some interaction. Doing this in the event handler ensures
-      // that we don't forget about some event and prevents duplicate code.
-      switch( event->type() )
-      {
-        case QEvent::KeyPress:
-        case QEvent::KeyRelease:
-        case QEvent::MouseButtonDblClick:
-        case QEvent::MouseButtonPress:
-        case QEvent::MouseButtonRelease:
-        case QEvent::MouseMove:
-        case QEvent::Wheel:
-          this->update();
-          break;
-
-        default:
-          break;
-      }
-
-      return( handled );
+      getEventQueue()->mouseScroll( motion );
     }
 
     void OSGWidget::onHome()
     {
-      osgViewer::ViewerBase::Views views;
-      viewer_->getViews( views );
-
-      for( std::size_t i = 0; i < views.size(); i++ )
-      {
-        osgViewer::View* view = views.at(i);
-        view->home();
-      }
+      viewer_->home ();
     }
 
     void OSGWidget::changeMode(Mode mode)
@@ -446,12 +397,6 @@ namespace hpp {
     void OSGWidget::attachToWindow(const std::string nodeName)
     {
       wsm_->addSceneToWindow(nodeName.c_str(), wid_);
-    }
-
-    void OSGWidget::onResize( int /*width*/, int /*height*/ )
-    {
-      osg::Camera* camera = viewer_->getCamera();
-      camera->setViewport( 0, 0, this->width(), this->height() );
     }
 
     osgGA::EventQueue* OSGWidget::getEventQueue() const
@@ -564,28 +509,28 @@ namespace hpp {
       size_ (16,16),
       selection_ (QIcon::fromTheme("edit-select").pixmap(size_)),
       record_ (QIcon::fromTheme("media-record").pixmap(size_)),
-      label_ (parent)
+      label_ (new QLabel (parent))
     {
-      label_.setAutoFillBackground(true);
-      label_.hide();
-      label_.setGeometry(QRect (QPoint(0,0), size_));
+      label_->setAutoFillBackground(true);
+      label_->hide();
+      label_->setGeometry(QRect (QPoint(0,0), size_));
     }
 
     void OSGWidget::InfoBox::normalMode()
     {
-      label_.hide();
+      label_->hide();
     }
 
     void OSGWidget::InfoBox::selectionMode()
     {
-      label_.show();
-      label_.setPixmap(selection_);
+      label_->show();
+      label_->setPixmap(selection_);
     }
 
     void OSGWidget::InfoBox::recordMode()
     {
-      label_.show();
-      label_.setPixmap(record_);
+      label_->show();
+      label_->setPixmap(record_);
     }
 
     void OSGWidget::InfoBox::setMode(OSGWidget::Mode mode)

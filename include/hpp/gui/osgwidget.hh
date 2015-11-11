@@ -14,7 +14,7 @@
 
 namespace hpp {
   namespace gui {
-    class OSGWidget : public QGLWidget
+    class OSGWidget : public QWidget
     {
       Q_OBJECT
       public:
@@ -29,8 +29,8 @@ namespace hpp {
         OSGWidget( WindowsManagerPtr_t wm,
             std::string name,
             QWidget* parent = 0,
-            const QGLWidget* shareWidget = 0,
-            Qt::WindowFlags f = 0 );
+            Qt::WindowFlags f = 0,
+            osgViewer::ViewerBase::ThreadingModel threadingModel=osgViewer::Viewer::SingleThreaded );
 
         virtual ~OSGWidget();
 
@@ -56,9 +56,6 @@ signals:
       protected:
 
         virtual void paintEvent( QPaintEvent* paintEvent );
-        virtual void paintGL();
-        virtual void resizeGL( int width, int height );
-
         virtual void keyPressEvent( QKeyEvent* event );
         virtual void keyReleaseEvent( QKeyEvent* event );
 
@@ -67,15 +64,11 @@ signals:
         virtual void mouseReleaseEvent( QMouseEvent* event );
         virtual void wheelEvent( QWheelEvent* event );
 
-        virtual bool event( QEvent* event );
-
       private:
-
-        virtual void onResize( int width, int height );
 
         osgGA::EventQueue* getEventQueue() const;
 
-        osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> graphicsWindow_;
+        osg::ref_ptr<osgQt::GraphicsWindowQt> graphicsWindow_;
         WindowsManagerPtr_t wsm_;
         WindowsManager::WindowID wid_;
         graphics::WindowManagerPtr_t wm_;
@@ -96,7 +89,7 @@ signals:
         struct InfoBox {
           QSize size_;
           QPixmap selection_, record_;
-          QLabel label_;
+          QLabel* label_;
 
           InfoBox (QWidget* parent);
           void normalMode ();
