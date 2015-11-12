@@ -16,7 +16,11 @@ namespace hpp {
       bool autoWriteSettings;
       bool startGepettoCorbaServer;
 
+      int refreshRate;
+
       std::ostream& print (std::ostream& os);
+
+      bool fromArgv (const int argc, char* const argv[]);
     };
   } // namespace gui
 } // namespace hpp

@@ -125,7 +125,7 @@ namespace hpp {
       this->setMouseTracking( true );
 
       connect( &timer_, SIGNAL(timeout()), this, SLOT(update()));
-      timer_.start (30);
+      timer_.start (MainWindow::instance()->settings_.refreshRate);
     }
 
     OSGWidget::~OSGWidget()
