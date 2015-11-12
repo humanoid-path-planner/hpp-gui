@@ -34,6 +34,7 @@
 
 #include <hpp/gui/windows-manager.hh>
 #include <hpp/gui/bodytreewidget.hh>
+#include <hpp/gui/pick-handler.hh>
 
 namespace hpp {
   namespace gui {
@@ -116,7 +117,8 @@ namespace hpp {
       viewer_->setKeyEventSetsDone(0);
 
       viewer_->addEventHandler(new osgViewer::WindowSizeHandler);
-      viewer_->addEventHandler( new osgViewer::StatsHandler );
+      viewer_->addEventHandler(new osgViewer::StatsHandler );
+      viewer_->addEventHandler(new PickHandler (wsm_, this) );
       viewer_->setCameraManipulator( new osgGA::TrackballManipulator );
 
       wid_ = wm->createWindow (name.c_str(), viewer_, graphicsWindow_.get());
@@ -124,19 +126,9 @@ namespace hpp {
 
       viewer_->setThreadingModel(threadingModel);
 
-      // This ensures that the widget will receive keyboard events. This focus
-      // policy is not set by default. The default, Qt::NoFocus, will result in
-      // keyboard events that are ignored.
-      this->setFocusPolicy( Qt::StrongFocus );
-      this->setMinimumSize( 100, 100 );
-
-      // Ensures that the widget receives mouse move events even though no
-      // mouse button has been pressed. We require this in order to let the
-      // graphics window switch viewports properly.
-      this->setMouseTracking( true );
-
       QGLWidget* glWidget = graphicsWindow_->getGLWidget();
       QHBoxLayout* hblayout = new QHBoxLayout (this);
+      hblayout->setContentsMargins(1,1,1,1);
       setLayout (hblayout);
       hblayout->addWidget(glWidget);
 
@@ -202,170 +194,6 @@ namespace hpp {
       getEventQueue()->keyRelease( osgGA::GUIEventAdapter::KeySymbol( keyData ) );
     }
 
-    void OSGWidget::mouseMoveEvent( QMouseEvent* event )
-    {
-      // Note that we have to check the buttons mask in order to see whether the
-      // left button has been pressed. A call to `button()` will only result in
-      // `Qt::NoButton` for mouse move events.
-      if( mode_ == NODE_SELECTION && event->buttons() & Qt::LeftButton )
-      {
-        selectionEnd_ = event->pos();
-
-        // Ensures that new paint events are created while the user moves the
-        // mouse.
-        this->update();
-      }
-      else
-      {
-        getEventQueue()->mouseMotion( static_cast<float>( event->x() ),
-            static_cast<float>( event->y() ) );
-      }
-    }
-
-    void OSGWidget::mousePressEvent( QMouseEvent* event )
-    {
-      // Selection processing
-      switch (mode_) {
-        case NODE_SELECTION: {
-                               bool handled = false;
-                               switch (event->button()) {
-                                 case Qt::LeftButton:
-                                   selectionStart_    = event->pos();
-                                   selectionEnd_      = selectionStart_; // Deletes the old selection
-                                   selectionFinished_ = false;           // As long as this is set, the rectangle will be drawn
-                                   handled = true;
-                                   break;
-                                 default:
-                                   break;
-                               }
-                               if (handled)
-                                 break;
-                             }
-        case CAMERA_MANIPULATION:{
-                                   selectionStart_ = event->pos();
-
-                                   unsigned int button = 0;
-                                   switch (event->button()) {
-                                     case Qt::LeftButton:
-                                       button = 1;
-                                       break;
-                                     case Qt::MiddleButton:
-                                       button = 2;
-                                       break;
-                                     case Qt::RightButton:
-                                       button = 3;
-                                       break;
-                                     default:
-                                       break;
-                                   }
-                                   getEventQueue()->mouseButtonPress (static_cast<float> (event->x ()),
-                                       static_cast<float> (event->y ()),
-                                       button);
-                                 }
-                                 break;
-        case NODE_MOTION:
-                                 selectionStart_ = event->pos();
-                                 if (selectedNode_) selectedNode_->setArrowsVisibility (graphics::VISIBILITY_OFF);
-                                 NodeList list = processPoint();
-                                 switch (event->button()) {
-                                   case Qt::LeftButton:
-                                     if (selectedNode_) selectedNode_->setArrowsVisibility (graphics::VISIBILITY_OFF);
-                                     if (list.empty()) selectedNode_ = graphics::NodePtr_t();
-                                     else {
-                                       selectedNode_ = list.front();
-                                       selectedNode_->setArrowsVisibility (graphics::VISIBILITY_ON);
-                                     }
-                                     break;
-                                   case Qt::RightButton:
-                                     if (list.empty()) selectedNode_ = graphics::NodePtr_t();
-                                     else {
-                                       selectedNode_ = list.front();
-                                     }
-                                     break;
-                                   default:
-                                     break;
-                                 }
-                                 break;
-      }
-    }
-
-    void OSGWidget::mouseReleaseEvent(QMouseEvent* event)
-    {
-      // Selection processing: Store end position and obtain selected objects
-      // through polytope intersection.
-      switch (mode_) {
-        case NODE_SELECTION: {
-                               bool handled = false;
-                               if(event->button() == Qt::LeftButton ) {
-                                 selectionEnd_      = event->pos();
-                                 // Will force the painter to stop drawing the selection rectangle
-                                 selectionFinished_ = true;
-
-                                 NodeList list;
-                                 if ((selectionStart_ - selectionEnd_).isNull()) {
-                                   list = processPoint();
-                                 } else  {
-                                   list = processSelection();
-                                 }
-                                 if (!list.empty()) {
-                                   MainWindow* mw = MainWindow::instance();
-                                   mw->requestSelectJointFromBodyName (list.front()->getID());
-                                 }
-                                 handled = true;
-                               }
-                               if (handled)
-                                 break;
-                             }
-        case CAMERA_MANIPULATION:{
-                                   selectionEnd_ = event->pos();
-                                   if ((selectionStart_ - selectionEnd_).isNull()) {
-                                     NodeList list = processPoint();
-                                     MainWindow* mw = MainWindow::instance();
-                                     if (!list.empty()) {
-                                       mw->requestSelectJointFromBodyName (list.front()->getID());
-                                     } else {
-                                       mw->requestSelectJointFromBodyName("");
-                                     }
-                                   }
-                                   unsigned int button = 0;
-                                   switch (event->button()) {
-                                     case Qt::LeftButton:
-                                       button = 1;
-                                       break;
-                                     case Qt::MiddleButton:
-                                       button = 2;
-                                       break;
-                                     case Qt::RightButton:
-                                       button = 3;
-                                       break;
-                                     default:
-                                       break;
-                                   }
-                                   getEventQueue()->mouseButtonRelease (static_cast<float> (event->x ()),
-                                       static_cast<float> (event->y ()),
-                                       button);
-                                   break;
-                                 }
-        default:
-                                 break;
-      }
-    }
-
-    void OSGWidget::wheelEvent( QWheelEvent* event )
-    {
-      // Ignore wheel events as long as the selection is active.
-      if( mode_ == NODE_SELECTION )
-        return;
-
-      event->accept();
-      int delta = event->delta();
-
-      osgGA::GUIEventAdapter::ScrollingMotion motion = delta > 0 ?   osgGA::GUIEventAdapter::SCROLL_UP
-        : osgGA::GUIEventAdapter::SCROLL_DOWN;
-
-      getEventQueue()->mouseScroll( motion );
-    }
-
     void OSGWidget::onHome()
     {
       viewer_->home ();
@@ -407,51 +235,6 @@ namespace hpp {
         return( eventQueue );
       else
         throw( std::runtime_error( "Unable to obtain valid event queue") );
-    }
-
-    std::list <graphics::NodePtr_t> OSGWidget::processPoint()
-    {
-      NodeList nodes;
-
-      osg::ref_ptr<osg::Camera> camera = viewer_->getCamera();
-
-      if( !camera )
-        throw std::runtime_error( "Unable to obtain valid camera for selection processing" );
-
-      double x = selectionStart_.x();
-      double y = height() - selectionStart_.y();
-
-      osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector =
-        new osgUtil::LineSegmentIntersector(osgUtil::Intersector::WINDOW, x, y);
-
-      // This limits the amount of intersections that are reported by the
-      // polytope intersector. Using this setting, a single drawable will
-      // appear at most once while calculating intersections. This is the
-      // preferred and expected behaviour.
-      intersector->setIntersectionLimit( osgUtil::Intersector::LIMIT_ONE_PER_DRAWABLE );
-
-      osgUtil::IntersectionVisitor iv( intersector );
-
-      camera->accept( iv );
-
-      if( !intersector->containsIntersections() )
-        return nodes;
-
-      osgUtil::LineSegmentIntersector::Intersections intersections = intersector->getIntersections();
-
-      for(osgUtil::LineSegmentIntersector::Intersections::iterator it = intersections.begin();
-          it != intersections.end(); ++it) {
-        for (int i = (int) it->nodePath.size()-1; i >= 0 ; --i) {
-          graphics::NodePtr_t n = wsm_->getNode(it->nodePath[i]->getName ());
-          if (n) {
-            if (boost::regex_match (n->getID(), boost::regex ("^.*_[0-9]+$")))
-              continue;
-            nodes.push_back(n);
-            break;
-          }
-        }
-      }
-      return nodes;
     }
 
     std::list <graphics::NodePtr_t> OSGWidget::processSelection()

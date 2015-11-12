@@ -56,6 +56,7 @@ SET (${PROJECT_NAME}_HEADERS_MOC
   include/hpp/gui/mainwindow.hh
   include/hpp/gui/safeapplication.hh
   include/hpp/gui/osgwidget.hh
+  include/hpp/gui/pick-handler.hh
   include/hpp/gui/tree-item.hh
   include/hpp/gui/bodytreewidget.hh
   include/hpp/gui/ledindicator.hh
@@ -109,6 +110,7 @@ SET (${PROJECT_NAME}_SOURCES
   src/safeapplication.cc
   src/mainwindow.cc
   src/osgwidget.cc
+  src/pick-handler.cc
   src/tree-item.cc
   src/omniorbthread.cc
   src/bodytreewidget.cc
