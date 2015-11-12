@@ -79,13 +79,14 @@ namespace hpp {
                   if (n) {
                       if (boost::regex_match (n->getID(), boost::regex ("^.*_[0-9]+$")))
                         continue;
-                      nodes.push_back(n);
-                      break;
+                      emit parent_->selected (n->getID ());
+                      return nodes;
+                      // nodes.push_back(n);
+                      // break;
                     }
                 }
             }
-//          emit parent_->selected (nodes.front());
-          MainWindow::instance()->requestSelectJointFromBodyName (nodes.front()->getID());
+          // emit parent_->selected (nodes.front()->getID ());
         }
       return nodes;
     }

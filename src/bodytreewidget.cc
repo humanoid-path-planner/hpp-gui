@@ -105,6 +105,11 @@ namespace hpp {
       }
     }
 
+    void BodyTreeWidget::selectBodyByName (const std::string& bodyName)
+    {
+      return selectBodyByName (QString::fromStdString (bodyName));
+    }
+
     void BodyTreeWidget::reloadBodyTree()
     {
       model_->clear();

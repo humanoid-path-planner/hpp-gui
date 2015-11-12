@@ -74,7 +74,7 @@ namespace hpp {
 
     OSGWidget::OSGWidget(WindowsManagerPtr_t wm,
         std::string name,
-        QWidget *parent, Qt::WindowFlags f ,
+        MainWindow *parent, Qt::WindowFlags f ,
         osgViewer::ViewerBase::ThreadingModel threadingModel)
       : QWidget( parent, f )
         , graphicsWindow_()
@@ -132,8 +132,13 @@ namespace hpp {
       setLayout (hblayout);
       hblayout->addWidget(glWidget);
 
-      connect( &timer_, SIGNAL(timeout()), this, SLOT(update()));
+      connect( &timer_, SIGNAL(timeout()), SLOT(update()));
       timer_.start (30);
+
+      parent->bodyTree()->connect(this,
+          SIGNAL (selected(std::string)), SLOT (selectBodyByName(std::string)));
+      parent->connect(this, SIGNAL (selected(std::string)),
+          SLOT (requestSelectJointFromBodyName(std::string)));
     }
 
     OSGWidget::~OSGWidget()
@@ -165,33 +170,6 @@ namespace hpp {
     void OSGWidget::paintEvent( QPaintEvent* /* paintEvent */ )
     {
         viewer_->frame();
-    }
-
-    void OSGWidget::keyPressEvent( QKeyEvent* event )
-    {
-      switch (event->key()) {
-        case Qt::Key_S:
-          changeMode(NODE_SELECTION);
-          break;
-        case Qt::Key_M:
-          //      changeMode(NODE_MOTION);
-          break;
-        case Qt::Key_Escape:
-          changeMode(CAMERA_MANIPULATION);
-          break;
-        case Qt::Key_H:
-          this->onHome();
-          break;
-        default:
-          char keyData = event->text()[0].toAscii();
-          getEventQueue()->keyPress( osgGA::GUIEventAdapter::KeySymbol( keyData ) );
-      }
-    }
-
-    void OSGWidget::keyReleaseEvent( QKeyEvent* event )
-    {
-      char keyData = event->text()[0].toAscii();
-      getEventQueue()->keyRelease( osgGA::GUIEventAdapter::KeySymbol( keyData ) );
     }
 
     void OSGWidget::onHome()

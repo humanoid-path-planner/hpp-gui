@@ -48,6 +48,7 @@ namespace hpp {
 
     public slots:
       void selectBodyByName (const QString& bodyName);
+      void selectBodyByName (const std::string& bodyName);
       void reloadBodyTree ();
 
     protected slots:

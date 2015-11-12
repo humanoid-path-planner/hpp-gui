@@ -563,7 +563,6 @@ namespace hpp {
 
     void MainWindow::requestSelectJointFromBodyName(const std::string &bodyName)
     {
-      ui_->bodyTreeContent->selectBodyByName (QString::fromStdString(bodyName));
       emit selectJointFromBodyName(bodyName);
     }
   } // namespace gui

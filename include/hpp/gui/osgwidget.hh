@@ -28,7 +28,7 @@ namespace hpp {
 
         OSGWidget( WindowsManagerPtr_t wm,
             std::string name,
-            QWidget* parent = 0,
+            MainWindow* parent = 0,
             Qt::WindowFlags f = 0,
             osgViewer::ViewerBase::ThreadingModel threadingModel=osgViewer::Viewer::SingleThreaded );
 
@@ -37,7 +37,7 @@ namespace hpp {
         WindowsManager::WindowID windowID () const;
 
 signals:
-        void selected (graphics::NodePtr_t node);
+        void selected (std::string name);
         void requestMotion (graphics::NodePtr_t node, graphics::Node::Arrow direction,
             float speed);
 
@@ -56,8 +56,6 @@ signals:
       protected:
 
         virtual void paintEvent( QPaintEvent* paintEvent );
-        virtual void keyPressEvent( QKeyEvent* event );
-        virtual void keyReleaseEvent( QKeyEvent* event );
 
       private:
 
