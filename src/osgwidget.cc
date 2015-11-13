@@ -71,9 +71,9 @@ namespace hpp {
 
     }
 
-    OSGWidget::OSGWidget( WindowsManagerPtr_t wm,
+    OSGWidget::OSGWidget(WindowsManagerPtr_t wm,
         std::string name,
-        QWidget *parent,
+        MainWindow *parent,
         const QGLWidget *shareWidget, Qt::WindowFlags f )
       : QGLWidget( parent, shareWidget, f )
         , graphicsWindow_()
@@ -81,6 +81,7 @@ namespace hpp {
         , wid_ (-1)
         , wm_ ()
         , viewer_ ()
+        , screenCapture_ ()
         , mode_ (CAMERA_MANIPULATION)
         , selectionFinished_( true )
         , infoBox_ (this)
@@ -109,9 +110,15 @@ namespace hpp {
       wm_ = wsm_->getWindowManager (wid_);
       viewer_ = wm_->getViewerClone();
       osgQt::initQtWindowingSystem();
+      screenCapture_ = new osgViewer::ScreenCaptureHandler (
+            new osgViewer::ScreenCaptureHandler::WriteToFile (
+              parent->settings_->captureDirectory + "/" + parent->settings_->captureFilename,
+              parent->settings_->captureExtension),
+            1);
       viewer_->setThreadingModel( osgViewer::Viewer::SingleThreaded);
-      viewer_->addEventHandler(new osgViewer::WindowSizeHandler);
       viewer_->addEventHandler(new osgViewer::StatsHandler);
+      viewer_->addEventHandler(screenCapture_);
+      viewer_->addEventHandler(new osgViewer::HelpHandler);
 
       // This ensures that the widget will receive keyboard events. This focus
       // policy is not set by default. The default, Qt::NoFocus, will result in
@@ -125,7 +132,7 @@ namespace hpp {
       this->setMouseTracking( true );
 
       connect( &timer_, SIGNAL(timeout()), this, SLOT(update()));
-      timer_.start (MainWindow::instance()->settings_.refreshRate);
+      timer_.start (parent->settings_->refreshRate);
     }
 
     OSGWidget::~OSGWidget()
@@ -202,9 +209,6 @@ namespace hpp {
           break;
         case Qt::Key_Escape:
           changeMode(CAMERA_MANIPULATION);
-          break;
-        case Qt::Key_H:
-          this->onHome();
           break;
         default:
           char keyData = event->text()[0].toAscii();

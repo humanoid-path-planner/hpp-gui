@@ -28,7 +28,7 @@ namespace hpp {
 
         OSGWidget( WindowsManagerPtr_t wm,
             std::string name,
-            QWidget* parent = 0,
+            MainWindow* parent = 0,
             const QGLWidget* shareWidget = 0,
             Qt::WindowFlags f = 0 );
 
@@ -80,6 +80,7 @@ signals:
         WindowsManager::WindowID wid_;
         graphics::WindowManagerPtr_t wm_;
         osgViewer::ViewerRefPtr viewer_;
+        osg::ref_ptr <osgViewer::ScreenCaptureHandler> screenCapture_;
 
         QPoint selectionStart_;
         QPoint selectionEnd_;
