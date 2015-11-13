@@ -57,6 +57,7 @@ namespace hpp {
 
       if( viewer )
       {
+          wsm_->lock().lock();
           osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector =
               new osgUtil::LineSegmentIntersector(osgUtil::Intersector::WINDOW, x, y);
           intersector->setIntersectionLimit( osgUtil::Intersector::LIMIT_ONE_PER_DRAWABLE );
@@ -66,6 +67,8 @@ namespace hpp {
           osg::Camera* camera = viewer->getCamera();
 
           camera->accept( iv );
+
+          wsm_->lock().unlock();
 
           if( !intersector->containsIntersections() )
             return nodes;

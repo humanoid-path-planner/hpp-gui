@@ -176,7 +176,9 @@ namespace hpp {
 
     void OSGWidget::paintEvent( QPaintEvent* /* paintEvent */ )
     {
+        wsm_->lock().lock();
         viewer_->frame();
+        wsm_->lock().unlock();
     }
 
     void OSGWidget::onHome()
