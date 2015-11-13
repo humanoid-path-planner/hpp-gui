@@ -41,7 +41,7 @@ namespace hpp {
 
         static void addPluginDir (const QString& path);
 
-        bool loadPlugin (const QString& name);
+        bool initPlugin (const QString& name);
 
         bool unloadPlugin (const QString& name);
 

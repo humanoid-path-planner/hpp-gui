@@ -13,22 +13,8 @@
 
 using namespace hpp::gui;
 
-int main(int argc, char *argv[])
+void setupEnvironment ()
 {
-  Settings settings;
-  if (!settings.fromArgv (argc, argv)) return 1;
-
-  XInitThreads();
-
-  SafeApplication a(argc, argv);
-  a.setStyle(new QCleanlooksStyle);
-  QIcon::setThemeName("oxygen");
-
-  QPixmap pixmap(":/img/gepetto.png");
-  QSplashScreen splash(pixmap);
-  splash.show();
-  a.processEvents ();
-
   QCoreApplication::setOrganizationName("@PROJECT_NAME@");
   QCoreApplication::setOrganizationDomain("@PROJECT_URL@");
   QCoreApplication::setApplicationName("@PROJECT_NAME@");
@@ -57,7 +43,30 @@ int main(int argc, char *argv[])
     }
   }
 
-  MainWindow w (settings);
+  QIcon::setThemeName("oxygen");
+}
+
+int main(int argc, char *argv[])
+{
+  XInitThreads();
+
+  SafeApplication a(argc, argv);
+  a.setStyle(new QCleanlooksStyle);
+
+  setupEnvironment();
+
+  Settings settings;
+  if (!settings.fromArgv (argc, argv)) return 1;
+  settings.fromFiles ();
+
+  QPixmap pixmap(":/img/gepetto.png");
+  QSplashScreen splash(pixmap);
+  splash.show();
+  a.processEvents ();
+
+  MainWindow w (&settings);
+  settings.setMainWindow (&w);
+  settings.initPlugins ();
   w.connect (&a, SIGNAL (log(QString)), SLOT (logError(const QString&)));
   w.show();
   splash.finish(&w);

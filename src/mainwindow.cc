@@ -16,7 +16,7 @@ namespace hpp {
   namespace gui {
     MainWindow* MainWindow::instance_ = NULL;
 
-    MainWindow::MainWindow(Settings settings, QWidget *parent) :
+    MainWindow::MainWindow(Settings* settings, QWidget *parent) :
       QMainWindow(parent),
       settings_ (settings),
       ui_(new ::Ui::MainWindow),
@@ -29,7 +29,7 @@ namespace hpp {
       MainWindow::instance_ = this;
       ui_->setupUi(this);
 
-      if (settings_.startGepettoCorbaServer) {
+      if (settings_->startGepettoCorbaServer) {
         osgServer_ = new CorbaServer (new ViewerServerProcess (
               new graphics::corbaServer::Server (
                 osgViewerManagers_, 0, NULL, true)));
@@ -55,14 +55,10 @@ namespace hpp {
       worker_.start();
 
       setupInterface();
-
-      readSettings();
     }
 
     MainWindow::~MainWindow()
     {
-      if (settings_.autoWriteSettings)
-        writeSettings();
       worker_.quit();
       if (osgServer_ != NULL) {
         osgServer_->wait();
@@ -118,7 +114,7 @@ namespace hpp {
 
     PluginManager *MainWindow::pluginManager()
     {
-      return &pluginManager_;
+      return &(settings_->pluginManager_);
     }
 
     void MainWindow::log(const QString &text)
@@ -351,165 +347,6 @@ namespace hpp {
       onCreateView();
     }
 
-    void MainWindow::readSettings()
-    {
-      do {
-        QSettings robot (QSettings::SystemScope,
-            QCoreApplication::organizationName(),
-            QString::fromStdString(settings_.predifinedRobotConf),
-            this);
-        if (robot.status() != QSettings::NoError) {
-          logError(QString ("Enable to open configuration file ") + robot.fileName());
-          break;
-        } else {
-          foreach (QString name, robot.childGroups()) {
-            robot.beginGroup(name);
-            QString robotName = robot.value("RobotName", name).toString();
-            QDir packagePath (robot.value("PackagePath", "").toString());
-            QString meshDirectory;
-            if (packagePath.exists()) {
-              QDir meshDir = packagePath; meshDir.cdUp();
-              meshDirectory = robot.value("MeshDirectory", meshDir.absolutePath()).toString();
-            } else {
-              meshDirectory = robot.value("MeshDirectory", "").toString();
-            }
-            DialogLoadRobot::addRobotDefinition(
-                name,
-                robotName,
-                robot.value("RootJointType", "freeflyer").toString(),
-                robot.value("ModelName", robotName).toString(),
-                robot.value("Package", packagePath.dirName()).toString(),
-                packagePath.path(),
-                robot.value("URDFSuffix", "").toString(),
-                robot.value("SRDFSuffix", "").toString(),
-                meshDirectory
-                );
-            robot.endGroup();
-          }
-          log(QString ("Read configuration file ") + robot.fileName());
-        }
-      } while (0);
-      do {
-        QSettings env (QSettings::SystemScope,
-            QCoreApplication::organizationName(),
-            QString::fromStdString(settings_.predifinedEnvConf),
-            this);
-        if (env.status() != QSettings::NoError) {
-          logError(QString ("Enable to open configuration file ") + env.fileName());
-          break;
-        } else {
-          foreach (QString name, env.childGroups()) {
-            env.beginGroup(name);
-            QString envName = env.value("EnvironmentName", name).toString();
-            QDir packagePath (env.value("PackagePath", "").toString());
-            QString meshDirectory;
-            if (packagePath.exists()) {
-              QDir meshDir = packagePath; meshDir.cdUp();
-              meshDirectory = env.value("MeshDirectory", meshDir.absolutePath()).toString();
-            } else {
-              meshDirectory = env.value("MeshDirectory", "").toString();
-            }
-            DialogLoadEnvironment::addEnvironmentDefinition(
-                name,
-                envName,
-                env.value("Package", packagePath.dirName()).toString(),
-                packagePath.path(),
-                env.value("URDFFilename").toString(),
-                meshDirectory
-                );
-            env.endGroup();
-          }
-          log (QString ("Read configuration file ") + env.fileName());
-        }
-      } while (0);
-      do {
-        QSettings env (QSettings::SystemScope,
-            QCoreApplication::organizationName(),
-            QString::fromStdString(settings_.configurationFile),
-            this);
-        if (env.status() != QSettings::NoError) {
-          logError(QString ("Enable to open configuration file ") + env.fileName());
-          break;
-        } else {
-          env.beginGroup("plugins");
-          foreach (QString name, env.childKeys()) {
-            pluginManager_.add(name, this,
-                (settings_.noPlugin)?false:env.value(name, true).toBool()
-                );
-          }
-          env.endGroup ();
-          log (QString ("Read configuration file ") + env.fileName());
-        }
-      } while (0);
-    }
-
-    void MainWindow::writeSettings()
-    {
-      do {
-        QSettings robot (QSettings::SystemScope,
-            QCoreApplication::organizationName(),
-            QString::fromStdString(settings_.predifinedRobotConf),
-            this);
-        if (!robot.isWritable()) {
-          log (QString("Configuration file ") + robot.fileName() + QString(" is not writable."));
-          break;
-        }
-        foreach (DialogLoadRobot::RobotDefinition rd, DialogLoadRobot::getRobotDefinitions()) {
-          if (rd.name_.isEmpty()) continue;
-          robot.beginGroup(rd.name_);
-          robot.setValue("RobotName", rd.robotName_);
-          robot.setValue("ModelName", rd.modelName_);
-          robot.setValue("RootJointType", rd.rootJointType_);
-          robot.setValue("Package", rd.package_);
-          robot.setValue("PackagePath", rd.packagePath_);
-          robot.setValue("URDFSuffix", rd.urdfSuf_);
-          robot.setValue("SRDFSuffix", rd.srdfSuf_);
-          robot.setValue("MeshDirectory", rd.mesh_);
-          robot.endGroup();
-        }
-        log (QString("Wrote configuration file ") + robot.fileName());
-      } while (0);
-      do {
-        QSettings env (QSettings::SystemScope,
-            QCoreApplication::organizationName(),
-            QString::fromStdString(settings_.predifinedEnvConf),
-            this);
-        if (!env.isWritable()) {
-          log(QString ("Configuration file") + env.fileName() + QString("is not writable."));
-          break;
-        }
-        foreach (DialogLoadEnvironment::EnvironmentDefinition ed, DialogLoadEnvironment::getEnvironmentDefinitions()) {
-          if (ed.name_.isEmpty()) continue;
-          env.beginGroup(ed.name_);
-          env.setValue("RobotName", ed.envName_);
-          env.setValue("Package", ed.package_);
-          env.setValue("PackagePath", ed.packagePath_);
-          env.setValue("URDFFilename", ed.urdfFilename_);
-          env.setValue("MeshDirectory", ed.mesh_);
-          env.endGroup();
-        }
-        log (QString ("Wrote configuration file ") + env.fileName());
-      } while (0);
-      do {
-        QSettings env (QSettings::SystemScope,
-            QCoreApplication::organizationName(),
-            QString::fromStdString(settings_.configurationFile),
-            this);
-        if (env.status() != QSettings::NoError) {
-          logError(QString ("Enable to open configuration file ") + env.fileName());
-          break;
-        } else {
-          env.beginGroup("plugins");
-          for (PluginManager::Map::const_iterator p = pluginManager_.plugins ().constBegin();
-              p != pluginManager_.plugins().constEnd(); p++) {
-            env.setValue(p.key(),
-                (settings_.noPlugin)?false:p.value()->isLoaded());
-          }
-          env.endGroup ();
-          log (QString ("Read configuration file ") + env.fileName());
-        }
-      } while (0);
-    }
 
     void MainWindow::requestApplyCurrentConfiguration()
     {

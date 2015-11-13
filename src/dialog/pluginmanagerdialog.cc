@@ -9,18 +9,24 @@ namespace hpp {
   namespace gui {
     QList <QDir> PluginManager::pluginDirs_;
 
-    bool PluginManager::add(const QString &name, QWidget *parent, bool load)
+    bool PluginManager::add(const QString &name, QWidget *parent, bool init)
     {
-      QString filename = name;
-      if (!QDir::isAbsolutePath(name)) {
-        foreach (QDir dir, pluginDirs_) {
-          if (dir.exists(name)) {
-            filename = dir.absoluteFilePath(name);
-          }
+      if (!plugins_.contains(name)) {
+          QString filename = name;
+          if (!QDir::isAbsolutePath(name)) {
+              foreach (QDir dir, pluginDirs_) {
+                  if (dir.exists(name)) {
+                      filename = dir.absoluteFilePath(name);
+                    }
+                }
+            }
+          plugins_[name] = new QPluginLoader (filename, parent);
         }
+      if (!plugins_[name]->load()) {
+        qDebug() << name << ": " << plugins_[name]->errorString();
+        return false;
       }
-      plugins_[name] = new QPluginLoader (filename, parent);
-      if (load) return loadPlugin(name);
+      if (init) return initPlugin(name);
       return false;
     }
 
@@ -58,9 +64,9 @@ namespace hpp {
         pluginDirs_.append (can);
     }
 
-    bool PluginManager::loadPlugin(const QString &name)
+    bool PluginManager::initPlugin(const QString &name)
     {
-      if (!plugins_[name]->load()) {
+      if (!plugins_[name]->isLoaded()) {
         qDebug() << name << ": " << plugins_[name]->errorString();
         return false;
       }
@@ -130,7 +136,7 @@ namespace hpp {
 
     void PluginManagerDialog::load(const QString &name)
     {
-      pm_->loadPlugin(name);
+      pm_->initPlugin(name);
       updateList ();
     }
 

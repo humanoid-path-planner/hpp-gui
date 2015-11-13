@@ -29,9 +29,9 @@ namespace hpp {
       Q_OBJECT
 
       public:
-        Settings settings_;
+        Settings* settings_;
 
-        explicit MainWindow(Settings settings, QWidget *parent = 0);
+        explicit MainWindow(Settings* settings, QWidget *parent = 0);
         ~MainWindow();
 
         static MainWindow* instance ();
@@ -94,8 +94,6 @@ signals:
       private:
         void setupInterface ();
         void createCentralWidget ();
-        void readSettings ();
-        void writeSettings ();
 
         static MainWindow* instance_;
 
