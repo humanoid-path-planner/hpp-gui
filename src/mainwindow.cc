@@ -78,6 +78,7 @@ namespace hpp {
       addDockWidget(area, dock, orientation);
       dock->setVisible (false);
       dock->toggleViewAction ()->setIcon(QIcon::fromTheme("window-new"));
+      dock->adjustSize();
       ui_->menuWindow->addAction(dock->toggleViewAction ());
     }
 

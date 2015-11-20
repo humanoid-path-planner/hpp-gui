@@ -53,7 +53,7 @@ namespace hpp {
       dock = new QDockWidget ("&Configuration List", main);
       configListWidget_ = new ConfigurationListWidget (this, dock);
       dock->setWidget(configListWidget_);
-      main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
+      main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
       dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_C);
       dockWidgets_.append(dock);
 
@@ -62,7 +62,6 @@ namespace hpp {
       solverWidget_ = new SolverWidget (this, dock);
       dock->setWidget(solverWidget_);
       main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
-      main->tabifyDockWidget(dockWidgets_.first(), dock);
       dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_S);
       dockWidgets_.append(dock);
 
@@ -71,7 +70,6 @@ namespace hpp {
       pathPlayer_ = new PathPlayer (this, dock);
       dock->setWidget(pathPlayer_);
       main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
-      main->tabifyDockWidget(dockWidgets_.first(), dock);
       dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_P);
       dockWidgets_.append(dock);
 
