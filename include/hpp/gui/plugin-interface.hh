@@ -15,6 +15,11 @@ namespace hpp {
 
     class PluginInterface {
       public:
+        PluginInterface ()
+          : errorMsg_ ("Not initalized")
+          , isInit_ (false)
+        {}
+
         virtual ~PluginInterface () {}
 
         virtual QString name () const = 0;
@@ -23,14 +28,15 @@ namespace hpp {
         {
           try {
             init ();
+            isInit_ = true;
           } catch (const std::exception& e) {
             errorMsg_ = QString (e.what ());
           }
-        };
+        }
 
         bool isInit () const
         {
-          return errorMsg_.isNull ();
+          return isInit_;
         }
 
         const QString& errorMsg () const
@@ -43,6 +49,7 @@ namespace hpp {
 
       private:
         QString errorMsg_;
+        bool isInit_;
     };
 
       class JointAction : public QAction {
