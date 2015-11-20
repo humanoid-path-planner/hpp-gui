@@ -24,6 +24,16 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
+      <widget class="QPushButton" name="button_ResetGoalConfig">
+       <property name="toolTip">
+        <string>Reset goal configurations</string>
+       </property>
+       <property name="text">
+        <string>&amp;Reset</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLineEdit" name="lineEdit_configName">
        <property name="text">
         <string>config</string>

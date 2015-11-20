@@ -34,6 +34,10 @@ namespace hpp {
         void updateCurrentConfig (QListWidgetItem* current,QListWidgetItem* previous);
         void showListContextMenu (const QPoint& pos);
 
+      private slots:
+        void resetGoalConfigs ();
+
+
       private:
         inline QListWidget* list ();
         inline QLineEdit* name ();

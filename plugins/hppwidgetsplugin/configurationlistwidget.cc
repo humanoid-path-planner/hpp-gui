@@ -18,6 +18,7 @@ namespace hpp {
       ui_->setupUi (this);
 
       connect (ui_->button_SaveConfig, SIGNAL (clicked()), this, SLOT (onSaveClicked()));
+      connect (ui_->button_ResetGoalConfig, SIGNAL (clicked()), SLOT(resetGoalConfigs()));
       connect (list (), SIGNAL (currentItemChanged (QListWidgetItem*,QListWidgetItem*)),
           this, SLOT (updateCurrentConfig(QListWidgetItem*,QListWidgetItem*)));
       connect (list (), SIGNAL (customContextMenuRequested(QPoint)),
@@ -75,7 +76,12 @@ namespace hpp {
         plugin_->client()->problem()->addGoalConfig (c);
       } else if (selected == reset) {
         plugin_->client()->problem()->resetGoalConfigs ();
-      }
+        }
+    }
+
+    void ConfigurationListWidget::resetGoalConfigs()
+    {
+      plugin_->client()->problem()->resetGoalConfigs();
     }
 
     QLineEdit *ConfigurationListWidget::name() {
