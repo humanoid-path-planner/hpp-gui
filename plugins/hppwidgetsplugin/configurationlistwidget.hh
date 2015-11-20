@@ -31,7 +31,7 @@ namespace hpp {
 
         public slots:
           void onSaveClicked ();
-        void updateCurrentConfig (QListWidgetItem* item);
+        void updateCurrentConfig (QListWidgetItem* current,QListWidgetItem* previous);
         void showListContextMenu (const QPoint& pos);
 
       private:

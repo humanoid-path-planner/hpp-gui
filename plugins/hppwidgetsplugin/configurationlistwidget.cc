@@ -18,8 +18,8 @@ namespace hpp {
       ui_->setupUi (this);
 
       connect (ui_->button_SaveConfig, SIGNAL (clicked()), this, SLOT (onSaveClicked()));
-      connect (list (), SIGNAL (itemPressed (QListWidgetItem*)),
-          this, SLOT (updateCurrentConfig(QListWidgetItem*)));
+      connect (list (), SIGNAL (currentItemChanged (QListWidgetItem*,QListWidgetItem*)),
+          this, SLOT (updateCurrentConfig(QListWidgetItem*,QListWidgetItem*)));
       connect (list (), SIGNAL (customContextMenuRequested(QPoint)),
           this, SLOT (showListContextMenu (QPoint)));
     }
@@ -46,11 +46,13 @@ namespace hpp {
       count_++;
     }
 
-    void ConfigurationListWidget::updateCurrentConfig (QListWidgetItem* item)
+    void ConfigurationListWidget::updateCurrentConfig (QListWidgetItem* current, QListWidgetItem *)
     {
-      const hpp::floatSeq& c = *(item->data(ConfigRole).value <hpp::floatSeq*> ());
-      plugin_->client()->robot()->setCurrentConfig (c);
-      main_->requestApplyCurrentConfiguration();
+      if (current != 0) {
+          const hpp::floatSeq& c = *(current->data(ConfigRole).value <hpp::floatSeq*> ());
+          plugin_->client()->robot()->setCurrentConfig (c);
+          main_->requestApplyCurrentConfiguration();
+        }
     }
 
     void ConfigurationListWidget::showListContextMenu (const QPoint& pos)
