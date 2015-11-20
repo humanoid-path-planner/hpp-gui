@@ -216,7 +216,7 @@ namespace hpp {
 
         QString what = QString ("Loading robot ") + rd.name_;
         WorkItem* item;
-        foreach (ModelInterface* loader, pluginManager_.get <ModelInterface> ()) {
+        foreach (ModelInterface* loader, pluginManager()->get <ModelInterface> ()) {
           item = new WorkItem_1 <ModelInterface, void,
                DialogLoadRobot::RobotDefinition>
                  (loader, &ModelInterface::loadRobotModel, rd);
@@ -255,7 +255,7 @@ namespace hpp {
 
         QString what = QString ("Loading environment ") + ed.name_;
         WorkItem* item;
-        foreach (ModelInterface* loader, pluginManager_.get <ModelInterface> ()) {
+        foreach (ModelInterface* loader, pluginManager()->get <ModelInterface> ()) {
           item = new WorkItem_1 <ModelInterface, void,
                DialogLoadEnvironment::EnvironmentDefinition>
                  (loader, &ModelInterface::loadEnvironmentModel, ed);
@@ -274,7 +274,7 @@ namespace hpp {
 
     void MainWindow::resetConnection()
     {
-      foreach (CorbaInterface* e, pluginManager_.get <CorbaInterface> ()) {
+      foreach (CorbaInterface* e, pluginManager()->get <CorbaInterface> ()) {
         e->openConnection ();
       }
     }
@@ -347,7 +347,6 @@ namespace hpp {
       onCreateView();
     }
 
-
     void MainWindow::requestApplyCurrentConfiguration()
     {
       emit applyCurrentConfiguration();
@@ -362,7 +361,7 @@ namespace hpp {
 
     void MainWindow::onOpenPluginManager()
     {
-      PluginManagerDialog d (&pluginManager_, this);
+      PluginManagerDialog d (pluginManager(), this);
       d.exec ();
     }
 

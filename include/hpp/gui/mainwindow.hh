@@ -111,8 +111,6 @@ signals:
 
         QStandardItemModel *bodyTreeModel_;
 
-        PluginManager pluginManager_;
-
         QMutex delayedCreateView_;
         QStringList robotNames_;
         QStringList lastBodiesInCollision_;
