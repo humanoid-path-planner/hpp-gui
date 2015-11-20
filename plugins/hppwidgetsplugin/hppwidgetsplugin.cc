@@ -54,7 +54,7 @@ namespace hpp {
       configListWidget_ = new ConfigurationListWidget (this, dock);
       dock->setWidget(configListWidget_);
       main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
-      dock->toggleViewAction()->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_C);
+      dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_C);
       dockWidgets_.append(dock);
 
       // Solver widget
@@ -63,7 +63,7 @@ namespace hpp {
       dock->setWidget(solverWidget_);
       main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
       main->tabifyDockWidget(dockWidgets_.first(), dock);
-      dock->toggleViewAction()->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_S);
+      dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_S);
       dockWidgets_.append(dock);
 
       // Path player widget
@@ -72,7 +72,7 @@ namespace hpp {
       dock->setWidget(pathPlayer_);
       main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
       main->tabifyDockWidget(dockWidgets_.first(), dock);
-      dock->toggleViewAction()->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_P);
+      dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_P);
       dockWidgets_.append(dock);
 
       // Joint tree widget
@@ -81,7 +81,7 @@ namespace hpp {
       dock->setWidget(jointTreeWidget_);
       jointTreeWidget_->dockWidget (dock);
       main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
-      dock->toggleViewAction()->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_J);
+      dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_J);
       dockWidgets_.append(dock);
 
       // Connect widgets

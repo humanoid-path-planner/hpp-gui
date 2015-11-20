@@ -11,6 +11,8 @@
 
 namespace hpp {
   namespace gui {
+    const int DockKeyShortcutBase = Qt::CTRL + Qt::ALT;
+
     class PluginInterface {
       public:
         virtual ~PluginInterface () {}
