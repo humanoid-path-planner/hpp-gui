@@ -19,8 +19,35 @@ The core part is independent of [HPP] and can be extended to other tools via the
 Launch the binary file `hpp-gui` and do as in [this video](http://homepages.laas.fr/jmirabel/raw/videos/hpp-gui-example.mp4).
 
 #### Adding predefined robots and environments
-For convenience, robots and environments can be predifined. The configuration files are - from the installation prefix - in `etc/hpp-gui`.
+For convenience, robots and environments can be predefined.
 
+###### Automatic
+* Robots:
+```bash
+# Use option --predefined-robots to change the robots setting file.
+# OPTIONS="--predefined-robots other-robots"
+OPTIONS=""
+
+# PR2 from hpp_tutorial
+hpp-gui -g ${OPTIONS} --add-robot "PR2-hpp_tutorial,pr2,planar,pr2,hpp_tutorial,"`rospack find hpp_tutorial`",,_manipulation,"`rospack find pr2_description| sed 's/pr2_description$//'`
+# HRP2
+hpp-gui -g ${OPTIONS} --add-robot "HRP2,hrp2,freeflyer,hrp2_14,hrp2_14_description,"`rospack find hrp2_14_description`",,,"`rospack find hrp2_14_description| sed 's/hrp2_14_description$//'`
+# Romeo
+hpp-gui -g ${OPTIONS} --add-robot "Romeo,romeo,freeflyer,romeo,romeo_description,"`rospack find romeo_description`",,H37V1,"`rospack find romeo_description| sed 's/romeo_description$//'`
+```
+
+* Environments:
+```bash
+# Use option --predefined-environments to change the environments setting file.
+# OPTIONS="--predefined-environments other-environments"
+OPTIONS=""
+
+# Kitchen
+hpp-gui -g ${OPTIONS} --add-env "Kitchen,kitchen,iai_maps,"`rospack find iai_maps`",kitchen_area,"`rospack find iai_maps| sed 's/iai_maps$//'`
+```
+
+###### Manually
+The configuration files are - from the installation prefix - in `etc/hpp-gui`.
 Open `${CMAKE_INSTALL_PREFIX}/etc/hpp-gui/robots.conf` and write:
 ```
 [PR2 - hpp_tutorial]
@@ -58,6 +85,27 @@ Note: Do not forget to replace `${CMAKE_INSTALL_PREFIX}` by a relevant path.
 
 #### Loading plugins
 
+###### Automatic
+```bash
+# Use option --config-file to change the settings file.
+# OPTIONS="--config-file other-settings"
+OPTIONS=""
+
+# Using the core framework: hppcorbaserver
+hpp-gui -g ${OPTIONS} \
+  --load-plugin libhppwidgetsplugin.so \
+  --load-plugin libhppcorbaserverplugin.so \
+  --load-plugin libremoteimuplugin.so
+
+# Using the manipulation framework: hpp-manipulation-server
+hpp-gui -g ${OPTIONS} \
+  --load-plugin libhppmanipulationwidgetsplugin.so \
+  --load-plugin libhppmanipulationplugin.so \
+  --load-plugin libhppmonitoringplugin.so \
+  --load-plugin libremoteimuplugin.so
+```
+
+###### Manually
 Open `${CMAKE_INSTALL_PREFIX}/etc/hpp-gui/settings.conf` and write:
 ```
 [plugins]
@@ -72,7 +120,9 @@ The plugins are looked for in the directory `${CMAKE_INSTALL_PREFIX}/lib/hpp-gui
 As [HPP], the *GUI* can be controlled using a python interface. When the *GUI* starts, it launches a server for both [HPP] and the Gepetto Viewer exactly as if you were manually launching the two commands `hppcorbaserver` and `gepetto-viewer-server`. This means that **you can run the same python scripts** and it will work !
 
 When you do so, pay attention to the following points:
-- the GUI has no way of knowing when to refresh the list of joints and bodies. **There is a refresh button in the "Joint tree" window**.
+- the GUI has no way of knowing when to refresh the list of joints and bodies. **There is a refresh button in the `Tools` menu**.
+- you can run the `hppcorbaserver` (or any server embedding it, like `hpp-manipulation-server`) externally. Use `Tools > Reset connection` when the CORBA client has to reconnect to a new server.
+  In this case, set `libhppcorbaserverplugin.so` and `libhppmanipulationplugin.so` to `false` in your settings file because they are launching the servers themselves.
 - moving the robot in the GUI while the server is processing data can lead to unexpected results, because you are modifying the *current configuration* of HPP when not expected.
 
 ## Installation procedure
@@ -118,7 +168,6 @@ Want to contribute? Great!
 See the ToDo's list below and use the github pull request mechanism.
 
 ## Todo's
-* Display roadmap;
 * Create constraints.
 
 [HPP]:http://projects.laas.fr/gepetto/index.php/Software/Hpp
