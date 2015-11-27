@@ -80,6 +80,7 @@ signals:
         void onOpenPluginManager ();
 
         private slots:
+          OSGWidget* onCreateView(QString name);
           OSGWidget* onCreateView();
         void openLoadRobotDialog ();
         void openLoadEnvironmentDialog ();

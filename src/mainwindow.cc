@@ -42,7 +42,7 @@ namespace hpp {
       ui_->bodyTreeContent->init(ui_->bodyTree, ui_->toolBox);
 
       // Setup the main OSG widget
-      connect (this, SIGNAL (createView(QString)), SLOT (onCreateView()));
+      connect (this, SIGNAL (createView(QString)), SLOT (onCreateView(QString)));
 
       connect (ui_->actionRefresh, SIGNAL (triggered()), SLOT (requestRefresh()));
 
@@ -172,9 +172,12 @@ namespace hpp {
       emit refresh ();
     }
 
-    OSGWidget *MainWindow::onCreateView()
+    OSGWidget *MainWindow::onCreateView() {
+      return onCreateView ("hpp_gui_window_" + QString::number(osgWindows_.size()));
+    }
+
+    OSGWidget *MainWindow::onCreateView(QString objName)
     {
-      QString objName = "hpp_gui_window_" + QString::number(osgWindows_.size());
       OSGWidget* osgWidget = new OSGWidget (osgViewerManagers_, objName.toStdString(),
           this, 0);
       if (!osgWindows_.empty()) {
