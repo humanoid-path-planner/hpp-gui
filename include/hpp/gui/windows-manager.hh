@@ -59,7 +59,9 @@ namespace hpp {
         static WindowsManagerPtr_t create ();
 
         WindowID createWindow(const char *windowNameCorba);
-        WindowID createWindow(const char *windowNameCorba, osg::GraphicsContext *gc);
+        WindowID createWindow(const char *windowNameCorba,
+                              osgViewer::Viewer* viewer,
+                              osg::GraphicsContext *gc);
 
       protected:
         WindowsManager ();

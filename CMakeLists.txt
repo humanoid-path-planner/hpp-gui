@@ -69,6 +69,7 @@ SET (${PROJECT_NAME}_HEADERS_NO_MOC
   include/hpp/gui/fwd.hh
   include/hpp/gui/meta.hh
   include/hpp/gui/settings.hh
+  include/hpp/gui/pick-handler.hh
   include/hpp/gui/windows-manager.hh
   include/hpp/gui/color-map.hh
   )
@@ -109,6 +110,7 @@ SET (${PROJECT_NAME}_SOURCES
   src/safeapplication.cc
   src/mainwindow.cc
   src/osgwidget.cc
+  src/pick-handler.cc
   src/tree-item.cc
   src/omniorbthread.cc
   src/bodytreewidget.cc
