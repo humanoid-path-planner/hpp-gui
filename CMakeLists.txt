@@ -37,7 +37,7 @@ ADD_REQUIRED_DEPENDENCY("openscenegraph-osgQt")
 ADD_REQUIRED_DEPENDENCY("openthreads >= 3.2")
 ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba")
 
-SET(BOOST_COMPONENTS program_options system regex)
+SET(BOOST_COMPONENTS program_options system thread regex)
 SEARCH_FOR_BOOST ()
 
 ADD_OPTIONAL_DEPENDENCY("hpp-corbaserver")

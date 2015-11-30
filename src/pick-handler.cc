@@ -1,5 +1,7 @@
 #include "hpp/gui/pick-handler.hh"
 
+#include <QDebug>
+
 #include <osg/io_utils>
 
 #include <osgUtil/IntersectionVisitor>
@@ -57,7 +59,11 @@ namespace hpp {
 
       if( viewer )
       {
-          wsm_->lock().lock();
+          // There is no need to lock the windows manager mutex
+          // as this is treated in the event loop of OSG, and not Qt.
+          // On the contrary, locking here creates a deadlock as the lock is
+          // already acquired by OSGWidget::paintEvent.
+          // wsm_->lock().lock();
           osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector =
               new osgUtil::LineSegmentIntersector(osgUtil::Intersector::WINDOW, x, y);
           intersector->setIntersectionLimit( osgUtil::Intersector::LIMIT_ONE_PER_DRAWABLE );
@@ -67,8 +73,6 @@ namespace hpp {
           osg::Camera* camera = viewer->getCamera();
 
           camera->accept( iv );
-
-          wsm_->lock().unlock();
 
           if( !intersector->containsIntersections() )
             return nodes;
