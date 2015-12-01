@@ -43,8 +43,7 @@ namespace hpp {
 
       void addBodyToTree (graphics::GroupNodePtr_t group);
 
-    signals:
-      void selectedBodyChanged (const QStringList& selected, const QStringList& deselected);
+      QTreeView* view ();
 
     public slots:
       void selectBodyByName (const QString& bodyName);
@@ -53,9 +52,6 @@ namespace hpp {
 
     protected slots:
       void customContextMenu (const QPoint& pos);
-
-    private slots:
-      void bodySelectionChanged (const QItemSelection & selected, const QItemSelection & deselected);
 
     public slots:
       void setVisibilityMode (QString arg);

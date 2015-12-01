@@ -15,16 +15,25 @@
 #include <hpp/gui/windows-manager.hh>
 #include <hpp/gui/osgwidget.hh>
 #include <hpp/gui/mainwindow.hh>
+#include <hpp/gui/bodytreewidget.hh>
+#include <hpp/gui/tree-item.hh>
 
 namespace hpp {
   namespace gui {
     PickHandler::PickHandler(WindowsManagerPtr_t wsm, OSGWidget *parent)
       : wsm_ (wsm)
       , parent_ (parent)
+      , last_ ()
       , pushed_ (false)
       , lastX_ (0)
       , lastY_ (0)
-    {}
+    {
+      MainWindow* main = MainWindow::instance ();
+      connect (main->bodyTree ()->view ()->selectionModel(),
+          SIGNAL (currentChanged(QModelIndex,QModelIndex)),
+          SLOT (bodyTreeCurrentChanged(QModelIndex,QModelIndex)),
+          Qt::QueuedConnection);
+    }
 
     PickHandler::~PickHandler()
     {
@@ -51,6 +60,14 @@ namespace hpp {
       return false;
     }
 
+    void PickHandler::select (graphics::NodePtr_t node)
+    {
+      if (last_ == node) return;
+      if (last_) last_->setHighlightState (0);
+      last_ = node;
+      if (last_) last_->setHighlightState (8);
+    }
+
     std::list<graphics::NodePtr_t> PickHandler::computeIntersection(osgGA::GUIActionAdapter &aa,
                                                                     const float &x, const float &y)
     {
@@ -74,8 +91,10 @@ namespace hpp {
 
           camera->accept( iv );
 
-          if( !intersector->containsIntersections() )
+          if( !intersector->containsIntersections() ) {
+            select (graphics::NodePtr_t());
             return nodes;
+          }
 
           osgUtil::LineSegmentIntersector::Intersections intersections = intersector->getIntersections();
 
@@ -86,6 +105,7 @@ namespace hpp {
                   if (n) {
                       if (boost::regex_match (n->getID(), boost::regex ("^.*_[0-9]+$")))
                         continue;
+                      select (n);
                       emit parent_->selected (n->getID ());
                       return nodes;
                       // nodes.push_back(n);
@@ -95,7 +115,22 @@ namespace hpp {
             }
           // emit parent_->selected (nodes.front()->getID ());
         }
+      select (graphics::NodePtr_t());
       return nodes;
+    }
+
+    void PickHandler::bodyTreeCurrentChanged (const QModelIndex &current,
+        const QModelIndex &/*previous*/)
+    {
+      BodyTreeItem *item = dynamic_cast <BodyTreeItem*> (
+          qobject_cast <const QStandardItemModel*>
+          (current.model())->itemFromIndex(current)
+         );
+      if (item) {
+        wsm_->lock ().lock();
+        select (item->node ());
+        wsm_->lock ().unlock();
+      }
     }
   }
 }

@@ -73,8 +73,6 @@ namespace hpp {
       view_->setSelectionMode(QAbstractItemView::SingleSelection);
 
       connect (main, SIGNAL (refresh()), SLOT (reloadBodyTree()));
-      connect (view_->selectionModel(), SIGNAL (selectionChanged(QItemSelection,QItemSelection)),
-          SLOT (bodySelectionChanged(QItemSelection,QItemSelection)));
       connect (view_, SIGNAL (customContextMenuRequested(QPoint)), SLOT(customContextMenu(QPoint)));
 
       addSelector (toolBox_, "Visibility",
@@ -87,6 +85,11 @@ namespace hpp {
                    this, SLOT(setWireFrameMode(QString)));
       addColorSelector(toolBox_, "Color", this, SLOT(setColor(QColor)));
       addSlider(toolBox_, "Scale", this, SLOT(setScale(int)));
+    }
+
+    QTreeView* BodyTreeWidget::view ()
+    {
+      return view_;
     }
 
     void BodyTreeWidget::selectBodyByName(const QString &bodyName)
@@ -124,30 +127,6 @@ namespace hpp {
     void BodyTreeWidget::addBodyToTree(graphics::GroupNodePtr_t group)
     {
       model_->appendRow(new BodyTreeItem (this, group));
-    }
-
-    void BodyTreeWidget::bodySelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
-    {
-      QStringList sel, desel;
-      foreach (QModelIndex index, selected.indexes()) {
-        BodyTreeItem *item = dynamic_cast <BodyTreeItem*>
-          (model_->itemFromIndex(index));
-        if (item) {
-          const std::string& s = item->node()->getID();
-          sel << QString::fromStdString(s);
-          osg_->setHighlight(s.c_str(), 2);
-        }
-      }
-      foreach (QModelIndex index, deselected.indexes()) {
-        BodyTreeItem *item = dynamic_cast <BodyTreeItem*>
-          (model_->itemFromIndex(index));
-        if (item) {
-          const std::string& s = item->node()->getID();
-          desel << QString::fromStdString(s);
-          osg_->setHighlight(s.c_str(), 0);
-        }
-      }
-      emit selectedBodyChanged (sel, desel);
     }
 
     void BodyTreeWidget::customContextMenu(const QPoint &pos)
