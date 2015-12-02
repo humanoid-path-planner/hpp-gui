@@ -13,7 +13,12 @@
 #include <osg/StateSet>
 
 #include <osgGA/EventQueue>
+#include <osgGA/KeySwitchMatrixManipulator>
 #include <osgGA/TrackballManipulator>
+#include <osgGA/SphericalManipulator>
+#include <osgGA/FlightManipulator>
+#include <osgGA/DriveManipulator>
+#include <osgGA/TerrainManipulator>
 
 #include <osgUtil/IntersectionVisitor>
 #include <osgUtil/PolytopeIntersector>
@@ -126,7 +131,16 @@ namespace hpp {
       viewer_->addEventHandler(screenCapture_);
       viewer_->addEventHandler(new osgViewer::HelpHandler);
       viewer_->addEventHandler(new PickHandler (wsm_, this) );
-      viewer_->setCameraManipulator( new osgGA::TrackballManipulator );
+      osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator = new osgGA::KeySwitchMatrixManipulator;
+
+      keyswitchManipulator->addMatrixManipulator( '1', "Trackball", new osgGA::TrackballManipulator() );
+      keyswitchManipulator->addMatrixManipulator( '2', "Spherical", new osgGA::SphericalManipulator() );
+      keyswitchManipulator->addMatrixManipulator( '3', "Flight", new osgGA::FlightManipulator() );
+      keyswitchManipulator->addMatrixManipulator( '4', "First person", new osgGA::FirstPersonManipulator() );
+      keyswitchManipulator->addMatrixManipulator( '5', "Drive", new osgGA::DriveManipulator() );
+      keyswitchManipulator->addMatrixManipulator( '6', "Terrain", new osgGA::TerrainManipulator() );
+      keyswitchManipulator->selectMatrixManipulator (0);
+      viewer_->setCameraManipulator( keyswitchManipulator.get() );
 
       wid_ = wm->createWindow (name.c_str(), viewer_, graphicsWindow_.get());
       wm_ = wsm_->getWindowManager (wid_);
