@@ -41,22 +41,42 @@ namespace hpp {
 
     bool PickHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
     {
-      if (ea.getButton() != osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON) return false;
-      if (pushed_
-          && ea.getEventType() == osgGA::GUIEventAdapter::RELEASE) {
-          pushed_ = false;
-          if ((int)floor(lastX_ - ea.getX()+0.05) == 0
-              && (int)floor(lastY_ - ea.getY() + 0.5) == 0) {
-              computeIntersection(aa, ea.getX(), ea.getY());
-              return true;
+      switch (ea.getEventType()) {
+        case osgGA::GUIEventAdapter::PUSH:
+        case osgGA::GUIEventAdapter::RELEASE:
+          if (ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON) {
+            if (pushed_
+                && ea.getEventType() == osgGA::GUIEventAdapter::RELEASE) {
+              pushed_ = false;
+              if ((int)floor(lastX_ - ea.getX()+0.05) == 0
+                  && (int)floor(lastY_ - ea.getY() + 0.5) == 0) {
+                computeIntersection(aa, ea.getX(), ea.getY());
+                return true;
+              }
             }
-        }
-      if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH) {
-          lastX_ = ea.getX();
-          lastY_ = ea.getY();
-          pushed_ = true;
-        }
-
+            if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH) {
+              lastX_ = ea.getX();
+              lastY_ = ea.getY();
+              pushed_ = true;
+            }
+          }
+          return false;
+          break;
+        case osgGA::GUIEventAdapter::KEYUP:
+          switch (ea.getKey ()) {
+            case 'z':
+                setCameraToSelected (aa, false);
+                return true;
+            case 'Z':
+                setCameraToSelected (aa, true);
+              return true;
+            default:
+              break;
+          }
+          break;
+        default:
+          break;
+      }
       return false;
     }
 
@@ -66,6 +86,13 @@ namespace hpp {
       if (last_) last_->setHighlightState (0);
       last_ = node;
       if (last_) last_->setHighlightState (8);
+    }
+
+    void PickHandler::getUsage (osg::ApplicationUsage& usage)
+    {
+      usage.addKeyboardMouseBinding ("Right click", "Select node");
+      usage.addKeyboardMouseBinding ('z', "Move camera on selected node");
+      usage.addKeyboardMouseBinding ('Z', "Move and zoom on selected node");
     }
 
     std::list<graphics::NodePtr_t> PickHandler::computeIntersection(osgGA::GUIActionAdapter &aa,
@@ -117,6 +144,27 @@ namespace hpp {
         }
       select (graphics::NodePtr_t());
       return nodes;
+    }
+
+    void PickHandler::setCameraToSelected (osgGA::GUIActionAdapter &aa,
+        bool zoom)
+    {
+      qDebug () << "setCameraToSelected" << zoom;
+      if (!last_) return;
+      osgViewer::View* viewer = dynamic_cast<osgViewer::View*>( &aa );
+      if(!viewer) return;
+
+      const osg::BoundingSphere& bs = last_->asGroup()->getBound ();
+      osg::Vec3f eye, center, up;
+      viewer->getCameraManipulator()->getInverseMatrix ()
+        .getLookAt (eye, center, up);
+      if (zoom) {
+        eye.normalize();
+        eye *= 1 + bs.radius ();
+      }
+      viewer->getCameraManipulator()->setByInverseMatrix (
+          osg::Matrixd::lookAt (eye, bs.center(), up)
+          );
     }
 
     void PickHandler::bodyTreeCurrentChanged (const QModelIndex &current,

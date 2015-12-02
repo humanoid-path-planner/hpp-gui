@@ -27,6 +27,8 @@ namespace hpp {
 
       void select (graphics::NodePtr_t node);
 
+      void getUsage (osg::ApplicationUsage &usage);
+
     private slots:
       void bodyTreeCurrentChanged (const QModelIndex &current,
           const QModelIndex &previous);
@@ -34,6 +36,8 @@ namespace hpp {
     private:
       std::list <graphics::NodePtr_t> computeIntersection (osgGA::GUIActionAdapter& aa,
                                                            const float& x, const float& y);
+
+      void setCameraToSelected (osgGA::GUIActionAdapter& aa, bool zoom);
 
       WindowsManagerPtr_t wsm_;
       OSGWidget* parent_;
