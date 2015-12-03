@@ -20,9 +20,8 @@
 
 namespace hpp {
   namespace gui {
-    PickHandler::PickHandler(WindowsManagerPtr_t wsm, OSGWidget *parent)
+    PickHandler::PickHandler(WindowsManagerPtr_t wsm)
       : wsm_ (wsm)
-      , parent_ (parent)
       , last_ ()
       , pushed_ (false)
       , lastX_ (0)
@@ -31,8 +30,7 @@ namespace hpp {
       MainWindow* main = MainWindow::instance ();
       connect (main->bodyTree ()->view ()->selectionModel(),
           SIGNAL (currentChanged(QModelIndex,QModelIndex)),
-          SLOT (bodyTreeCurrentChanged(QModelIndex,QModelIndex)),
-          Qt::QueuedConnection);
+          SLOT (bodyTreeCurrentChanged(QModelIndex,QModelIndex)));
     }
 
     PickHandler::~PickHandler()
@@ -133,7 +131,7 @@ namespace hpp {
                       if (boost::regex_match (n->getID(), boost::regex ("^.*_[0-9]+$")))
                         continue;
                       select (n);
-                      emit parent_->selected (n->getID ());
+                      emit selected (QString::fromStdString(n->getID ()));
                       return nodes;
                       // nodes.push_back(n);
                       // break;

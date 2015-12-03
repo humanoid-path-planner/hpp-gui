@@ -62,7 +62,7 @@ signals:
         void refresh ();
         void applyCurrentConfiguration();
         void configurationValidation();
-        void selectJointFromBodyName(const std::string &bodyName);
+        void selectJointFromBodyName(const QString bodyName);
 
         public slots:
         void log (const QString& text);
@@ -78,7 +78,7 @@ signals:
         void requestConfigurationValidation ();
         void configurationValidationStatusChanged (bool valid);
         void configurationValidationStatusChanged (QStringList bodiesInCollision);
-        void requestSelectJointFromBodyName (const std::string& bodyName);
+        void requestSelectJointFromBodyName (const QString bodyName);
         void onOpenPluginManager ();
 
         private slots:

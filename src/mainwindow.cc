@@ -401,7 +401,7 @@ namespace hpp {
       collisionIndicator_->setToolTip (tooltip);
     }
 
-    void MainWindow::requestSelectJointFromBodyName(const std::string &bodyName)
+    void MainWindow::requestSelectJointFromBodyName(const QString bodyName)
     {
       emit selectJointFromBodyName(bodyName);
     }

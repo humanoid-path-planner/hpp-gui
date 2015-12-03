@@ -95,8 +95,8 @@ namespace hpp {
           SLOT (configurationValidationStatusChanged (QStringList)));
       connect (main, SIGNAL (applyCurrentConfiguration()),
           SLOT (applyCurrentConfiguration()));
-      connect (main, SIGNAL (selectJointFromBodyName (std::string)),
-          SLOT (selectJointFromBodyName (std::string)));
+      connect (main, SIGNAL (selectJointFromBodyName (QString)),
+          SLOT (selectJointFromBodyName (QString)));
       main->connect (this, SIGNAL (logJobFailed(int,QString)),
           SLOT (logJobFailed(int, QString)));
       main->connect (this, SIGNAL (logSuccess(QString)), SLOT (log(QString)));
@@ -245,11 +245,12 @@ namespace hpp {
       emit configurationValidationStatus (col);
     }
 
-    void HppWidgetsPlugin::selectJointFromBodyName(const std::string &bodyName)
+    void HppWidgetsPlugin::selectJointFromBodyName(const QString bodyName)
     {
       boost::regex roadmap ("^(roadmap|path[0-9]+)_(.*)/(node|edge)([0-9]+)$");
       boost::cmatch what;
-      if (boost::regex_match (bodyName.c_str(), what, roadmap)) {
+      const std::string bname = bodyName.toStdString();
+      if (boost::regex_match (bname.c_str(), what, roadmap)) {
         std::string group; group.assign(what[1].first, what[1].second);
         std::string joint; joint.assign(what[2].first, what[2].second);
         std::string type;  type .assign(what[3].first, what[3].second);
@@ -269,13 +270,13 @@ namespace hpp {
         return;
       }
       foreach (const JointElement& je, jointMap_) {
-        if (bodyName.compare(je.bodyName) == 0) {
+        if (bname.compare(je.bodyName) == 0) {
           // TODO: use je.item for a faster selection.
           jointTreeWidget_->selectJoint (je.name);
           return;
         }
       }
-      qDebug () << "Joint for body" << QString::fromStdString(bodyName) << "not found.";
+      qDebug () << "Joint for body" << bodyName << "not found.";
     }
 
     QList<QAction *> HppWidgetsPlugin::getJointActions(const std::string &jointName)

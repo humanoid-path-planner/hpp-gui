@@ -66,7 +66,7 @@ signals:
         public slots:
           void applyCurrentConfiguration ();
         void configurationValidation ();
-        void selectJointFromBodyName (const std::string& bodyName);
+        void selectJointFromBodyName (const QString bodyName);
 
       public:
         QList <QAction*> getJointActions (const std::string &jointName);

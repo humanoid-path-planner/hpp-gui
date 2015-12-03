@@ -92,7 +92,7 @@ namespace hpp {
       return view_;
     }
 
-    void BodyTreeWidget::selectBodyByName(const QString &bodyName)
+    void BodyTreeWidget::selectBodyByName(const QString bodyName)
     {
       QList<QStandardItem*> matches;
       if (!bodyName.isEmpty() && !bodyName.isNull()) {
@@ -110,6 +110,7 @@ namespace hpp {
 
     void BodyTreeWidget::selectBodyByName (const std::string& bodyName)
     {
+      qDebug () << "Use QString instead of std::string";
       return selectBodyByName (QString::fromStdString (bodyName));
     }
 

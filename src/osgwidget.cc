@@ -130,7 +130,9 @@ namespace hpp {
       viewer_->addEventHandler(new osgViewer::StatsHandler);
       viewer_->addEventHandler(screenCapture_);
       viewer_->addEventHandler(new osgViewer::HelpHandler);
-      viewer_->addEventHandler(new PickHandler (wsm_, this) );
+      PickHandler* ph = new PickHandler (wsm_);
+      connect(ph, SIGNAL(selected(QString)), SLOT(transferSelected(QString)));
+      viewer_->addEventHandler(ph);
       osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator = new osgGA::KeySwitchMatrixManipulator;
 
       keyswitchManipulator->addMatrixManipulator( '1', "Trackball", new osgGA::TrackballManipulator() );
@@ -153,13 +155,17 @@ namespace hpp {
       setLayout (hblayout);
       hblayout->addWidget(glWidget);
 
-      connect( &timer_, SIGNAL(timeout()), SLOT(update()));
-      timer_.start (30);
+      render_.viewerPtr = viewer_;
+      render_.wsm_ = wsm_;
+      render_.start ();
+
+//      connect( &timer_, SIGNAL(timeout()), SLOT(update()));
+//      timer_.start (30);
 
       parent->bodyTree()->connect(this,
-          SIGNAL (selected(std::string)), SLOT (selectBodyByName(std::string)));
-      parent->connect(this, SIGNAL (selected(std::string)),
-          SLOT (requestSelectJointFromBodyName(std::string)));
+          SIGNAL (selected(QString)), SLOT (selectBodyByName(QString)));
+      parent->connect(this, SIGNAL (selected(QString)),
+          SLOT (requestSelectJointFromBodyName(QString)));
     }
 
     OSGWidget::~OSGWidget()
@@ -190,9 +196,14 @@ namespace hpp {
 
     void OSGWidget::paintEvent( QPaintEvent* /* paintEvent */ )
     {
-        wsm_->lock().lock();
-        viewer_->frame();
-        wsm_->lock().unlock();
+//        wsm_->lock().lock();
+//        viewer_->frame();
+      //        wsm_->lock().unlock();
+    }
+
+    void hpp::gui::OSGWidget::transferSelected(QString name)
+    {
+      emit selected (name);
     }
 
     void OSGWidget::onHome()
@@ -334,5 +345,23 @@ namespace hpp {
           break;
       }
     }
+
+    void RenderThread::run()
+    {
+      if (viewerPtr) {
+          while (!viewerPtr->done ()) {
+              wsm_->lock ().lock();
+              viewerPtr->frame();
+              wsm_->lock ().unlock();
+              QThread::msleep(30);
+            }
+        }
+    }
+
+    RenderThread::~RenderThread() {
+      if (viewerPtr) viewerPtr->setDone(true);
+      wait();
+    }
+
   } // namespace gui
 } // namespace hpp

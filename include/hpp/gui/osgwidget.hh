@@ -14,6 +14,25 @@
 
 namespace hpp {
   namespace gui {
+    class RenderThread : public QThread {
+    public:
+      RenderThread () :
+        QThread (), viewerPtr (0)
+      {}
+
+      virtual ~RenderThread();
+
+      osgViewer::ViewerRefPtr viewerPtr;
+      WindowsManagerPtr_t wsm_;
+
+      // QThread interface
+    protected:
+      void run();
+
+    private:
+      QTimer timer_;
+    };
+
     class OSGWidget : public QWidget
     {
       Q_OBJECT
@@ -37,7 +56,7 @@ namespace hpp {
         WindowsManager::WindowID windowID () const;
 
 signals:
-        void selected (std::string name);
+        void selected (QString name);
         void requestMotion (graphics::NodePtr_t node, graphics::Node::Arrow direction,
             float speed);
 
@@ -57,14 +76,17 @@ signals:
 
         virtual void paintEvent( QPaintEvent* paintEvent );
 
-      private:
+    private slots:
+        void transferSelected (QString name);
 
+      private:
         osgGA::EventQueue* getEventQueue() const;
 
         osg::ref_ptr<osgQt::GraphicsWindowQt> graphicsWindow_;
         WindowsManagerPtr_t wsm_;
         WindowsManager::WindowID wid_;
         graphics::WindowManagerPtr_t wm_;
+        RenderThread render_;
         osgViewer::ViewerRefPtr viewer_;
         osg::ref_ptr <osgViewer::ScreenCaptureHandler> screenCapture_;
 
@@ -77,8 +99,6 @@ signals:
 
         std::list <graphics::NodePtr_t> processPoint ();
         std::list <graphics::NodePtr_t> processSelection();
-
-        QTimer timer_;
 
         struct InfoBox {
           QSize size_;
