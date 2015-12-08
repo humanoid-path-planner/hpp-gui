@@ -54,6 +54,8 @@ signals:
         public slots:
           void drawRobotContacts ();
           void drawEnvironmentContacts ();
+          void drawHandlesFrame ();
+          void drawGrippersFrame ();
 
       private:
         HppManipClient* hpp_;

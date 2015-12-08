@@ -31,6 +31,12 @@ namespace hpp {
       toolBar_->addAction (drawEContact);
       connect (drawRContact, SIGNAL(triggered()), SLOT (drawRobotContacts()));
       connect (drawEContact, SIGNAL(triggered()), SLOT (drawEnvironmentContacts()));
+      QAction* drawHFrame = new QAction ("Draw handles frame",toolBar_);
+      QAction* drawGFrame = new QAction ("Draw grippers frame",toolBar_);
+      toolBar_->addAction (drawHFrame);
+      toolBar_->addAction (drawGFrame);
+      connect (drawHFrame, SIGNAL(triggered()), SLOT (drawHandlesFrame()));
+      connect (drawGFrame, SIGNAL(triggered()), SLOT (drawGrippersFrame()));
     }
 
     QString HppManipulationWidgetsPlugin::name() const
@@ -153,6 +159,44 @@ namespace hpp {
           main->osg()->addCurve (name.c_str(), ps, color);
           main->osg()->setCurveMode (name.c_str(), GL_POLYGON);
         }
+      }
+    }
+
+    void HppManipulationWidgetsPlugin::drawHandlesFrame()
+    {
+      MainWindow* main = MainWindow::instance ();
+      hpp::Names_t_var rcs = hpp_->problem()->getAvailable("handle");
+      hpp::Transform__var t (new Transform_);
+      graphics::WindowsManager::value_type t_gv[7];
+      const float color[] = {0, 1, 0, 1};
+      for (CORBA::ULong i = 0; i < rcs->length(); ++i) {
+        const std::string jn =
+          hpp_->robot()->getHandlePositionInJoint (rcs[i],t.out());
+        std::string groupName = createJointGroup (jn.c_str());
+        std::string hn = "handle_" + escapeJointName (jn);
+        for (int i = 0; i < 7; ++i) t_gv[i] = t.in()[i];
+        main->osg()->addXYZaxis (hn.c_str(), color, 0.005f, 1.f);
+        main->osg()->applyConfiguration (hn.c_str(), t_gv);
+        main->osg()->addToGroup (hn.c_str(), groupName.c_str());
+      }
+    }
+
+    void HppManipulationWidgetsPlugin::drawGrippersFrame()
+    {
+      MainWindow* main = MainWindow::instance ();
+      hpp::Names_t_var rcs = hpp_->problem()->getAvailable("gripper");
+      hpp::Transform__var t (new Transform_);
+      graphics::WindowsManager::value_type t_gv[7];
+      const float color[] = {0, 1, 0, 1};
+      for (CORBA::ULong i = 0; i < rcs->length(); ++i) {
+        const std::string jn =
+          hpp_->robot()->getGripperPositionInJoint (rcs[i],t.out());
+        std::string groupName = createJointGroup (jn.c_str());
+        std::string hn = "gripper_" + escapeJointName (jn);
+        for (int i = 0; i < 7; ++i) t_gv[i] = t.in()[i];
+        main->osg()->addXYZaxis (hn.c_str(), color, 0.005f, 1.f);
+        main->osg()->applyConfiguration (hn.c_str(), t_gv);
+        main->osg()->addToGroup (hn.c_str(), groupName.c_str());
       }
     }
 
