@@ -173,12 +173,13 @@ namespace hpp {
         const std::string jn =
           hpp_->robot()->getHandlePositionInJoint (rcs[i],t.out());
         std::string groupName = createJointGroup (jn.c_str());
-        std::string hn = "handle_" + escapeJointName (jn);
+        std::string hn = "handle_" + escapeJointName (std::string(rcs[i]));
         for (int i = 0; i < 7; ++i) t_gv[i] = t.in()[i];
         main->osg()->addXYZaxis (hn.c_str(), color, 0.005f, 1.f);
         main->osg()->applyConfiguration (hn.c_str(), t_gv);
         main->osg()->addToGroup (hn.c_str(), groupName.c_str());
       }
+      main->osg()->refresh();
     }
 
     void HppManipulationWidgetsPlugin::drawGrippersFrame()
@@ -192,12 +193,13 @@ namespace hpp {
         const std::string jn =
           hpp_->robot()->getGripperPositionInJoint (rcs[i],t.out());
         std::string groupName = createJointGroup (jn.c_str());
-        std::string hn = "gripper_" + escapeJointName (jn);
+        std::string hn = "gripper_" + escapeJointName (std::string(rcs[i]));
         for (int i = 0; i < 7; ++i) t_gv[i] = t.in()[i];
         main->osg()->addXYZaxis (hn.c_str(), color, 0.005f, 1.f);
         main->osg()->applyConfiguration (hn.c_str(), t_gv);
         main->osg()->addToGroup (hn.c_str(), groupName.c_str());
       }
+      main->osg()->refresh();
     }
 
     Q_EXPORT_PLUGIN2 (hppmanipulationwidgetsplugin, HppManipulationWidgetsPlugin)
