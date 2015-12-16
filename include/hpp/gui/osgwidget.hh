@@ -1,8 +1,10 @@
 #ifndef HPP_GUI_OSGWIDGET_HH
 #define HPP_GUI_OSGWIDGET_HH
 
-#include <QtOpenGL>
 #include <QString>
+#include <QThread>
+#include <QLabel>
+#include <QTimer>
 
 #include <osg/ref_ptr>
 
