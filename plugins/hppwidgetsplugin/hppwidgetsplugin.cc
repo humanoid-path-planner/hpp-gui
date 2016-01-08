@@ -61,7 +61,7 @@ namespace hpp {
       dock = new QDockWidget ("Problem &solver", main);
       solverWidget_ = new SolverWidget (this, dock);
       dock->setWidget(solverWidget_);
-      main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
+      main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Horizontal);
       dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_S);
       dockWidgets_.append(dock);
 

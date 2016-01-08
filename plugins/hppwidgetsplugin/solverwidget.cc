@@ -51,21 +51,26 @@ namespace hpp {
     }
 
     void SolverWidget::update (Select s) {
+      hpp::Names_t_var names;
       switch (s) {
         case All:
         case Planner:
           clearQComboBox(planner());
-          planner()->addItems(QStringList () << "DiffusingPlanner" << "VisibilityPrmPlanner");
+          names = plugin_->client()->problem()->getAvailable("PathPlanner");
+          for (CORBA::ULong i = 0; i < names->length(); ++i)
+            planner()->addItem(QString::fromLocal8Bit(names[i]));
           if (s == Planner) break;
         case Optimizer:
+          names = plugin_->client()->problem()->getAvailable("PathOptimizer");
           clearQComboBox(optimizer());
-          optimizer()->addItems(QStringList () << "None" << "RandomShortcut");
+          for (CORBA::ULong i = 0; i < names->length(); ++i)
+            optimizer()->addItem(QString::fromLocal8Bit(names[i]));
           if (s == Optimizer) break;
         case Projector:
           clearQComboBox(projector());
-          projector()->addItem(QString("None"), QVariant ((double)0.2));
-          projector()->addItem(QString("Progressive"), QVariant ((double)0.2));
-          projector()->addItem(QString("Dichotomy"), QVariant ((double)0.2));
+          names = plugin_->client()->problem()->getAvailable("PathProjector");
+          for (CORBA::ULong i = 0; i < names->length(); ++i)
+            projector()->addItem(QString::fromLocal8Bit(names[i]), QVariant (0.2));
           if (s == Projector) break;
       }
     }
