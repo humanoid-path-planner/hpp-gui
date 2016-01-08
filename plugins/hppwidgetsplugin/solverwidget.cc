@@ -159,11 +159,11 @@ namespace hpp {
 
     void SolverWidget::SolveAndDisplay::solve()
     {
+      isSolved = false;
       HppWidgetsPlugin::HppClient* hpp = plugin->client();
       std::string jn = plugin->getSelectedJoint();
       if (jn.empty()) {
-        QMessageBox::information(parent, "Select a joint",
-            "Please, select a joint in the joint tree window.");
+        qDebug () << "Please, select a joint in the joint tree window.";
         return;
       }
       isSolved = hpp->problem()->prepareSolveStepByStep();
