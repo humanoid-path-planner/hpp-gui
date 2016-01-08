@@ -147,7 +147,6 @@ namespace hpp {
     void PickHandler::setCameraToSelected (osgGA::GUIActionAdapter &aa,
         bool zoom)
     {
-      qDebug () << "setCameraToSelected" << zoom;
       if (!last_) return;
       osgViewer::View* viewer = dynamic_cast<osgViewer::View*>( &aa );
       if(!viewer) return;
