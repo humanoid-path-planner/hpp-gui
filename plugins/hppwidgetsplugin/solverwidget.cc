@@ -31,7 +31,6 @@ namespace hpp {
       selectButtonSolve(true);
       connect (&main_->worker(), SIGNAL (done(int)), this, SLOT (handleWorkerDone (int)));
 
-      update ();
       connect(planner(), SIGNAL (currentIndexChanged(const QString&)), this, SLOT (selectPathPlanner(const QString&)));
       connect(optimizer(), SIGNAL (currentIndexChanged(const QString&)), this, SLOT (selectPathOptimizer(const QString&)));
       connect(projector(), SIGNAL (currentIndexChanged(int)), this, SLOT (selectPathProjector(int)));

@@ -30,6 +30,7 @@ namespace hpp {
 
         ~SolverWidget ();
 
+      public slots:
         virtual void update (Select s = All);
 
 signals:
