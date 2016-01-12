@@ -38,7 +38,8 @@ signals:
 
         protected slots:
           void selectPathPlanner (const QString& text);
-        void selectPathOptimizer (const QString& text);
+        void selectPathOptimizers (const QStringList& list);
+        void openPathOptimizerSelector ();
         void selectPathProjector (int index);
         void solve ();
         void solveAndDisplay ();
@@ -68,13 +69,12 @@ signals:
         void selectButtonSolve (bool solve);
         QComboBox* planner ();
         QComboBox* projector ();
-        QComboBox* optimizer ();
 
         ::Ui::SolverWidget* ui_;
         HppWidgetsPlugin* plugin_;
         MainWindow* main_;
 
-        QComboBox *planner_, *projector_, *optimizer_;
+        QStringList optimizers_;
 
         int solveDoneId_;
         SolveAndDisplay solveAndDisplay_;

@@ -23,7 +23,6 @@ namespace hpp {
       ui_ (new ::Ui::SolverWidget),
       plugin_ (plugin),
       main_(MainWindow::instance()),
-      planner_ (0), projector_ (0), optimizer_ (0),
       solveDoneId_ (-1),
       solveAndDisplay_ (plugin, this)
     {
@@ -31,9 +30,9 @@ namespace hpp {
       selectButtonSolve(true);
       connect (&main_->worker(), SIGNAL (done(int)), this, SLOT (handleWorkerDone (int)));
 
-      connect(planner(), SIGNAL (currentIndexChanged(const QString&)), this, SLOT (selectPathPlanner(const QString&)));
-      connect(optimizer(), SIGNAL (currentIndexChanged(const QString&)), this, SLOT (selectPathOptimizer(const QString&)));
-      connect(projector(), SIGNAL (currentIndexChanged(int)), this, SLOT (selectPathProjector(int)));
+      connect(planner(), SIGNAL (activated(const QString&)), this, SLOT (selectPathPlanner(const QString&)));
+      connect(ui_->pathOptimizerButton, SIGNAL (clicked()), this, SLOT (openPathOptimizerSelector()));
+      connect(projector(), SIGNAL (activated(int)), this, SLOT (selectPathProjector(int)));
       connect(ui_->pushButtonSolve, SIGNAL (clicked ()), this, SLOT (solve ()));
       connect(ui_->pushButtonInterrupt, SIGNAL (clicked ()), this, SLOT (interrupt ()));
       connect(ui_->pushButtonSolveAndDisplay, SIGNAL (clicked ()),
@@ -61,9 +60,9 @@ namespace hpp {
           if (s == Planner) break;
         case Optimizer:
           names = plugin_->client()->problem()->getAvailable("PathOptimizer");
-          clearQComboBox(optimizer());
+          optimizers_.clear();
           for (CORBA::ULong i = 0; i < names->length(); ++i)
-            optimizer()->addItem(QString::fromLocal8Bit(names[i]));
+            optimizers_ << QString::fromLocal8Bit(names[i]);
           if (s == Optimizer) break;
         case Projector:
           clearQComboBox(projector());
@@ -78,15 +77,48 @@ namespace hpp {
       plugin_->client()->problem()->selectPathPlanner (text.toStdString().c_str());
     }
 
-    void SolverWidget::selectPathOptimizer (const QString& text) {
+    void SolverWidget::selectPathOptimizers (const QStringList& list) {
       plugin_->client()->problem()->clearPathOptimizers();
-      plugin_->client()->problem()->addPathOptimizer (text.toStdString().c_str());
+      foreach(QString s, list)
+        plugin_->client()->problem()->addPathOptimizer (s.toStdString().c_str());
     }
 
     void SolverWidget::selectPathProjector (int index) {
       plugin_->client()->problem()->selectPathProjector (
           projector()->itemText(index).toStdString().c_str(),
           projector()->itemData(index).toDouble());
+    }
+
+    void SolverWidget::openPathOptimizerSelector ()
+    {
+      QDialog dialog(this);
+      // Use a layout allowing to have a label next to each field
+      QVBoxLayout lay(&dialog);
+
+      // Add some text above the fields
+      lay.addWidget(new QLabel("Select path optimizers:"));
+
+      // Add the lineEdits with their respective labels
+      QListWidget* list = new QListWidget (&dialog);
+      list->addItems(optimizers_);
+      list->setSelectionMode(QAbstractItemView::ExtendedSelection);
+      lay.addWidget(list);
+
+      QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+          Qt::Horizontal, &dialog);
+      lay.addWidget(&buttonBox);
+      QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+      QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+      // Show the dialog as modal
+      if (dialog.exec() == QDialog::Accepted) {
+          // If the user didn't dismiss the dialog, do something with the fields
+          QStringList selected;
+          foreach (QListWidgetItem* item, list->selectedItems())
+              selected << item->text();
+          qDebug () << "Selected path optimizers: " << selected;
+          selectPathOptimizers(selected);
+        }
     }
 
     void SolverWidget::solve()
@@ -203,11 +235,6 @@ namespace hpp {
     QComboBox *SolverWidget::projector()
     {
       return ui_->pathProjectorComboBox;
-    }
-
-    QComboBox *SolverWidget::optimizer()
-    {
-      return ui_->pathOptimizerComboBox;
     }
   } // namespace gui
 } // namespace hpp
