@@ -20,12 +20,19 @@ void setupEnvironment ()
   QCoreApplication::setApplicationName("@PROJECT_NAME@");
   QCoreApplication::setApplicationVersion("@PROJECT_VERSION@");
 
-  QSettings::setPath(QSettings::IniFormat,
-                     QSettings::SystemScope, "@CMAKE_INSTALL_PREFIX@/etc");
-  QSettings::setPath(QSettings::NativeFormat,
-                     QSettings::SystemScope, "@CMAKE_INSTALL_PREFIX@/etc");
-
   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+  if (env.contains ("HPP_GUI_SETTINGS_DIR")) {
+    QSettings::setPath(QSettings::IniFormat,
+        QSettings::SystemScope, env.value("HPP_GUI_SETTINGS_DIR"));
+    QSettings::setPath(QSettings::NativeFormat,
+        QSettings::SystemScope, env.value("HPP_GUI_SETTINGS_DIR"));
+  } else {
+    QSettings::setPath(QSettings::IniFormat,
+        QSettings::SystemScope, "@CMAKE_INSTALL_PREFIX@/etc");
+    QSettings::setPath(QSettings::NativeFormat,
+        QSettings::SystemScope, "@CMAKE_INSTALL_PREFIX@/etc");
+  }
+
   foreach (QString p, env.value("LD_LIBRARY_PATH").split(':')) {
       PluginManager::addPluginDir (p + "/hpp-gui-plugins");
     }

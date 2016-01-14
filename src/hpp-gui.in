@@ -1,4 +1,6 @@
 #!/bin/sh
 
 export LD_LIBRARY_PATH="@CMAKE_INSTALL_PREFIX@/lib/hpp-gui-plugins:$LD_LIBRARY_PATH"
+export HPP_GUI_SETTINGS_DIR="@CMAKE_INSTALL_PREFIX@/etc"
+
 @CMAKE_INSTALL_PREFIX@/lib/hpp-gui $@
