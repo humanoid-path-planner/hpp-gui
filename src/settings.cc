@@ -47,12 +47,13 @@ namespace hpp {
       , mw (0)
     {}
 
-    bool Settings::fromArgv(const int argc, char * const argv[])
+    int Settings::fromArgv(const int argc, char * const argv[])
     {
       typedef std::vector <std::string> Strings_t;
 
       bool help = false;
       bool genAndQuit = false;
+      int retVal = 0;
 
       // Declare the supported options.
       po::options_description desc("Options");
@@ -125,6 +126,7 @@ namespace hpp {
             addPlugin (QString::fromStdString(*it), !noPlugin);
         }
 
+      if (help || genAndQuit) retVal = 1;
       if (unrecognized.size () > 0) {
           std::cout << "Unrecognized options:\n";
           for (std::size_t i = 0; i < unrecognized.size (); ++i)
@@ -132,13 +134,14 @@ namespace hpp {
           std::cout << "\n";
           help = true;
           verbose = true;
+          retVal = 2;
         }
 
       if (help) std::cout << desc << std::endl;
       if (verbose) print (std::cout) << std::endl;
       if (genAndQuit) writeSettings ();
 
-      return !help && !genAndQuit;
+      return retVal;
     }
 
     void Settings::fromFiles ()

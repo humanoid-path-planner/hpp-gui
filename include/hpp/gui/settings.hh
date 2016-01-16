@@ -30,7 +30,7 @@ namespace hpp {
       Settings ();
 
       /// Update values accordingly with command arguments
-      bool fromArgv (const int argc, char* const argv[]);
+      int fromArgv (const int argc, char* const argv[]);
 
       /// Update settings from setting files
       void fromFiles ();

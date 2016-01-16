@@ -63,7 +63,17 @@ int main(int argc, char *argv[])
   setupEnvironment();
 
   Settings settings;
-  if (!settings.fromArgv (argc, argv)) return 1;
+  switch (settings.fromArgv (argc, argv)) {
+    case 0:
+      break;
+    case 1:
+      return 0;
+    case 2:
+      return 1;
+    default:
+      qDebug () << "Settings.fromArgv returned unknow error code";
+      break;
+  }
   settings.fromFiles ();
 
   QPixmap pixmap(":/img/gepetto.png");
