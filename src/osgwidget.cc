@@ -157,10 +157,8 @@ namespace hpp {
 
       render_.viewerPtr = viewer_;
       render_.wsm_ = wsm_;
+      render_.refreshRate = parent->settings_->refreshRate;
       render_.start ();
-
-//      connect( &timer_, SIGNAL(timeout()), SLOT(update()));
-//      timer_.start (30);
 
       parent->bodyTree()->connect(this,
           SIGNAL (selected(QString)), SLOT (selectBodyByName(QString)));

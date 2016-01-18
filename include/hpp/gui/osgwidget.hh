@@ -19,20 +19,18 @@ namespace hpp {
     class RenderThread : public QThread {
     public:
       RenderThread () :
-        QThread (), viewerPtr (0)
+        QThread (), viewerPtr (0), refreshRate (30)
       {}
 
       virtual ~RenderThread();
 
       osgViewer::ViewerRefPtr viewerPtr;
       WindowsManagerPtr_t wsm_;
+      int refreshRate;
 
       // QThread interface
     protected:
       void run();
-
-    private:
-      QTimer timer_;
     };
 
     class OSGWidget : public QWidget
