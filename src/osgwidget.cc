@@ -15,10 +15,6 @@
 #include <osgGA/EventQueue>
 #include <osgGA/KeySwitchMatrixManipulator>
 #include <osgGA/TrackballManipulator>
-#include <osgGA/SphericalManipulator>
-#include <osgGA/FlightManipulator>
-#include <osgGA/DriveManipulator>
-#include <osgGA/TerrainManipulator>
 
 #include <osgUtil/IntersectionVisitor>
 #include <osgUtil/PolytopeIntersector>
@@ -36,6 +32,7 @@
 #include <QWheelEvent>
 
 #include <gepetto/viewer/urdf-parser.h>
+#include <gepetto/viewer/OSGManipulator/keyboard-manipulator.h>
 
 #include <hpp/gui/windows-manager.hh>
 #include <hpp/gui/bodytreewidget.hh>
@@ -122,27 +119,24 @@ namespace hpp {
 
       viewer_->setKeyEventSetsDone(0);
 
+
+      osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator = new osgGA::KeySwitchMatrixManipulator;
+      keyswitchManipulator->addMatrixManipulator( '1', "Trackball", new osgGA::TrackballManipulator() );
+      keyswitchManipulator->addMatrixManipulator( '2', "First person", new ::osgGA::KeyboardManipulator(graphicsWindow_));
+      keyswitchManipulator->selectMatrixManipulator (0);
+      viewer_->setCameraManipulator( keyswitchManipulator.get() );
+
       screenCapture_ = new osgViewer::ScreenCaptureHandler (
             new osgViewer::ScreenCaptureHandler::WriteToFile (
               parent->settings_->captureDirectory + "/" + parent->settings_->captureFilename,
               parent->settings_->captureExtension),
             1);
-      viewer_->addEventHandler(new osgViewer::StatsHandler);
       viewer_->addEventHandler(screenCapture_);
       viewer_->addEventHandler(new osgViewer::HelpHandler);
+
       PickHandler* ph = new PickHandler (wsm_);
       connect(ph, SIGNAL(selected(QString)), SLOT(transferSelected(QString)));
       viewer_->addEventHandler(ph);
-      osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator = new osgGA::KeySwitchMatrixManipulator;
-
-      keyswitchManipulator->addMatrixManipulator( '1', "Trackball", new osgGA::TrackballManipulator() );
-      keyswitchManipulator->addMatrixManipulator( '2', "Spherical", new osgGA::SphericalManipulator() );
-      keyswitchManipulator->addMatrixManipulator( '3', "Flight", new osgGA::FlightManipulator() );
-      keyswitchManipulator->addMatrixManipulator( '4', "First person", new osgGA::FirstPersonManipulator() );
-      keyswitchManipulator->addMatrixManipulator( '5', "Drive", new osgGA::DriveManipulator() );
-      keyswitchManipulator->addMatrixManipulator( '6', "Terrain", new osgGA::TerrainManipulator() );
-      keyswitchManipulator->selectMatrixManipulator (0);
-      viewer_->setCameraManipulator( keyswitchManipulator.get() );
 
       wid_ = wm->createWindow (name.c_str(), viewer_, graphicsWindow_.get());
       wm_ = wsm_->getWindowManager (wid_);
