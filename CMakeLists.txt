@@ -34,7 +34,7 @@ FIND_PACKAGE(Qt4 REQUIRED QtCore QtGui QtOpenGl QtNetwork)
 
 ADD_REQUIRED_DEPENDENCY("openscenegraph >= 3.2")
 ADD_REQUIRED_DEPENDENCY("openscenegraph-osgQt")
-ADD_REQUIRED_DEPENDENCY("openthreads >= 3.2")
+ADD_REQUIRED_DEPENDENCY("openthreads >= 2.6")
 ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba")
 
 SET(BOOST_COMPONENTS program_options system thread regex)
