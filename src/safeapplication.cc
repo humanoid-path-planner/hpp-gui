@@ -20,6 +20,8 @@ namespace hpp {
         qDebug () << e.what();
       } catch (const CORBA::TRANSIENT& e) {
         emit log (QString ("CORBA Exception %1 - %2.\nYou may need to reset the connections (see Tools menu)").arg(e._name()).arg(e._rep_id()));
+      } catch (const CORBA::COMM_FAILURE& e) {
+        emit log (QString ("CORBA Exception %1 - %2.\nYou may need to reset the connections (see Tools menu)").arg(e._name()).arg(e._rep_id()));
       } catch (const CORBA::Exception& e) {
         bool handled = false;
         foreach (CorbaInterface* errorHandler, MainWindow::instance()->pluginManager()->get <CorbaInterface>()) {

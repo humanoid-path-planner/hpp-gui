@@ -178,10 +178,17 @@ namespace hpp {
     {
       MainWindow * main = MainWindow::instance ();
       if (jointMap_.isEmpty()) {
-        emit logFailure("The current configuration cannot be applied. "
-            "This is probably because you are using external commands (python "
-            "interface) and you did not refresh this GUI. "
-            "Use the refresh button \"Tools\" menu.");
+          if (QMessageBox::Ok == QMessageBox::question (NULL, "Refresh required",
+                                 "The current configuration cannot be applied because the joint map is empty. "
+                                 "This is probably because you are using external commands (python "
+                                 "interface) and you did not refresh this GUI. "
+                                 "Do you want to refresh the joint map now ?"))
+            jointTreeWidget_->reload();
+          else
+            emit logFailure("The current configuration cannot be applied. "
+                            "This is probably because you are using external commands (python "
+                            "interface) and you did not refresh this GUI. "
+                            "Use the refresh button \"Tools\" menu.");
       }
       float T[7];
       for (JointMap::iterator ite = jointMap_.begin ();
