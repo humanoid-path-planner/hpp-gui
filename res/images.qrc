@@ -6,6 +6,7 @@
         <file>record.png</file>
         <file>zoom_fit.png</file>
         <file>refresh.png</file>
+        <file>floor.png</file>
     </qresource>
     <qresource prefix="/osg">
         <file>record.gif</file>

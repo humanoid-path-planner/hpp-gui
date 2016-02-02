@@ -97,6 +97,7 @@
    </attribute>
    <addaction name="actionPlugins"/>
    <addaction name="actionReconnect"/>
+   <addaction name="actionRefresh"/>
    <addaction name="actionFetch_configuration"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -199,7 +200,6 @@
    <addaction name="actionCamera_control_mode"/>
    <addaction name="actionSelection"/>
    <addaction name="actionHome"/>
-   <addaction name="actionRefresh"/>
    <addaction name="actionAdd_floor"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_log">
@@ -356,6 +356,10 @@
    </property>
   </action>
   <action name="actionAdd_floor">
+   <property name="icon">
+    <iconset resource="../../../../res/images.qrc">
+     <normaloff>:/icons/floor.png</normaloff>:/icons/floor.png</iconset>
+   </property>
    <property name="text">
     <string>Add floor</string>
    </property>
@@ -382,6 +386,9 @@
    </property>
   </action>
   <action name="actionFetch_configuration">
+   <property name="icon">
+    <iconset theme="mail-receive"/>
+   </property>
    <property name="text">
     <string>Fetch configuration</string>
    </property>
@@ -399,7 +406,9 @@
    </slots>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../../../../res/images.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionCreate_view</sender>

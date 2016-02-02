@@ -313,7 +313,7 @@ namespace hpp {
       // Menu "Window"
       QMenu* toolbar = ui_->menuWindow->addMenu("Tool bar");
       toolbar->setIcon(QIcon::fromTheme("configure-toolbars"));
-      ui_->mainToolBar->setVisible(false);
+      ui_->mainToolBar->setVisible(true);
       ui_->osgToolBar->setVisible(false);
       toolbar->addAction (ui_->mainToolBar->toggleViewAction ());
       toolbar->addAction (ui_->osgToolBar->toggleViewAction ());
