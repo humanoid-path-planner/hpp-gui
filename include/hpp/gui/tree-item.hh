@@ -46,6 +46,7 @@ namespace hpp {
         void setVisibilityMode (QString mode);
         void removeFromGroup ();
         void remove ();
+        void removeAll ();
         void addLandmark ();
         void deleteLandmark ();
 

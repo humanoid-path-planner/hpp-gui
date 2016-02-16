@@ -44,6 +44,8 @@ namespace hpp {
       /// Remove
       QAction* remove = contextMenu->addAction (tr("Remove"));
       connect (remove, SIGNAL (triggered()), SLOT (remove()));
+      QAction* removeAll = contextMenu->addAction (tr("Remove all"));
+      connect (removeAll, SIGNAL (triggered()), SLOT (removeAll()));
       if (!parentGroup_.empty()) {
         QAction* rfg = contextMenu->addAction (tr("Remove from group"));
         connect (rfg, SIGNAL (triggered()), SLOT (removeFromGroup ()));
@@ -114,10 +116,17 @@ namespace hpp {
       QStandardItem::parent()->removeRow(row());
     }
 
+    void BodyTreeItem::removeAll()
+    {
+      MainWindow* main = MainWindow::instance();
+      main->osg()->deleteNode(node_->getID().c_str(), true);
+      main->bodyTree()->reloadBodyTree();
+    }
+
     void BodyTreeItem::remove()
     {
       MainWindow* main = MainWindow::instance();
-      main->osg()->deleteNode(node_->getID().c_str());
+      main->osg()->deleteNode(node_->getID().c_str(), false);
       main->bodyTree()->reloadBodyTree();
     }
 
