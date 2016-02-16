@@ -235,6 +235,30 @@
        </property>
       </widget>
      </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="clearLogs">
+         <property name="text">
+          <string>Clear logs</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
     </layout>
    </widget>
   </widget>
@@ -387,7 +411,9 @@
   </action>
   <action name="actionFetch_configuration">
    <property name="icon">
-    <iconset theme="mail-receive"/>
+    <iconset theme="mail-receive">
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>Fetch configuration</string>
@@ -487,6 +513,22 @@
     <hint type="destinationlabel">
      <x>376</x>
      <y>363</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clearLogs</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>logText</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>230</x>
+     <y>693</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>135</x>
+     <y>575</y>
     </hint>
    </hints>
   </connection>
