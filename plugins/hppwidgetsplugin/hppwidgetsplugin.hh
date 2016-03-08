@@ -101,6 +101,7 @@ signals:
       protected:
         static std::string escapeJointName (const std::string jn);
         std::string createJointGroup (const std::string jn);
+        QString getIIOPurl () const;
 
         JointMap jointMap_;
         std::list <std::string> jointFrames_;

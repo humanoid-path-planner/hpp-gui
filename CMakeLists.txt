@@ -61,6 +61,7 @@ SET (${PROJECT_NAME}_HEADERS_MOC
   include/hpp/gui/ledindicator.hh
   include/hpp/gui/plugin-interface.hh
   include/hpp/gui/omniorb/omniorbthread.hh
+  include/hpp/gui/omniorb/url.hh
   include/hpp/gui/dialog/dialogloadrobot.hh
   include/hpp/gui/dialog/dialogloadenvironment.hh
   include/hpp/gui/dialog/pluginmanagerdialog.hh

@@ -7,6 +7,7 @@
 
 #include <hpp/gui/mainwindow.hh>
 #include <hpp/gui/windows-manager.hh>
+#include <hpp/gui/omniorb/url.hh>
 
 #include <omniORB4/CORBA.h>
 
@@ -161,12 +162,20 @@ namespace hpp {
       return false;
     }
 
+    QString HppWidgetsPlugin::getIIOPurl () const
+    {
+      QString host = MainWindow::instance ()->settings_->getSetting
+        ("hpp/host", QString ()).toString ();
+      QString port = MainWindow::instance ()->settings_->getSetting
+        ("hpp/port", QString ()).toString ();
+      return omniOrb::IIOPurl (host, port);
+    }
+
     void HppWidgetsPlugin::openConnection ()
     {
       closeConnection ();
       hpp_ = new hpp::corbaServer::Client (0,0);
-      QByteArray iiop = MainWindow::instance ()->settings_->getSetting
-        ("hpp/iiop", "corbaloc:rir:/NameService").toString ().toAscii();
+      QByteArray iiop = getIIOPurl ().toAscii();
       hpp_->connect (iiop.constData ());
     }
 
