@@ -66,8 +66,8 @@ namespace hpp {
     {
       HppWidgetsPlugin::openConnection();
       hpp_ = new HppManipClient (0,0);
-      QByteArray iiop = MainWindow::instance ()->settings_->
-        getSetting ("hpp/iiop", "").toString ().toAscii();
+      QByteArray iiop = MainWindow::instance ()->settings_->getSetting
+        ("hpp/iiop", "corbaloc:rir:/NameService").toString ().toAscii();
       hpp_->connect (iiop.constData ());
     }
 
