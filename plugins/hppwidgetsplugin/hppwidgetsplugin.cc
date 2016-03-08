@@ -165,7 +165,9 @@ namespace hpp {
     {
       closeConnection ();
       hpp_ = new hpp::corbaServer::Client (0,0);
-      hpp_->connect ();
+      QByteArray iiop = MainWindow::instance ()->settings_->
+        getSetting ("hpp/iiop", "").toString ().toAscii();
+      hpp_->connect (iiop.constData ());
     }
 
     void HppWidgetsPlugin::closeConnection ()

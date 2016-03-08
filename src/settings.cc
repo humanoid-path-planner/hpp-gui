@@ -344,6 +344,18 @@ namespace hpp {
       log (QString ("Read configuration file ") + env.fileName());
     }
 
+    QVariant Settings::getSetting (const QString & key,
+        const QVariant & defaultValue)
+    {
+      QSettings env (QSettings::SystemScope,
+          QCoreApplication::organizationName(),
+          QString::fromStdString(configurationFile));
+      if (env.status() == QSettings::NoError) {
+        return env.value (key, defaultValue);
+      }
+      return defaultValue;
+    }
+
     void Settings::addRobotFromString (const std::string& rbtStr)
     {
       QString rbt = QString::fromStdString(rbtStr);

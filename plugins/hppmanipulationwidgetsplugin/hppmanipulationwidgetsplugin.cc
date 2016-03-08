@@ -66,7 +66,9 @@ namespace hpp {
     {
       HppWidgetsPlugin::openConnection();
       hpp_ = new HppManipClient (0,0);
-      hpp_->connect ();
+      QByteArray iiop = MainWindow::instance ()->settings_->
+        getSetting ("hpp/iiop", "").toString ().toAscii();
+      hpp_->connect (iiop.constData ());
     }
 
     void HppManipulationWidgetsPlugin::closeConnection()

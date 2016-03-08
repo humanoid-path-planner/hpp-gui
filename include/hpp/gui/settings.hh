@@ -38,6 +38,10 @@ namespace hpp {
       /// Write the settings to configuration files
       void writeSettings ();
 
+      /// Get a setting
+      QVariant getSetting (const QString & key,
+          const QVariant & defaultValue = QVariant());
+
       PluginManager pluginManager_;
       QStringList pluginsToInit_;
 
