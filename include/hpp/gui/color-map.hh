@@ -15,10 +15,15 @@ namespace hpp {
         ColorMap (std::size_t nbColors) :
           nbColors_ (nbColors),
           currentIndex_ (0)
-      {}
+      {
+        log2up_ = 0;
+        mask_ = 0;
+        std::size_t val = (nbColors > 0)?nbColors:1;
+        for (log2up_ = 0; val; ++log2up_, val >>= 1) mask_ = 2*mask_ + 1;
+      }
 
         QColor getColor (std::size_t index) const {
-          return ColorMap::interpolate(nbColors_, index);
+          return ColorMap::interpolate(nbColors_, remap (index));
         }
 
         void getColor (std::size_t index, float color[4]) const {
@@ -39,8 +44,23 @@ namespace hpp {
           currentIndex_ = index % nbColors_;
         }
 
+        /// Reverse the order of the bits in index.
+        /// This increases the contrast between colors with close indexes.
+        std::size_t remap (const std::size_t& index) const {
+          std::size_t ret = 0;
+          std::size_t input = index;
+          for (std::size_t i = 0; i < log2up_; ++i) {
+            if (input & 1) ++ret;
+            ret <<= 1;
+            input >>= 1;
+          }
+          return ret;
+        }
+
       private:
         std::size_t nbColors_;
+        std::size_t mask_;
+        std::size_t log2up_;
         std::size_t currentIndex_;
     };
   } // namespace gui

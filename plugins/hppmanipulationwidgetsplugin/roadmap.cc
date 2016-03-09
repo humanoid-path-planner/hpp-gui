@@ -17,8 +17,7 @@ namespace hpp {
     void ManipulationRoadmap::initRoadmap(const std::string jointName)
     {
       Roadmap::initRoadmap (jointName);
-      /// TODO: add a getter for the number of graph components
-      nodeColorMap_ = ColorMap (10);
+      nodeColorMap_ = ColorMap (1 << 10);
     }
 
     void ManipulationRoadmap::nodeColor (NodeID nodeId, Color& color)
