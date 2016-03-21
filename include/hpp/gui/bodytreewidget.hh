@@ -42,6 +42,7 @@ namespace hpp {
       virtual ~BodyTreeWidget () {}
 
       void addBodyToTree (graphics::GroupNodePtr_t group);
+      void changeAlphaValue(const float& alpha);
 
       QTreeView* view ();
 
@@ -54,6 +55,7 @@ namespace hpp {
       void customContextMenu (const QPoint& pos);
 
     public slots:
+      void setTransparency(int value);
       void setVisibilityMode (QString arg);
       void setWireFrameMode (QString arg);
       void setColor (QColor color);

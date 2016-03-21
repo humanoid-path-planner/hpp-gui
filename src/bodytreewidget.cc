@@ -51,10 +51,10 @@ static void addColorSelector (QToolBox* tb, QString title, QObject* receiver, co
 }
 
 static void addSlider (QToolBox* tb, QString title, QObject* receiver, const char* slot) {
-  QSlider* slider = new QSlider (Qt::Horizontal);
-  slider->setMinimum(0);
-  slider->setMaximum(100);
-  slider->setObjectName(title);
+    QSlider* slider = new QSlider (Qt::Horizontal);
+    slider->setMinimum(0);
+    slider->setMaximum(100);
+    slider->setObjectName(title);
 
   receiver->connect (slider, SIGNAL(valueChanged(int)), slot);
   tb->addItem(slider, title);
@@ -75,6 +75,8 @@ namespace hpp {
       connect (main, SIGNAL (refresh()), SLOT (reloadBodyTree()));
       connect (view_, SIGNAL (customContextMenuRequested(QPoint)), SLOT(customContextMenu(QPoint)));
 
+      toolBox_->removeItem(0);
+      addSlider(toolBox_, "Transparency", this, SLOT(setTransparency(int)));
       addSelector (toolBox_, "Visibility",
                    QStringList () << "On" << "Always on top" << "Off",
                    QStringList () << "ON" << "ALWAYS_ON_TOP" << "OFF",
@@ -150,6 +152,15 @@ namespace hpp {
         }
     }
 
+    void BodyTreeWidget::changeAlphaValue(const float& alpha)
+    {
+        QSlider *tr = qobject_cast<QSlider *>(toolBox_->widget(0));
+
+        tr->setValue((int)alpha * 100);
+    }
+
+    HPP_GUI_BODYTREE_IMPL_FEATURE (setTransparency, int,
+                   gepetto::corbaserver::Position_var, setAlpha)
     HPP_GUI_BODYTREE_IMPL_FEATURE (setVisibilityMode, QString, CORBA::String_var, setVisibility)
     HPP_GUI_BODYTREE_IMPL_FEATURE (setWireFrameMode, QString, CORBA::String_var, setWireFrameMode)
     HPP_GUI_BODYTREE_IMPL_FEATURE (setColor, QColor, gepetto::corbaserver::Color_var, setColor)
