@@ -51,6 +51,19 @@ namespace hpp {
 
     };
 
+    template <> struct Traits <int> {
+      struct type {
+          float value;
+          const float& in() { return value; }
+      };
+
+      static inline type from(const int& in) {
+          type out;
+          out.value = (float)(in / 100.0);
+          return out;
+      }
+    };
+
     class WindowsManager : public graphics::WindowsManager
     {
       public:

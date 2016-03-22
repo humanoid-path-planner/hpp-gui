@@ -159,8 +159,7 @@ namespace hpp {
         tr->setValue((int)alpha * 100);
     }
 
-    HPP_GUI_BODYTREE_IMPL_FEATURE (setTransparency, int,
-                   gepetto::corbaserver::Position_var, setAlpha)
+    HPP_GUI_BODYTREE_IMPL_FEATURE (setTransparency, int, int, setAlpha)
     HPP_GUI_BODYTREE_IMPL_FEATURE (setVisibilityMode, QString, CORBA::String_var, setVisibility)
     HPP_GUI_BODYTREE_IMPL_FEATURE (setWireFrameMode, QString, CORBA::String_var, setWireFrameMode)
     HPP_GUI_BODYTREE_IMPL_FEATURE (setColor, QColor, gepetto::corbaserver::Color_var, setColor)
