@@ -1,0 +1,8 @@
+#ifndef PYTHON_CONFIG_PYTHON_HH
+# define PYTHON_CONFIG_PYTHON_HH
+
+//# include "config.h"
+
+#cmakedefine01 PYTHONQT_NEED_INCLUDE
+
+#endif // PYTHON_CONFIG_PYTHON_HH

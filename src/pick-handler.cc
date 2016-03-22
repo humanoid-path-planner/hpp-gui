@@ -98,7 +98,6 @@ namespace hpp {
     {
       std::list<graphics::NodePtr_t> nodes;
       osgViewer::View* viewer = dynamic_cast<osgViewer::View*>( &aa );
-
       if( viewer )
       {
           // There is no need to lock the windows manager mutex

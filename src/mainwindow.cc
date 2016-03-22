@@ -9,6 +9,7 @@
 #include "hpp/gui/dialog/dialogloadrobot.hh"
 #include "hpp/gui/dialog/dialogloadenvironment.hh"
 #include "hpp/gui/plugin-interface.hh"
+#include "hpp/gui/pythonwidget.hh"
 
 #include <hpp/gui/meta.hh>
 
@@ -55,6 +56,10 @@ namespace hpp {
       worker_.start();
 
       setupInterface();
+      #if PYTHONQT_NEED_INSTALL==1
+      pythonWidget_ = new PythonWidget(this);
+      insertDockWidget(pythonWidget_, Qt::RightDockWidgetArea, Qt::Horizontal);
+      #endif
     }
 
     MainWindow::~MainWindow()
@@ -188,6 +193,9 @@ namespace hpp {
         centralWidget_ = osgWidget;
         centralWidget_->setObjectName(objName);
         setCentralWidget(centralWidget_);
+	#if PYTHONQT_NEED_INSTALL==1
+        pythonWidget_->addToContext("osg", centralWidget_);
+	#endif
         connect(ui_->actionHome, SIGNAL (triggered()), centralWidget_, SLOT (onHome()));
         connect(ui_->actionSelection, SIGNAL (triggered()), centralWidget_, SLOT (selectionMode()));
         connect(ui_->actionCamera_control_mode, SIGNAL (triggered()), centralWidget_, SLOT (cameraManipulationMode()));

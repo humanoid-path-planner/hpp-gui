@@ -15,6 +15,7 @@
 #include <hpp/gui/dialog/dialogloadrobot.hh>
 #include <hpp/gui/dialog/dialogloadenvironment.hh>
 #include <hpp/gui/dialog/pluginmanagerdialog.hh>
+#include <hpp/gui/pythonwidget.hh>
 
 #include <hpp/gui/settings.hh>
 
@@ -101,6 +102,9 @@ signals:
         ::Ui::MainWindow* ui_;
         OSGWidget* centralWidget_;
         QList <OSGWidget*> osgWindows_;
+        #if PYTHONQT_NEED_INSTALL==1
+        PythonWidget* pythonWidget_;
+        #endif
 
         WindowsManagerPtr_t osgViewerManagers_;
         CorbaServer* osgServer_;

@@ -66,6 +66,7 @@ SET (${PROJECT_NAME}_HEADERS_MOC
   include/hpp/gui/dialog/dialogloadenvironment.hh
   include/hpp/gui/dialog/pluginmanagerdialog.hh
   include/hpp/gui/pick-handler.hh
+  include/hpp/gui/pythonwidget.hh
   )
 SET (${PROJECT_NAME}_HEADERS_NO_MOC
   include/hpp/gui/fwd.hh
@@ -119,6 +120,7 @@ SET (${PROJECT_NAME}_SOURCES
   src/dialog/dialogloadrobot.cc
   src/dialog/dialogloadenvironment.cc
   src/dialog/pluginmanagerdialog.cc
+  src/pythonwidget.cc
   )
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES}
@@ -127,6 +129,17 @@ ADD_EXECUTABLE(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_FORMS_HEADERS}
   ${${PROJECT_NAME}_RESOURCES_RCC}
   )
+
+IF(PYTHONQT_INCLUDE_DIR AND PYTHONQT_LIBRARY_DIR AND PYTHON_INCLUDE_DIR)
+  FIND_PACKAGE(PythonLibs REQUIRED)
+  INCLUDE_DIRECTORIES("${PYTHON_INCLUDE_DIR}")
+  INCLUDE_DIRECTORIES("${PYTHONQT_INCLUDE_DIR}")
+  SET(PYTHONQT_NEED_INCLUDE 1)
+  TARGET_LINK_LIBRARIES(${PROJECT_NAME} PythonQt PythonQt_QtAll)
+  MESSAGE(STATUS "Adding PythonQt to project")
+ELSE ()
+  MESSAGE(STATUS "Skipping PythonQt settings")
+ENDIF()
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_LIBRARIES})
 PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} openscenegraph)
@@ -143,5 +156,13 @@ INSTALL(FILES ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME} DESTINATION bin
 
 ADD_SUBDIRECTORY(plugins)
 ADD_SUBDIRECTORY(tests)
+
+message(STATUS ${CMAKE_INSTALL_INCLUDEDIR}/hpp/gui)
+
+config_files(include/hpp/gui/config-python.hh)
+install(FILES include/hpp/gui/config-python.hh
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/gui
+  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE
+  )
 
 SETUP_PROJECT_FINALIZE()
