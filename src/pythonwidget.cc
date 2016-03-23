@@ -11,9 +11,11 @@ namespace hpp {
         PythonWidget::PythonWidget(QWidget *parent) :
             QDockWidget("PythonQt console", parent)
         {
-            PythonQt::init();
+	    PythonQt::init(PythonQt::IgnoreSiteModule | PythonQt::RedirectStdOut);
             PythonQt_QtAll::init();
             mainContext_ = PythonQt::self()->getMainModule();
+	    PythonQtObjectPtr sys = PythonQt::self()->importModule ("sys");
+	    sys.addVariable ("argv", QVariant(QStringList () << "toto.py"));
             console_ = new PythonQtScriptingConsole(NULL, mainContext_);
             mainContext_.addObject("mainWindow", MainWindow::instance());
 

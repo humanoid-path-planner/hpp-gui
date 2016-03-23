@@ -57,8 +57,6 @@ namespace hpp {
       worker_.start();
 
       setupInterface();
-      int toto = PYTHONQT_NEED_INCLUDE;
-      std::cout << "lol " << toto << std::endl;
       #if PYTHONQT_NEED_INCLUDE==1
       pythonWidget_ = new PythonWidget(this);
       insertDockWidget(pythonWidget_, Qt::RightDockWidgetArea, Qt::Horizontal);
@@ -196,7 +194,7 @@ namespace hpp {
         centralWidget_ = osgWidget;
         centralWidget_->setObjectName(objName);
         setCentralWidget(centralWidget_);
-	#if PYTHONQT_NEED_INSTALL==1
+	#if PYTHONQT_NEED_INCLUDE==1
         pythonWidget_->addToContext("osg", centralWidget_);
 	#endif
         connect(ui_->actionHome, SIGNAL (triggered()), centralWidget_, SLOT (onHome()));
