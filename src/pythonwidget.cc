@@ -32,6 +32,11 @@ namespace hpp {
             connect(button_, SIGNAL(clicked()), SLOT(browseFile()));
         }
 
+      PythonWidget::~PythonWidget()
+      {
+	PythonQt::cleanup();
+      }
+
         void PythonWidget::browseFile() {
             QFileDialog* fd = new QFileDialog;
 

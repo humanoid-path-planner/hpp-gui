@@ -18,6 +18,7 @@ namespace hpp {
     public:
       explicit PythonWidget(QWidget *parent = 0);
       void addToContext(QString const& name, QObject *obj);
+      virtual ~PythonWidget();
 
     private:
       PythonQtObjectPtr mainContext_;
