@@ -102,7 +102,7 @@ signals:
         ::Ui::MainWindow* ui_;
         OSGWidget* centralWidget_;
         QList <OSGWidget*> osgWindows_;
-        #if PYTHONQT_NEED_INSTALL==1
+        #if PYTHONQT_NEED_INCLUDE==1
         PythonWidget* pythonWidget_;
         #endif
 

@@ -1,6 +1,6 @@
 #include "hpp/gui/config-python.hh"
 
-#if PYTHONQT_NEED_INSTALL==1
+#if PYTHONQT_NEED_INCLUDE==1
 #include <QFileDialog>
 #include "hpp/gui/osgwidget.hh"
 #include "hpp/gui/pythonwidget.hh"

@@ -2,7 +2,7 @@
 #ifndef HPP_GUI_PYTHONWIDGET_H
 #define HPP_GUI_PYTHONWIDGET_H
 
-#if PYTHONQT_NEED_INSTALL==1
+#if PYTHONQT_NEED_INCLUDE==1
 #include <QDockWidget>
 #include <QLayout>
 #include <QPushButton>

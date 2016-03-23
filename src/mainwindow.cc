@@ -12,6 +12,7 @@
 #include "hpp/gui/pythonwidget.hh"
 
 #include <hpp/gui/meta.hh>
+#include "hpp/gui/config-python.hh"
 
 namespace hpp {
   namespace gui {
@@ -56,7 +57,9 @@ namespace hpp {
       worker_.start();
 
       setupInterface();
-      #if PYTHONQT_NEED_INSTALL==1
+      int toto = PYTHONQT_NEED_INCLUDE;
+      std::cout << "lol " << toto << std::endl;
+      #if PYTHONQT_NEED_INCLUDE==1
       pythonWidget_ = new PythonWidget(this);
       insertDockWidget(pythonWidget_, Qt::RightDockWidgetArea, Qt::Horizontal);
       #endif
