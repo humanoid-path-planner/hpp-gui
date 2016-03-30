@@ -12,6 +12,10 @@
 
 #include <hpp/gui/meta.hh>
 
+#if HPP_GUI_HAS_PYTHONQT
+# include <hpp/gui/pythonwidget.hh>
+#endif
+
 namespace hpp {
   namespace gui {
     MainWindow* MainWindow::instance_ = NULL;
