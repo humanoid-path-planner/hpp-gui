@@ -12,7 +12,7 @@
 #include <QPushButton>
 #include <PythonQt/PythonQt.h>
 #include <PythonQt/PythonQt_QtAll.h>
-#include <PythonQt/gui/PythonQtScriptingConsole.h>
+#include <PythonQt/PythonQtScriptingConsole.h>
 
 namespace hpp {
   namespace gui {
