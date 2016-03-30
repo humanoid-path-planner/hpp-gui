@@ -9,10 +9,8 @@
 #include "hpp/gui/dialog/dialogloadrobot.hh"
 #include "hpp/gui/dialog/dialogloadenvironment.hh"
 #include "hpp/gui/plugin-interface.hh"
-#include "hpp/gui/pythonwidget.hh"
 
 #include <hpp/gui/meta.hh>
-#include "hpp/gui/config-python.hh"
 
 namespace hpp {
   namespace gui {
@@ -57,10 +55,10 @@ namespace hpp {
       worker_.start();
 
       setupInterface();
-      #if PYTHONQT_NEED_INCLUDE==1
+#if HPP_GUI_HAS_PYTHONQT
       pythonWidget_ = new PythonWidget(this);
       insertDockWidget(pythonWidget_, Qt::RightDockWidgetArea, Qt::Horizontal);
-      #endif
+#endif
     }
 
     MainWindow::~MainWindow()

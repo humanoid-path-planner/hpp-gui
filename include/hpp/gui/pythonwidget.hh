@@ -1,8 +1,12 @@
-#include "hpp/gui/config-python.hh"
-#ifndef HPP_GUI_PYTHONWIDGET_H
-#define HPP_GUI_PYTHONWIDGET_H
+#ifndef HPP_GUI_PYTHONWIDGET_HH
+#define HPP_GUI_PYTHONWIDGET_HH
 
-#if PYTHONQT_NEED_INCLUDE==1
+#include <hpp/gui/config-dep.hh>
+
+#if ! HPP_GUI_HAS_PYTHONQT
+# error "hpp-gui was not compile with PythonQt dependency."
+#endif
+
 #include <QDockWidget>
 #include <QLayout>
 #include <QPushButton>
@@ -33,5 +37,4 @@ namespace hpp {
   } // namespace gui
 } // namespace hpp
 
-#endif // PYTHONQT_NEED_INSTALL
-#endif // PYTHONWIDGET_H
+#endif // HPP_GUI_PYTHONWIDGET_HH

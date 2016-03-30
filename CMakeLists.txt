@@ -52,6 +52,8 @@ IF (HPP_DEBUG)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHPP_DEBUG")
 ENDIF()
 
+# Configure the project
+
 SET (${PROJECT_NAME}_HEADERS_MOC
   include/hpp/gui/mainwindow.hh
   include/hpp/gui/safeapplication.hh
@@ -66,7 +68,6 @@ SET (${PROJECT_NAME}_HEADERS_MOC
   include/hpp/gui/dialog/dialogloadenvironment.hh
   include/hpp/gui/dialog/pluginmanagerdialog.hh
   include/hpp/gui/pick-handler.hh
-  include/hpp/gui/pythonwidget.hh
   )
 SET (${PROJECT_NAME}_HEADERS_NO_MOC
   include/hpp/gui/fwd.hh
@@ -74,10 +75,7 @@ SET (${PROJECT_NAME}_HEADERS_NO_MOC
   include/hpp/gui/settings.hh
   include/hpp/gui/windows-manager.hh
   include/hpp/gui/color-map.hh
-  )
-SET (${PROJECT_NAME}_HEADERS
-  ${${PROJECT_NAME}_HEADERS_MOC}
-  ${${PROJECT_NAME}_HEADERS_NO_MOC}
+  ${CMAKE_BINARY_DIR}/include/hpp/gui/config-dep.hh
   )
 
 SET(${PROJECT_NAME}_FORMS
@@ -88,22 +86,6 @@ SET(${PROJECT_NAME}_FORMS
   )
 
 SET(${PROJECT_NAME}_RESOURCES res/images.qrc)
-
-QT4_WRAP_CPP(${PROJECT_NAME}_HEADERS_MOCED ${${PROJECT_NAME}_HEADERS_MOC})
-QT4_WRAP_UI(${PROJECT_NAME}_FORMS_HEADERS ${${PROJECT_NAME}_FORMS})
-QT4_ADD_RESOURCES(${PROJECT_NAME}_RESOURCES_RCC ${${PROJECT_NAME}_RESOURCES})
-
-INCLUDE(${QT_USE_FILE})
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-
-CONFIGURE_FILE (src/main.cc
-  ${CMAKE_BINARY_DIR}/src/main.cc
-  @ONLY
-)
-CONFIGURE_FILE (src/hpp-gui.in
-  ${CMAKE_BINARY_DIR}/bin/hpp-gui
-  @ONLY
-)
 
 SET (${PROJECT_NAME}_SOURCES
   ${CMAKE_BINARY_DIR}/src/main.cc
@@ -120,8 +102,52 @@ SET (${PROJECT_NAME}_SOURCES
   src/dialog/dialogloadrobot.cc
   src/dialog/dialogloadenvironment.cc
   src/dialog/pluginmanagerdialog.cc
-  src/pythonwidget.cc
   )
+
+IF(PYTHONQT_INCLUDE_DIR AND PYTHONQT_LIBRARY_DIR AND PYTHON_INCLUDE_DIR)
+  SET(HPP_GUI_HAS_PYTHONQT TRUE CACHE BOOL "Use PythonQt dependency")
+ELSE(PYTHONQT_INCLUDE_DIR AND PYTHONQT_LIBRARY_DIR AND PYTHON_INCLUDE_DIR)
+  SET(HPP_GUI_HAS_PYTHONQT FALSE CACHE BOOL "Use PythonQt dependency")
+ENDIF(PYTHONQT_INCLUDE_DIR AND PYTHONQT_LIBRARY_DIR AND PYTHON_INCLUDE_DIR)
+
+IF(HPP_GUI_HAS_PYTHONQT)
+  # TODO: This must be replaced by
+  # FINDPYTHON(2.7 EXACT REQUIRED)
+  # when the corresponding pull-request on jrl cmake submodule is accepted.
+  FIND_PACKAGE(PythonLibs REQUIRED)
+  INCLUDE_DIRECTORIES("${PYTHON_INCLUDE_DIR}")
+  INCLUDE_DIRECTORIES("${PYTHONQT_INCLUDE_DIR}")
+  TARGET_LINK_LIBRARIES(${PROJECT_NAME} PythonQt PythonQt_QtAll)
+
+  SET (${PROJECT_NAME}_HEADERS_MOC
+    ${${PROJECT_NAME}_HEADERS_MOC}
+    include/hpp/gui/pythonwidget.hh)
+  SET (${PROJECT_NAME}_SOURCES
+    ${${PROJECT_NAME}_SOURCES}
+    src/pythonwidget.cc)
+ELSE (HPP_GUI_HAS_PYTHONQT)
+  MESSAGE(STATUS "Skipping PythonQt settings")
+ENDIF(HPP_GUI_HAS_PYTHONQT)
+
+SET (${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_HEADERS_MOC}
+  ${${PROJECT_NAME}_HEADERS_NO_MOC}
+  )
+
+config_files(
+  include/hpp/gui/config-dep.hh
+  src/main.cc
+  src/hpp-gui
+  )
+
+# Compile meta-objects and executable
+
+QT4_WRAP_CPP(${PROJECT_NAME}_HEADERS_MOCED ${${PROJECT_NAME}_HEADERS_MOC})
+QT4_WRAP_UI(${PROJECT_NAME}_FORMS_HEADERS ${${PROJECT_NAME}_FORMS})
+QT4_ADD_RESOURCES(${PROJECT_NAME}_RESOURCES_RCC ${${PROJECT_NAME}_RESOURCES})
+
+INCLUDE(${QT_USE_FILE})
+ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_HEADERS_MOCED}
@@ -129,19 +155,6 @@ ADD_EXECUTABLE(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_FORMS_HEADERS}
   ${${PROJECT_NAME}_RESOURCES_RCC}
   )
-
-MESSAGE(STATUS ${PYTHON_INCLUDE_DIR})
-
-IF(PYTHONQT_INCLUDE_DIR AND PYTHONQT_LIBRARY_DIR AND PYTHON_INCLUDE_DIR)
-  FIND_PACKAGE(PythonLibs REQUIRED)
-  INCLUDE_DIRECTORIES("${PYTHON_INCLUDE_DIR}")
-  INCLUDE_DIRECTORIES("${PYTHONQT_INCLUDE_DIR}")
-  SET(PYTHONQT_NEED_INCLUDE 1)
-  TARGET_LINK_LIBRARIES(${PROJECT_NAME} PythonQt PythonQt_QtAll)
-  MESSAGE(STATUS "Adding PythonQt to project")
-ELSE ()
-  MESSAGE(STATUS "Skipping PythonQt settings")
-ENDIF()
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_LIBRARIES})
 PKG_CONFIG_USE_DEPENDENCY(${PROJECT_NAME} openscenegraph)
@@ -158,13 +171,5 @@ INSTALL(FILES ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME} DESTINATION bin
 
 ADD_SUBDIRECTORY(plugins)
 ADD_SUBDIRECTORY(tests)
-
-message(STATUS ${CMAKE_INSTALL_INCLUDEDIR}/hpp/gui)
-
-config_files(include/hpp/gui/config-python.hh)
-install(FILES include/hpp/gui/config-python.hh
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/gui
-  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE
-  )
 
 SETUP_PROJECT_FINALIZE()

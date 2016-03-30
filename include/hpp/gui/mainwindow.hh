@@ -8,6 +8,7 @@
 #include <gepetto/viewer/group-node.h>
 
 #include <hpp/gui/fwd.hh>
+#include <hpp/gui/config-dep.hh>
 
 #include <hpp/gui/ledindicator.hh>
 
@@ -15,7 +16,10 @@
 #include <hpp/gui/dialog/dialogloadrobot.hh>
 #include <hpp/gui/dialog/dialogloadenvironment.hh>
 #include <hpp/gui/dialog/pluginmanagerdialog.hh>
-#include <hpp/gui/pythonwidget.hh>
+
+#if HPP_GUI_HAS_PYTHONQT
+# include <hpp/gui/pythonwidget.hh>
+#endif
 
 #include <hpp/gui/settings.hh>
 
@@ -102,9 +106,9 @@ signals:
         ::Ui::MainWindow* ui_;
         OSGWidget* centralWidget_;
         QList <OSGWidget*> osgWindows_;
-        #if PYTHONQT_NEED_INCLUDE==1
+#if HPP_GUI_HAS_PYTHONQT
         PythonWidget* pythonWidget_;
-        #endif
+#endif
 
         WindowsManagerPtr_t osgViewerManagers_;
         CorbaServer* osgServer_;

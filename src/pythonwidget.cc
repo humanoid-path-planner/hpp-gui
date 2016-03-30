@@ -1,9 +1,8 @@
-#include "hpp/gui/config-python.hh"
-
-#if PYTHONQT_NEED_INCLUDE==1
-#include <QFileDialog>
-#include "hpp/gui/osgwidget.hh"
 #include "hpp/gui/pythonwidget.hh"
+
+#include <QFileDialog>
+
+#include "hpp/gui/osgwidget.hh"
 #include "hpp/gui/mainwindow.hh"
 
 namespace hpp {
@@ -56,5 +55,3 @@ namespace hpp {
         }
     }
 }
-
-#endif
