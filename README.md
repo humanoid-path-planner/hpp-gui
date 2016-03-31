@@ -12,6 +12,7 @@ The core part is independent of [HPP] and can be extended to other tools via the
   *  [For HPP developpers](#for-hpp-developpers)
 * [Installation procedure](#installation-procedure)
   * [Dependencies](#dependencies)
+  * [PythonQt](#pythonqt)
 
 ## Usage
 
@@ -158,6 +159,9 @@ mkdir hpp-gui/build && cd hpp-gui/build
 cmake ..
 make install
 ```
+
+### PythonQt
+hpp-gui offers the possibility to develop plugins in python. To do so, you must install PythonQt by following the instructions here: https://github.com/jmirabel/PythonQt#readme
 
 ## Version
 0.1
