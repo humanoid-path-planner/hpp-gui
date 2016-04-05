@@ -1,19 +1,22 @@
-#ifndef HPP_GUI_ROOTJOINTWIDGET_HH__
-# define HPP_GUI_ROOTJOINTWIDGET_H__
+#ifndef HPP_GUI_JOINTMOVEWIDGET_HH__
+# define HPP_GUI_JOINTMOVEWIDGET_H__
 
-#include <QWidget>
+#include <string>
+
+#include <QDialog>
 #include <QDoubleSpinBox>
 
-#include <gepetto/viewer/node.h>
 #include "hppwidgetsplugin.hh"
+#include <gepetto/viewer/node.h>
 
 namespace hpp {
   namespace gui {
-    class RootJointWidget : public QWidget
+    class JointMoveWidget : public QDialog
     {
       Q_OBJECT
     public:
-      RootJointWidget(HppWidgetsPlugin* plugin, QWidget* parent = 0);
+      JointMoveWidget(HppWidgetsPlugin* plugin, std::string jointName);
+
       void setTransform(hpp::Transform__slice* transform);
 
     private slots:
@@ -23,6 +26,7 @@ namespace hpp {
       
     private:
       HppWidgetsPlugin* plugin_;
+      std::string jointName_;
       hpp::Transform__slice* transform_;
 
       QDoubleSpinBox* xSlider_;
@@ -32,4 +36,4 @@ namespace hpp {
   } // namespace gui
 } // namespace hpp
 
-#endif /* HPP_GUI_ROOTJOINTWIDGET_HH__ */
+#endif /* HPP_GUI_JOINTMOVEWIDGET_HH__ */

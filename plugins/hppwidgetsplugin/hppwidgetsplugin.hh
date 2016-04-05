@@ -12,7 +12,6 @@ namespace hpp {
     class ConfigurationListWidget;
     class JointTreeItem;
     class Roadmap;
-    class RootJointWidget;
 
     class HppWidgetsPlugin : public QObject, public PluginInterface,
     public ModelInterface, public CorbaInterface
@@ -95,7 +94,6 @@ signals:
         SolverWidget* solverWidget_;
         JointTreeWidget* jointTreeWidget_;
         ConfigurationListWidget* configListWidget_;
-        RootJointWidget* rootJointWidget_;
         QList <QDockWidget*> dockWidgets_;
 
         HppClient* hpp_;

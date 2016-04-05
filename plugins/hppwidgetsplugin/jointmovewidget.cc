@@ -1,12 +1,15 @@
-#include "rootjointwidget.hh"
+#include "jointmovewidget.hh"
 
 namespace hpp {
   namespace gui {
-    RootJointWidget::RootJointWidget(HppWidgetsPlugin* plugin, QWidget* parent)
-      : QWidget(parent),
-	plugin_(NULL),
+    JointMoveWidget::JointMoveWidget(HppWidgetsPlugin* plugin, std::string jointName)
+      : QDialog(NULL),
 	transform_(NULL)
     {
+      plugin_ = plugin;
+      transform_ = plugin->client()->robot()->getJointPosition(jointName.c_str());
+      jointName_ = jointName;
+
       QVBoxLayout* l = new QVBoxLayout;
       this->setLayout(l);
 
@@ -14,59 +17,47 @@ namespace hpp {
       xSlider_->setMinimum(-DBL_MAX);
       xSlider_->setMaximum(DBL_MAX);
       xSlider_->setSingleStep(0.01);
+      xSlider_->setValue(transform_[0]);
       l->addWidget(xSlider_);
 
       ySlider_ = new QDoubleSpinBox;
       ySlider_->setMinimum(-DBL_MAX);
       ySlider_->setMaximum(DBL_MAX);
       ySlider_->setSingleStep(0.01);
+      ySlider_->setValue(transform_[1]);
       l->addWidget(ySlider_);
 
       zSlider_ = new QDoubleSpinBox;
       zSlider_->setMinimum(-DBL_MAX);
       zSlider_->setMaximum(DBL_MAX);
       zSlider_->setSingleStep(0.01);
+      xSlider_->setValue(transform_[2]);
       l->addWidget(zSlider_);
 
       xSlider_->connect(xSlider_, SIGNAL(valueChanged(double)), this, SLOT(xChanged(double)));
       ySlider_->connect(ySlider_, SIGNAL(valueChanged(double)), this, SLOT(yChanged(double)));
       ySlider_->connect(zSlider_, SIGNAL(valueChanged(double)), this, SLOT(zChanged(double)));
 
-      plugin_ = plugin;
+      setWindowTitle(QString::fromStdString("Move " + jointName_));
+      setAttribute(Qt::WA_DeleteOnClose);
+    }
+    
+    void JointMoveWidget::xChanged(double value)
+    {
+      transform_[0] = value;
+      plugin_->client()->robot()->setJointPosition(jointName_.c_str(), transform_);
     }
 
-    void RootJointWidget::setTransform(hpp::Transform__slice* transform)
+    void JointMoveWidget::yChanged(double value)
     {
-      if (transform) {
-	transform_ = transform;
-	xSlider_->setValue(transform_[0]);
-	ySlider_->setValue(transform_[1]);
-	zSlider_->setValue(transform_[2]);
-      }
+      transform_[1] = value;
+      plugin_->client()->robot()->setJointPosition(jointName_.c_str(), transform_);
     }
 
-    void RootJointWidget::xChanged(double value)
+    void JointMoveWidget::zChanged(double value)
     {
-      if (transform_) {
-	transform_[0] = value;
-	plugin_->client()->robot()->setRootJointPosition(transform_);
-      }
-    }
-
-    void RootJointWidget::yChanged(double value)
-    {
-      if (transform_) {
-	transform_[1] = value;
-	plugin_->client()->robot()->setRootJointPosition(transform_);
-      }
-    }
-
-    void RootJointWidget::zChanged(double value)
-    {
-      if (transform_) {
-	transform_[2] = value;
-	plugin_->client()->robot()->setRootJointPosition(transform_);
-      }
+      transform_[2] = value;
+      plugin_->client()->robot()->setJointPosition(jointName_.c_str(), transform_);
     }
   }
 }

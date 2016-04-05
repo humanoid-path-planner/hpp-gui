@@ -31,6 +31,7 @@ signals:
         void addJointToTree (const std::string name, JointTreeItem *parent);
         void selectJoint (const std::string& jointName);
         void openJointBoundDialog (const std::string jointName);
+        void openJointMoveDialog(const std::string jointName);
 
         void reload ();
 

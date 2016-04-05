@@ -8,6 +8,7 @@
 
 #include "hppwidgetsplugin/joint-tree-item.hh"
 #include "hppwidgetsplugin/jointbounddialog.hh"
+#include "hppwidgetsplugin/jointmovewidget.hh"
 
 using CORBA::ULong;
 
@@ -120,6 +121,19 @@ namespace hpp {
             plugin_->client()->robot()->setJointBounds(jointName.c_str(), bounds.in());
           }
         }
+      } catch (const hpp::Error& e) {
+        MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
+        return;
+      }
+    }
+
+    void JointTreeWidget::openJointMoveDialog(const std::string jointName)
+    {
+      try {
+        JointMoveWidget* d =
+      new JointMoveWidget(plugin_, jointName);
+
+	d->show();
       } catch (const hpp::Error& e) {
         MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
         return;
