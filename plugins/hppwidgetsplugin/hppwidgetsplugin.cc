@@ -16,6 +16,7 @@
 #include "hppwidgetsplugin/jointtreewidget.hh"
 #include "hppwidgetsplugin/configurationlistwidget.hh"
 #include "hppwidgetsplugin/joint-tree-item.hh"
+#include "hppwidgetsplugin/rootjointwidget.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
 #include <hpp/gui/meta.hh>
@@ -29,6 +30,7 @@ namespace hpp {
       solverWidget_ (NULL),
       jointTreeWidget_ (NULL),
       configListWidget_ (NULL),
+      rootJointWidget_ (NULL),
       hpp_ (NULL)
     {
     }
@@ -83,6 +85,14 @@ namespace hpp {
       dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_J);
       dockWidgets_.append(dock);
 
+      // Root joint widget
+      dock = new QDockWidget ("&Root Joint", main);
+      rootJointWidget_ = new RootJointWidget (this, dock);
+      dock->setWidget(rootJointWidget_);
+      main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
+      dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_R);
+      dockWidgets_.append(dock);
+
       // Connect widgets
       connect (solverWidget_, SIGNAL (problemSolved ()), pathPlayer_, SLOT (update()));
       connect (main, SIGNAL (refresh()), jointTreeWidget_, SLOT (reload ()));
@@ -127,6 +137,7 @@ namespace hpp {
       else if (rd.rootJointType_.compare("planar") == 0) bjn = "base_joint_xy";
       else if (rd.rootJointType_.compare("anchor") == 0) bjn = "base_joint";
       updateRobotJoints (rd.robotName_);
+      rootJointWidget_->setTransform(client()->robot()->getRootJointPosition());
       jointTreeWidget_->addJointToTree(bjn, 0);
       applyCurrentConfiguration();
       emit logSuccess ("Robot " + rd.name_ + " loaded");
