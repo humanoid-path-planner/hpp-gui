@@ -92,7 +92,6 @@ signals:
 
         PathPlayer* pathPlayer_;
         SolverWidget* solverWidget_;
-        JointTreeWidget* jointTreeWidget_;
         ConfigurationListWidget* configListWidget_;
         QList <QDockWidget*> dockWidgets_;
 
@@ -103,6 +102,7 @@ signals:
         std::string createJointGroup (const std::string jn);
         QString getIIOPurl () const;
 
+        JointTreeWidget* jointTreeWidget_;
         JointMap jointMap_;
         std::list <std::string> jointFrames_;
     };

@@ -61,6 +61,8 @@ signals:
         HppManipClient* hpp_;
 
         QToolBar *toolBar_;
+
+        int firstEnter_;
     };
   } // namespace gui
 } // namespace hpp

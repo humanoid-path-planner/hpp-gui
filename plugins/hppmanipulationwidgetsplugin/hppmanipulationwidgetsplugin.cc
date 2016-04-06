@@ -4,6 +4,7 @@
 #include "hpp/gui/mainwindow.hh"
 #include "hpp/gui/windows-manager.hh"
 
+#include "hppwidgetsplugin/jointtreewidget.hh"
 
 using CORBA::ULong;
 
@@ -14,6 +15,7 @@ namespace hpp {
       hpp_ (NULL),
       toolBar_ (NULL)
     {
+      firstEnter_ = 0;
     }
 
     HppManipulationWidgetsPlugin::~HppManipulationWidgetsPlugin()
@@ -46,8 +48,17 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::loadRobotModel(DialogLoadRobot::RobotDefinition rd)
     {
-      /// TODO: load the robot properly
-      HppWidgetsPlugin::loadRobotModel (rd);
+      // if (firstEnter_ == 0) {
+      // 	hpp_->robot ()->create (Traits<QString>::to_corba("composite").in());
+      // 	firstEnter_ = 1;
+      // }
+      hpp_->robot ()->insertRobotModel (Traits<QString>::to_corba(rd.robotName_).in(),
+				       Traits<QString>::to_corba(rd.rootJointType_).in(),
+				       Traits<QString>::to_corba(rd.package_).in(),
+				       Traits<QString>::to_corba(rd.modelName_).in(),
+				       Traits<QString>::to_corba(rd.urdfSuf_).in(),
+				       Traits<QString>::to_corba(rd.srdfSuf_).in());
+      emit logSuccess ("Robot " + rd.name_ + " loaded");
     }
 
     void HppManipulationWidgetsPlugin::loadEnvironmentModel(DialogLoadEnvironment::EnvironmentDefinition ed)
