@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>440</width>
-    <height>327</height>
+    <height>348</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -140,6 +140,18 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>comboBox_defs</tabstop>
+  <tabstop>envName</tabstop>
+  <tabstop>pushButton_details</tabstop>
+  <tabstop>packageName</tabstop>
+  <tabstop>pushButton_package</tabstop>
+  <tabstop>packagePath</tabstop>
+  <tabstop>urdfFilename</tabstop>
+  <tabstop>pushButton_mesh</tabstop>
+  <tabstop>meshDirectory</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
