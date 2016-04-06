@@ -5,7 +5,7 @@
 namespace hpp {
   namespace gui {
     JointMoveWidget::JointMoveWidget(HppWidgetsPlugin* plugin, std::string jointName)
-      : QDialog(NULL),
+      : QDialog(NULL, Qt::Dialog | Qt::WindowStaysOnTopHint),
 	transform_(NULL)
     {
       plugin_ = plugin;
