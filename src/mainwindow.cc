@@ -67,6 +67,7 @@ namespace hpp {
 
     MainWindow::~MainWindow()
     {
+      osgViewerManagers_.reset();
       worker_.quit();
       if (osgServer_ != NULL) {
         osgServer_->wait();

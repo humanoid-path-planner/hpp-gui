@@ -11,8 +11,6 @@
 
 namespace hpp {
   namespace gui {
-    class OSGWidget;
-
     class PickHandler : public QObject, public osgGA::GUIEventHandler
     {
       Q_OBJECT

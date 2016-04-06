@@ -81,6 +81,7 @@ namespace hpp {
       : QWidget( parent, f )
         , graphicsWindow_()
         , wsm_ (wm)
+        , pickHandler_ (new PickHandler (wsm_))
         , wid_ (-1)
         , wm_ ()
         , viewer_ (new osgViewer::Viewer)
@@ -134,9 +135,8 @@ namespace hpp {
       viewer_->addEventHandler(screenCapture_);
       viewer_->addEventHandler(new osgViewer::HelpHandler);
 
-      PickHandler* ph = new PickHandler (wsm_);
-      connect(ph, SIGNAL(selected(QString)), SLOT(transferSelected(QString)));
-      viewer_->addEventHandler(ph);
+      connect(pickHandler_, SIGNAL(selected(QString)), SLOT(transferSelected(QString)));
+      viewer_->addEventHandler(pickHandler_);
 
       wid_ = wm->createWindow (name.c_str(), viewer_, graphicsWindow_.get());
       wm_ = wsm_->getWindowManager (wid_);
@@ -162,6 +162,11 @@ namespace hpp {
 
     OSGWidget::~OSGWidget()
     {
+      viewer_->setDone(true);
+      viewer_->removeEventHandler(pickHandler_);
+      pickHandler_ = NULL;
+      wm_.reset();
+      wsm_.reset();
     }
 
     graphics::WindowsManager::WindowID OSGWidget::windowID() const
