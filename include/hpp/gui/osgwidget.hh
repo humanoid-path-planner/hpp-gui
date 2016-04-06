@@ -27,6 +27,7 @@ namespace hpp {
       osgViewer::ViewerRefPtr viewerPtr;
       WindowsManagerPtr_t wsm_;
       int refreshRate;
+      bool stop;
 
       // QThread interface
     protected:
@@ -84,6 +85,7 @@ signals:
 
         osg::ref_ptr<osgQt::GraphicsWindowQt> graphicsWindow_;
         WindowsManagerPtr_t wsm_;
+        osg::ref_ptr<PickHandler> pickHandler_;
         WindowsManager::WindowID wid_;
         graphics::WindowManagerPtr_t wm_;
         RenderThread render_;

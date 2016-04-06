@@ -9,7 +9,7 @@ namespace hpp {
 	transform_(NULL)
     {
       plugin_ = plugin;
-      transform_ = plugin->client()->robot()->getJointPosition(jointName.c_str());
+      transform_ = plugin->client()->robot()->getJointPositionInParentFrame(jointName.c_str());
       jointName_ = jointName;
 
       QVBoxLayout* l = new QVBoxLayout;
@@ -46,7 +46,7 @@ namespace hpp {
 
     void JointMoveWidget::changed()
     {
-      plugin_->client()->robot()->setJointPosition(jointName_.c_str(), transform_);
+      plugin_->client()->robot()->setJointPositionInParentFrame(jointName_.c_str(), transform_);
       MainWindow::instance()->requestApplyCurrentConfiguration();
     }
     

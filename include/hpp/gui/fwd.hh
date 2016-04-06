@@ -8,6 +8,7 @@ namespace hpp {
   namespace gui {
     class MainWindow;
     class OSGWidget;
+    class PickHandler;
     class BodyTreeWidget;
 
     class ViewerCorbaServer;
