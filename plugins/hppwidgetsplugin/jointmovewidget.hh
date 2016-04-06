@@ -25,6 +25,8 @@ namespace hpp {
       void zChanged(double);
       
     private:
+      void changed();
+
       HppWidgetsPlugin* plugin_;
       std::string jointName_;
       hpp::Transform__slice* transform_;

@@ -1,3 +1,5 @@
+#include "hpp/gui/mainwindow.hh"
+
 #include "jointmovewidget.hh"
 
 namespace hpp {
@@ -41,23 +43,29 @@ namespace hpp {
       setWindowTitle(QString::fromStdString("Move " + jointName_));
       setAttribute(Qt::WA_DeleteOnClose);
     }
+
+    void JointMoveWidget::changed()
+    {
+      plugin_->client()->robot()->setJointPosition(jointName_.c_str(), transform_);
+      MainWindow::instance()->requestApplyCurrentConfiguration();
+    }
     
     void JointMoveWidget::xChanged(double value)
     {
       transform_[0] = value;
-      plugin_->client()->robot()->setJointPosition(jointName_.c_str(), transform_);
+      changed();
     }
 
     void JointMoveWidget::yChanged(double value)
     {
       transform_[1] = value;
-      plugin_->client()->robot()->setJointPosition(jointName_.c_str(), transform_);
+      changed();
     }
 
     void JointMoveWidget::zChanged(double value)
     {
       transform_[2] = value;
-      plugin_->client()->robot()->setJointPosition(jointName_.c_str(), transform_);
+      changed();
     }
   }
 }
