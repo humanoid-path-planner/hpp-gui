@@ -199,7 +199,8 @@ namespace hpp {
       HppWidgetsPlugin::HppClient* hpp = plugin->client();
       std::string jn = plugin->getSelectedJoint();
       if (jn.empty()) {
-        qDebug () << "Please, select a joint in the joint tree window.";
+	QMessageBox::information(parent, "Problem solver",
+				 "Please, select a joint in the joint tree window.");
         return;
       }
       isSolved = hpp->problem()->prepareSolveStepByStep();
