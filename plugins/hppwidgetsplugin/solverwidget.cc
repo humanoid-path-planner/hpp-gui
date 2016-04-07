@@ -33,6 +33,7 @@ namespace hpp {
       connect(planner(), SIGNAL (activated(const QString&)), this, SLOT (selectPathPlanner(const QString&)));
       connect(ui_->pathOptimizerButton, SIGNAL (clicked()), this, SLOT (openPathOptimizerSelector()));
       connect(projector(), SIGNAL (activated(int)), this, SLOT (selectPathProjector(int)));
+      connect(validation(), SIGNAL (activated(int)), this, SLOT (selectPathValidation(int)));
       connect(ui_->pushButtonSolve, SIGNAL (clicked ()), this, SLOT (solve ()));
       connect(ui_->pushButtonInterrupt, SIGNAL (clicked ()), this, SLOT (interrupt ()));
       connect(ui_->pushButtonSolveAndDisplay, SIGNAL (clicked ()),
@@ -64,6 +65,12 @@ namespace hpp {
           for (CORBA::ULong i = 0; i < names->length(); ++i)
             optimizers_ << QString::fromLocal8Bit(names[i]);
           if (s == Optimizer) break;
+        case Validation:
+	  clearQComboBox(validation());
+          names = plugin_->client()->problem()->getAvailable("PathValidation");
+          for (CORBA::ULong i = 0; i < names->length(); ++i)
+            validation()->addItem(QString::fromLocal8Bit(names[i]), QVariant (0.2));
+          if (s == Validation) break;
         case Projector:
           clearQComboBox(projector());
           names = plugin_->client()->problem()->getAvailable("PathProjector");
@@ -87,6 +94,12 @@ namespace hpp {
       plugin_->client()->problem()->selectPathProjector (
           projector()->itemText(index).toStdString().c_str(),
           projector()->itemData(index).toDouble());
+    }
+
+    void SolverWidget::selectPathValidation (int index) {
+      plugin_->client()->problem()->selectPathValidation (
+	  validation()->itemText(index).toStdString().c_str(),
+          validation()->itemData(index).toDouble());
     }
 
     void SolverWidget::openPathOptimizerSelector ()
@@ -236,6 +249,11 @@ namespace hpp {
     QComboBox *SolverWidget::projector()
     {
       return ui_->pathProjectorComboBox;
+    }
+
+    QComboBox *SolverWidget::validation()
+    {
+      return ui_->pathValidationComboBox;
     }
   } // namespace gui
 } // namespace hpp
