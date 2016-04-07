@@ -88,7 +88,6 @@ signals:
         void addJointFrame (const std::string& jointName);
 
       private:
-        void computeObjectPosition();
 
         PathPlayer* pathPlayer_;
         SolverWidget* solverWidget_;
@@ -101,6 +100,7 @@ signals:
         static std::string escapeJointName (const std::string jn);
         std::string createJointGroup (const std::string jn);
         QString getIIOPurl () const;
+        void computeObjectPosition();
 
         JointTreeWidget* jointTreeWidget_;
         JointMap jointMap_;

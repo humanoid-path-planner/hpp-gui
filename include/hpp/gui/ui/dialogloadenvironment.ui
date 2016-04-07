@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>440</width>
-    <height>348</height>
+    <height>418</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -89,14 +89,27 @@
       <string>Details</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="4" column="1">
-       <widget class="QLineEdit" name="urdfFilename"/>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>URDF Suffix</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="urdfSuffix"/>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="packagePath"/>
       </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="packageName"/>
       </item>
-      <item row="3" column="1">
-       <widget class="QLineEdit" name="packagePath"/>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="urdfFilename"/>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_4">
@@ -118,8 +131,12 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="1">
-       <widget class="QLineEdit" name="meshDirectory"/>
+      <item row="7" column="0">
+       <widget class="QPushButton" name="pushButton_mesh">
+        <property name="text">
+         <string>Mesh directory</string>
+        </property>
+       </widget>
       </item>
       <item row="3" column="0">
        <widget class="QPushButton" name="pushButton_package">
@@ -128,12 +145,21 @@
         </property>
        </widget>
       </item>
+      <item row="7" column="1">
+       <widget class="QLineEdit" name="meshDirectory"/>
+      </item>
       <item row="6" column="0">
-       <widget class="QPushButton" name="pushButton_mesh">
+       <widget class="QLabel" name="label_6">
         <property name="text">
-         <string>Mesh directory</string>
+         <string>SRDF Suffix</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLineEdit" name="srdfSuffix"/>
       </item>
      </layout>
     </widget>
@@ -161,8 +187,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>430</x>
+     <y>338</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -177,8 +203,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>430</x>
+     <y>338</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
@@ -193,8 +219,8 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>347</x>
-     <y>134</y>
+     <x>430</x>
+     <y>126</y>
     </hint>
     <hint type="destinationlabel">
      <x>219</x>
@@ -209,8 +235,8 @@
    <slot>packagePathSelect()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>68</x>
-     <y>194</y>
+     <x>94</x>
+     <y>223</y>
     </hint>
     <hint type="destinationlabel">
      <x>219</x>
@@ -225,8 +251,8 @@
    <slot>meshSelect()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>68</x>
-     <y>255</y>
+     <x>94</x>
+     <y>293</y>
     </hint>
     <hint type="destinationlabel">
      <x>219</x>

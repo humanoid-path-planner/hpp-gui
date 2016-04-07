@@ -48,24 +48,36 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::loadRobotModel(DialogLoadRobot::RobotDefinition rd)
     {
-      // if (firstEnter_ == 0) {
-      // 	hpp_->robot ()->create (Traits<QString>::to_corba("composite").in());
-      // 	firstEnter_ = 1;
-      // }
+      if (firstEnter_ == 0) {
+      	hpp_->robot ()->create (Traits<QString>::to_corba("composite").in());
+      	firstEnter_ = 1;
+      }
       hpp_->robot ()->insertRobotModel (Traits<QString>::to_corba(rd.robotName_).in(),
-				       Traits<QString>::to_corba(rd.rootJointType_).in(),
-				       Traits<QString>::to_corba(rd.package_).in(),
-				       Traits<QString>::to_corba(rd.modelName_).in(),
-				       Traits<QString>::to_corba(rd.urdfSuf_).in(),
-				       Traits<QString>::to_corba(rd.srdfSuf_).in());
+					Traits<QString>::to_corba(rd.rootJointType_).in(),
+					Traits<QString>::to_corba(rd.package_).in(),
+					Traits<QString>::to_corba(rd.modelName_).in(),
+					Traits<QString>::to_corba(rd.urdfSuf_).in(),
+					Traits<QString>::to_corba(rd.srdfSuf_).in());
+      updateRobotJoints (rd.robotName_);
+      jointTreeWidget_->addJointToTree("base_joint", 0);
+      applyCurrentConfiguration();
       emit logSuccess ("Robot " + rd.name_ + " loaded");
     }
 
     void HppManipulationWidgetsPlugin::loadEnvironmentModel(DialogLoadEnvironment::EnvironmentDefinition ed)
     {
-      /// TODO: load the environment properly
-      HppWidgetsPlugin::loadEnvironmentModel (ed);
-    }
+      if (firstEnter_ == 0) {
+      	hpp_->robot ()->create (Traits<QString>::to_corba("composite").in());
+      	firstEnter_ = 1;
+      }
+      hpp_->robot ()-> loadEnvironmentModel(Traits<QString>::to_corba(ed.package_).in(),
+					    Traits<QString>::to_corba(ed.urdfFilename_).in(),
+					    Traits<QString>::to_corba(ed.urdfSuf_).in(),
+					    Traits<QString>::to_corba(ed.srdfSuf_).in(),
+					    Traits<QString>::to_corba(ed.name_ + "/").in());
+      HppWidgetsPlugin::computeObjectPosition();
+      emit logSuccess ("Environment " + ed.name_ + " loaded");
+   }
 
     std::string HppManipulationWidgetsPlugin::getBodyFromJoint(const std::string &jointName) const
     {
@@ -97,6 +109,7 @@ namespace hpp {
     {
       Q_UNUSED (robotName);
       hpp::Names_t_var joints = client()->robot()->getAllJointNames ();
+      std::cout << joints->length() << std::endl;
       for (size_t i = 0; i < joints->length (); ++i) {
         const char* jname = joints[(ULong) i];
         std::string linkName (client()->robot()->getLinkName (jname));
