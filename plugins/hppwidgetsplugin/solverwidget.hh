@@ -23,6 +23,7 @@ namespace hpp {
           Planner,
           Optimizer,
           Projector,
+	  Validation,
           All
         };
 
@@ -41,6 +42,9 @@ signals:
         void selectPathOptimizers (const QStringList& list);
         void openPathOptimizerSelector ();
         void selectPathProjector (int index);
+        void selectPathValidation (int index);
+        void discontinuityChanged(double value);
+        void penetrationChanged(double value);
         void solve ();
         void solveAndDisplay ();
         void solveAndDisplayDone ();
@@ -69,6 +73,9 @@ signals:
         void selectButtonSolve (bool solve);
         QComboBox* planner ();
         QComboBox* projector ();
+        QComboBox* validation ();
+        QDoubleSpinBox* projectorDiscontinuity ();
+        QDoubleSpinBox* validationPenetration ();
 
         ::Ui::SolverWidget* ui_;
         HppWidgetsPlugin* plugin_;

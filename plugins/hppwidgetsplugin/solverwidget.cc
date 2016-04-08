@@ -33,6 +33,7 @@ namespace hpp {
       connect(planner(), SIGNAL (activated(const QString&)), this, SLOT (selectPathPlanner(const QString&)));
       connect(ui_->pathOptimizerButton, SIGNAL (clicked()), this, SLOT (openPathOptimizerSelector()));
       connect(projector(), SIGNAL (activated(int)), this, SLOT (selectPathProjector(int)));
+      connect(validation(), SIGNAL (activated(int)), this, SLOT (selectPathValidation(int)));
       connect(ui_->pushButtonSolve, SIGNAL (clicked ()), this, SLOT (solve ()));
       connect(ui_->pushButtonInterrupt, SIGNAL (clicked ()), this, SLOT (interrupt ()));
       connect(ui_->pushButtonSolveAndDisplay, SIGNAL (clicked ()),
@@ -41,6 +42,20 @@ namespace hpp {
           SLOT(solveAndDisplayDone ()));
       connect(ui_->loadRoadmap, SIGNAL (clicked()), SLOT (loadRoadmap()));
       connect(ui_->saveRoadmap, SIGNAL (clicked()), SLOT (saveRoadmap()));
+
+      // Settings of the DoubleSpinBox for discontinuity
+      ui_->pathProjectorDiscontinuity->setMinimum(0);
+      ui_->pathProjectorDiscontinuity->setValue(0.2);
+      ui_->pathProjectorDiscontinuity->setSingleStep(0.1);
+      connect(ui_->pathProjectorDiscontinuity, SIGNAL(valueChanged(double)),
+	      this, SLOT(discontinuityChanged(double)));
+
+      // Settings of the DoubleSpinBox for penetration
+      ui_->pathValidationPenetration->setMinimum(0);
+      ui_->pathValidationPenetration->setValue(0.05);
+      ui_->pathValidationPenetration->setSingleStep(0.01);
+      connect(ui_->pathValidationPenetration, SIGNAL(valueChanged(double)),
+	      this, SLOT(penetrationChanged(double)));
     }
 
     SolverWidget::~SolverWidget()
@@ -64,6 +79,12 @@ namespace hpp {
           for (CORBA::ULong i = 0; i < names->length(); ++i)
             optimizers_ << QString::fromLocal8Bit(names[i]);
           if (s == Optimizer) break;
+        case Validation:
+	  clearQComboBox(validation());
+          names = plugin_->client()->problem()->getAvailable("PathValidation");
+          for (CORBA::ULong i = 0; i < names->length(); ++i)
+            validation()->addItem(QString::fromLocal8Bit(names[i]), QVariant (0.2));
+          if (s == Validation) break;
         case Projector:
           clearQComboBox(projector());
           names = plugin_->client()->problem()->getAvailable("PathProjector");
@@ -86,7 +107,25 @@ namespace hpp {
     void SolverWidget::selectPathProjector (int index) {
       plugin_->client()->problem()->selectPathProjector (
           projector()->itemText(index).toStdString().c_str(),
-          projector()->itemData(index).toDouble());
+	  projectorDiscontinuity()->value());
+    }
+
+    void SolverWidget::selectPathValidation (int index) {
+      plugin_->client()->problem()->selectPathValidation (
+	  validation()->itemText(index).toStdString().c_str(),
+          validationPenetration()->value());
+    }
+
+    void SolverWidget::discontinuityChanged(double value)
+    {
+      Q_UNUSED(value);
+      selectPathProjector(projector()->currentIndex());
+    }
+
+    void SolverWidget::penetrationChanged(double value)
+    {
+      Q_UNUSED(value);
+      selectPathValidation(validation()->currentIndex());
     }
 
     void SolverWidget::openPathOptimizerSelector ()
@@ -199,7 +238,8 @@ namespace hpp {
       HppWidgetsPlugin::HppClient* hpp = plugin->client();
       std::string jn = plugin->getSelectedJoint();
       if (jn.empty()) {
-        qDebug () << "Please, select a joint in the joint tree window.";
+	QMessageBox::information(parent, "Problem solver",
+				 "Please, select a joint in the joint tree window.");
         return;
       }
       isSolved = hpp->problem()->prepareSolveStepByStep();
@@ -235,6 +275,21 @@ namespace hpp {
     QComboBox *SolverWidget::projector()
     {
       return ui_->pathProjectorComboBox;
+    }
+
+    QComboBox *SolverWidget::validation()
+    {
+      return ui_->pathValidationComboBox;
+    }
+
+    QDoubleSpinBox *SolverWidget::projectorDiscontinuity()
+    {
+      return ui_->pathProjectorDiscontinuity;
+    }
+
+    QDoubleSpinBox *SolverWidget::validationPenetration()
+    {
+      return ui_->pathValidationPenetration;
     }
   } // namespace gui
 } // namespace hpp
