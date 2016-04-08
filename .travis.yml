@@ -18,6 +18,7 @@ addons:
       - libboost-system-dev
       - libboost-program-options-dev
       - libboost-test-dev
+      - libboost-regex-dev
 before_install:
 - sudo apt-get update -qq
 - sudo apt-get install -qq libqt4-opengl-dev libqtgui4 oxygen-icon-theme
