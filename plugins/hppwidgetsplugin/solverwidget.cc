@@ -42,6 +42,20 @@ namespace hpp {
           SLOT(solveAndDisplayDone ()));
       connect(ui_->loadRoadmap, SIGNAL (clicked()), SLOT (loadRoadmap()));
       connect(ui_->saveRoadmap, SIGNAL (clicked()), SLOT (saveRoadmap()));
+
+      // Settings of the DoubleSpinBox for discontinuity
+      ui_->pathProjectorDiscontinuity->setMinimum(0);
+      ui_->pathProjectorDiscontinuity->setValue(0.2);
+      ui_->pathProjectorDiscontinuity->setSingleStep(0.1);
+      connect(ui_->pathProjectorDiscontinuity, SIGNAL(valueChanged(double)),
+	      this, SLOT(discontinuityChanged(double)));
+
+      // Settings of the DoubleSpinBox for penetration
+      ui_->pathValidationPenetration->setMinimum(0);
+      ui_->pathValidationPenetration->setValue(0.05);
+      ui_->pathValidationPenetration->setSingleStep(0.01);
+      connect(ui_->pathValidationPenetration, SIGNAL(valueChanged(double)),
+	      this, SLOT(penetrationChanged(double)));
     }
 
     SolverWidget::~SolverWidget()
@@ -93,13 +107,25 @@ namespace hpp {
     void SolverWidget::selectPathProjector (int index) {
       plugin_->client()->problem()->selectPathProjector (
           projector()->itemText(index).toStdString().c_str(),
-          projector()->itemData(index).toDouble());
+	  projectorDiscontinuity()->value());
     }
 
     void SolverWidget::selectPathValidation (int index) {
       plugin_->client()->problem()->selectPathValidation (
 	  validation()->itemText(index).toStdString().c_str(),
-          validation()->itemData(index).toDouble());
+          validationPenetration()->value());
+    }
+
+    void SolverWidget::discontinuityChanged(double value)
+    {
+      Q_UNUSED(value);
+      selectPathProjector(projector()->currentIndex());
+    }
+
+    void SolverWidget::penetrationChanged(double value)
+    {
+      Q_UNUSED(value);
+      selectPathValidation(validation()->currentIndex());
     }
 
     void SolverWidget::openPathOptimizerSelector ()
@@ -254,6 +280,16 @@ namespace hpp {
     QComboBox *SolverWidget::validation()
     {
       return ui_->pathValidationComboBox;
+    }
+
+    QDoubleSpinBox *SolverWidget::projectorDiscontinuity()
+    {
+      return ui_->pathProjectorDiscontinuity;
+    }
+
+    QDoubleSpinBox *SolverWidget::validationPenetration()
+    {
+      return ui_->pathValidationPenetration;
     }
   } // namespace gui
 } // namespace hpp
