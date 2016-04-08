@@ -4,6 +4,7 @@
 #include "hpp/gui/mainwindow.hh"
 #include "hpp/gui/windows-manager.hh"
 
+#include "hppwidgetsplugin/jointtreewidget.hh"
 
 using CORBA::ULong;
 
@@ -14,6 +15,7 @@ namespace hpp {
       hpp_ (NULL),
       toolBar_ (NULL)
     {
+      firstEnter_ = 0;
     }
 
     HppManipulationWidgetsPlugin::~HppManipulationWidgetsPlugin()
@@ -37,6 +39,9 @@ namespace hpp {
       toolBar_->addAction (drawGFrame);
       connect (drawHFrame, SIGNAL(triggered()), SLOT (drawHandlesFrame()));
       connect (drawGFrame, SIGNAL(triggered()), SLOT (drawGrippersFrame()));
+      QAction* autoBuildGraph = new QAction ("Autobuild constraint graph",toolBar_);
+      toolBar_->addAction (autoBuildGraph);
+      connect(autoBuildGraph, SIGNAL(triggered()), SLOT(autoBuildGraph()));
     }
 
     QString HppManipulationWidgetsPlugin::name() const
@@ -46,15 +51,36 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::loadRobotModel(DialogLoadRobot::RobotDefinition rd)
     {
-      /// TODO: load the robot properly
-      HppWidgetsPlugin::loadRobotModel (rd);
+      if (firstEnter_ == 0) {
+      	hpp_->robot ()->create (Traits<QString>::to_corba("composite").in());
+      	firstEnter_ = 1;
+      }
+      hpp_->robot ()->insertRobotModel (Traits<QString>::to_corba(rd.robotName_).in(),
+					Traits<QString>::to_corba(rd.rootJointType_).in(),
+					Traits<QString>::to_corba(rd.package_).in(),
+					Traits<QString>::to_corba(rd.modelName_).in(),
+					Traits<QString>::to_corba(rd.urdfSuf_).in(),
+					Traits<QString>::to_corba(rd.srdfSuf_).in());
+      updateRobotJoints (rd.robotName_);
+      jointTreeWidget_->addJointToTree("base_joint", 0);
+      applyCurrentConfiguration();
+      emit logSuccess ("Robot " + rd.name_ + " loaded");
     }
 
     void HppManipulationWidgetsPlugin::loadEnvironmentModel(DialogLoadEnvironment::EnvironmentDefinition ed)
     {
-      /// TODO: load the environment properly
-      HppWidgetsPlugin::loadEnvironmentModel (ed);
-    }
+      if (firstEnter_ == 0) {
+      	hpp_->robot ()->create (Traits<QString>::to_corba("composite").in());
+      	firstEnter_ = 1;
+      }
+      hpp_->robot ()-> loadEnvironmentModel(Traits<QString>::to_corba(ed.package_).in(),
+					    Traits<QString>::to_corba(ed.urdfFilename_).in(),
+					    Traits<QString>::to_corba(ed.urdfSuf_).in(),
+					    Traits<QString>::to_corba(ed.srdfSuf_).in(),
+					    Traits<QString>::to_corba(ed.name_ + "/").in());
+      HppWidgetsPlugin::computeObjectPosition();
+      emit logSuccess ("Environment " + ed.name_ + " loaded");
+   }
 
     std::string HppManipulationWidgetsPlugin::getBodyFromJoint(const std::string &jointName) const
     {
@@ -201,6 +227,59 @@ namespace hpp {
         main->osg()->addToGroup (hn.c_str(), groupName.c_str());
       }
       main->osg()->refresh();
+    }
+
+    HppManipulationWidgetsPlugin::NamesPair
+    HppManipulationWidgetsPlugin::convertMap(std::map<std::string,
+					     std::list<std::string> >& mapNames)
+    {
+      HppManipulationWidgetsPlugin::NamesPair names;
+      int i = 0;
+      int j;
+
+      names.first.length(mapNames.size());
+      names.second.length(mapNames.size());
+      for (HppManipulationWidgetsPlugin::MapNames::iterator itMap = mapNames.begin();
+	   itMap != mapNames.end(); itMap++, i++){
+	names.first[i] = (*itMap).first.c_str();
+	names.second[i].length((*itMap).second.size());
+        j = 0;
+	for (std::list<std::string>::iterator itList = (*itMap).second.begin();
+	     itList != (*itMap).second.end(); itList++, j++) {
+	  names.second[i][j] = (*itList).c_str();
+	}
+      }
+      return names;
+    }
+
+    HppManipulationWidgetsPlugin::NamesPair
+    HppManipulationWidgetsPlugin::buildNamess(hpp::Names_t& names)
+    {
+      std::map<std::string, std::list<std::string> > mapNames;
+
+      for (CORBA::ULong i = 0; i < names.length(); i++) {
+	std::string name(names[i]);
+	size_t pos = name.find_first_of("/");
+	std::string object = name.substr(0, pos);
+	std::string handle = name.substr(pos + 1);
+
+	mapNames[object].push_back(name);
+      }
+      return convertMap(mapNames);
+    }
+
+    void HppManipulationWidgetsPlugin::autoBuildGraph()
+    {
+      hpp::Names_t grippers = *(hpp_->problem ()->getAvailable ("Gripper"));
+      HppManipulationWidgetsPlugin::NamesPair handles =
+	buildNamess(*(hpp_->problem ()->getAvailable ("Handle")));
+      HppManipulationWidgetsPlugin::NamesPair shapes =
+	buildNamess(*(hpp_->problem ()->getRobotContactNames ()));
+      hpp::Names_t envNames = *(hpp_->problem()->getEnvironmentContactNames());
+
+      hpp_->graph ()->createGraph("constraints");
+      hpp_->graph ()->autoBuild("constraints", grippers, handles.first,
+      				handles.second, shapes.second, envNames);
     }
 
     Q_EXPORT_PLUGIN2 (hppmanipulationwidgetsplugin, HppManipulationWidgetsPlugin)

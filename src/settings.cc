@@ -254,6 +254,8 @@ namespace hpp {
               env.value("Package", packagePath.dirName()).toString(),
               packagePath.path(),
               env.value("URDFFilename").toString(),
+	      env.value("URDFSuffix").toString(),
+	      env.value("SRDFSuffix").toString(),
               meshDirectory
               );
           env.endGroup();
@@ -380,7 +382,7 @@ namespace hpp {
           return;
         }
       DialogLoadEnvironment::addEnvironmentDefinition(split[0],
-          split[1], split[2], split[3], split[4], split[5]);
+	  split[1], split[2], split[3], split[4], split[5], split[6], split[7]);
     }
 
     void Settings::addPlugin (const QString& plg, bool init)
