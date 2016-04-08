@@ -39,6 +39,9 @@ namespace hpp {
       toolBar_->addAction (drawGFrame);
       connect (drawHFrame, SIGNAL(triggered()), SLOT (drawHandlesFrame()));
       connect (drawGFrame, SIGNAL(triggered()), SLOT (drawGrippersFrame()));
+      QAction* autoBuildGraph = new QAction ("Autobuild constraint graph",toolBar_);
+      toolBar_->addAction (autoBuildGraph);
+      connect(autoBuildGraph, SIGNAL(triggered()), SLOT(autoBuildGraph()));
     }
 
     QString HppManipulationWidgetsPlugin::name() const
@@ -109,7 +112,6 @@ namespace hpp {
     {
       Q_UNUSED (robotName);
       hpp::Names_t_var joints = client()->robot()->getAllJointNames ();
-      std::cout << joints->length() << std::endl;
       for (size_t i = 0; i < joints->length (); ++i) {
         const char* jname = joints[(ULong) i];
         std::string linkName (client()->robot()->getLinkName (jname));
@@ -225,6 +227,59 @@ namespace hpp {
         main->osg()->addToGroup (hn.c_str(), groupName.c_str());
       }
       main->osg()->refresh();
+    }
+
+    HppManipulationWidgetsPlugin::NamesPair
+    HppManipulationWidgetsPlugin::convertMap(std::map<std::string,
+					     std::list<std::string> >& mapNames)
+    {
+      HppManipulationWidgetsPlugin::NamesPair names;
+      int i = 0;
+      int j;
+
+      names.first.length(mapNames.size());
+      names.second.length(mapNames.size());
+      for (HppManipulationWidgetsPlugin::MapNames::iterator itMap = mapNames.begin();
+	   itMap != mapNames.end(); itMap++, i++){
+	names.first[i] = (*itMap).first.c_str();
+	names.second[i].length((*itMap).second.size());
+        j = 0;
+	for (std::list<std::string>::iterator itList = (*itMap).second.begin();
+	     itList != (*itMap).second.end(); itList++, j++) {
+	  names.second[i][j] = (*itList).c_str();
+	}
+      }
+      return names;
+    }
+
+    HppManipulationWidgetsPlugin::NamesPair
+    HppManipulationWidgetsPlugin::buildNamess(hpp::Names_t& names)
+    {
+      std::map<std::string, std::list<std::string> > mapNames;
+
+      for (CORBA::ULong i = 0; i < names.length(); i++) {
+	std::string name(names[i]);
+	size_t pos = name.find_first_of("/");
+	std::string object = name.substr(0, pos);
+	std::string handle = name.substr(pos + 1);
+
+	mapNames[object].push_back(name);
+      }
+      return convertMap(mapNames);
+    }
+
+    void HppManipulationWidgetsPlugin::autoBuildGraph()
+    {
+      hpp::Names_t grippers = *(hpp_->problem ()->getAvailable ("Gripper"));
+      HppManipulationWidgetsPlugin::NamesPair handles =
+	buildNamess(*(hpp_->problem ()->getAvailable ("Handle")));
+      HppManipulationWidgetsPlugin::NamesPair shapes =
+	buildNamess(*(hpp_->problem ()->getRobotContactNames ()));
+      hpp::Names_t envNames = *(hpp_->problem()->getEnvironmentContactNames());
+
+      hpp_->graph ()->createGraph("constraints");
+      hpp_->graph ()->autoBuild("constraints", grippers, handles.first,
+      				handles.second, shapes.second, envNames);
     }
 
     Q_EXPORT_PLUGIN2 (hppmanipulationwidgetsplugin, HppManipulationWidgetsPlugin)
