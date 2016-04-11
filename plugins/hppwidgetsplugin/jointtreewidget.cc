@@ -8,7 +8,7 @@
 
 #include "hppwidgetsplugin/joint-tree-item.hh"
 #include "hppwidgetsplugin/jointbounddialog.hh"
-#include "hppwidgetsplugin/jointmovewidget.hh"
+#include "hppwidgetsplugin/transformwidget.hh"
 
 using CORBA::ULong;
 
@@ -127,13 +127,23 @@ namespace hpp {
       }
     }
 
+    void JointTreeWidget::moveJoint(hpp::Transform__slice* transform, std::string const& jointName)
+    {
+      plugin_->client()->robot()->setJointPositionInParentFrame(jointName.c_str(), transform);
+      MainWindow::instance()->requestApplyCurrentConfiguration();
+    }
+
     void JointTreeWidget::openJointMoveDialog(const std::string jointName)
     {
       try {
-        JointMoveWidget* d =
-      new JointMoveWidget(plugin_, jointName);
+        TransformWidget* d =
+	  new TransformWidget(plugin_->client()->robot()->\
+			      getJointPositionInParentFrame(jointName.c_str()),
+			      jointName, this);
 
 	d->show();
+	connect(d, SIGNAL(valueChanged(hpp::Transform__slice*, std::string const&)),
+		SLOT(moveJoint(hpp::Transform__slice*, std::string const&)));
       } catch (const hpp::Error& e) {
         MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
         return;

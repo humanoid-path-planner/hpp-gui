@@ -32,7 +32,7 @@ signals:
         void selectJoint (const std::string& jointName);
         void openJointBoundDialog (const std::string jointName);
         void openJointMoveDialog(const std::string jointName);
-
+        void moveJoint(hpp::Transform__slice*, std::string const& jointName);
         void reload ();
 
         private slots:
