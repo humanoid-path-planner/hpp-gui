@@ -23,6 +23,7 @@ namespace hpp {
       public:
         PathPlayer (HppWidgetsPlugin* plugin, QWidget* parent = 0);
         ~PathPlayer();
+        int getCurrentPath() const;
 
         public slots:
           void displayWaypointsOfPath (const std::string jointName);

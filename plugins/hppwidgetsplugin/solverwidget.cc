@@ -9,6 +9,7 @@
 #include "hpp/gui/windows-manager.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
+#include "hppwidgetsplugin/pathplayer.hh"
 
 namespace hpp {
   namespace gui {
@@ -42,6 +43,7 @@ namespace hpp {
           SLOT(solveAndDisplayDone ()));
       connect(ui_->loadRoadmap, SIGNAL (clicked()), SLOT (loadRoadmap()));
       connect(ui_->saveRoadmap, SIGNAL (clicked()), SLOT (saveRoadmap()));
+      connect(ui_->optimizeButton, SIGNAL(clicked()), SLOT(optimizePath()));
 
       // Settings of the DoubleSpinBox for discontinuity
       ui_->pathProjectorDiscontinuity->setMinimum(0);
@@ -222,6 +224,19 @@ namespace hpp {
       }
     }
 
+    void SolverWidget::optimizePath()
+    {
+      /* double time = */
+      WorkItem* item = new WorkItem_1 <hpp::corbaserver::_objref_Problem, hpp::intSeq*,
+				       unsigned short>
+        (plugin_->client()->problem().in(), &hpp::corbaserver::_objref_Problem::optimizePath,
+	 plugin_->pathPlayer()->getCurrentPath());
+      main_->emitSendToBackground(item);
+      main_->logJobStarted(item->id(), "Optimize path.");
+      solveDoneId_ = item->id();
+      selectButtonSolve(false);
+    }
+
     void SolverWidget::handleWorkerDone(int id)
     {
       if (id == solveDoneId_) {
@@ -260,10 +275,12 @@ namespace hpp {
         ui_->pushButtonInterrupt->setVisible(false);
         ui_->pushButtonSolve->setVisible(true);
         ui_->pushButtonSolveAndDisplay->setVisible(true);
+	ui_->optimizeButton->setVisible(true);
       } else {
         ui_->pushButtonInterrupt->setVisible(true);
         ui_->pushButtonSolve->setVisible(false);
         ui_->pushButtonSolveAndDisplay->setVisible(false);
+	ui_->optimizeButton->setVisible(false);
       }
     }
 

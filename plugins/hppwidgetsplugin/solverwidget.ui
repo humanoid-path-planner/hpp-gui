@@ -125,6 +125,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="optimizeButton">
+          <property name="text">
+           <string>Optimize Path</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="pushButtonInterrupt">
           <property name="enabled">
            <bool>true</bool>

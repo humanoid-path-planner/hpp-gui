@@ -333,6 +333,11 @@ namespace hpp {
       return jointMap_;
     }
 
+    PathPlayer* HppWidgetsPlugin::pathPlayer() const
+    {
+      return pathPlayer_;
+    }
+
     void HppWidgetsPlugin::updateRobotJoints(const QString robotName)
     {
       hpp::Names_t_var joints = client()->robot()->getAllJointNames ();

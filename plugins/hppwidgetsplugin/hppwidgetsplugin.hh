@@ -74,6 +74,7 @@ signals:
       public:
         HppClient* client () const;
         JointMap& jointMap ();
+        PathPlayer* pathPlayer() const;
 
         virtual void updateRobotJoints (const QString robotName);
         std::string getSelectedJoint ();

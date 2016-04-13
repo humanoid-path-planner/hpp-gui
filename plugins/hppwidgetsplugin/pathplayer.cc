@@ -323,5 +323,10 @@ namespace hpp {
     {
       return ui_->recordButton;
     }
+
+    int	PathPlayer::getCurrentPath() const
+    {
+      return pathIndex()->value();
+    }
   } // namespace gui
 } // namespace hpp
