@@ -29,7 +29,7 @@ SET(${PLUGIN_NAME}_HEADERS
   configurationlistwidget.hh
   joint-tree-item.hh
   jointbounddialog.hh
-  jointmovewidget.hh
+  transformwidget.hh
   )
 
 SET(${PLUGIN_NAME}_HEADERS_NO_MOC
@@ -64,7 +64,7 @@ SET (${PLUGIN_NAME}_SOURCES
   joint-tree-item.cc
   jointbounddialog.cc
   roadmap.cc
-  jointmovewidget.cc
+  transformwidget.cc
   )
 
 ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}

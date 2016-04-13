@@ -30,9 +30,9 @@ namespace hpp {
       delete ui_;
     }
 
-    void DialogLoadEnvironment::addEnvironmentDefinition(QString name, QString envName, QString package, QString packagePath, QString urdfFilename, QString meshDirectory)
+    void DialogLoadEnvironment::addEnvironmentDefinition(QString name, QString envName, QString package, QString packagePath, QString urdfFilename, QString urdfSuffix, QString srdfSuffix, QString meshDirectory)
     {
-      definitions.append(EnvironmentDefinition (name, envName, package, packagePath, urdfFilename, meshDirectory));
+      definitions.append(EnvironmentDefinition (name, envName, package, packagePath, urdfFilename, urdfSuffix, srdfSuffix, meshDirectory));
     }
 
     QList<DialogLoadEnvironment::EnvironmentDefinition> DialogLoadEnvironment::getEnvironmentDefinitions()
@@ -60,7 +60,9 @@ namespace hpp {
           ui_->packageName->text(),
           ui_->packagePath->text(),
           ui_->urdfFilename->text(),
-          ui_->meshDirectory->text());
+	  ui_->urdfSuffix->text(),
+	  ui_->srdfSuffix->text(),
+	  ui_->meshDirectory->text());
       done(QDialog::Accepted);
     }
 

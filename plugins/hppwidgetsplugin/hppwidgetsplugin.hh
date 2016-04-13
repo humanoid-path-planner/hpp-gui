@@ -88,11 +88,9 @@ signals:
         void addJointFrame (const std::string& jointName);
 
       private:
-        void computeObjectPosition();
 
         PathPlayer* pathPlayer_;
         SolverWidget* solverWidget_;
-        JointTreeWidget* jointTreeWidget_;
         ConfigurationListWidget* configListWidget_;
         QList <QDockWidget*> dockWidgets_;
 
@@ -102,7 +100,9 @@ signals:
         static std::string escapeJointName (const std::string jn);
         std::string createJointGroup (const std::string jn);
         QString getIIOPurl () const;
+        void computeObjectPosition();
 
+        JointTreeWidget* jointTreeWidget_;
         JointMap jointMap_;
         std::list <std::string> jointFrames_;
     };

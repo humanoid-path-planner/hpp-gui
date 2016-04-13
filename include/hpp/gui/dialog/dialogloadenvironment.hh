@@ -19,13 +19,16 @@ namespace hpp {
         ~DialogLoadEnvironment();
 
         struct EnvironmentDefinition {
-          QString name_, envName_, urdfFilename_, mesh_, package_, packagePath_;
+          QString name_, envName_, urdfFilename_, mesh_, package_, packagePath_, urdfSuf_,
+	    srdfSuf_;
           EnvironmentDefinition () {}
           EnvironmentDefinition (QString name, QString envName,
-              QString package, QString packagePath,
-              QString urdfFilename, QString meshDirectory) :
+	    QString package, QString packagePath,
+	    QString urdfFilename, QString urdfSuffix, QString srdfSuffix,
+	    QString meshDirectory) :
             name_(name), envName_ (envName), urdfFilename_(urdfFilename),
-            mesh_(meshDirectory), package_ (package), packagePath_ (packagePath)
+            mesh_(meshDirectory), package_ (package), packagePath_ (packagePath),
+	    urdfSuf_(urdfSuffix), srdfSuf_(srdfSuffix)
           {}
         };
 
@@ -34,6 +37,8 @@ namespace hpp {
             QString package,
             QString packagePath,
             QString urdfFilename,
+	    QString urdfSuffix,
+	    QString srdfSuffix,
             QString meshDirectory);
         static QList <EnvironmentDefinition> getEnvironmentDefinitions ();
 

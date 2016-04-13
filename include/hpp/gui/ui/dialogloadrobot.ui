@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>271</width>
-    <height>410</height>
+    <width>284</width>
+    <height>444</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -179,6 +179,21 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>comboBox_defs</tabstop>
+  <tabstop>robotName</tabstop>
+  <tabstop>pushButton_details</tabstop>
+  <tabstop>rootJointType</tabstop>
+  <tabstop>modelName</tabstop>
+  <tabstop>packageName</tabstop>
+  <tabstop>pushButton_package</tabstop>
+  <tabstop>packagePath</tabstop>
+  <tabstop>urdfSuffix</tabstop>
+  <tabstop>srdfSuffix</tabstop>
+  <tabstop>pushButton_mesh</tabstop>
+  <tabstop>meshDirectory</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

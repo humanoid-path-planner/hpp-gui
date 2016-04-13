@@ -149,9 +149,9 @@ namespace hpp {
           // be emitted. Force a value changed.
           if (pathIndex()->value() == 0)
             pathIndexChanged(0);
-          pathIndex()->setValue(0);
         }
         pathIndex()->setMaximum(nbPath - 1);
+	pathIndex()->setValue(nbPath - 1);
       }
       else {
         pathIndex()->setEnabled(false);
