@@ -72,16 +72,12 @@ install_dependency()
     echo "--> Compiling $1"
     mkdir -p "$build_dir/$1"
     cd "$build_dir"
-    if [ "$#" -eq "2" ]; then
-      branch=$2
-    else
-      branch=$git_branch
-    fi
+    branch=$2
     $git_clone --branch $branch "git://github.com/$1" "$1"
     cd "$build_dir/$1"
     mkdir build
     cd build
-    cmake $cmake_args ..
+    cmake $cmake_args $3 ..
     make $make_args install
 }
 
@@ -89,13 +85,18 @@ install_dependency()
 
 install_doxygen
 
+install_dependency jmirabel/hpp-corbaserver          devel -DCLIENT_ONLY=ON
+install_dependency jmirabel/hpp-wholebody-step-corba master -DCLIENT_ONLY=ON
+install_dependency jmirabel/hpp-manipulation-corba   devel -DCLIENT_ONLY=ON
+
 install_dependency humanoid-path-planner/gepetto-viewer         devel
 install_dependency humanoid-path-planner/gepetto-viewer-corba   devel
 
 # Compile and run tests
 cd "$build_dir"
 cmake "$root_dir" -DCMAKE_INSTALL_PREFIX="$install_dir"		\
-		  -DCMAKE_INSTALL_PREFIX:STRING="$install_dir"
+		  -DCMAKE_INSTALL_PREFIX:STRING="$install_dir"  \
+                  -DBUILD_HPP_CORBASERVER_PLUGIN=OFF
 make $make_args
 make $make_args test
 make $make_args install
