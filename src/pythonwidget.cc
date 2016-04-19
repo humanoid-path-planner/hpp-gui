@@ -26,14 +26,16 @@ namespace hpp {
             layout->addWidget(console_);
             layout->addWidget(button_);
             widget->setLayout(layout);
-            this->layout()->addWidget(widget);
+            this->setWidget(widget);
 
             connect(button_, SIGNAL(clicked()), SLOT(browseFile()));
         }
 
       PythonWidget::~PythonWidget()
       {
+	std::cout << "begin cleanup" << std::endl;
 	PythonQt::cleanup();
+	std::cout << "end cleanup" << std::endl;
       }
 
         void PythonWidget::browseFile() {
