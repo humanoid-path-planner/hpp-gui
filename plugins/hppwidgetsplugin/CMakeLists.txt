@@ -30,6 +30,9 @@ SET(${PLUGIN_NAME}_HEADERS
   joint-tree-item.hh
   jointbounddialog.hh
   transformwidget.hh
+  constraintwidget.hh
+  positionconstraintwidget.hh
+  iconstraint.hh
   )
 
 SET(${PLUGIN_NAME}_HEADERS_NO_MOC
@@ -41,6 +44,7 @@ SET(${PLUGIN_NAME}_FORMS
   solverwidget.ui
   jointtreewidget.ui
   configurationlistwidget.ui
+  constraintwidget.ui
   )
 
 SET(${PLUGIN_NAME}_RESOURCES
@@ -65,6 +69,9 @@ SET (${PLUGIN_NAME}_SOURCES
   jointbounddialog.cc
   roadmap.cc
   transformwidget.cc
+  constraintwidget.cc
+  positionconstraintwidget.cc
+  iconstraint.cc
   )
 
 ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}
