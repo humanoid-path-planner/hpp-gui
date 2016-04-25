@@ -35,6 +35,7 @@ namespace hpp {
       connect(ui_->pathOptimizerButton, SIGNAL (clicked()), this, SLOT (openPathOptimizerSelector()));
       connect(projector(), SIGNAL (activated(int)), this, SLOT (selectPathProjector(int)));
       connect(validation(), SIGNAL (activated(int)), this, SLOT (selectPathValidation(int)));
+      connect(steeringMethod(), SIGNAL(activated(const QString&)), this, SLOT(selectSteeringMethod(const QString&)));
       connect(ui_->pushButtonSolve, SIGNAL (clicked ()), this, SLOT (solve ()));
       connect(ui_->pushButtonInterrupt, SIGNAL (clicked ()), this, SLOT (interrupt ()));
       connect(ui_->pushButtonSolveAndDisplay, SIGNAL (clicked ()),
@@ -93,11 +94,22 @@ namespace hpp {
           for (CORBA::ULong i = 0; i < names->length(); ++i)
             projector()->addItem(QString::fromLocal8Bit(names[i]), QVariant (0.2));
           if (s == Projector) break;
+        case SteeringMethod:
+          clearQComboBox(steeringMethod());
+          names = plugin_->client()->problem()->getAvailable("SteeringMethod");
+          plugin_->client()->problem()->selectSteeringMethod(names[0]);
+          for (CORBA::ULong i = 0; i < names->length(); ++i)
+            steeringMethod()->addItem(QString::fromLocal8Bit(names[i]));
+          if (s == SteeringMethod) break;
       }
     }
 
     void SolverWidget::selectPathPlanner (const QString& text) {
       plugin_->client()->problem()->selectPathPlanner (text.toStdString().c_str());
+    }
+
+    void SolverWidget::selectSteeringMethod (const QString& text) {
+      plugin_->client()->problem()->selectSteeringMethod (text.toStdString().c_str());
     }
 
     void SolverWidget::selectPathOptimizers (const QStringList& list) {
@@ -297,6 +309,11 @@ namespace hpp {
     QComboBox *SolverWidget::validation()
     {
       return ui_->pathValidationComboBox;
+    }
+
+    QComboBox *SolverWidget::steeringMethod()
+    {
+      return ui_->steeringMethodComboBox;
     }
 
     QDoubleSpinBox *SolverWidget::projectorDiscontinuity()
