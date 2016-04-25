@@ -177,10 +177,12 @@ namespace hpp {
             << escapeJointName(std::string (rcs[i])) << "_" << j;
           std::string name = ssname.str ();
           gepetto::corbaserver::PositionSeq ps; ps.length (indexes[j] - iPts);
+          std::cout << indexes[j] << std::endl;
           for (CORBA::Long k = iPts; k < indexes[j]; ++k) {
             ps[k - iPts][0] = (float)points[k][0];
             ps[k - iPts][1] = (float)points[k][1];
             ps[k - iPts][2] = (float)points[k][2];
+            std::cout << ps[k - iPts][0] << " - " << ps[k - iPts][1] << " - " << ps[k - iPts][2] << std::endl;
           }
           iPts = indexes[j];
           main->osg()->addCurve (name.c_str(), ps, color);
@@ -253,7 +255,7 @@ namespace hpp {
     }
 
     HppManipulationWidgetsPlugin::NamesPair
-    HppManipulationWidgetsPlugin::buildNamess(hpp::Names_t& names)
+    HppManipulationWidgetsPlugin::buildNamess(const hpp::Names_t& names)
     {
       std::map<std::string, std::list<std::string> > mapNames;
 
@@ -270,16 +272,16 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::autoBuildGraph()
     {
-      hpp::Names_t grippers = *(hpp_->problem ()->getAvailable ("Gripper"));
-      HppManipulationWidgetsPlugin::NamesPair handles =
-	buildNamess(*(hpp_->problem ()->getAvailable ("Handle")));
-      HppManipulationWidgetsPlugin::NamesPair shapes =
-	buildNamess(*(hpp_->problem ()->getRobotContactNames ()));
-      hpp::Names_t envNames = *(hpp_->problem()->getEnvironmentContactNames());
+      hpp::Names_t_var grippers = hpp_->problem ()->getAvailable ("Gripper");
+      hpp::Names_t_var handlesV = hpp_->problem ()->getAvailable ("Handle");
+      hpp::Names_t_var contacts = hpp_->problem ()->getRobotContactNames ();
+      HppManipulationWidgetsPlugin::NamesPair handles =	buildNamess(handlesV.in());
+      HppManipulationWidgetsPlugin::NamesPair shapes = buildNamess(contacts.in());
+      hpp::Names_t_var envNames = hpp_->problem()->getEnvironmentContactNames();
 
       hpp_->graph ()->createGraph("constraints");
-      hpp_->graph ()->autoBuild("constraints", grippers, handles.first,
-      				handles.second, shapes.second, envNames);
+      hpp_->graph ()->autoBuild("constraints", grippers.in(), handles.first,
+                    handles.second, shapes.second, envNames.in());
     }
 
     Q_EXPORT_PLUGIN2 (hppmanipulationwidgetsplugin, HppManipulationWidgetsPlugin)

@@ -16,6 +16,7 @@
 #include "hppwidgetsplugin/jointtreewidget.hh"
 #include "hppwidgetsplugin/configurationlistwidget.hh"
 #include "hppwidgetsplugin/joint-tree-item.hh"
+#include "hppwidgetsplugin/constraintwidget.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
 #include <hpp/gui/meta.hh>
@@ -27,9 +28,9 @@ namespace hpp {
     HppWidgetsPlugin::HppWidgetsPlugin() :
       pathPlayer_ (NULL),
       solverWidget_ (NULL),
-      jointTreeWidget_ (NULL),
       configListWidget_ (NULL),
-      hpp_ (NULL)
+      hpp_ (NULL),
+      jointTreeWidget_ (NULL)
     {
     }
 
@@ -83,6 +84,15 @@ namespace hpp {
       dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_J);
       dockWidgets_.append(dock);
 
+      // Joint tree widget
+      dock = new QDockWidget ("&Constraint creator", main);
+      constraintWidget_ = new ConstraintWidget (this, dock);
+      dock->setWidget(constraintWidget_);
+      main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
+      dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_V);
+      dockWidgets_.append(dock);
+      constraintWidget_->addConstraint(new PositionConstraint(this));
+
       // Connect widgets
       connect (solverWidget_, SIGNAL (problemSolved ()), pathPlayer_, SLOT (update()));
       connect (main, SIGNAL (refresh()), jointTreeWidget_, SLOT (reload ()));
@@ -103,6 +113,7 @@ namespace hpp {
           SLOT (logJobFailed(int, QString)));
       main->connect (this, SIGNAL (logSuccess(QString)), SLOT (log(QString)));
       main->connect (this, SIGNAL (logFailure(QString)), SLOT (logError(QString)));
+      connect (main, SIGNAL(refresh()), constraintWidget_, SLOT(reload()));
 
       main->osg()->createGroup("joints");
       main->osg()->addToGroup("joints", "hpp-gui");
