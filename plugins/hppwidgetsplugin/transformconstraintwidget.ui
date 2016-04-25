@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TransformConstraintWidget</class>
+ <widget class="QWidget" name="TransformConstraintWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>515</width>
+    <height>718</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="jointsGroup">
+     <property name="title">
+      <string>Joints</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QLabel" name="firstJointLabel">
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="secondJointLabel">
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="positionGroup">
+     <property name="title">
+      <string>Position</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QCheckBox" name="xPositionCheck">
+        <property name="text">
+         <string>Constrain x position ?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="xPositionWidget" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QDoubleSpinBox" name="firstXPosition"/>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="secondXPosition"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="yPositionCheck">
+        <property name="text">
+         <string>Constrain y position ?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="yPositionWidget" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <widget class="QDoubleSpinBox" name="firstYPosition"/>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="secondYPosition"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="zPositionCheck">
+        <property name="text">
+         <string>Constrain z position ?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="zPositionWidget" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <item>
+          <widget class="QDoubleSpinBox" name="firstZPosition"/>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="secondZPosition"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="orientationGroup">
+     <property name="title">
+      <string>Quaternion</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_8">
+      <item>
+       <widget class="QCheckBox" name="xOrientationCheck">
+        <property name="text">
+         <string>Constrain x orientation ?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDoubleSpinBox" name="xOrientationValue"/>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="yOrientationCheck">
+        <property name="text">
+         <string>Constrain y orientation ?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDoubleSpinBox" name="yOrientationValue"/>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="zOrientationCheck">
+        <property name="text">
+         <string>Constrain z orientation ?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDoubleSpinBox" name="zOrientationValue"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="confirmButton">
+     <property name="text">
+      <string>Confirm</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>xOrientationCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>xOrientationValue</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>261</x>
+     <y>500</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>261</x>
+     <y>531</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>yOrientationCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>yOrientationValue</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>261</x>
+     <y>561</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>261</x>
+     <y>592</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>zOrientationCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>zOrientationValue</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>261</x>
+     <y>622</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>261</x>
+     <y>653</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>xPositionCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>xPositionWidget</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>261</x>
+     <y>128</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>261</x>
+     <y>184</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>yPositionCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>yPositionWidget</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>261</x>
+     <y>240</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>261</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>zPositionCheck</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>zPositionWidget</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>261</x>
+     <y>352</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>261</x>
+     <y>408</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <signal>finished(QString)</signal>
+ </slots>
+</ui>

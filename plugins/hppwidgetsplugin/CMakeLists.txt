@@ -31,7 +31,7 @@ SET(${PLUGIN_NAME}_HEADERS
   jointbounddialog.hh
   transformwidget.hh
   constraintwidget.hh
-  positionconstraintwidget.hh
+  transformconstraintwidget.hh
   iconstraint.hh
   )
 
@@ -45,6 +45,7 @@ SET(${PLUGIN_NAME}_FORMS
   jointtreewidget.ui
   configurationlistwidget.ui
   constraintwidget.ui
+  transformconstraintwidget.ui
   )
 
 SET(${PLUGIN_NAME}_RESOURCES
@@ -70,7 +71,7 @@ SET (${PLUGIN_NAME}_SOURCES
   roadmap.cc
   transformwidget.cc
   constraintwidget.cc
-  positionconstraintwidget.cc
+  transformconstraintwidget.cc
   iconstraint.cc
   )
 

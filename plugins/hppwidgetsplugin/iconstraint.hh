@@ -1,5 +1,5 @@
-#ifndef ICONSTRAINT_HH
-#define ICONSTRAINT_HH
+#ifndef HPP_GUI_ICONSTRAINT_HH
+#define HPP_GUI_ICONSTRAINT_HH
 
 #include "hppwidgetsplugin/hppwidgetsplugin.hh"
 
@@ -23,7 +23,7 @@ namespace hpp {
         Q_OBJECT
 
     private slots:
-      void getPositionConstraint(QVector<double> vec);
+      void getPositionConstraint(std::pair<QVector<double>, QVector<bool> > result);
 
     public:
       explicit PositionConstraint(HppWidgetsPlugin* plugin);
@@ -39,6 +39,7 @@ namespace hpp {
       QString firstJoint_;
       QString secondJoint_;
     };
-  }
-}
-#endif // ICONSTRAINT_HH
+  } // namespace hpp
+} // namespace gui
+
+#endif // HPP_GUI_ICONSTRAINT_HH

@@ -3,7 +3,7 @@
 #include "hpp/gui/mainwindow.hh"
 
 #include "hppwidgetsplugin/constraintwidget.hh"
-#include "hppwidgetsplugin/positionconstraintwidget.hh"
+#include "hppwidgetsplugin/transformconstraintwidget.hh"
 #include "hppwidgetsplugin/ui_constraintwidget.h"
 
 namespace hpp {
