@@ -10,9 +10,10 @@ namespace hpp {
 	transform_(NULL)
     {
       transform_ = transform;
-      rAxis_ = QVector3D(transform_[3], transform_[4], transform_[5]);
+      QQuaternion q (transform_[3], transform_[4], transform_[5], transform_[6]);
+      q.normalize();
+      rAxis_ = q.vector().normalized() * 2 * std::atan2(q.vector().length(), q.scalar());
       jointName_ = jointName;
-
       QVBoxLayout* l = new QVBoxLayout;
       this->setLayout(l);
 
@@ -82,11 +83,19 @@ namespace hpp {
     void TransformWidget::changed(bool axisChanged)
     {
       if (axisChanged) {
-	QQuaternion quaternion(rAxis_.length(), rAxis_.normalized());
+        QQuaternion quaternion;
+        if (!rAxis_.isNull()) {
+          quaternion = QQuaternion::fromAxisAndAngle(rAxis_.normalized(), rAxis_.length());
+          const double theta = rAxis_.length();
+          quaternion = QQuaternion(std::cos(theta/2), std::sin(theta/2) * rAxis_ / theta);
+        }
 
-	transform_[3] = quaternion.x();
-	transform_[4] = quaternion.y();
-	transform_[5] = quaternion.z();
+        qDebug()<< rAxis_;
+        qDebug()<< quaternion;
+        transform_[3] = quaternion.scalar();
+        transform_[4] = quaternion.x();
+        transform_[5] = quaternion.y();
+        transform_[6] = quaternion.z();
       }
       emit valueChanged(transform_, jointName_);
     }

@@ -1,5 +1,7 @@
 # hpp-gui
 
+[![Build Status](https://travis-ci.org/jmirabel/hpp-gui.svg?branch=master)](https://travis-ci.org/jmirabel/hpp-gui)
+
 **hpp-gui** is a graphical interface for robot visualization with plugins to integrate [HPP] - Humanoid Path Planner. The interfaces is based on Qt 4 and OpenSceneGraph 3.2.
 
 The core part is independent of [HPP] and can be extended to other tools via the plugin system.
