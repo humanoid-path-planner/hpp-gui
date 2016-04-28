@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>515</width>
-    <height>718</height>
+    <height>720</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -96,7 +96,14 @@
        <widget class="QWidget" name="zPositionWidget" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_7">
          <item>
-          <widget class="QDoubleSpinBox" name="firstZPosition"/>
+          <widget class="QDoubleSpinBox" name="firstZPosition">
+           <property name="singleStep">
+            <double>0.500000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.000000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QDoubleSpinBox" name="secondZPosition"/>
@@ -121,7 +128,23 @@
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="xOrientationValue"/>
+       <widget class="QDoubleSpinBox" name="xOrientationValue">
+        <property name="decimals">
+         <number>8</number>
+        </property>
+        <property name="minimum">
+         <double>-3.141592000000000</double>
+        </property>
+        <property name="maximum">
+         <double>3.141592000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.010000000000000</double>
+        </property>
+        <property name="value">
+         <double>0.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="yOrientationCheck">
@@ -131,7 +154,23 @@
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="yOrientationValue"/>
+       <widget class="QDoubleSpinBox" name="yOrientationValue">
+        <property name="decimals">
+         <number>8</number>
+        </property>
+        <property name="minimum">
+         <double>-3.141592000000000</double>
+        </property>
+        <property name="maximum">
+         <double>3.141592000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.010000000000000</double>
+        </property>
+        <property name="value">
+         <double>0.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="zOrientationCheck">
@@ -141,7 +180,20 @@
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="zOrientationValue"/>
+       <widget class="QDoubleSpinBox" name="zOrientationValue">
+        <property name="decimals">
+         <number>8</number>
+        </property>
+        <property name="minimum">
+         <double>-3.141592000000000</double>
+        </property>
+        <property name="maximum">
+         <double>3.141592000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.010000000000000</double>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

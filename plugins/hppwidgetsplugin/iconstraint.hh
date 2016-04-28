@@ -39,6 +39,50 @@ namespace hpp {
       QString firstJoint_;
       QString secondJoint_;
     };
+
+    class OrientationConstraint : public IConstraint
+    {
+      Q_OBJECT
+
+    private slots:
+      void getOrientationConstraint(std::pair<QVector<double>, QVector<bool> > result);
+
+    public:
+      explicit OrientationConstraint(HppWidgetsPlugin* plugin);
+      ~OrientationConstraint();
+
+      QString getName() const;
+      void operator()(QString const& name, QString const& firstJoint,
+                      QString const& secondJoint);
+
+    private:
+      HppWidgetsPlugin* plugin_;
+      QString name_;
+      QString firstJoint_;
+      QString secondJoint_;
+    };
+
+    class TransformConstraint : public IConstraint
+    {
+      Q_OBJECT
+
+    private slots:
+      void getTransformConstraint(std::pair<QVector<double>, QVector<bool> > result);
+
+    public:
+      explicit TransformConstraint(HppWidgetsPlugin* plugin);
+      ~TransformConstraint();
+
+      QString getName() const;
+      void operator()(QString const& name, QString const& firstJoint,
+                      QString const& secondJoint);
+
+    private:
+      HppWidgetsPlugin* plugin_;
+      QString name_;
+      QString firstJoint_;
+      QString secondJoint_;
+    };
   } // namespace hpp
 } // namespace gui
 

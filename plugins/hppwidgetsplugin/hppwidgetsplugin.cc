@@ -92,6 +92,8 @@ namespace hpp {
       dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_V);
       dockWidgets_.append(dock);
       constraintWidget_->addConstraint(new PositionConstraint(this));
+      constraintWidget_->addConstraint(new OrientationConstraint(this));
+      constraintWidget_->addConstraint(new TransformConstraint(this));
 
       // Connect widgets
       connect (solverWidget_, SIGNAL (problemSolved ()), pathPlayer_, SLOT (update()));

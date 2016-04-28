@@ -45,8 +45,8 @@ namespace hpp {
         isPositionConstraint_ = true;
       }
 
-      ui->secondJointLabel->setText(secondJoint);
-      ui->firstJointLabel->setText(firstJoint);
+      ui->secondJointLabel->setText((secondJoint == "") ? "Global frame" : secondJoint);
+      ui->firstJointLabel->setText((firstJoint == "") ? "Global frame" : firstJoint);
 
       positionEnabled_ = doPosition;
       orientationEnabled_ = doOrientation;
@@ -70,17 +70,17 @@ namespace hpp {
         vecDouble[i + 1] = ui->firstYPosition->value();
         vecDouble[i + 2] = ui->firstZPosition->value();
         vecBool[i] = ui->xPositionCheck->isChecked();
-        vecBool[i + 1] = ui->xPositionCheck->isChecked();
-        vecBool[i + 2] = ui->xPositionCheck->isChecked();
+        vecBool[i + 1] = ui->yPositionCheck->isChecked();
+        vecBool[i + 2] = ui->zPositionCheck->isChecked();
         i += 3;
       }
       if (orientationEnabled_) {
         vecDouble[i] = ui->xOrientationValue->value();
         vecDouble[i + 1] = ui->yOrientationValue->value();
-        vecDouble[i + 1] = ui->zOrientationValue->value();
+        vecDouble[i + 2] = ui->zOrientationValue->value();
         vecBool[i] = ui->xOrientationCheck->isChecked();
-        vecBool[i + 1] = ui->xOrientationCheck->isChecked();
-        vecBool[i + 2] = ui->xOrientationCheck->isChecked();
+        vecBool[i + 1] = ui->yOrientationCheck->isChecked();
+        vecBool[i + 2] = ui->zOrientationCheck->isChecked();
         i += 3;
       }
       if (isPositionConstraint_) {
