@@ -4,6 +4,7 @@
 
 #include "hppwidgetsplugin/constraintwidget.hh"
 #include "hppwidgetsplugin/transformconstraintwidget.hh"
+#include "hppwidgetsplugin/numericalconstraintpicker.hh"
 #include "hppwidgetsplugin/ui_constraintwidget.h"
 
 namespace hpp {
@@ -21,6 +22,7 @@ namespace hpp {
         connect(ui->resetButton, SIGNAL(clicked()), SLOT(reset()));
         connect(ui->confirmButton, SIGNAL(clicked()), SLOT(confirmNumerical()));
         connect(ui->applyButton, SIGNAL(clicked()), SLOT(applyConstraints()));
+        connect(ui->firstGlobalFrame, SIGNAL(toggled(bool)), SLOT(globalSelected(bool)));
     }
 
     ConstraintWidget::~ConstraintWidget()
@@ -31,7 +33,7 @@ namespace hpp {
 
     void ConstraintWidget::addConstraint(IConstraint *constraint)
     {
-      funcs_[funcs_.size()] = constraint;
+      funcs_[(int)funcs_.size()] = constraint;
       ui->constraintTypeSelect->addItem(constraint->getName());
       connect(constraint, SIGNAL(finished(QString)), SLOT(createFinished(QString)));
     }
@@ -39,7 +41,7 @@ namespace hpp {
     void ConstraintWidget::reset()
     {
       plugin_->client()->problem()->resetConstraints();
-      ui->nameList->clear();
+      //ui->nameList->clear();
     }
 
     void ConstraintWidget::applyConstraints()
@@ -48,32 +50,25 @@ namespace hpp {
       hpp::floatSeq_var newConfig = NULL;
       double residual;
 
-      if (plugin_->client()->problem()->applyConstraints(config.in(), newConfig, residual) == false) {
+      if (plugin_->client()->problem()->applyConstraints(config.in(), newConfig.out(), residual) == false) {
         MainWindow::instance()->logError("Could not apply constraints to current configuration");
       }
       else {
-          plugin_->client()->robot()->setCurrentConfig(newConfig.in());
-          MainWindow::instance()->requestApplyCurrentConfiguration();
+        plugin_->client()->robot()->setCurrentConfig(newConfig.in());
+        MainWindow::instance()->requestApplyCurrentConfiguration();
       }
     }
 
     void ConstraintWidget::confirmNumerical()
     {
-      QString name("hpp-gui-constraints");
-      QListWidget* list = ui->nameList;
-      hpp::Names_t_var constraintsNames = new hpp::Names_t;
-      hpp::intSeq_var priorities = new hpp::intSeq;
-      int count = list->count();
-
-      constraintsNames->length(count);
-      priorities->length(count);
-      for (int i = 0; i < count; ++i) {
-        constraintsNames[i] = Traits<QString>::to_corba(list->item(i)->text());
-        priorities[i] = 0;
+      QStringList l;
+      for (int i = 0; i < ui->nameList->count(); i++) {
+        QListWidgetItem* item = ui->nameList->item(i);
+        l << item->text();
       }
-      plugin_->client()->problem()->setNumericalConstraints(Traits<QString>::to_corba(name),
-                                                            constraintsNames.in(),
-                                                            priorities.in());
+      NumericalConstraintPicker* ncp = new NumericalConstraintPicker(l, plugin_);
+
+      ncp->show();
     }
 
     void ConstraintWidget::reload()
@@ -94,11 +89,11 @@ namespace hpp {
     void ConstraintWidget::createConstraint()
     {
       QString name = ui->constraintNameEdit->text();
-      QString firstJoint = ui->firstJointSelect->currentText();
-      QString secondJoint = ui->secondJointSelect->currentText();
+      QString firstJoint = (ui->firstGlobalFrame->isChecked()) ? "" : ui->firstJointSelect->currentText();
+      QString secondJoint = (ui->secondGlobalFrame->isChecked()) ? "" : ui->secondJointSelect->currentText();
 
-      if (name == "" || secondJoint == "") {
-        QMessageBox::information(this, "hpp-gui", "You have to fill all the field to create a constraint");
+      if (name == "" || (firstJoint == "" && secondJoint == "")) {
+        QMessageBox::information(this, "hpp-gui", "You have to give a name and select at least one joint");
         return ;
       }
       if (funcs_.find(ui->constraintTypeSelect->currentIndex()) != funcs_.end()) {
@@ -111,6 +106,16 @@ namespace hpp {
       ui->secondJointSelect->clear();
       for (unsigned i = 0; i < joints_->length(); i++) {
         if (i != index) ui->secondJointSelect->addItem(joints_[i].in());
+      }
+    }
+
+    void ConstraintWidget::globalSelected(bool action)
+    {
+      if (action) {
+        firstJointSelect(-1);
+      }
+      else {
+        firstJointSelect(ui->firstJointSelect->currentIndex());
       }
     }
 

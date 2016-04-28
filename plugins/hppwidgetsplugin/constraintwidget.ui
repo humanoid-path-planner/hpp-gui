@@ -46,30 +46,44 @@
      <item row="1" column="1">
       <widget class="QComboBox" name="firstJointSelect"/>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="secondJointLabel">
        <property name="text">
         <string>Second Joint</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <widget class="QComboBox" name="secondJointSelect"/>
      </item>
-     <item row="3" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="constraintTypeLabel">
        <property name="text">
         <string>Constraint type</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="5" column="1">
       <widget class="QComboBox" name="constraintTypeSelect"/>
      </item>
-     <item row="4" column="1">
+     <item row="6" column="1">
       <widget class="QPushButton" name="createConstraintButton">
        <property name="text">
         <string>Create</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="firstGlobalFrame">
+       <property name="text">
+        <string>Use Global Frame</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QCheckBox" name="secondGlobalFrame">
+       <property name="text">
+        <string>Use Global Frame</string>
        </property>
       </widget>
      </item>
@@ -116,5 +130,38 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>firstGlobalFrame</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>firstJointSelect</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>319</x>
+     <y>271</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>319</x>
+     <y>242</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>secondGlobalFrame</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>secondJointSelect</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>319</x>
+     <y>302</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>319</x>
+     <y>273</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

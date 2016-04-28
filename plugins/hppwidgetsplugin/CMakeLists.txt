@@ -33,6 +33,7 @@ SET(${PLUGIN_NAME}_HEADERS
   constraintwidget.hh
   transformconstraintwidget.hh
   iconstraint.hh
+  numericalconstraintpicker.hh
   )
 
 SET(${PLUGIN_NAME}_HEADERS_NO_MOC
@@ -46,6 +47,7 @@ SET(${PLUGIN_NAME}_FORMS
   configurationlistwidget.ui
   constraintwidget.ui
   transformconstraintwidget.ui
+  numericalconstraintpicker.ui
   )
 
 SET(${PLUGIN_NAME}_RESOURCES
@@ -73,6 +75,7 @@ SET (${PLUGIN_NAME}_SOURCES
   constraintwidget.cc
   transformconstraintwidget.cc
   iconstraint.cc
+  numericalconstraintpicker.cc
   )
 
 ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}

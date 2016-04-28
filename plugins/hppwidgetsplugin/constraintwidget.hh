@@ -33,6 +33,7 @@ namespace hpp {
         void applyConstraints();
         void reset();
         void firstJointSelect(int index);
+        void globalSelected(bool action);
         void createFinished(QString);
 
     private:
