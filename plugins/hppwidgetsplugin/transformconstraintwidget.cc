@@ -51,6 +51,7 @@ namespace hpp {
       positionEnabled_ = doPosition;
       orientationEnabled_ = doOrientation;
 
+      this->layout()->setSizeConstraint(QLayout::SetFixedSize);
       connect(ui->confirmButton, SIGNAL(clicked()), SLOT(onClick()));
     }
 
