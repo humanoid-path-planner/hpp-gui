@@ -23,6 +23,8 @@ namespace hpp {
         connect(ui->confirmButton, SIGNAL(clicked()), SLOT(confirmNumerical()));
         connect(ui->applyButton, SIGNAL(clicked()), SLOT(applyConstraints()));
         connect(ui->firstGlobalFrame, SIGNAL(toggled(bool)), SLOT(globalSelected(bool)));
+	lastInsert_ = 0;
+	ui->constraintNameEdit->setText("constraint_0");
     }
 
     ConstraintWidget::~ConstraintWidget()
@@ -33,7 +35,7 @@ namespace hpp {
 
     void ConstraintWidget::addConstraint(IConstraint *constraint)
     {
-      funcs_[(int)funcs_.size()] = constraint;
+      funcs_.push_back(constraint);
       ui->constraintTypeSelect->addItem(constraint->getName());
       connect(constraint, SIGNAL(finished(QString)), SLOT(createFinished(QString)));
     }
@@ -96,7 +98,7 @@ namespace hpp {
         QMessageBox::information(this, "hpp-gui", "You have to give a name and select at least one joint");
         return ;
       }
-      if (funcs_.find(ui->constraintTypeSelect->currentIndex()) != funcs_.end()) {
+      if (ui->constraintTypeSelect->currentIndex() < funcs_.size()) {
         (*(this->funcs_[ui->constraintTypeSelect->currentIndex()]))(name, firstJoint, secondJoint);
       }
     }
@@ -122,7 +124,8 @@ namespace hpp {
     void ConstraintWidget::createFinished(QString name)
     {
       ui->nameList->addItem(name);
-      ui->constraintNameEdit->clear();
+      lastInsert_++;
+      ui->constraintNameEdit->setText("constraint_" + lastInsert_);
     }
   }
 }

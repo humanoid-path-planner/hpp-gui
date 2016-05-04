@@ -41,7 +41,8 @@ namespace hpp {
         Ui::ConstraintWidget *ui;
         QDockWidget* dock_;
         hpp::Names_t_var joints_;
-        std::map<int, IConstraint*> funcs_;
+        int lastInsert_;
+        std::vector<IConstraint*> funcs_;
 
         void fillFirstJoint();
     };
