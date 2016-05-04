@@ -163,7 +163,7 @@ make install
 ```
 
 ### PythonQt
-hpp-gui offers the possibility to develop plugins in python. To do so, you must install PythonQt by following the instructions here: https://github.com/jmirabel/PythonQt#readme
+`hpp-gui` offers the possibility to develop plugins in python. To do so, you must install PythonQt by following the instructions here: https://github.com/jmirabel/PythonQt#readme
 
 ## Version
 0.1
