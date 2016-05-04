@@ -90,10 +90,10 @@ namespace hpp {
       }
 
       boolSeq->length(3);
-      quat[0] = qtQuat.scalar();
-      quat[1] = qtQuat.x();
-      quat[2] = qtQuat.y();
-      quat[3] = qtQuat.z();
+      quat.inout()[0] = qtQuat.scalar();
+      quat.inout()[1] = qtQuat.x();
+      quat.inout()[2] = qtQuat.y();
+      quat.inout()[3] = qtQuat.z();
       boolSeq[0] = result.second[0];
       boolSeq[1] = result.second[1];
       boolSeq[2] = result.second[2];
@@ -147,14 +147,13 @@ namespace hpp {
       }
 
       boolSeq->length(6);
-      trans[0] = result.first[0];
-      trans[1] = result.first[1];
-      trans[2] = result.first[2];
-      trans[3] = qtQuat.scalar();
-      trans[4] = qtQuat.x();
-      trans[5] = qtQuat.y();
-      trans[6] = qtQuat.z();
-      std::cout << trans[3] << std::endl;
+      trans.inout()[0] = result.first[0];
+      trans.inout()[1] = result.first[1];
+      trans.inout()[2] = result.first[2];
+      trans.inout()[3] = qtQuat.scalar();
+      trans.inout()[4] = qtQuat.x();
+      trans.inout()[5] = qtQuat.y();
+      trans.inout()[6] = qtQuat.z();
       boolSeq[0] = result.second[0];
       boolSeq[1] = result.second[1];
       boolSeq[2] = result.second[2];
