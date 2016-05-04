@@ -9,15 +9,13 @@
 namespace hpp {
   namespace gui {
     ManipulationRoadmap::ManipulationRoadmap(HppManipulationWidgetsPlugin *plugin):
-      Roadmap (plugin),
-      plugin_ (plugin),
-      nodeColorMap_ (0)
+      Roadmap (plugin), plugin_ (plugin)
     {}
 
     void ManipulationRoadmap::initRoadmap(const std::string jointName)
     {
       Roadmap::initRoadmap (jointName);
-      nodeColorMap_ = ColorMap (1 << 10);
+      nodeColorMap_ = ColorMap ((1 << 7) - 1);
     }
 
     void ManipulationRoadmap::nodeColor (NodeID nodeId, Color& color)

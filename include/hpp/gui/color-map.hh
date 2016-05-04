@@ -2,6 +2,7 @@
 #define HPP_GUI_COLORMAP_HH
 
 #include <QColor>
+#include <QDebug>
 
 namespace hpp {
   namespace gui {
@@ -9,6 +10,8 @@ namespace hpp {
       public:
         static QColor interpolate (std::size_t nbColors, std::size_t index)
         {
+          if (index > nbColors)
+            qDebug() << "Nb colors:" << nbColors << "and index" << index;
           return QColor::fromHslF((qreal)index / (qreal)nbColors, 1, 0.5);
         }
 
@@ -23,7 +26,7 @@ namespace hpp {
       }
 
         QColor getColor (std::size_t index) const {
-          return ColorMap::interpolate(nbColors_, remap (index));
+          return ColorMap::interpolate(mask_, remap (index));
         }
 
         void getColor (std::size_t index, float color[4]) const {
@@ -50,8 +53,8 @@ namespace hpp {
           std::size_t ret = 0;
           std::size_t input = index;
           for (std::size_t i = 0; i < log2up_; ++i) {
-            if (input & 1) ++ret;
             ret <<= 1;
+            if (input & 1) ++ret;
             input >>= 1;
           }
           return ret;

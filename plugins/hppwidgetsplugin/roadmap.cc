@@ -15,8 +15,8 @@ namespace hpp {
     Roadmap::Roadmap(HppWidgetsPlugin *plugin):
       radius (0.01f), axisSize (1.f),
       currentNodeId_ (0), currentEdgeId_ (0),
-      plugin_ (plugin),
-      nodeColorMap_ (0), edgeColorMap_ (0)
+      nodeColorMap_ (0), edgeColorMap_ (0),
+      plugin_ (plugin)
     {}
 
     void Roadmap::initRoadmap(const std::string jointName)

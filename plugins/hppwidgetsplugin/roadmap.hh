@@ -55,13 +55,12 @@ namespace hpp {
 
       protected:
         std::size_t currentNodeId_, currentEdgeId_;
+        ColorMap nodeColorMap_, edgeColorMap_;
 
       private:
         HppWidgetsPlugin* plugin_;
         std::string jointName_;
         hpp::floatSeq_var config_;
-
-        ColorMap nodeColorMap_, edgeColorMap_;
     };
   } // namespace gui
 } // namespace hpp

@@ -23,7 +23,6 @@ namespace hpp {
 
       private:
         HppManipulationWidgetsPlugin* plugin_;
-        ColorMap nodeColorMap_;
     };
   } // namespace gui
 } // namespace hpp
