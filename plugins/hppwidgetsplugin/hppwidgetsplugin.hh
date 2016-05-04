@@ -12,6 +12,7 @@ namespace hpp {
     class ConfigurationListWidget;
     class JointTreeItem;
     class Roadmap;
+    class ConstraintWidget;
 
     class HppWidgetsPlugin : public QObject, public PluginInterface,
     public ModelInterface, public CorbaInterface
@@ -74,6 +75,7 @@ signals:
       public:
         HppClient* client () const;
         JointMap& jointMap ();
+        PathPlayer* pathPlayer() const;
 
         virtual void updateRobotJoints (const QString robotName);
         std::string getSelectedJoint ();
@@ -92,7 +94,6 @@ signals:
         PathPlayer* pathPlayer_;
         SolverWidget* solverWidget_;
         ConfigurationListWidget* configListWidget_;
-        QList <QDockWidget*> dockWidgets_;
 
         HppClient* hpp_;
 
@@ -102,7 +103,9 @@ signals:
         QString getIIOPurl () const;
         void computeObjectPosition();
 
+        QList <QDockWidget*> dockWidgets_;
         JointTreeWidget* jointTreeWidget_;
+        ConstraintWidget* constraintWidget_;
         JointMap jointMap_;
         std::list <std::string> jointFrames_;
     };

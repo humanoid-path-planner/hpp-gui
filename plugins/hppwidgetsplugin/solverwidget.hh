@@ -24,6 +24,7 @@ namespace hpp {
           Optimizer,
           Projector,
 	  Validation,
+	  SteeringMethod,
           All
         };
 
@@ -43,6 +44,7 @@ signals:
         void openPathOptimizerSelector ();
         void selectPathProjector (int index);
         void selectPathValidation (int index);
+        void selectSteeringMethod(const QString&);
         void discontinuityChanged(double value);
         void penetrationChanged(double value);
         void solve ();
@@ -51,6 +53,7 @@ signals:
         void interrupt ();
         void loadRoadmap ();
         void saveRoadmap ();
+        void optimizePath();
 
         void handleWorkerDone (int id);
 
@@ -74,6 +77,7 @@ signals:
         QComboBox* planner ();
         QComboBox* projector ();
         QComboBox* validation ();
+        QComboBox* steeringMethod();
         QDoubleSpinBox* projectorDiscontinuity ();
         QDoubleSpinBox* validationPenetration ();
 

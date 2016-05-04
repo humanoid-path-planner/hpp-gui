@@ -62,7 +62,7 @@ signals:
         // Type used to make one function to build datas needed for autoBuild
         typedef std::pair<hpp::Names_t, hpp::corbaserver::manipulation::Namess_t> NamesPair;
       typedef std::map<std::string, std::list<std::string> > MapNames;
-        NamesPair buildNamess(hpp::Names_t&);
+        NamesPair buildNamess(const Names_t &);
         NamesPair convertMap(MapNames& mapNames);
         
         HppManipClient* hpp_;

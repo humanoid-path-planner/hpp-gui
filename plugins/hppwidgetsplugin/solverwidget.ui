@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>490</width>
-    <height>353</height>
+    <width>495</width>
+    <height>384</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,14 +45,14 @@
         <item row="1" column="1">
          <widget class="QComboBox" name="pathProjectorComboBox"/>
         </item>
-        <item row="5" column="0">
+        <item row="6" column="0">
          <widget class="QLabel" name="pathOptimizerLabel">
           <property name="text">
            <string>Path optimizer</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="1">
+        <item row="6" column="1">
          <widget class="QPushButton" name="pathOptimizerButton">
           <property name="text">
            <string>Select path optimizers</string>
@@ -89,6 +89,16 @@
           </property>
          </widget>
         </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Steering Method</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QComboBox" name="steeringMethodComboBox"/>
+        </item>
        </layout>
       </item>
       <item>
@@ -121,6 +131,13 @@
          <widget class="QPushButton" name="pushButtonSolveAndDisplay">
           <property name="text">
            <string>Solve and display</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="optimizeButton">
+          <property name="text">
+           <string>Optimize Path</string>
           </property>
          </widget>
         </item>

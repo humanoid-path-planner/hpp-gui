@@ -9,6 +9,7 @@
 #include "hpp/gui/windows-manager.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
+#include "hppwidgetsplugin/pathplayer.hh"
 
 namespace hpp {
   namespace gui {
@@ -34,6 +35,7 @@ namespace hpp {
       connect(ui_->pathOptimizerButton, SIGNAL (clicked()), this, SLOT (openPathOptimizerSelector()));
       connect(projector(), SIGNAL (activated(int)), this, SLOT (selectPathProjector(int)));
       connect(validation(), SIGNAL (activated(int)), this, SLOT (selectPathValidation(int)));
+      connect(steeringMethod(), SIGNAL(activated(const QString&)), this, SLOT(selectSteeringMethod(const QString&)));
       connect(ui_->pushButtonSolve, SIGNAL (clicked ()), this, SLOT (solve ()));
       connect(ui_->pushButtonInterrupt, SIGNAL (clicked ()), this, SLOT (interrupt ()));
       connect(ui_->pushButtonSolveAndDisplay, SIGNAL (clicked ()),
@@ -42,6 +44,7 @@ namespace hpp {
           SLOT(solveAndDisplayDone ()));
       connect(ui_->loadRoadmap, SIGNAL (clicked()), SLOT (loadRoadmap()));
       connect(ui_->saveRoadmap, SIGNAL (clicked()), SLOT (saveRoadmap()));
+      connect(ui_->optimizeButton, SIGNAL(clicked()), SLOT(optimizePath()));
 
       // Settings of the DoubleSpinBox for discontinuity
       ui_->pathProjectorDiscontinuity->setMinimum(0);
@@ -91,11 +94,22 @@ namespace hpp {
           for (CORBA::ULong i = 0; i < names->length(); ++i)
             projector()->addItem(QString::fromLocal8Bit(names[i]), QVariant (0.2));
           if (s == Projector) break;
+        case SteeringMethod:
+          clearQComboBox(steeringMethod());
+          names = plugin_->client()->problem()->getAvailable("SteeringMethod");
+          plugin_->client()->problem()->selectSteeringMethod(names[0]);
+          for (CORBA::ULong i = 0; i < names->length(); ++i)
+            steeringMethod()->addItem(QString::fromLocal8Bit(names[i]));
+          if (s == SteeringMethod) break;
       }
     }
 
     void SolverWidget::selectPathPlanner (const QString& text) {
       plugin_->client()->problem()->selectPathPlanner (text.toStdString().c_str());
+    }
+
+    void SolverWidget::selectSteeringMethod (const QString& text) {
+      plugin_->client()->problem()->selectSteeringMethod (text.toStdString().c_str());
     }
 
     void SolverWidget::selectPathOptimizers (const QStringList& list) {
@@ -222,6 +236,19 @@ namespace hpp {
       }
     }
 
+    void SolverWidget::optimizePath()
+    {
+      /* double time = */
+      WorkItem* item = new WorkItem_1 <hpp::corbaserver::_objref_Problem, hpp::intSeq*,
+				       unsigned short>
+        (plugin_->client()->problem().in(), &hpp::corbaserver::_objref_Problem::optimizePath,
+	 plugin_->pathPlayer()->getCurrentPath());
+      main_->emitSendToBackground(item);
+      main_->logJobStarted(item->id(), "Optimize path.");
+      solveDoneId_ = item->id();
+      selectButtonSolve(false);
+    }
+
     void SolverWidget::handleWorkerDone(int id)
     {
       if (id == solveDoneId_) {
@@ -260,10 +287,12 @@ namespace hpp {
         ui_->pushButtonInterrupt->setVisible(false);
         ui_->pushButtonSolve->setVisible(true);
         ui_->pushButtonSolveAndDisplay->setVisible(true);
+	ui_->optimizeButton->setVisible(true);
       } else {
         ui_->pushButtonInterrupt->setVisible(true);
         ui_->pushButtonSolve->setVisible(false);
         ui_->pushButtonSolveAndDisplay->setVisible(false);
+	ui_->optimizeButton->setVisible(false);
       }
     }
 
@@ -280,6 +309,11 @@ namespace hpp {
     QComboBox *SolverWidget::validation()
     {
       return ui_->pathValidationComboBox;
+    }
+
+    QComboBox *SolverWidget::steeringMethod()
+    {
+      return ui_->steeringMethodComboBox;
     }
 
     QDoubleSpinBox *SolverWidget::projectorDiscontinuity()

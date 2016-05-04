@@ -18,7 +18,7 @@ namespace hpp {
       Q_OBJECT
     public:
       TransformWidget(hpp::Transform__slice* transform, std::string const& jointName,
-		      QWidget* parent);
+                      QWidget* parent, bool doPosition = true, bool doQuaternion = true);
 
     signals:
       void valueChanged(hpp::Transform__slice* transform, std::string const& jointName);
