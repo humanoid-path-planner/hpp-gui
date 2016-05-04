@@ -177,12 +177,10 @@ namespace hpp {
             << escapeJointName(std::string (rcs[i])) << "_" << j;
           std::string name = ssname.str ();
           gepetto::corbaserver::PositionSeq ps; ps.length (indexes[j] - iPts);
-          std::cout << indexes[j] << std::endl;
           for (CORBA::Long k = iPts; k < indexes[j]; ++k) {
             ps[k - iPts][0] = (float)points[k][0];
             ps[k - iPts][1] = (float)points[k][1];
             ps[k - iPts][2] = (float)points[k][2];
-            std::cout << ps[k - iPts][0] << " - " << ps[k - iPts][1] << " - " << ps[k - iPts][2] << std::endl;
           }
           iPts = indexes[j];
           main->osg()->addCurve (name.c_str(), ps, color);
