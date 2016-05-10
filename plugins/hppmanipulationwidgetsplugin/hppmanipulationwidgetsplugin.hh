@@ -58,16 +58,21 @@ signals:
           void drawGrippersFrame ();
           void autoBuildGraph();
 
+        private slots:
+          void buildGraph();
+
       private:
         // Type used to make one function to build datas needed for autoBuild
         typedef std::pair<hpp::Names_t, hpp::corbaserver::manipulation::Namess_t> NamesPair;
       typedef std::map<std::string, std::list<std::string> > MapNames;
-        NamesPair buildNamess(const Names_t &);
+        NamesPair buildNamess(const QList<QListWidgetItem *>& names);
         NamesPair convertMap(MapNames& mapNames);
+        hpp::Names_t_var convertToNames(const QList<QListWidgetItem *>& l);
         
         HppManipClient* hpp_;
 
         QToolBar *toolBar_;
+        QTabWidget *tw_;
 
         int firstEnter_;
     };

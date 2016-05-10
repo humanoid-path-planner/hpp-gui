@@ -20,6 +20,7 @@ namespace hpp {
 
     HppManipulationWidgetsPlugin::~HppManipulationWidgetsPlugin()
     {
+      tw_->deleteLater();
     }
 
     void HppManipulationWidgetsPlugin::init()
@@ -253,33 +254,99 @@ namespace hpp {
     }
 
     HppManipulationWidgetsPlugin::NamesPair
-    HppManipulationWidgetsPlugin::buildNamess(const hpp::Names_t& names)
+    HppManipulationWidgetsPlugin::buildNamess(const QList<QListWidgetItem *>& names)
     {
       std::map<std::string, std::list<std::string> > mapNames;
 
-      for (CORBA::ULong i = 0; i < names.length(); i++) {
-	std::string name(names[i]);
+      for (int i = 0; i < names.count(); i++) {
+        std::string name(names[i]->text().toStdString());
 	size_t pos = name.find_first_of("/");
 	std::string object = name.substr(0, pos);
-	std::string handle = name.substr(pos + 1);
 
 	mapNames[object].push_back(name);
       }
       return convertMap(mapNames);
     }
 
-    void HppManipulationWidgetsPlugin::autoBuildGraph()
+    hpp::Names_t_var HppManipulationWidgetsPlugin::convertToNames(const QList<QListWidgetItem *>& l)
     {
-      hpp::Names_t_var grippers = hpp_->problem ()->getAvailable ("Gripper");
-      hpp::Names_t_var handlesV = hpp_->problem ()->getAvailable ("Handle");
-      hpp::Names_t_var contacts = hpp_->problem ()->getRobotContactNames ();
-      HppManipulationWidgetsPlugin::NamesPair handles =	buildNamess(handlesV.in());
-      HppManipulationWidgetsPlugin::NamesPair shapes = buildNamess(contacts.in());
-      hpp::Names_t_var envNames = hpp_->problem()->getEnvironmentContactNames();
+      hpp::Names_t_var cl = new hpp::Names_t;
+      cl->length(l.count());
+      for (int i = 0; i < l.count(); i++) {
+        cl[i]= l[i]->text().toStdString().c_str();
+      }
+      return cl;
+    }
+
+    void HppManipulationWidgetsPlugin::buildGraph()
+    {
+      QListWidget* l = dynamic_cast<QListWidget*>(tw_->widget(0));
+      hpp::Names_t_var grippers = convertToNames(l->selectedItems());
+      l = dynamic_cast<QListWidget*>(tw_->widget(1));
+      HppManipulationWidgetsPlugin::NamesPair handles = buildNamess(l->selectedItems());
+      l = dynamic_cast<QListWidget*>(tw_->widget(2));
+      HppManipulationWidgetsPlugin::NamesPair shapes = buildNamess(l->selectedItems());
+      l = dynamic_cast<QListWidget*>(tw_->widget(3));
+      hpp::Names_t_var envNames = convertToNames(l->selectedItems());
 
       hpp_->graph ()->createGraph("constraints");
       hpp_->graph ()->autoBuild("constraints", grippers.in(), handles.first,
                     handles.second, shapes.second, envNames.in());
+      tw_->deleteLater();
+      tw_->close();
+    }
+
+    void HppManipulationWidgetsPlugin::autoBuildGraph()
+    {
+      tw_ = new QTabWidget;
+      QListWidget* lw;
+      QPushButton* button = new QPushButton("Confirm", tw_);
+
+      connect(button, SIGNAL(clicked()), SLOT(buildGraph()));
+      hpp::Names_t_var n;
+      n = hpp_->problem()->getAvailable("Gripper");
+      QStringList l;
+      for (unsigned i = 0; i < n->length(); i++) {
+        l << QString(n[i].in());
+      }
+      lw = new QListWidget(tw_);
+      std::cout << lw << std::endl;
+      lw->addItems(l);
+      lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
+      tw_->addTab(lw, "Grippers");
+
+      n = hpp_->problem()->getAvailable("Handle");
+      l.clear();
+      for (unsigned i = 0; i < n->length(); i++) {
+        l << QString(n[i].in());
+      }
+      lw = new QListWidget(tw_);
+      lw->addItems(l);
+      lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
+      tw_->addTab(lw, "Handles");
+
+      n = hpp_->problem()->getRobotContactNames();
+      l.clear();
+      for (unsigned i = 0; i < n->length(); i++) {
+        l << QString(n[i].in());
+      }
+      lw = new QListWidget(tw_);
+      lw->addItems(l);
+      lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
+      tw_->addTab(lw, "Robot Contacts");
+
+      n = hpp_->problem()->getEnvironmentContactNames();
+      l.clear();
+      for (unsigned i = 0; i < n->length(); i++) {
+        l << QString(n[i].in());
+      }
+      lw = new QListWidget(tw_);
+      lw->addItems(l);
+      lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
+      tw_->addTab(lw, "Environments Contacts");
+
+      tw_->setCornerWidget(button, Qt::BottomRightCorner);
+      tw_->show();
     }
 
     Q_EXPORT_PLUGIN2 (hppmanipulationwidgetsplugin, HppManipulationWidgetsPlugin)
