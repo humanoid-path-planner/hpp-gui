@@ -9,7 +9,7 @@
 #include <QPushButton>
 
 #include <hpp/corbaserver/robot.hh>
-#include <hpp/gui/fwd.hh>
+#include <gepetto/gui/fwd.hh>
 #include <gepetto/viewer/node.h>
 
 #include "hppwidgetsplugin/hppwidgetsplugin.hh"
@@ -22,7 +22,7 @@ namespace hpp {
 
       public:
         IntegratorWheel (Qt::Orientation o, HppWidgetsPlugin* plugin, QWidget *parent,
-            MainWindow *main, std::string jointName,
+            gepetto::gui::MainWindow *main, std::string jointName,
             int nbDof, int index);
 
       protected:
@@ -35,7 +35,7 @@ namespace hpp {
       private:
         int rate_; // in millisecond
         int timerId_;
-        MainWindow* main_;
+        gepetto::gui::MainWindow* main_;
         HppWidgetsPlugin* plugin_;
 
         std::string jointName_;
@@ -52,7 +52,7 @@ namespace hpp {
 
       public:
         SliderBoundedJoint (Qt::Orientation orientation, HppWidgetsPlugin* plugin, QWidget* parent,
-            MainWindow *main, std::string jointName,
+            gepetto::gui::MainWindow *main, std::string jointName,
             hpp::floatSeq* q, int index, double min, double max);
 
         double getValue ();
@@ -61,7 +61,7 @@ namespace hpp {
           void updateConfig (int value);
 
       private:
-        MainWindow* main_;
+        gepetto::gui::MainWindow* main_;
         HppWidgetsPlugin* plugin_;
         std::string jointName_;
         hpp::floatSeq_var q_;
@@ -122,7 +122,7 @@ namespace hpp {
       Q_OBJECT
 
       public:
-        JointItemDelegate (QPushButton* forceVelocity, HppWidgetsPlugin* plugin, MainWindow* parent);
+        JointItemDelegate (QPushButton* forceVelocity, HppWidgetsPlugin* plugin, gepetto::gui::MainWindow* parent);
 
         void updateTypeRole (JointTreeItem::ItemType& type) const;
 
@@ -132,7 +132,7 @@ namespace hpp {
         void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
       private:
-        MainWindow* main_;
+        gepetto::gui::MainWindow* main_;
         HppWidgetsPlugin* plugin_;
         QPushButton* forceIntegrator_;
     };

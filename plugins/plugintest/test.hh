@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include <hpp/gui/plugin-interface.hh>
+#include <gepetto/gui/plugin-interface.hh>
 
 namespace hpp {
   namespace gui {

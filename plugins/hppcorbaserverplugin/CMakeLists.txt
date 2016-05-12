@@ -19,12 +19,8 @@
 
 SET(PLUGIN_NAME hppcorbaserverplugin)
 
-SET(${PLUGIN_NAME}_HEADERS_NO_MOC
-  ../../include/hpp/gui/plugin-interface.hh
-  )
-
 SET(${PLUGIN_NAME}_HEADERS
-  hppcorbaserverplugin.hh
+  ${PLUGIN_NAME}.hh
   hppserverprocess.hh
   )
 
@@ -45,7 +41,7 @@ ADD_DEFINITIONS(-DQT_PLUGIN)
 ADD_DEFINITIONS(-DQT_SHARED)
 
 SET (${PLUGIN_NAME}_SOURCES
-  hppcorbaserverplugin.cc
+  ${PLUGIN_NAME}.cc
   hppserverprocess.cc
   )
 
@@ -58,5 +54,6 @@ ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}
 
 TARGET_LINK_LIBRARIES(${PLUGIN_NAME} ${QT_LIBRARIES})
 PKG_CONFIG_USE_DEPENDENCY(${PLUGIN_NAME} "hpp-corbaserver")
+PKG_CONFIG_USE_DEPENDENCY(${PLUGIN_NAME} "gepetto-viewer-corba")
 
-INSTALL(TARGETS ${PLUGIN_NAME} DESTINATION lib/hpp-gui-plugins)
+INSTALL(TARGETS ${PLUGIN_NAME} DESTINATION lib/gepetto-gui-plugins)

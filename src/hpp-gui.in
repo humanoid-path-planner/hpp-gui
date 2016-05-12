@@ -1,7 +1,0 @@
-#!/bin/sh
-
-INSTALL_DIR="@CMAKE_INSTALL_PREFIX@"
-export LD_LIBRARY_PATH="${INSTALL_DIR}/lib/hpp-gui-plugins:$LD_LIBRARY_PATH"
-export HPP_GUI_SETTINGS_DIR="${INSTALL_DIR}/etc"
-
-${INSTALL_DIR}/lib/hpp-gui $@

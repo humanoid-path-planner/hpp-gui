@@ -3,8 +3,8 @@
 #include <string>
 #include <sstream>
 
-#include <hpp/gui/mainwindow.hh>
-#include <hpp/gui/windows-manager.hh>
+#include <gepetto/gui/mainwindow.hh>
+#include <gepetto/gui/windows-manager.hh>
 
 namespace hpp {
   namespace gui {
@@ -15,7 +15,7 @@ namespace hpp {
     void ManipulationRoadmap::initRoadmap(const std::string jointName)
     {
       Roadmap::initRoadmap (jointName);
-      nodeColorMap_ = ColorMap ((1 << 7) - 1);
+      nodeColorMap_ = gepetto::gui::ColorMap ((1 << 7) - 1);
     }
 
     void ManipulationRoadmap::nodeColor (NodeID nodeId, Color& color)

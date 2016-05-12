@@ -5,7 +5,7 @@
 #include <QComboBox>
 #include <QFormLayout>
 
-#include "hpp/gui/fwd.hh"
+#include "gepetto/gui/fwd.hh"
 #include "hppwidgetsplugin/hppwidgetsplugin.hh"
 
 namespace Ui {
@@ -83,7 +83,7 @@ signals:
 
         ::Ui::SolverWidget* ui_;
         HppWidgetsPlugin* plugin_;
-        MainWindow* main_;
+        gepetto::gui::MainWindow* main_;
 
         QStringList optimizers_;
 

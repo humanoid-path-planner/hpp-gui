@@ -2,7 +2,7 @@
 #define HPP_GUI_ROADMAP_HH
 
 #include <hpp/corbaserver/common.hh>
-#include <hpp/gui/color-map.hh>
+#include <gepetto/gui/color-map.hh>
 #include <hppwidgetsplugin/hppwidgetsplugin.hh>
 
 namespace hpp {
@@ -55,7 +55,7 @@ namespace hpp {
 
       protected:
         std::size_t currentNodeId_, currentEdgeId_;
-        ColorMap nodeColorMap_, edgeColorMap_;
+        gepetto::gui::ColorMap nodeColorMap_, edgeColorMap_;
 
       private:
         HppWidgetsPlugin* plugin_;

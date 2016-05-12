@@ -3,9 +3,9 @@
 #include <hpp/corbaserver/common.hh>
 #include <hpp/corbaserver/client.hh>
 
-#include "hpp/gui/mainwindow.hh"
-#include <hpp/gui/windows-manager.hh>
-#include <hpp/gui/osgwidget.hh>
+#include "gepetto/gui/mainwindow.hh"
+#include <gepetto/gui/windows-manager.hh>
+#include <gepetto/gui/osgwidget.hh>
 
 #include "hppwidgetsplugin/ui_pathplayerwidget.h"
 
@@ -49,7 +49,7 @@ namespace hpp {
 
     void PathPlayer::displayWaypointsOfPath(const std::string jointName)
     {
-      MainWindow* main = MainWindow::instance();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
       if (!pathIndex()->isEnabled()) {
         main->logError("There is no path. Did you solve a problem ?");
         return;
@@ -59,7 +59,7 @@ namespace hpp {
       std::string pn = ss.str();
       float colorN[] = {0.f, 0.f, 1.f, 1.f};
       float colorE[] = {1.f, 0.f, 0.f, 1.f};
-      WindowsManagerPtr_t wsm = main->osg();
+      gepetto::gui::WindowsManagerPtr_t wsm = main->osg();
       HppWidgetsPlugin::HppClient* hpp = plugin_->client();
       hpp::floatSeqSeq_var waypoints = hpp->problem()->getWaypoints((CORBA::UShort)pid);
       wsm->createScene (pn.c_str());
@@ -100,7 +100,7 @@ namespace hpp {
 
     void PathPlayer::displayPath_impl(const std::string jointName)
     {
-      MainWindow* main = MainWindow::instance();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
       if (!pathIndex()->isEnabled()) {
         main->logError("There is no path. Did you solve a problem ?");
         emit displayPath_status(100);
@@ -110,7 +110,7 @@ namespace hpp {
       std::stringstream ss; ss << "curvedpath_" << pid << "_" << jointName;
       std::string pn = ss.str();
       float colorE[] = {1.f, 0.f, 0.f, 1.f};
-      WindowsManagerPtr_t wsm = main->osg();
+      gepetto::gui::WindowsManagerPtr_t wsm = main->osg();
       HppWidgetsPlugin::HppClient* hpp = plugin_->client();
       hpp::floatSeq_var curCfg = hpp->robot()->getCurrentConfig();
       CORBA::Double length = hpp->problem()->pathLength(pid);
@@ -193,7 +193,7 @@ namespace hpp {
 
     void PathPlayer::recordToggled(bool toggled)
     {
-      MainWindow* main = MainWindow::instance();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
       if (toggled) {
         QDir tmp ("/tmp");
         tmp.mkpath ("hpp-gui/record"); tmp.cd("hpp-gui/record");
@@ -266,7 +266,7 @@ namespace hpp {
       hpp::floatSeq_var config =
         plugin_->client()->problem()->configAtParam ((short unsigned int)pathIndex()->value(),currentParam_);
       plugin_->client()->robot()->setCurrentConfig (config.in());
-      MainWindow::instance()->requestApplyCurrentConfiguration();
+      gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
     }
 
     inline double PathPlayer::sliderToLength(int v) const

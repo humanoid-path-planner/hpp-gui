@@ -22,7 +22,7 @@ namespace hpp {
     void HppCorbaserverPlugin::init()
     {
       hpp::core::ProblemSolverPtr_t ps = hpp::core::ProblemSolver::create ();
-      server_ = new CorbaServer (new HppServerProcess (
+      server_ = new gepetto::gui::CorbaServer (new HppServerProcess (
             new hpp::corbaServer::Server (ps, 0, NULL, true)));
       server_->start();
       server_->waitForInitDone();

@@ -1,8 +1,8 @@
 #include "hppmanipulationwidgetsplugin/hppmanipulationwidgetsplugin.hh"
 
 #include "hppmanipulationwidgetsplugin/roadmap.hh"
-#include "hpp/gui/mainwindow.hh"
-#include "hpp/gui/windows-manager.hh"
+#include "gepetto/gui/mainwindow.hh"
+#include "gepetto/gui/windows-manager.hh"
 
 #include "hppwidgetsplugin/jointtreewidget.hh"
 
@@ -27,7 +27,7 @@ namespace hpp {
     {
       HppWidgetsPlugin::init ();
 
-      toolBar_ = MainWindow::instance()->addToolBar("Manipulation tools");
+      toolBar_ = gepetto::gui::MainWindow::instance()->addToolBar("Manipulation tools");
       QAction* drawRContact = new QAction ("Draw robot contacts",toolBar_);
       QAction* drawEContact = new QAction ("Draw environment contacts",toolBar_);
       toolBar_->addAction (drawRContact);
@@ -50,35 +50,35 @@ namespace hpp {
       return QString ("Widgets for hpp-manipulation-corba");
     }
 
-    void HppManipulationWidgetsPlugin::loadRobotModel(DialogLoadRobot::RobotDefinition rd)
+    void HppManipulationWidgetsPlugin::loadRobotModel(gepetto::gui::DialogLoadRobot::RobotDefinition rd)
     {
       if (firstEnter_ == 0) {
-      	hpp_->robot ()->create (Traits<QString>::to_corba("composite").in());
+      	hpp_->robot ()->create (gepetto::gui::Traits<QString>::to_corba("composite").in());
       	firstEnter_ = 1;
       }
-      hpp_->robot ()->insertRobotModel (Traits<QString>::to_corba(rd.robotName_).in(),
-					Traits<QString>::to_corba(rd.rootJointType_).in(),
-					Traits<QString>::to_corba(rd.package_).in(),
-					Traits<QString>::to_corba(rd.modelName_).in(),
-					Traits<QString>::to_corba(rd.urdfSuf_).in(),
-					Traits<QString>::to_corba(rd.srdfSuf_).in());
+      hpp_->robot ()->insertRobotModel (gepetto::gui::Traits<QString>::to_corba(rd.robotName_).in(),
+					gepetto::gui::Traits<QString>::to_corba(rd.rootJointType_).in(),
+					gepetto::gui::Traits<QString>::to_corba(rd.package_).in(),
+					gepetto::gui::Traits<QString>::to_corba(rd.modelName_).in(),
+					gepetto::gui::Traits<QString>::to_corba(rd.urdfSuf_).in(),
+					gepetto::gui::Traits<QString>::to_corba(rd.srdfSuf_).in());
       updateRobotJoints (rd.robotName_);
       jointTreeWidget_->addJointToTree("base_joint", 0);
       applyCurrentConfiguration();
       emit logSuccess ("Robot " + rd.name_ + " loaded");
     }
 
-    void HppManipulationWidgetsPlugin::loadEnvironmentModel(DialogLoadEnvironment::EnvironmentDefinition ed)
+    void HppManipulationWidgetsPlugin::loadEnvironmentModel(gepetto::gui::DialogLoadEnvironment::EnvironmentDefinition ed)
     {
       if (firstEnter_ == 0) {
-      	hpp_->robot ()->create (Traits<QString>::to_corba("composite").in());
+      	hpp_->robot ()->create (gepetto::gui::Traits<QString>::to_corba("composite").in());
       	firstEnter_ = 1;
       }
-      hpp_->robot ()-> loadEnvironmentModel(Traits<QString>::to_corba(ed.package_).in(),
-					    Traits<QString>::to_corba(ed.urdfFilename_).in(),
-					    Traits<QString>::to_corba(ed.urdfSuf_).in(),
-					    Traits<QString>::to_corba(ed.srdfSuf_).in(),
-					    Traits<QString>::to_corba(ed.name_ + "/").in());
+      hpp_->robot ()-> loadEnvironmentModel(gepetto::gui::Traits<QString>::to_corba(ed.package_).in(),
+					    gepetto::gui::Traits<QString>::to_corba(ed.urdfFilename_).in(),
+					    gepetto::gui::Traits<QString>::to_corba(ed.urdfSuf_).in(),
+					    gepetto::gui::Traits<QString>::to_corba(ed.srdfSuf_).in(),
+					    gepetto::gui::Traits<QString>::to_corba(ed.name_ + "/").in());
       HppWidgetsPlugin::computeObjectPosition();
       emit logSuccess ("Environment " + ed.name_ + " loaded");
    }
@@ -129,7 +129,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::drawRobotContacts()
     {
-      MainWindow* main = MainWindow::instance ();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var rcs = hpp_->problem()->getRobotContactNames();
       hpp::floatSeqSeq_var points;
       hpp::intSeq_var indexes;
@@ -162,7 +162,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::drawEnvironmentContacts()
     {
-      MainWindow* main = MainWindow::instance ();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var rcs = hpp_->problem()->getEnvironmentContactNames();
       hpp::floatSeqSeq_var points;
       hpp::intSeq_var indexes;
@@ -192,7 +192,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::drawHandlesFrame()
     {
-      MainWindow* main = MainWindow::instance ();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var rcs = hpp_->problem()->getAvailable("handle");
       hpp::Transform__var t (new Transform_);
       graphics::WindowsManager::value_type t_gv[7];
@@ -212,7 +212,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::drawGrippersFrame()
     {
-      MainWindow* main = MainWindow::instance ();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var rcs = hpp_->problem()->getAvailable("gripper");
       hpp::Transform__var t (new Transform_);
       graphics::WindowsManager::value_type t_gv[7];

@@ -3,8 +3,8 @@
 #include "hppwidgetsplugin/jointtreewidget.hh"
 #include "hppwidgetsplugin/ui_jointtreewidget.h"
 
-#include <hpp/gui/mainwindow.hh>
-#include <hpp/gui/windows-manager.hh>
+#include <gepetto/gui/mainwindow.hh>
+#include <gepetto/gui/windows-manager.hh>
 
 #include "hppwidgetsplugin/joint-tree-item.hh"
 #include "hppwidgetsplugin/jointbounddialog.hh"
@@ -26,7 +26,7 @@ namespace hpp {
       ui_->jointTree->setItemDelegate (
           new JointItemDelegate(ui_->button_forceVelocity,
             plugin_,
-            MainWindow::instance()));
+            gepetto::gui::MainWindow::instance()));
       reset ();
 
       connect(ui_->jointTree, SIGNAL (customContextMenuRequested(QPoint)),
@@ -67,8 +67,8 @@ namespace hpp {
           dynamic_cast <JointTreeItem*> (model_->itemFromIndex(index));
         if (!item) return;
         contextMenu.addActions (plugin_->getJointActions(item->name()));
-        foreach (JointModifierInterface* adi,
-            MainWindow::instance()->pluginManager ()->get<JointModifierInterface> ()) {
+        foreach (gepetto::gui::JointModifierInterface* adi,
+            gepetto::gui::MainWindow::instance()->pluginManager ()->get<gepetto::gui::JointModifierInterface> ()) {
           if (!adi) continue;
           contextMenu.addAction (adi->action (item->name()));
         }
@@ -79,7 +79,7 @@ namespace hpp {
 
     void JointTreeWidget::addJointToTree(const std::string name, JointTreeItem *parent)
     {
-      MainWindow* main = MainWindow::instance();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
       HppWidgetsPlugin::JointElement& je = plugin_->jointMap() [name];
       graphics::NodePtr_t node = main->osg ()->getNode(je.bodyName);
       if (!node) node = main->osg ()->getScene(je.bodyName);
@@ -122,7 +122,7 @@ namespace hpp {
           }
         }
       } catch (const hpp::Error& e) {
-        MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
+        gepetto::gui::MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
         return;
       }
     }
@@ -130,7 +130,7 @@ namespace hpp {
     void JointTreeWidget::moveJoint(hpp::Transform__slice* transform, std::string const& jointName)
     {
       plugin_->client()->robot()->setJointPositionInParentFrame(jointName.c_str(), transform);
-      MainWindow::instance()->requestApplyCurrentConfiguration();
+      gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
     }
 
     void JointTreeWidget::openJointMoveDialog(const std::string jointName)
@@ -145,7 +145,7 @@ namespace hpp {
 	connect(d, SIGNAL(valueChanged(hpp::Transform__slice*, std::string const&)),
 		SLOT(moveJoint(hpp::Transform__slice*, std::string const&)));
       } catch (const hpp::Error& e) {
-        MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
+        gepetto::gui::MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
         return;
       }
     }
@@ -162,7 +162,7 @@ namespace hpp {
         plugin_->updateRobotJoints(robotName);
         addJointToTree(bjn, 0);
       } catch (hpp::Error& e) {
-        MainWindow::instance ()->logError(QString(e.msg));
+        gepetto::gui::MainWindow::instance ()->logError(QString(e.msg));
         return;
       }
       delete[] robotName;

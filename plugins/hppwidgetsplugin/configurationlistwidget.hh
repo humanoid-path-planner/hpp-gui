@@ -3,8 +3,8 @@
 
 #include <QWidget>
 
-#include "hpp/gui/fwd.hh"
-#include "hpp/gui/mainwindow.hh"
+#include "gepetto/gui/fwd.hh"
+#include "gepetto/gui/mainwindow.hh"
 
 #include "hpp/corbaserver/common.hh"
 
@@ -45,7 +45,7 @@ namespace hpp {
         HppWidgetsPlugin* plugin_;
         ::Ui::ConfigurationListWidget* ui_;
 
-        MainWindow* main_;
+        gepetto::gui::MainWindow* main_;
         QString basename_;
         int count_;
     };

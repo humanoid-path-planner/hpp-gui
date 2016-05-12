@@ -18,7 +18,7 @@ namespace hpp {
     {
       server_->startCorbaServer ();
       emit done ();
-      ServerProcess::init();
+      gepetto::gui::ServerProcess::init();
     }
 
     void HppServerProcess::processRequest(bool loop)

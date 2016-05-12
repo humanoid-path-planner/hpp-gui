@@ -5,8 +5,8 @@
 
 #include <QFormLayout>
 #include <QMessageBox>
-#include "hpp/gui/mainwindow.hh"
-#include "hpp/gui/windows-manager.hh"
+#include "gepetto/gui/mainwindow.hh"
+#include "gepetto/gui/windows-manager.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
 #include "hppwidgetsplugin/pathplayer.hh"
@@ -23,7 +23,7 @@ namespace hpp {
       QWidget (parent),
       ui_ (new ::Ui::SolverWidget),
       plugin_ (plugin),
-      main_(MainWindow::instance()),
+      main_(gepetto::gui::MainWindow::instance()),
       solveDoneId_ (-1),
       solveAndDisplay_ (plugin, this)
     {
@@ -177,7 +177,7 @@ namespace hpp {
     void SolverWidget::solve()
     {
       /* double time = */
-      WorkItem* item = new WorkItem_0 <hpp::corbaserver::_objref_Problem, hpp::intSeq*>
+      gepetto::gui::WorkItem* item = new gepetto::gui::WorkItem_0 <hpp::corbaserver::_objref_Problem, hpp::intSeq*>
         (plugin_->client()->problem().in(), &hpp::corbaserver::_objref_Problem::solve);
       main_->emitSendToBackground(item);
       main_->logJobStarted(item->id(), "solve problem.");
@@ -221,7 +221,7 @@ namespace hpp {
       try {
         plugin_->client()->problem()->readRoadmap (file.toLocal8Bit().data());
       } catch (const hpp::Error& e) {
-        MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
+        gepetto::gui::MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
       }
     }
 
@@ -232,14 +232,14 @@ namespace hpp {
       try {
         plugin_->client()->problem()->saveRoadmap (file.toLocal8Bit().data());
       } catch (const hpp::Error& e) {
-        MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
+        gepetto::gui::MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
       }
     }
 
     void SolverWidget::optimizePath()
     {
       /* double time = */
-      WorkItem* item = new WorkItem_1 <hpp::corbaserver::_objref_Problem, hpp::intSeq*,
+      gepetto::gui::WorkItem* item = new gepetto::gui::WorkItem_1 <hpp::corbaserver::_objref_Problem, hpp::intSeq*,
 				       unsigned short>
         (plugin_->client()->problem().in(), &hpp::corbaserver::_objref_Problem::optimizePath,
 	 plugin_->pathPlayer()->getCurrentPath());

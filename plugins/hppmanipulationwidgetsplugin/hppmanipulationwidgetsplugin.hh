@@ -3,7 +3,7 @@
 
 #include <QToolBar>
 
-#include <hpp/gui/plugin-interface.hh>
+#include <gepetto/gui/plugin-interface.hh>
 #include <hpp/corbaserver/manipulation/client.hh>
 #undef __robot_hh__
 #undef __problem_hh__
@@ -15,9 +15,9 @@ namespace hpp {
                                          // , public PluginInterface, public ModelInterface, public CorbaErrorInterface
     {
       Q_OBJECT
-        Q_INTERFACES (hpp::gui::PluginInterface
-            hpp::gui::ModelInterface
-            hpp::gui::CorbaInterface)
+        Q_INTERFACES (gepetto::gui::PluginInterface
+            gepetto::gui::ModelInterface
+            gepetto::gui::CorbaInterface)
 
       public:
         typedef hpp::corbaServer::manipulation::Client HppManipClient;
@@ -33,8 +33,8 @@ namespace hpp {
 
         // ModelInterface interface
       public:
-        void loadRobotModel (DialogLoadRobot::RobotDefinition rd);
-        void loadEnvironmentModel (DialogLoadEnvironment::EnvironmentDefinition ed);
+        void loadRobotModel (gepetto::gui::DialogLoadRobot::RobotDefinition rd);
+        void loadEnvironmentModel (gepetto::gui::DialogLoadEnvironment::EnvironmentDefinition ed);
         std::string getBodyFromJoint (const std::string& jointName) const;
 signals:
         void configurationValidationStatus (bool valid);

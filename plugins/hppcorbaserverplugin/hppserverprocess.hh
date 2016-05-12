@@ -3,11 +3,11 @@
 
 #include <hpp/corbaserver/fwd.hh>
 
-#include <hpp/gui/omniorb/omniorbthread.hh>
+#include <gepetto/gui/omniorb/omniorbthread.hh>
 
 namespace hpp {
   namespace gui {
-    class HppServerProcess : public ServerProcess
+    class HppServerProcess : public gepetto::gui::ServerProcess
     {
       Q_OBJECT
 

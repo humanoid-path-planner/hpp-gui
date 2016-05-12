@@ -1,4 +1,4 @@
-#include "hpp/gui/mainwindow.hh"
+#include "gepetto/gui/mainwindow.hh"
 
 #include "transformwidget.hh"
 

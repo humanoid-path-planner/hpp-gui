@@ -5,7 +5,7 @@
 #include <QListWidgetItem>
 
 #include <omniORB4/CORBA.h>
-#include "hpp/gui/meta.hh"
+#include "gepetto/gui/meta.hh"
 #include "hppwidgetsplugin/hppwidgetsplugin.hh"
 
 namespace Ui {
