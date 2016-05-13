@@ -66,6 +66,7 @@ namespace hpp {
       updateRobotJoints (rd.robotName_);
       jointTreeWidget_->addJointToTree("base_joint", 0);
       applyCurrentConfiguration();
+      gepetto::gui::MainWindow::instance()->requestRefresh();
       emit logSuccess ("Robot " + rd.name_ + " loaded");
     }
 
@@ -81,6 +82,7 @@ namespace hpp {
 					    gepetto::gui::Traits<QString>::to_corba(ed.srdfSuf_).in(),
 					    gepetto::gui::Traits<QString>::to_corba(ed.name_ + "/").in());
       HppWidgetsPlugin::computeObjectPosition();
+      gepetto::gui::MainWindow::instance()->requestRefresh();
       emit logSuccess ("Environment " + ed.name_ + " loaded");
    }
 
@@ -159,6 +161,7 @@ namespace hpp {
           main->osg()->setCurveMode (name.c_str(), GL_POLYGON);
         }
       }
+      gepetto::gui::MainWindow::instance()->requestRefresh();
     }
 
     void HppManipulationWidgetsPlugin::drawEnvironmentContacts()
@@ -189,6 +192,7 @@ namespace hpp {
           main->osg()->setCurveMode (name.c_str(), GL_POLYGON);
         }
       }
+      gepetto::gui::MainWindow::instance()->requestRefresh();
     }
 
     void HppManipulationWidgetsPlugin::drawHandlesFrame()
@@ -209,6 +213,7 @@ namespace hpp {
         main->osg()->addToGroup (hn.c_str(), groupName.c_str());
       }
       main->osg()->refresh();
+      gepetto::gui::MainWindow::instance()->requestRefresh();
     }
 
     void HppManipulationWidgetsPlugin::drawGrippersFrame()
@@ -229,6 +234,7 @@ namespace hpp {
         main->osg()->addToGroup (hn.c_str(), groupName.c_str());
       }
       main->osg()->refresh();
+      gepetto::gui::MainWindow::instance()->requestRefresh();
     }
 
     HppManipulationWidgetsPlugin::NamesPair

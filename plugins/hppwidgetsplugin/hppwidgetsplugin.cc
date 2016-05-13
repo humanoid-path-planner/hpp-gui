@@ -121,6 +121,7 @@ namespace hpp {
 
       main->osg()->createGroup("joints");
       main->osg()->addToGroup("joints", "hpp-gui");
+      main->osg()->refresh();
     }
 
     QString HppWidgetsPlugin::name() const
@@ -144,6 +145,7 @@ namespace hpp {
       updateRobotJoints (rd.robotName_);
       jointTreeWidget_->addJointToTree(bjn, 0);
       applyCurrentConfiguration();
+      gepetto::gui::MainWindow::instance()->requestRefresh();
       emit logSuccess ("Robot " + rd.name_ + " loaded");
     }
 
@@ -155,6 +157,7 @@ namespace hpp {
           gepetto::gui::Traits<QString>::to_corba(ed.urdfFilename_).in(),
           gepetto::gui::Traits<QString>::to_corba(prefix          ).in());
       computeObjectPosition ();
+      gepetto::gui::MainWindow::instance()->requestRefresh();
       emit logSuccess ("Environment " + ed.name_ + " loaded");
     }
 
