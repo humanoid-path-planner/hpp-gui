@@ -41,6 +41,7 @@ namespace hpp {
       private:
         inline QListWidget* list ();
         inline QLineEdit* name ();
+        void renameConfig(QListWidgetItem* item);
 
         HppWidgetsPlugin* plugin_;
         ::Ui::ConfigurationListWidget* ui_;

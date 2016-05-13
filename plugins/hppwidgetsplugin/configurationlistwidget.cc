@@ -56,6 +56,24 @@ namespace hpp {
         }
     }
 
+    void ConfigurationListWidget::renameConfig(QListWidgetItem* item)
+    {
+      QDialog* d = new QDialog;
+      QVBoxLayout* layout = new QVBoxLayout(d);
+      QLineEdit* newName = new QLineEdit(d);
+      QPushButton* button = new QPushButton("Confirm", d);
+
+      layout->addWidget(new QLabel("Name :", d));
+      layout->addWidget(newName);
+      layout->addWidget(button);
+      connect(button, SIGNAL(clicked()), d, SLOT(close()));
+      d->setLayout(layout);
+      d->exec();
+      if (newName->text() != "") {
+        item->setText(newName->text());
+      }
+    }
+
     void ConfigurationListWidget::showListContextMenu (const QPoint& pos)
     {
       QListWidgetItem* item = list()->itemAt(pos);
@@ -64,10 +82,13 @@ namespace hpp {
       QAction* init = new QAction(tr("Set as initial configuration"), this);
       QAction* goal = new QAction(tr("Add as goal configuration"), this);
       QAction* reset = new QAction(tr("Reset goal configurations"), this);
+      QAction* rename = new QAction(tr("Rename configuration"), this);
       contextMenu.addAction(init);
       contextMenu.addAction(goal);
       contextMenu.addSeparator();
       contextMenu.addAction(reset);
+      contextMenu.addSeparator();
+      contextMenu.addAction(rename);
       QAction* selected = contextMenu.exec(mapToGlobal(pos));
       const hpp::floatSeq& c = *(item->data(ConfigRole).value <hpp::floatSeq*> ());
       if (selected == init) {
@@ -77,6 +98,9 @@ namespace hpp {
       } else if (selected == reset) {
         plugin_->client()->problem()->resetGoalConfigs ();
         }
+      else if (selected == rename) {
+        renameConfig(item);
+      }
     }
 
     void ConfigurationListWidget::resetGoalConfigs()
