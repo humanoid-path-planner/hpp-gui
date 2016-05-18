@@ -53,6 +53,7 @@ signals:
         void interrupt ();
         void loadRoadmap ();
         void saveRoadmap ();
+        void clearRoadmap ();
         void optimizePath();
 
         void handleWorkerDone (int id);

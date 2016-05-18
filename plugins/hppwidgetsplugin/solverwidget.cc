@@ -44,6 +44,7 @@ namespace hpp {
           SLOT(solveAndDisplayDone ()));
       connect(ui_->loadRoadmap, SIGNAL (clicked()), SLOT (loadRoadmap()));
       connect(ui_->saveRoadmap, SIGNAL (clicked()), SLOT (saveRoadmap()));
+      connect(ui_->clearRoadmap, SIGNAL (clicked()), SLOT (clearRoadmap()));
       connect(ui_->optimizeButton, SIGNAL(clicked()), SLOT(optimizePath()));
 
       // Settings of the DoubleSpinBox for discontinuity
@@ -231,6 +232,15 @@ namespace hpp {
       if (file.isNull()) return;
       try {
         plugin_->client()->problem()->saveRoadmap (file.toLocal8Bit().data());
+      } catch (const hpp::Error& e) {
+        MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
+      }
+    }
+
+    void SolverWidget::clearRoadmap()
+    {
+      try {
+        plugin_->client()->problem()->resetRoadmap ();
       } catch (const hpp::Error& e) {
         MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
       }
