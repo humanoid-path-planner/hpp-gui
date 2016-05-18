@@ -8,6 +8,10 @@
 
 namespace hpp {
   namespace gui {
+    using gepetto::gui::ModelInterface;
+    using gepetto::gui::MainWindow;
+    using gepetto::gui::JointAction;
+
     AttitudeEventSender::AttitudeEventSender()
     {
     }
@@ -52,7 +56,7 @@ namespace hpp {
     {
       if (lock_.isRunning()) stop ();
 
-      gepetto::gui::MainWindow* m = gepetto::gui::MainWindow::instance();
+      MainWindow* m = gepetto::gui::MainWindow::instance();
       ModelInterface* model = m->pluginManager()->getFirstOf <ModelInterface> ();
       if (model == NULL) {
         qDebug () << "No ModelInterface found";

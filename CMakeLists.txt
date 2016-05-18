@@ -35,11 +35,11 @@ SET(CMAKE_MODULE_PATH
 
 SETUP_PROJECT()
 
-FIND_PACKAGE(Qt4 REQUIRED QtCore QtGui QtOpenGl)
+FIND_PACKAGE(Qt4 REQUIRED QtCore QtGui QtOpenGl QtNetwork)
 
 ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba")
 
-SET(BOOST_COMPONENTS program_options system thread regex)
+SET(BOOST_COMPONENTS thread regex)
 SEARCH_FOR_BOOST ()
 
 ADD_OPTIONAL_DEPENDENCY("hpp-corbaserver")
@@ -52,7 +52,12 @@ IF (HPP_DEBUG)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHPP_DEBUG")
 ENDIF()
 
-# This line allow the MOC to compile with the include from gepetto-gui
+# This line allows QT-MOC to compile with the include from gepetto-gui
+# It cannot be done through the pkg-config framework because the moc settings
+# are generated before PKG_CONFIG_USE_DEPENDENCY calls.
+# Without this, file
+# gepetto/gui/plugin-interface.hh
+# is not found.
 INCLUDE_DIRECTORIES(${GEPETTO_VIEWER_CORBA_INCLUDE_DIRS})
 
 ADD_SUBDIRECTORY(plugins)

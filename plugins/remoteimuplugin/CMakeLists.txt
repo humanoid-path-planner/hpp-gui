@@ -19,10 +19,6 @@
 
 SET(PLUGIN_NAME remoteimuplugin)
 
-SET(${PLUGIN_NAME}_HEADERS_NO_MOC
-  ../../include/hpp/gui/plugin-interface.hh
-  )
-
 SET(${PLUGIN_NAME}_HEADERS
   remoteimuplugin.hh
   )
@@ -48,7 +44,6 @@ SET (${PLUGIN_NAME}_SOURCES
   )
 
 ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}
-  ${${PLUGIN_NAME}_HEADERS_NO_MOC}
   ${${PLUGIN_NAME}_HEADERS_MOC}
   ${${PLUGIN_NAME}_FORMS_HEADERS}
   ${${PLUGIN_NAME}_RESOURCES_RCC}

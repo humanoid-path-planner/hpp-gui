@@ -19,11 +19,13 @@ namespace hpp {
       }
     }
 
+    using gepetto::gui::MainWindow;
+
     SolverWidget::SolverWidget (HppWidgetsPlugin *plugin, QWidget *parent) :
       QWidget (parent),
       ui_ (new ::Ui::SolverWidget),
       plugin_ (plugin),
-      main_(gepetto::gui::MainWindow::instance()),
+      main_(MainWindow::instance()),
       solveDoneId_ (-1),
       solveAndDisplay_ (plugin, this)
     {
@@ -222,7 +224,7 @@ namespace hpp {
       try {
         plugin_->client()->problem()->readRoadmap (file.toLocal8Bit().data());
       } catch (const hpp::Error& e) {
-        gepetto::gui::MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
+        MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
       }
     }
 
@@ -233,7 +235,7 @@ namespace hpp {
       try {
         plugin_->client()->problem()->saveRoadmap (file.toLocal8Bit().data());
       } catch (const hpp::Error& e) {
-        gepetto::gui::MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
+        MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
       }
     }
 

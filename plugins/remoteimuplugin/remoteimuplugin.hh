@@ -97,9 +97,11 @@ namespace hpp {
     };
 
     class RemoteImuPlugin : public QObject,
-    public PluginInterface, public JointModifierInterface {
+    public gepetto::gui::PluginInterface,
+    public gepetto::gui::JointModifierInterface
+    {
       Q_OBJECT
-        Q_INTERFACES (hpp::gui::PluginInterface hpp::gui::JointModifierInterface)
+        Q_INTERFACES (gepetto::gui::PluginInterface gepetto::gui::JointModifierInterface)
 
       public:
         virtual ~RemoteImuPlugin ();
@@ -108,7 +110,7 @@ namespace hpp {
 
         QString name () const;
 
-        JointAction* action (const std::string &jointName) const;
+        gepetto::gui::JointAction* action (const std::string &jointName) const;
 
         public slots:
           void newDevice (const std::string jointName);
