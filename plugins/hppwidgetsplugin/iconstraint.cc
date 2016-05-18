@@ -1,5 +1,5 @@
 #include <omniORB4/CORBA.h>
-#include "hpp/gui/meta.hh"
+#include "gepetto/gui/meta.hh"
 
 #include <gepetto/viewer/node.h>
 
@@ -56,9 +56,9 @@ namespace hpp {
         boolSeq[2] = result.second[2];
 
         plugin_->client()->problem()->
-              createPositionConstraint(Traits<QString>::to_corba(name_),
-                                       Traits<QString>::to_corba(firstJoint_),
-                                       Traits<QString>::to_corba(secondJoint_),
+              createPositionConstraint(gepetto::gui::Traits<QString>::to_corba(name_),
+                                       gepetto::gui::Traits<QString>::to_corba(firstJoint_),
+                                       gepetto::gui::Traits<QString>::to_corba(secondJoint_),
                                        first.in(), second.in(), boolSeq.in());
         emit finished(name_);
     }
@@ -99,9 +99,9 @@ namespace hpp {
       boolSeq[2] = result.second[2];
 
       plugin_->client()->problem()->
-            createOrientationConstraint(Traits<QString>::to_corba(name_),
-                                        Traits<QString>::to_corba(firstJoint_),
-                                        Traits<QString>::to_corba(secondJoint_),
+            createOrientationConstraint(gepetto::gui::Traits<QString>::to_corba(name_),
+                                        gepetto::gui::Traits<QString>::to_corba(firstJoint_),
+                                        gepetto::gui::Traits<QString>::to_corba(secondJoint_),
                                         quat.in(), boolSeq.in());
       emit finished(name_);
     }
@@ -162,9 +162,9 @@ namespace hpp {
       boolSeq[5] = result.second[5];
 
       plugin_->client()->problem()->
-            createTransformationConstraint(Traits<QString>::to_corba(name_),
-                                        Traits<QString>::to_corba(firstJoint_),
-                                        Traits<QString>::to_corba(secondJoint_),
+            createTransformationConstraint(gepetto::gui::Traits<QString>::to_corba(name_),
+                                        gepetto::gui::Traits<QString>::to_corba(firstJoint_),
+                                        gepetto::gui::Traits<QString>::to_corba(secondJoint_),
                                         trans.in(), boolSeq.in());
       emit finished(name_);
     }

@@ -1,7 +1,7 @@
 #ifndef HPP_GUI_HPPWIDGETSPLUGIN_HH
 #define HPP_GUI_HPPWIDGETSPLUGIN_HH
 
-#include <hpp/gui/plugin-interface.hh>
+#include <gepetto/gui/plugin-interface.hh>
 #include <hpp/corbaserver/client.hh>
 
 namespace hpp {
@@ -14,13 +14,13 @@ namespace hpp {
     class Roadmap;
     class ConstraintWidget;
 
-    class HppWidgetsPlugin : public QObject, public PluginInterface,
-    public ModelInterface, public CorbaInterface
+    class HppWidgetsPlugin : public QObject, public gepetto::gui::PluginInterface,
+    public gepetto::gui::ModelInterface, public gepetto::gui::CorbaInterface
     {
       Q_OBJECT
-        Q_INTERFACES (hpp::gui::PluginInterface
-            hpp::gui::ModelInterface
-            hpp::gui::CorbaInterface)
+        Q_INTERFACES (gepetto::gui::PluginInterface
+            gepetto::gui::ModelInterface
+            gepetto::gui::CorbaInterface)
 
       public:
         struct JointElement {
@@ -48,8 +48,8 @@ namespace hpp {
 
         // ModelInterface interface
       public:
-        void loadRobotModel (DialogLoadRobot::RobotDefinition rd);
-        void loadEnvironmentModel (DialogLoadEnvironment::EnvironmentDefinition ed);
+        void loadRobotModel (gepetto::gui::DialogLoadRobot::RobotDefinition rd);
+        void loadEnvironmentModel (gepetto::gui::DialogLoadEnvironment::EnvironmentDefinition ed);
         std::string getBodyFromJoint (const std::string& jointName) const;
 signals:
         void configurationValidationStatus (bool valid);

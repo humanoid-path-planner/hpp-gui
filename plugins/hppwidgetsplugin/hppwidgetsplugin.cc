@@ -5,9 +5,9 @@
 
 #include <QDockWidget>
 
-#include <hpp/gui/mainwindow.hh>
-#include <hpp/gui/windows-manager.hh>
-#include <hpp/gui/omniorb/url.hh>
+#include <gepetto/gui/mainwindow.hh>
+#include <gepetto/gui/windows-manager.hh>
+#include <gepetto/gui/omniorb/url.hh>
 
 #include <omniORB4/CORBA.h>
 
@@ -19,7 +19,7 @@
 #include "hppwidgetsplugin/constraintwidget.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
-#include <hpp/gui/meta.hh>
+#include <gepetto/gui/meta.hh>
 
 using CORBA::ULong;
 
@@ -36,7 +36,7 @@ namespace hpp {
 
     HppWidgetsPlugin::~HppWidgetsPlugin()
     {
-      MainWindow* main = MainWindow::instance ();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       foreach (QDockWidget* dock, dockWidgets_) {
         main->removeDockWidget(dock);
         delete dock;
@@ -48,7 +48,7 @@ namespace hpp {
     {
       openConnection();
 
-      MainWindow* main = MainWindow::instance ();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       QDockWidget* dock;
 
       // Configuration list widget
@@ -56,7 +56,7 @@ namespace hpp {
       configListWidget_ = new ConfigurationListWidget (this, dock);
       dock->setWidget(configListWidget_);
       main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
-      dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_C);
+      dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_C);
       dockWidgets_.append(dock);
 
       // Solver widget
@@ -64,7 +64,7 @@ namespace hpp {
       solverWidget_ = new SolverWidget (this, dock);
       dock->setWidget(solverWidget_);
       main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Horizontal);
-      dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_S);
+      dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_S);
       dockWidgets_.append(dock);
 
       // Path player widget
@@ -72,7 +72,7 @@ namespace hpp {
       pathPlayer_ = new PathPlayer (this, dock);
       dock->setWidget(pathPlayer_);
       main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
-      dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_P);
+      dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_P);
       dockWidgets_.append(dock);
 
       // Joint tree widget
@@ -81,7 +81,7 @@ namespace hpp {
       dock->setWidget(jointTreeWidget_);
       jointTreeWidget_->dockWidget (dock);
       main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
-      dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_J);
+      dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_J);
       dockWidgets_.append(dock);
 
       // Joint tree widget
@@ -89,7 +89,7 @@ namespace hpp {
       constraintWidget_ = new ConstraintWidget (this, dock);
       dock->setWidget(constraintWidget_);
       main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
-      dock->toggleViewAction()->setShortcut(DockKeyShortcutBase + Qt::Key_V);
+      dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_V);
       dockWidgets_.append(dock);
       constraintWidget_->addConstraint(new PositionConstraint(this));
       constraintWidget_->addConstraint(new OrientationConstraint(this));
@@ -126,15 +126,15 @@ namespace hpp {
       return QString ("Widgets for hpp-corbaserver");
     }
 
-    void HppWidgetsPlugin::loadRobotModel(DialogLoadRobot::RobotDefinition rd)
+    void HppWidgetsPlugin::loadRobotModel(gepetto::gui::DialogLoadRobot::RobotDefinition rd)
     {
       client()->robot()->loadRobotModel(
-          Traits<QString>::to_corba(rd.robotName_    ).in(),
-          Traits<QString>::to_corba(rd.rootJointType_).in(),
-          Traits<QString>::to_corba(rd.package_      ).in(),
-          Traits<QString>::to_corba(rd.modelName_    ).in(),
-          Traits<QString>::to_corba(rd.urdfSuf_      ).in(),
-          Traits<QString>::to_corba(rd.srdfSuf_      ).in());
+          gepetto::gui::Traits<QString>::to_corba(rd.robotName_    ).in(),
+          gepetto::gui::Traits<QString>::to_corba(rd.rootJointType_).in(),
+          gepetto::gui::Traits<QString>::to_corba(rd.package_      ).in(),
+          gepetto::gui::Traits<QString>::to_corba(rd.modelName_    ).in(),
+          gepetto::gui::Traits<QString>::to_corba(rd.urdfSuf_      ).in(),
+          gepetto::gui::Traits<QString>::to_corba(rd.srdfSuf_      ).in());
       std::string bjn;
       if (rd.rootJointType_.compare("freeflyer") == 0)   bjn = "base_joint_xyz";
       else if (rd.rootJointType_.compare("planar") == 0) bjn = "base_joint_xy";
@@ -145,13 +145,13 @@ namespace hpp {
       emit logSuccess ("Robot " + rd.name_ + " loaded");
     }
 
-    void HppWidgetsPlugin::loadEnvironmentModel(DialogLoadEnvironment::EnvironmentDefinition ed)
+    void HppWidgetsPlugin::loadEnvironmentModel(gepetto::gui::DialogLoadEnvironment::EnvironmentDefinition ed)
     {
       QString prefix = ed.envName_ + "/";
       client()->obstacle()->loadObstacleModel(
-          Traits<QString>::to_corba(ed.package_     ).in(),
-          Traits<QString>::to_corba(ed.urdfFilename_).in(),
-          Traits<QString>::to_corba(prefix          ).in());
+          gepetto::gui::Traits<QString>::to_corba(ed.package_     ).in(),
+          gepetto::gui::Traits<QString>::to_corba(ed.urdfFilename_).in(),
+          gepetto::gui::Traits<QString>::to_corba(prefix          ).in());
       computeObjectPosition ();
       emit logSuccess ("Environment " + ed.name_ + " loaded");
     }
@@ -177,11 +177,11 @@ namespace hpp {
 
     QString HppWidgetsPlugin::getIIOPurl () const
     {
-      QString host = MainWindow::instance ()->settings_->getSetting
+      QString host = gepetto::gui::MainWindow::instance ()->settings_->getSetting
         ("hpp/host", QString ()).toString ();
-      QString port = MainWindow::instance ()->settings_->getSetting
+      QString port = gepetto::gui::MainWindow::instance ()->settings_->getSetting
         ("hpp/port", QString ()).toString ();
-      return omniOrb::IIOPurl (host, port);
+      return gepetto::gui::omniOrb::IIOPurl (host, port);
     }
 
     void HppWidgetsPlugin::openConnection ()
@@ -200,7 +200,7 @@ namespace hpp {
 
     void HppWidgetsPlugin::applyCurrentConfiguration()
     {
-      MainWindow * main = MainWindow::instance ();
+      gepetto::gui::MainWindow * main = gepetto::gui::MainWindow::instance ();
       if (jointMap_.isEmpty()) {
           if (QMessageBox::Ok == QMessageBox::question (NULL, "Refresh required",
                                  "The current configuration cannot be applied because the joint map is empty. "
@@ -218,7 +218,7 @@ namespace hpp {
       for (JointMap::iterator ite = jointMap_.begin ();
           ite != jointMap_.end (); ite++) {
         hpp::Transform__var t = client()->robot()->getLinkPosition(ite->name.c_str());
-        convertSequence < ::CORBA::Double, float, 7> (t.in(), T);
+        gepetto::gui::convertSequence < ::CORBA::Double, float, 7> (t.in(), T);
         if (ite->updateViewer)
           ite->updateViewer = main->osg()->applyConfiguration(ite->bodyName.c_str(), T);
         if (!ite->item) continue;
@@ -229,7 +229,7 @@ namespace hpp {
           it != jointFrames_.end (); ++it) {
         std::string n = escapeJointName(*it);
         hpp::Transform__var t = client()->robot()->getJointPosition(it->c_str());
-        convertSequence < ::CORBA::Double, float, 7> (t.in(), T);
+        gepetto::gui::convertSequence < ::CORBA::Double, float, 7> (t.in(), T);
         main->osg()->applyConfiguration (n.c_str (), T);
       }
       main->osg()->refresh();
@@ -292,7 +292,7 @@ namespace hpp {
           try {
             hpp::floatSeq_var q = hpp_->problem()->node(n);
             hpp_->robot()->setCurrentConfig(q.in());
-            MainWindow::instance()->requestApplyCurrentConfiguration();
+            gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
           } catch (const hpp::Error& e) {
             emit logFailure(QString::fromLocal8Bit(e.msg));
           }
@@ -314,23 +314,23 @@ namespace hpp {
     QList<QAction *> HppWidgetsPlugin::getJointActions(const std::string &jointName)
     {
       QList <QAction*> l;
-      JointAction* a;
-      a= new JointAction (tr("Move &joint..."), jointName, 0);
+      gepetto::gui::JointAction* a;
+      a= new gepetto::gui::JointAction (tr("Move &joint..."), jointName, 0);
       connect (a, SIGNAL (triggered(std::string)), jointTreeWidget_, SLOT (openJointMoveDialog(std::string)));
       l.append(a);
-      a= new JointAction (tr("Set &bounds..."), jointName, 0);
+      a= new gepetto::gui::JointAction (tr("Set &bounds..."), jointName, 0);
       connect (a, SIGNAL (triggered(std::string)), jointTreeWidget_, SLOT (openJointBoundDialog(std::string)));
       l.append(a);
-      a= new JointAction (tr("Add joint &frame"), jointName, 0);
+      a= new gepetto::gui::JointAction (tr("Add joint &frame"), jointName, 0);
       connect (a, SIGNAL (triggered(std::string)), SLOT (addJointFrame(std::string)));
       l.append(a);
-      a = new JointAction (tr("Display &roadmap"), jointName, 0);
+      a = new gepetto::gui::JointAction (tr("Display &roadmap"), jointName, 0);
       connect (a, SIGNAL (triggered(std::string)), this, SLOT (displayRoadmap(std::string)));
       l.append(a);
-      a = new JointAction (tr("Display &waypoints of selected path"), jointName, 0);
+      a = new gepetto::gui::JointAction (tr("Display &waypoints of selected path"), jointName, 0);
       connect (a, SIGNAL (triggered(std::string)), pathPlayer_, SLOT (displayWaypointsOfPath(std::string)));
       l.append(a);
-      a = new JointAction (tr("Display selected &path"), jointName, 0);
+      a = new gepetto::gui::JointAction (tr("Display selected &path"), jointName, 0);
       connect (a, SIGNAL (triggered(std::string)), pathPlayer_, SLOT (displayPath(std::string)));
       l.append(a);
       return l;
@@ -354,6 +354,7 @@ namespace hpp {
     void HppWidgetsPlugin::updateRobotJoints(const QString robotName)
     {
       hpp::Names_t_var joints = client()->robot()->getAllJointNames ();
+      jointMap_.clear();
       for (size_t i = 0; i < joints->length (); ++i) {
         const char* jname = joints[(ULong) i];
         const char* lname = client()->robot()->getLinkName (jname);
@@ -384,7 +385,7 @@ namespace hpp {
 
     void HppWidgetsPlugin::addJointFrame (const std::string& jointName)
     {
-      MainWindow* main = MainWindow::instance ();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       std::string target = createJointGroup(jointName);
       const std::string n = target + "/XYZ";
       const float color[4] = {1,0,0,1};
@@ -400,13 +401,13 @@ namespace hpp {
 
     void HppWidgetsPlugin::computeObjectPosition()
     {
-      MainWindow* main = MainWindow::instance ();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var obs = client()->obstacle()->getObstacleNames (true, false);
       hpp::Transform__var cfg = hpp::Transform__alloc () ;
       float d[7];
       for (size_t i = 0; i < obs->length(); ++i) {
         client()->obstacle()->getObstaclePosition (obs[(ULong) i], cfg.out());
-        convertSequence < ::CORBA::Double, float, 7> (cfg.inout(), d);
+        gepetto::gui::convertSequence < ::CORBA::Double, float, 7> (cfg.inout(), d);
         main->osg ()->applyConfiguration(obs[(ULong) i], d);
       }
       main->osg()->refresh();
@@ -421,7 +422,7 @@ namespace hpp {
 
     std::string HppWidgetsPlugin::createJointGroup(const std::string jn)
     {
-      MainWindow* main = MainWindow::instance ();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       std::string target = escapeJointName(jn);
       if (main->osg()->createGroup(target.c_str())) {
         main->osg()->addToGroup(target.c_str(), "joints");
@@ -429,7 +430,7 @@ namespace hpp {
         hpp::Transform__var t = client()->robot()->getJointPosition
           (jn.c_str());
         float p[7];
-        convertSequence < ::CORBA::Double, float, 7> (t.in(), p);
+        gepetto::gui::convertSequence < ::CORBA::Double, float, 7> (t.in(), p);
         jointFrames_.push_back(jn);
         main->osg()->applyConfiguration (target.c_str(), p);
         main->osg()->refresh();

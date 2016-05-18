@@ -5,10 +5,10 @@
 
 #include <QDebug>
 
-#include <hpp/gui/mainwindow.hh>
-#include <hpp/gui/windows-manager.hh>
+#include <gepetto/gui/mainwindow.hh>
+#include <gepetto/gui/windows-manager.hh>
 
-#include <hpp/gui/meta.hh>
+#include <gepetto/gui/meta.hh>
 
 namespace hpp {
   namespace gui {
@@ -24,11 +24,11 @@ namespace hpp {
       jointName_ = jointName;
       HppWidgetsPlugin::HppClient* hpp = plugin_->client();
       int nbCC = hpp->problem()->numberConnectedComponents();
-      nodeColorMap_ = ColorMap (nbCC + 10);
-      edgeColorMap_ = ColorMap (nbCC + 10);
+      nodeColorMap_ = gepetto::gui::ColorMap (nbCC + 10);
+      edgeColorMap_ = gepetto::gui::ColorMap (nbCC + 10);
 
       try {
-        WindowsManagerPtr_t wsm = MainWindow::instance()->osg();
+        gepetto::gui::WindowsManagerPtr_t wsm = gepetto::gui::MainWindow::instance()->osg();
         wsm->createScene (roadmapName().c_str());
       } catch (const gepetto::Error&) {
         qDebug () << "Roadmap" <<
@@ -44,9 +44,9 @@ namespace hpp {
 
       std::string rn = roadmapName ();
       float color[4];
-      WindowsManagerPtr_t wsm = MainWindow::instance()->osg();
+      gepetto::gui::WindowsManagerPtr_t wsm = gepetto::gui::MainWindow::instance()->osg();
       if (nbNodes == 0) {
-        MainWindow::instance()->logError("There is no node in the roadmap.");
+        gepetto::gui::MainWindow::instance()->logError("There is no node in the roadmap.");
         return;
       }
       beforeDisplay ();
@@ -115,7 +115,7 @@ namespace hpp {
       hpp::floatSeq_var n = hpp->problem()->node(nodeId);
       hpp->robot()->setCurrentConfig(n.in());
       hpp::Transform__var t = hpp->robot()->getLinkPosition(jointName_.c_str());
-      convertSequence < ::CORBA::Double, float, 7> (t.in(), frame);
+      gepetto::gui::convertSequence < ::CORBA::Double, float, 7> (t.in(), frame);
     }
 
     void Roadmap::edgePositions (EdgeID edgeId, Position& start, Position& end)
@@ -126,10 +126,10 @@ namespace hpp {
       hpp->problem()->edge(edgeId, n1.out(), n2.out());
       hpp->robot()->setCurrentConfig(n1.in());
       t = hpp->robot()->getLinkPosition(jointName_.c_str());
-      convertSequence < ::CORBA::Double, float, 3> (t.in(), start);
+      gepetto::gui::convertSequence < ::CORBA::Double, float, 3> (t.in(), start);
       hpp->robot()->setCurrentConfig(n2.in());
       t = hpp->robot()->getLinkPosition(jointName_.c_str());
-      convertSequence < ::CORBA::Double, float, 3> (t.in(), end);
+      gepetto::gui::convertSequence < ::CORBA::Double, float, 3> (t.in(), end);
     }
 
     void Roadmap::nodeColor (NodeID nodeId, Color& color)

@@ -43,11 +43,11 @@ namespace hpp {
       priorities->length(list.count());
       int i = 0;
       foreach(QListWidgetItem* item, list) {
-        names[i] = Traits<QString>::to_corba(item->text());
+        names[i] = gepetto::gui::Traits<QString>::to_corba(item->text());
         priorities[i] = 0;
         i++;
       }
-      plugin_->client()->problem()->setNumericalConstraints(Traits<QString>::to_corba(ui->numericalName->text()),
+      plugin_->client()->problem()->setNumericalConstraints(gepetto::gui::Traits<QString>::to_corba(ui->numericalName->text()),
                                                             names.in(), priorities.in());
       onCancelClicked();
     }

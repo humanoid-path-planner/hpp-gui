@@ -12,7 +12,7 @@ namespace hpp {
       QWidget (parent),
       plugin_ (plugin),
       ui_ (new ::Ui::ConfigurationListWidget),
-      main_ (MainWindow::instance()),
+      main_ (gepetto::gui::MainWindow::instance()),
       basename_ ("config_"), count_ (0)
     {
       ui_->setupUi (this);

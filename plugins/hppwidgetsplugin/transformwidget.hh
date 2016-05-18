@@ -7,7 +7,7 @@
 #include <QDoubleSpinBox>
 #include <QVector3D>
 
-#include "hpp/gui/mainwindow.hh"
+#include "gepetto/gui/mainwindow.hh"
 #include "hppwidgetsplugin.hh"
 #include <gepetto/viewer/node.h>
 

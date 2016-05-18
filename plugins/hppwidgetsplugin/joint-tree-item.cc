@@ -6,7 +6,7 @@
 #include <hpp/corbaserver/client.hh>
 #include <gepetto/viewer/group-node.h>
 
-#include "hpp/gui/mainwindow.hh"
+#include "gepetto/gui/mainwindow.hh"
 
 using CORBA::ULong;
 
@@ -108,7 +108,7 @@ namespace hpp {
       }
     }
 
-    JointItemDelegate::JointItemDelegate(QPushButton *forceVelocity, HppWidgetsPlugin *plugin, MainWindow *parent)
+    JointItemDelegate::JointItemDelegate(QPushButton *forceVelocity, HppWidgetsPlugin *plugin, gepetto::gui::MainWindow *parent)
       : QItemDelegate (parent), main_ (parent),
       plugin_ (plugin),
       forceIntegrator_ (forceVelocity)
@@ -250,7 +250,7 @@ namespace hpp {
     }
 
     IntegratorWheel::IntegratorWheel(Qt::Orientation o, HppWidgetsPlugin *plugin, QWidget *parent,
-        MainWindow *main, std::string jointName,
+        gepetto::gui::MainWindow *main, std::string jointName,
         int nbDof, int index)
       : QSlider (o, parent), rate_ (100), main_ (main), plugin_ (plugin), jointName_ (jointName),
       bound_ (100), maxVelocity_ (0.1),
@@ -289,7 +289,7 @@ namespace hpp {
     }
 
     SliderBoundedJoint::SliderBoundedJoint(Qt::Orientation orientation, HppWidgetsPlugin *plugin, QWidget *parent,
-        MainWindow *main, std::string jointName,
+        gepetto::gui::MainWindow *main, std::string jointName,
         hpp::floatSeq *q, int index, double min, double max)
       : QSlider (orientation, parent), main_ (main), plugin_ (plugin), jointName_ (jointName),
       q_ (q), index_ (index), m_ (min), M_ (max)

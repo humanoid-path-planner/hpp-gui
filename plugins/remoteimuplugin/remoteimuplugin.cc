@@ -3,8 +3,8 @@
 #include <QtPlugin>
 #include <QtConcurrentRun>
 
-#include <hpp/gui/mainwindow.hh>
-#include <hpp/gui/windows-manager.hh>
+#include <gepetto/gui/mainwindow.hh>
+#include <gepetto/gui/windows-manager.hh>
 
 namespace hpp {
   namespace gui {
@@ -36,7 +36,7 @@ namespace hpp {
       connect(&aes_, SIGNAL (attitudeEvent (double, double, double, double)),
           this, SLOT (updateJointAttitude (double, double, double, double)));
 
-      MainWindow* m = MainWindow::instance();
+      gepetto::gui::MainWindow* m = gepetto::gui::MainWindow::instance();
       float black[4] = {1,1,1,1};
       m->osg()->addBox("hpp-gui/attitudeControl", 0.001f, 0.001f, 0.001f, black);
       m->osg()->addLandmark("hpp-gui/attitudeControl", 0.1f);
@@ -52,7 +52,7 @@ namespace hpp {
     {
       if (lock_.isRunning()) stop ();
 
-      MainWindow* m = MainWindow::instance();
+      gepetto::gui::MainWindow* m = gepetto::gui::MainWindow::instance();
       ModelInterface* model = m->pluginManager()->getFirstOf <ModelInterface> ();
       if (model == NULL) {
         qDebug () << "No ModelInterface found";
@@ -93,7 +93,7 @@ namespace hpp {
     void AttitudeDevice::stop()
     {
       mouse_.stopEventHandler();
-      MainWindow* m = MainWindow::instance();
+      gepetto::gui::MainWindow* m = gepetto::gui::MainWindow::instance();
       ModelInterface* model = m->pluginManager()->getFirstOf <ModelInterface> ();
       if (model == NULL) {
         qDebug () << "No ModelInterface found";
@@ -109,7 +109,7 @@ namespace hpp {
 
     void AttitudeDevice::updateJointAttitude(double w, double x, double y, double z)
     {
-      MainWindow* m = MainWindow::instance();
+      gepetto::gui::MainWindow* m = gepetto::gui::MainWindow::instance();
 
       q[0] = w; q[1] = x; q[2] = y; q[3] = z;
       for (int i = 0; i < 4; i++) {

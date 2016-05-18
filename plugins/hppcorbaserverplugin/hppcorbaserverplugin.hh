@@ -1,16 +1,16 @@
 #ifndef HPP_GUI_HPPCORBASERVERPLUGIN_HH
 #define HPP_GUI_HPPCORBASERVERPLUGIN_HH
 
-#include <hpp/gui/plugin-interface.hh>
-#include <hpp/gui/omniorb/omniorbthread.hh>
+#include <gepetto/gui/plugin-interface.hh>
+#include <gepetto/gui/omniorb/omniorbthread.hh>
 
 namespace hpp {
   namespace gui {
     class HppCorbaserverPlugin : public QObject,
-    public PluginInterface
+    public gepetto::gui::PluginInterface
     {
       Q_OBJECT
-        Q_INTERFACES (hpp::gui::PluginInterface)
+      Q_INTERFACES (gepetto::gui::PluginInterface)
 
       public:
         explicit HppCorbaserverPlugin ();
@@ -27,7 +27,7 @@ signals:
           QString name() const;
 
       private:
-          CorbaServer* server_;
+          gepetto::gui::CorbaServer* server_;
     };
   } // namespace gui
 } // namespace hpp

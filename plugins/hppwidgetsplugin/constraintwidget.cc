@@ -1,6 +1,6 @@
 #include <omniORB4/CORBA.h>
-#include "hpp/gui/meta.hh"
-#include "hpp/gui/mainwindow.hh"
+#include "gepetto/gui/meta.hh"
+#include "gepetto/gui/mainwindow.hh"
 
 #include "hppwidgetsplugin/constraintwidget.hh"
 #include "hppwidgetsplugin/transformconstraintwidget.hh"
@@ -53,11 +53,11 @@ namespace hpp {
       double residual;
 
       if (plugin_->client()->problem()->applyConstraints(config.in(), newConfig.out(), residual) == false) {
-        MainWindow::instance()->logError("Could not apply constraints to current configuration");
+        gepetto::gui::MainWindow::instance()->logError("Could not apply constraints to current configuration");
       }
       else {
         plugin_->client()->robot()->setCurrentConfig(newConfig.in());
-        MainWindow::instance()->requestApplyCurrentConfiguration();
+        gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
       }
     }
 
@@ -84,7 +84,7 @@ namespace hpp {
         firstJointSelect(0);
       }
       catch (hpp::Error& e) {
-        MainWindow::instance ()->logError(QString(e.msg));
+        gepetto::gui::MainWindow::instance ()->logError(QString(e.msg));
       }
     }
 
