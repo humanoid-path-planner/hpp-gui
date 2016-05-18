@@ -69,6 +69,12 @@ namespace hpp {
       delete ui_;
     }
 
+    void SolverWidget::setSelected(QComboBox *cb, const QString &what)
+    {
+      hpp::Names_t_var names = plugin_->client()->problem()->getSelected(what.toStdString().c_str());
+      cb->setCurrentIndex(cb->findText(names[0].in()));
+    }
+
     void SolverWidget::update (Select s) {
       hpp::Names_t_var names;
       switch (s) {
@@ -78,6 +84,7 @@ namespace hpp {
           names = plugin_->client()->problem()->getAvailable("PathPlanner");
           for (CORBA::ULong i = 0; i < names->length(); ++i)
             planner()->addItem(QString::fromLocal8Bit(names[i]));
+          setSelected(planner(), "PathPlanner");
           if (s == Planner) break;
         case Optimizer:
           names = plugin_->client()->problem()->getAvailable("PathOptimizer");
@@ -90,12 +97,14 @@ namespace hpp {
           names = plugin_->client()->problem()->getAvailable("PathValidation");
           for (CORBA::ULong i = 0; i < names->length(); ++i)
             validation()->addItem(QString::fromLocal8Bit(names[i]), QVariant (0.2));
+          setSelected(validation(), "PathValidation");
           if (s == Validation) break;
         case Projector:
           clearQComboBox(projector());
           names = plugin_->client()->problem()->getAvailable("PathProjector");
           for (CORBA::ULong i = 0; i < names->length(); ++i)
             projector()->addItem(QString::fromLocal8Bit(names[i]), QVariant (0.2));
+          setSelected(projector(), "PathProjector");
           if (s == Projector) break;
         case SteeringMethod:
           clearQComboBox(steeringMethod());
@@ -103,6 +112,7 @@ namespace hpp {
           plugin_->client()->problem()->selectSteeringMethod(names[0]);
           for (CORBA::ULong i = 0; i < names->length(); ++i)
             steeringMethod()->addItem(QString::fromLocal8Bit(names[i]));
+          setSelected(steeringMethod(), "SteeringMethod");
           if (s == SteeringMethod) break;
       }
     }
@@ -159,6 +169,13 @@ namespace hpp {
       list->addItems(optimizers_);
       list->setSelectionMode(QAbstractItemView::ExtendedSelection);
       lay.addWidget(list);
+
+      hpp::Names_t_var names = plugin_->client()->problem()->getSelected("PathOptimizer");
+      for (unsigned i = 0; i < names->length(); ++i) {
+        int index = optimizers_.indexOf(QRegExp(names[i].in()));
+
+        list->item(index)->setSelected(true);
+      }
 
       QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
           Qt::Horizontal, &dialog);

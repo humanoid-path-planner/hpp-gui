@@ -74,6 +74,7 @@ signals:
           {}
         };
 
+        void setSelected(QComboBox* cb, QString const& what);
         void selectButtonSolve (bool solve);
         QComboBox* planner ();
         QComboBox* projector ();
