@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>403</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,24 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QListWidget" name="listConfigurations">
-     <property name="contextMenuPolicy">
-      <enum>Qt::CustomContextMenu</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QPushButton" name="button_ResetGoalConfig">
-       <property name="toolTip">
-        <string>Reset goal configurations</string>
-       </property>
-       <property name="text">
-        <string>&amp;Reset</string>
-       </property>
-      </widget>
-     </item>
      <item>
       <widget class="QLineEdit" name="lineEdit_configName">
        <property name="text">
@@ -59,8 +42,83 @@
      </item>
     </layout>
    </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Configurations saved</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="hpp::gui::ConfigurationList" name="listConfigurations">
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragDrop</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Initial configuration</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="hpp::gui::DropInitial" name="InitConfig">
+       <property name="acceptDrops">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Goal configurations</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="hpp::gui::ConfigurationList" name="listGoals">
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragDrop</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QPushButton" name="button_ResetGoalConfig">
+       <property name="text">
+        <string>Reset goal</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>hpp::gui::ConfigurationList</class>
+   <extends>QListWidget</extends>
+   <header>configurationlist.hh</header>
+  </customwidget>
+  <customwidget>
+   <class>hpp::gui::DropInitial</class>
+   <extends>QLabel</extends>
+   <header>configurationlistwidget.hh</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

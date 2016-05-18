@@ -34,6 +34,7 @@ SET(${PLUGIN_NAME}_HEADERS
   transformconstraintwidget.hh
   iconstraint.hh
   numericalconstraintpicker.hh
+  configurationlist.hh
   )
 
 SET(${PLUGIN_NAME}_HEADERS_NO_MOC
@@ -77,6 +78,7 @@ SET (${PLUGIN_NAME}_SOURCES
   transformconstraintwidget.cc
   iconstraint.cc
   numericalconstraintpicker.cc
+  configurationlist.cc
   )
 
 ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}

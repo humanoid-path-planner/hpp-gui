@@ -12,6 +12,7 @@ namespace hpp {
       QWidget (parent),
       plugin_ (plugin),
       ui_ (new ::Ui::ConfigurationListWidget),
+      previous_ (NULL),
       main_ (gepetto::gui::MainWindow::instance()),
       basename_ ("config_"), count_ (0)
     {
@@ -21,8 +22,14 @@ namespace hpp {
       connect (ui_->button_ResetGoalConfig, SIGNAL (clicked()), SLOT(resetGoalConfigs()));
       connect (list (), SIGNAL (currentItemChanged (QListWidgetItem*,QListWidgetItem*)),
           this, SLOT (updateCurrentConfig(QListWidgetItem*,QListWidgetItem*)));
-      connect (list (), SIGNAL (customContextMenuRequested(QPoint)),
-          this, SLOT (showListContextMenu (QPoint)));
+      connect (ui_->listGoals, SIGNAL (currentItemChanged (QListWidgetItem*,QListWidgetItem*)),
+          this, SLOT (updateCurrentConfig(QListWidgetItem*,QListWidgetItem*)));
+      connect (list (), SIGNAL (doubleClicked(const QModelIndex&)),
+          this, SLOT (onDoubleClick(const QModelIndex&)));
+      connect (ui_->listGoals, SIGNAL (doubleClicked(const QModelIndex&)),
+          this, SLOT (onDoubleClick(const QModelIndex&)));
+      connect(ui_->listGoals, SIGNAL(configurationChanged()), SLOT(setConfigs()));
+      connect(list(), SIGNAL(configurationChanged()), SLOT(setConfigs()));
     }
 
     ConfigurationListWidget::~ConfigurationListWidget()
@@ -53,11 +60,23 @@ namespace hpp {
           const hpp::floatSeq& c = *(current->data(ConfigRole).value <hpp::floatSeq*> ());
           plugin_->client()->robot()->setCurrentConfig (c);
           main_->requestApplyCurrentConfiguration();
+          if (previous_ &&
+              previous_ != current->listWidget()) {
+              previous_->clearSelection();
+              previous_->setCurrentRow(-1); // force saved index change
+          }
+          previous_ = current->listWidget();
         }
     }
 
-    void ConfigurationListWidget::renameConfig(QListWidgetItem* item)
+    void ConfigurationListWidget::onDoubleClick (const QModelIndex& pos)
     {
+      QListWidgetItem* item = list()->item(pos.row());
+      if (!item) {
+        item = ui_->listGoals->item(pos.row());
+        if (!item)
+          return;
+      }
       QDialog* d = new QDialog;
       QVBoxLayout* layout = new QVBoxLayout(d);
       QLineEdit* newName = new QLineEdit(d);
@@ -74,42 +93,180 @@ namespace hpp {
       }
     }
 
-    void ConfigurationListWidget::showListContextMenu (const QPoint& pos)
+    void ConfigurationListWidget::resetGoalConfigs(bool doEmpty)
     {
-      QListWidgetItem* item = list()->itemAt(pos);
-      if (!item) return;
-      QMenu contextMenu(tr("Configuration"), this);
-      QAction* init = new QAction(tr("Set as initial configuration"), this);
-      QAction* goal = new QAction(tr("Add as goal configuration"), this);
-      QAction* reset = new QAction(tr("Reset goal configurations"), this);
-      QAction* rename = new QAction(tr("Rename configuration"), this);
-      contextMenu.addAction(init);
-      contextMenu.addAction(goal);
-      contextMenu.addSeparator();
-      contextMenu.addAction(reset);
-      contextMenu.addSeparator();
-      contextMenu.addAction(rename);
-      QAction* selected = contextMenu.exec(mapToGlobal(pos));
-      const hpp::floatSeq& c = *(item->data(ConfigRole).value <hpp::floatSeq*> ());
-      if (selected == init) {
-        plugin_->client()->problem()->setInitialConfig (c);
-      } else if (selected == goal) {
-        plugin_->client()->problem()->addGoalConfig (c);
-      } else if (selected == reset) {
-        plugin_->client()->problem()->resetGoalConfigs ();
+      plugin_->client()->problem()->resetGoalConfigs();
+      if (doEmpty) {
+        while (ui_->listGoals->count()) {
+          QListWidgetItem* item = ui_->listGoals->takeItem(0);
+
+          list()->addItem(item);
         }
-      else if (selected == rename) {
-        renameConfig(item);
+        ui_->listGoals->setCurrentRow(-1);
       }
     }
 
-    void ConfigurationListWidget::resetGoalConfigs()
+    void ConfigurationListWidget::setConfigs()
     {
-      plugin_->client()->problem()->resetGoalConfigs();
+      resetGoalConfigs(false);
+      for (int i = 0; i < ui_->listGoals->count(); ++i) {
+        QListWidgetItem* item = ui_->listGoals->item(i);
+
+        plugin_->client()->problem()->addGoalConfig(*(item->data(ConfigRole).value<hpp::floatSeq*>()));
+      }
+    }
+
+    void ConfigurationListWidget::setInitConfig(floatSeq *config)
+    {
+      plugin_->client()->problem()->setInitialConfig(*config);
     }
 
     QLineEdit *ConfigurationListWidget::name() {
       return ui_->lineEdit_configName;
+    }
+
+    DropInitial::DropInitial(QWidget *parent)
+      : QLabel(parent)
+    {
+      ConfigurationListWidget* cl = dynamic_cast<ConfigurationListWidget*>(parent);
+
+      list_ = cl->list();
+      setStyleSheet("QLabel { background-color: white; border: 1px solid black }");
+      timer_ = new QBasicTimer();
+      alreadyReleased_ = false;
+    }
+
+    DropInitial::~DropInitial()
+    {
+      delete timer_;
+    }
+
+    void DropInitial::dragEnterEvent(QDragEnterEvent *event)
+    {
+      if (event->mimeData()->hasFormat("application/configuration-data")) event->accept();
+      else event->ignore();
+    }
+
+    void DropInitial::dragMoveEvent(QDragMoveEvent *event)
+    {
+      if (event->mimeData()->hasFormat("application/configuration-data")) {
+        event->setDropAction(Qt::MoveAction);
+        event->accept();
+      }
+      else event->ignore();
+    }
+
+    void DropInitial::mouseReleaseEvent(QMouseEvent* /*event*/)
+    {
+      if (alreadyReleased_) {
+          QDialog* d = new QDialog;
+          QVBoxLayout* layout = new QVBoxLayout(d);
+          QLineEdit* newName = new QLineEdit(d);
+          QPushButton* button = new QPushButton("Confirm", d);
+
+          layout->addWidget(new QLabel("Name :", d));
+          layout->addWidget(newName);
+          layout->addWidget(button);
+          connect(button, SIGNAL(clicked()), d, SLOT(close()));
+          d->setLayout(layout);
+          d->exec();
+          if (newName->text() != "") {
+            setText(newName->text());
+          }
+          alreadyReleased_ = false;
+          timer_->stop();
+      }
+      else alreadyReleased_ = true;
+    }
+
+    void DropInitial::mousePressEvent(QMouseEvent* /*event*/)
+    {
+      if (!timer_->isActive()) {
+        timer_->start(150, this);
+      }
+    }
+
+    void DropInitial::timerEvent(QTimerEvent *)
+    {
+      timer_->stop();
+      alreadyReleased_ = false;
+      if (!alreadyReleased_ && text() != "") {
+        QByteArray data;
+        QDataStream dataStream(&data, QIODevice::WriteOnly);
+
+        dataStream << fs_;
+
+        QMimeData* mime = new QMimeData;
+        mime->setData("application/configuration-data", data);
+        mime->setText(text());
+
+        QDrag* drag = new QDrag(this);
+        drag->setMimeData(mime);
+        if (drag->exec() == Qt::MoveAction) {
+          setText("");
+          fs_ = NULL;
+        }
+      }
+    }
+
+    hpp::floatSeq* DropInitial::getConfig() const
+    {
+      return fs_;
+    }
+
+    void DropInitial::dropEvent(QDropEvent *event)
+    {
+      if (event->source() == this) {
+        event->ignore();
+      }
+      else if (event->mimeData()->hasFormat("application/configuration-data")) {
+        if (text() != "") {
+          QListWidgetItem* item = new QListWidgetItem(list_);
+          QVariant v;
+
+          v.setValue(fs_);
+          item->setText(text());
+          item->setData(ConfigurationListWidget::ConfigRole, v);
+          list_->addItem(item);
+        }
+        QByteArray data = event->mimeData()->data("application/configuration-data");
+        QDataStream dataStream(&data, QIODevice::ReadOnly);
+        fs_ = new hpp::floatSeq;
+
+        dataStream >> fs_;
+        setText(event->mimeData()->text());
+        event->setDropAction(Qt::MoveAction);
+        event->accept();
+        ConfigurationListWidget* clw = dynamic_cast<ConfigurationListWidget*>(parent());
+
+        clw->setInitConfig(fs_);
+      }
+      else event->ignore();
+    }
+
+    QDataStream& operator>>(QDataStream& os, hpp::floatSeq*& tab)
+    {
+      int size = 0;
+      tab->length(1);
+      double f;
+      while (!os.atEnd()) {
+        os >> f;
+        (*tab)[size] = f;
+        if (!os.atEnd()) {
+          size += 1;
+          tab->length(size + 1);
+        }
+      }
+      return os;
+    }
+
+    QDataStream& operator<<(QDataStream& os, hpp::floatSeq*& tab) {
+      double f;
+      for (unsigned i = 0; i < tab->length(); ++i) {
+        f = (*tab)[i];
+        os << f;
+      }
+      return os;
     }
   } // namespace gui
 } // namespace hpp
