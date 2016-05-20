@@ -25,6 +25,8 @@ using CORBA::ULong;
 
 namespace hpp {
   namespace gui {
+    using gepetto::gui::MainWindow;
+
     HppWidgetsPlugin::HppWidgetsPlugin() :
       pathPlayer_ (NULL),
       solverWidget_ (NULL),
@@ -288,16 +290,28 @@ namespace hpp {
         std::string type;  type .assign(what[3].first, what[3].second);
         int n = std::atoi (what[4].first);
         qDebug () << "Detected the" << group.c_str() << type.c_str() << n << "of joint" << joint.c_str();
-        if (type == "node") {
-          try {
-            hpp::floatSeq_var q = hpp_->problem()->node(n);
-            hpp_->robot()->setCurrentConfig(q.in());
-            gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
-          } catch (const hpp::Error& e) {
-            emit logFailure(QString::fromLocal8Bit(e.msg));
+        if (group == "roadmap") {
+          if (type == "node") {
+            try {
+              hpp::floatSeq_var q = hpp_->problem()->node(n);
+              hpp_->robot()->setCurrentConfig(q.in());
+              gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
+            } catch (const hpp::Error& e) {
+              emit logFailure(QString::fromLocal8Bit(e.msg));
+            }
+          } else if (type == "edge") {
+            // TODO
           }
-        } else if (type == "edge") {
-          // TODO
+        } else if (group[0] == 'p') {
+          if (type == "node") {
+            int pid = std::atoi(&group[4]);
+            // compute pid
+            hpp::floatSeqSeq_var waypoints = hpp_->problem()->getWaypoints((CORBA::UShort)pid);
+            if (n < waypoints->length()) {
+              hpp_->robot()->setCurrentConfig(waypoints[n]);
+              MainWindow::instance()->requestApplyCurrentConfiguration();
+            }
+          }
         }
         return;
       }
