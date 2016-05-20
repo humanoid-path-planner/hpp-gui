@@ -13,14 +13,15 @@ namespace hpp {
     HppManipulationWidgetsPlugin::HppManipulationWidgetsPlugin() :
       HppWidgetsPlugin (),
       hpp_ (NULL),
-      toolBar_ (NULL)
+      toolBar_ (NULL),
+      tw_ (NULL)
     {
       firstEnter_ = 0;
     }
 
     HppManipulationWidgetsPlugin::~HppManipulationWidgetsPlugin()
     {
-      tw_->deleteLater();
+      if (tw_) tw_->deleteLater();
     }
 
     void HppManipulationWidgetsPlugin::init()
