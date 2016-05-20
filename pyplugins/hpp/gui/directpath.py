@@ -4,21 +4,31 @@ import sys
 sys.argv = ["none"]
 
 class DirectPathBox(QtGui.QGroupBox):
-    def __init__ (self, parent):
+    def __init__ (self, parent, plugin):
         super(DirectPathBox, self).__init__ ("Direct Path", parent)
         self.fromCfg = []
         self.toCfg = []
-        self.client = Client()
+        self.plugin = plugin
         self.initWidget()
 
     def getFrom (self):
-        self.fromCfg = self.client.robot.getCurrentConfig()
+        self.fromCfg = self.plugin.client.robot.getCurrentConfig()
 
     def getTo (self):
-        self.toCfg = self.client.robot.getCurrentConfig()
+        self.toCfg = self.plugin.client.robot.getCurrentConfig()
 
     def makePath (self):
-        self.client.problem.directPath (self.fromCfg, self.toCfg, self.validatePath.isChecked())
+        n = self.plugin.client.robot.getConfigSize()
+        if len(self.fromCfg) == n and len(self.toCfg) == n:
+            success, pid, msg = self.plugin.client.problem.directPath (self.fromCfg, self.toCfg, self.validatePath.isChecked())
+            if not success:
+                self.plugin.main.logError (msg)
+            else: # Success
+                # It would be nice to have access to the Path Player widget in order to
+                # select the good path index...
+                pass
+        else:
+            self.plugin.main.logError ("Configuration does not have the good size. Did you save them ?")
 
     def initWidget (self):
         box = QtGui.QVBoxLayout(self)

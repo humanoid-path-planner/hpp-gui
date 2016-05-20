@@ -7,10 +7,11 @@ sys.argv = ["none"]
 class _PathTab(QtGui.QWidget):
     def __init__ (self, parent):
         super(_PathTab, self).__init__ (parent)
+        self.plugin = parent
         box = QtGui.QVBoxLayout(self)
 
         # Create group
-        box.addWidget(DirectPathBox(self))
+        box.addWidget(DirectPathBox(self, self.plugin))
 
 class Plugin(QtGui.QDockWidget):
     """ Extra HPP functionalities for the Gepetto Viewer GUI """
@@ -25,3 +26,8 @@ class Plugin(QtGui.QDockWidget):
         self.setWidget (self.tabWidget)
         self.nodeCreator = _PathTab(self)
         self.tabWidget.addTab (self.nodeCreator, "Path")
+        self.main = mainWindow
+        self.client = Client()
+
+    def resetConnection(self):
+        self.client = Client()
