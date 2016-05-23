@@ -33,27 +33,64 @@ namespace hpp {
         ~SolverWidget ();
 
       public slots:
+        /// Update the field in the widget.
+        /// \param s which field to update
         virtual void update (Select s = All);
 
 signals:
         void problemSolved ();
 
         protected slots:
+        /// Change the path planner use in hpp.
+        /// \param text name of the path planner
           void selectPathPlanner (const QString& text);
+
+        /// Change the path Optimizers in hpp.
+        /// \param list list of path optimizers
         void selectPathOptimizers (const QStringList& list);
         void openPathOptimizerSelector ();
-        void selectPathProjector (int index);
-        void selectPathValidation (int index);
-        void selectSteeringMethod(const QString&);
+
+        /// Change the path projector in hpp.
+        /// \param name name of the path projector
+        void selectPathProjector (const QString& name);
+
+        /// Change the path validation in hpp.
+        /// \param name name of the path validation
+        void selectPathValidation (const QString& name);
+
+        /// Change the steering method in hpp.
+        /// \param name name of the path projector
+        void selectSteeringMethod(const QString& name);
+
+        /// Change the allowed discontinuity in hpp
+        /// \param value new value of discontinuity
         void discontinuityChanged(double value);
+
+        /// Change the allowed penetration in hpp
+        /// \param value new value of penetration
         void penetrationChanged(double value);
+
+        /// Ask hpp to solve the problem.
         void solve ();
+
+        /// Ask hpp to solve the problem and display the roadmap of the joint
+        /// selected in the joint tree.
         void solveAndDisplay ();
         void solveAndDisplayDone ();
+
+        /// Interrupt the solver.
         void interrupt ();
+
+        /// Load a roadmap in hpp.
         void loadRoadmap ();
+
+        /// Save the roadmap from hpp.
         void saveRoadmap ();
+
+        /// Reset the roadmap in hpp.
         void clearRoadmap ();
+
+        /// Optimize the path currently selected in PathPlayer widget.
         void optimizePath();
 
         void handleWorkerDone (int id);

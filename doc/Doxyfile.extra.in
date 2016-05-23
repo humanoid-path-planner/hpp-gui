@@ -1,0 +1,8 @@
+FILE_PATTERNS	= *.hh
+
+INPUT		= @CMAKE_SOURCE_DIR@/plugins/hppcorbaserverplugin \
+		  @CMAKE_SOURCE_DIR@/plugins/hppwidgetsplugin \
+		  @CMAKE_SOURCE_DIR@/plugins/hppmanipulationwidgetsplugin \
+
+TAGFILES	  = @HPP_CORBASERVER_DOXYGENDOCDIR@/hpp-core.doxytag=@HPP_CORE_DOXYGENDOCDIR@ \
+		  @HPP_MANIPULATION_CORBA_DOXYGENDOCDIR@/hpp-manipulation-corba=@HPP_MANIPULATION_CORBA_DOXYGENDOCDIR@

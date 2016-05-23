@@ -20,25 +20,50 @@ namespace hpp {
 
         virtual ~JointTreeWidget ();
 
+        /// Set the dock widget.
+        /// \param dock new dock widget
         void dockWidget (QDockWidget* dock);
 
+        /// Get the currently selected joint.
         std::string selectedJoint ();
 
 signals:
 
         public slots:
+          /// Display the context menu for a givent joint.
+          /// \param pos poistion of the joint in the tree
           void customContextMenu (const QPoint& pos);
+
+        /// Add a joint to the tree.
+        /// \param name name of the joint to add
+        /// \param parent parent of the joint
         void addJointToTree (const std::string name, JointTreeItem *parent);
+
+        /// select the joint in the tree.
+        /// \param jointName name of the joint selected
         void selectJoint (const std::string& jointName);
+
+        /// Open a dialog to set a joint bounds.
+        /// \param jointName name of the joint
         void openJointBoundDialog (const std::string jointName);
+
+        /// Open a dialog to move a joint.
+        /// \param jointName name of the joint
         void openJointMoveDialog(const std::string jointName);
-        void moveJoint(hpp::Transform__slice*, std::string const& jointName);
+
+        /// Call the corba function to move the joint in hpp.
+        /// \param transform transform to apply
+        /// \param jointName name of the joint
+        void moveJoint(hpp::Transform__slice* transform, std::string const& jointName);
+
+        /// Reload the joint in the tree.
         void reload ();
 
         private slots:
           void resize (const QModelIndex index);
 
       private:
+        /// Reset the tree.
         void reset ();
 
         HppWidgetsPlugin* plugin_;

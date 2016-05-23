@@ -114,7 +114,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::updateRobotJoints(const QString robotName)
     {
-      Q_UNUSED (robotName);
+      Q_UNUSED(robotName)
       hpp::Names_t_var joints = client()->robot()->getAllJointNames ();
       for (size_t i = 0; i < joints->length (); ++i) {
         const char* jname = joints[(ULong) i];

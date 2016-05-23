@@ -5,6 +5,7 @@
 
 namespace hpp {
   namespace gui {
+    /// A QListWidget that accept drag and drop of configurations.
     class ConfigurationList : public QListWidget
     {
       Q_OBJECT

@@ -23,14 +23,28 @@ namespace hpp {
       public:
         PathPlayer (HppWidgetsPlugin* plugin, QWidget* parent = 0);
         ~PathPlayer();
+
+        /// Returns the path currently selected.
         int getCurrentPath() const;
 
         public slots:
+        /// Display the waypoints of a joint in the viewer.
+        /// The waypoints are those of the currently selected path index.
+        /// \param jointName name of the joint
           void displayWaypointsOfPath (const std::string jointName);
+
+        /// Prepare the display of the path of a joint in the viewer.
+        /// The path is took from the currently selected path index.
+        /// \param jointName name of the joint
         void displayPath (const std::string jointName);
+
+        /// Get the number of paths in hpp and refresh the gui accordingly.
         void update ();
 
       protected:
+        /// Display the path of the jointName in the viewer.
+        /// The path is took from the currently selected path index.
+        /// \param jointName name of the joint
         virtual void displayPath_impl (const std::string jointName);
 signals:
         void displayPath_status (int progress);

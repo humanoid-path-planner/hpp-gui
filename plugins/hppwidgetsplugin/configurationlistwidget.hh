@@ -19,14 +19,17 @@ namespace Ui {
 
 namespace hpp {
   namespace gui {
+    /// Widget to define initial and goal configurations of the problem.
     class ConfigurationListWidget : public QWidget
     {
       Q_OBJECT
 
       public:
         static const int ConfigRole;
+        /// Get the list of configurations.
         inline QListWidget* list ();
 
+        /// Set the initial configuration in the problem.
         void setInitConfig(hpp::floatSeq* config);
 
         ConfigurationListWidget(HppWidgetsPlugin* plugin, QWidget* parent = 0);
@@ -34,17 +37,32 @@ namespace hpp {
         virtual ~ConfigurationListWidget();
 
         public slots:
+          /// Save the current configuration of the robot.
           void onSaveClicked ();
+
+          /// Open a widget to rename a configuration.
+          /// \param pos position of the configuration in list
           void onDoubleClick(const QModelIndex& pos);
+
+          /// Change the configuration displayed in the viewer.
+          /// \param current new configuration
+          /// \param previous previous configuration
         void updateCurrentConfig (QListWidgetItem* current,QListWidgetItem* previous);
 
       private slots:
+        /// Reset the goals configuration in the problem.
+        /// \param doEmpty if true empty the list else doesn't
         void resetGoalConfigs (bool doEmpty = true);
+
+        /// Set the goals configuration in the problem.
         void setConfigs();
 
-
       private:
+        /// Get the LineEdit that hold the name of the configuration.
         inline QLineEdit* name ();
+
+        /// Rename the configuration pointed by item.
+        /// \param item list item that holds the configuration to rename
         void renameConfig(QListWidgetItem* item);
 
         HppWidgetsPlugin* plugin_;

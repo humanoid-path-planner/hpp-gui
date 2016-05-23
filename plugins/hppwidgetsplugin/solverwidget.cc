@@ -35,8 +35,8 @@ namespace hpp {
 
       connect(planner(), SIGNAL (activated(const QString&)), this, SLOT (selectPathPlanner(const QString&)));
       connect(ui_->pathOptimizerButton, SIGNAL (clicked()), this, SLOT (openPathOptimizerSelector()));
-      connect(projector(), SIGNAL (activated(int)), this, SLOT (selectPathProjector(int)));
-      connect(validation(), SIGNAL (activated(int)), this, SLOT (selectPathValidation(int)));
+      connect(projector(), SIGNAL (activated(const QString&)), this, SLOT (selectPathProjector(const QString&)));
+      connect(validation(), SIGNAL (activated(const QString&)), this, SLOT (selectPathValidation(const QString&)));
       connect(steeringMethod(), SIGNAL(activated(const QString&)), this, SLOT(selectSteeringMethod(const QString&)));
       connect(ui_->pushButtonSolve, SIGNAL (clicked ()), this, SLOT (solve ()));
       connect(ui_->pushButtonInterrupt, SIGNAL (clicked ()), this, SLOT (interrupt ()));
@@ -131,28 +131,28 @@ namespace hpp {
         plugin_->client()->problem()->addPathOptimizer (s.toStdString().c_str());
     }
 
-    void SolverWidget::selectPathProjector (int index) {
+    void SolverWidget::selectPathProjector (const QString& name) {
       plugin_->client()->problem()->selectPathProjector (
-          projector()->itemText(index).toStdString().c_str(),
+          name.toStdString().c_str(),
 	  projectorDiscontinuity()->value());
     }
 
-    void SolverWidget::selectPathValidation (int index) {
+    void SolverWidget::selectPathValidation (const QString& name) {
       plugin_->client()->problem()->selectPathValidation (
-	  validation()->itemText(index).toStdString().c_str(),
+      name.toStdString().c_str(),
           validationPenetration()->value());
     }
 
     void SolverWidget::discontinuityChanged(double value)
     {
       Q_UNUSED(value);
-      selectPathProjector(projector()->currentIndex());
+      selectPathProjector(projector()->currentText());
     }
 
     void SolverWidget::penetrationChanged(double value)
     {
       Q_UNUSED(value);
-      selectPathValidation(validation()->currentIndex());
+      selectPathValidation(validation()->currentText());
     }
 
     void SolverWidget::openPathOptimizerSelector ()
