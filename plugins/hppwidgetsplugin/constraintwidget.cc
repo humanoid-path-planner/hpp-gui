@@ -125,7 +125,7 @@ namespace hpp {
     {
       ui->nameList->addItem(name);
       lastInsert_++;
-      ui->constraintNameEdit->setText("constraint_" + lastInsert_);
+      ui->constraintNameEdit->setText("constraint_" + QString::number(lastInsert_));
     }
   }
 }
