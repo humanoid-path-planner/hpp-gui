@@ -109,7 +109,6 @@ namespace hpp {
         case SteeringMethod:
           clearQComboBox(steeringMethod());
           names = plugin_->client()->problem()->getAvailable("SteeringMethod");
-          plugin_->client()->problem()->selectSteeringMethod(names[0]);
           for (CORBA::ULong i = 0; i < names->length(); ++i)
             steeringMethod()->addItem(QString::fromLocal8Bit(names[i]));
           setSelected(steeringMethod(), "SteeringMethod");
