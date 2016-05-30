@@ -92,6 +92,8 @@ signals:
         /// \param bodyName name of the body
         void selectJointFromBodyName (const QString bodyName);
 
+        void update();
+
       public:
         /// Get the possible actions on a joint.
         /// \param jointName name of the joint

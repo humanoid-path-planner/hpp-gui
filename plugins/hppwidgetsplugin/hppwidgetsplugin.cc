@@ -99,9 +99,8 @@ namespace hpp {
 
       // Connect widgets
       connect (solverWidget_, SIGNAL (problemSolved ()), pathPlayer_, SLOT (update()));
-      connect (main, SIGNAL (refresh()), jointTreeWidget_, SLOT (reload ()));
-      connect (main, SIGNAL (refresh()), pathPlayer_, SLOT (update()));
-      connect (main, SIGNAL (refresh()), solverWidget_, SLOT (update()));
+
+      connect (main, SIGNAL (refresh()), SLOT (update()));
 
       connect (main, SIGNAL (configurationValidation ()),
           SLOT (configurationValidation ()));
@@ -117,7 +116,6 @@ namespace hpp {
           SLOT (logJobFailed(int, QString)));
       main->connect (this, SIGNAL (logSuccess(QString)), SLOT (log(QString)));
       main->connect (this, SIGNAL (logFailure(QString)), SLOT (logError(QString)));
-      connect (main, SIGNAL(refresh()), constraintWidget_, SLOT(reload()));
 
       main->osg()->createGroup("joints");
       main->osg()->addToGroup("joints", "hpp-gui");
@@ -326,6 +324,15 @@ namespace hpp {
         }
       }
       qDebug () << "Joint for body" << bodyName << "not found.";
+    }
+
+    void HppWidgetsPlugin::update()
+    {
+      jointTreeWidget_->reload();
+      pathPlayer_->update();
+      solverWidget_->update();
+      configListWidget_->fetchInitAndGoalConfigs();
+      constraintWidget_->reload();
     }
 
     QList<QAction *> HppWidgetsPlugin::getJointActions(const std::string &jointName)
