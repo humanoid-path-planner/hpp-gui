@@ -17,11 +17,16 @@ namespace hpp {
       ConfigurationList(QWidget* parent);
       virtual ~ConfigurationList();
 
+      bool singleItemOnly;
+
     protected:
       void dragEnterEvent(QDragEnterEvent* event);
       void dragMoveEvent(QDragMoveEvent* event);
       void dropEvent(QDropEvent *event);
       void startDrag(Qt::DropActions supportedActions);
+
+    private:
+      void deleteItem(QListWidgetItem* item);
     };
   }
 }

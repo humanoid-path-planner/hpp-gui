@@ -59,6 +59,18 @@
        <property name="dragDropMode">
         <enum>QAbstractItemView::DragDrop</enum>
        </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="layoutMode">
+        <enum>QListView::SinglePass</enum>
+       </property>
+       <property name="uniformItemSizes">
+        <bool>false</bool>
+       </property>
+       <property name="batchSize">
+        <number>100</number>
+       </property>
       </widget>
      </item>
      <item>
@@ -69,12 +81,39 @@
       </widget>
      </item>
      <item>
-      <widget class="hpp::gui::DropInitial" name="InitConfig">
-       <property name="acceptDrops">
+      <widget class="hpp::gui::ConfigurationList" name="listInit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="dragEnabled">
         <bool>true</bool>
        </property>
-       <property name="text">
-        <string/>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragDrop</enum>
+       </property>
+       <property name="resizeMode">
+        <enum>QListView::Fixed</enum>
        </property>
       </widget>
      </item>
@@ -87,6 +126,15 @@
      </item>
      <item>
       <widget class="hpp::gui::ConfigurationList" name="listGoals">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
        <property name="dragDropMode">
         <enum>QAbstractItemView::DragDrop</enum>
        </property>
@@ -112,11 +160,6 @@
    <class>hpp::gui::ConfigurationList</class>
    <extends>QListWidget</extends>
    <header>configurationlist.hh</header>
-  </customwidget>
-  <customwidget>
-   <class>hpp::gui::DropInitial</class>
-   <extends>QLabel</extends>
-   <header>configurationlistwidget.hh</header>
   </customwidget>
  </customwidgets>
  <resources/>

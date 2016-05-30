@@ -8,6 +8,30 @@ namespace hpp {
   namespace gui {
     const int ConfigurationListWidget::ConfigRole = Qt::UserRole + 1;
 
+    namespace {
+      class ConfigItem : public QListWidgetItem
+      {
+      public:
+        ConfigItem (QString text, const hpp::floatSeq& q)
+          : QListWidgetItem (text)
+          , q_ (q)
+        {}
+
+        hpp::floatSeq q_;
+      };
+    }
+
+    QListWidgetItem* ConfigurationListWidget::makeItem (QString name, const hpp::floatSeq& config) {
+      QListWidgetItem* newItem = new ConfigItem (name, config);
+      newItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEditable);
+      return newItem;
+    }
+
+    hpp::floatSeq& ConfigurationListWidget::getConfig (QListWidgetItem* item) {
+      qDebug() << static_cast<ConfigItem*>(item)->q_.length();
+      return static_cast<ConfigItem*>(item)->q_;
+    }
+
     ConfigurationListWidget::ConfigurationListWidget(HppWidgetsPlugin *plugin, QWidget* parent) :
       QWidget (parent),
       plugin_ (plugin),
@@ -18,16 +42,16 @@ namespace hpp {
     {
       ui_->setupUi (this);
 
+      ui_->listInit->singleItemOnly = true;
+
       connect (ui_->button_SaveConfig, SIGNAL (clicked()), this, SLOT (onSaveClicked()));
       connect (ui_->button_ResetGoalConfig, SIGNAL (clicked()), SLOT(resetGoalConfigs()));
       connect (list (), SIGNAL (currentItemChanged (QListWidgetItem*,QListWidgetItem*)),
           this, SLOT (updateCurrentConfig(QListWidgetItem*,QListWidgetItem*)));
       connect (ui_->listGoals, SIGNAL (currentItemChanged (QListWidgetItem*,QListWidgetItem*)),
           this, SLOT (updateCurrentConfig(QListWidgetItem*,QListWidgetItem*)));
-      connect (list (), SIGNAL (doubleClicked(const QModelIndex&)),
-          this, SLOT (onDoubleClick(const QModelIndex&)));
-      connect (ui_->listGoals, SIGNAL (doubleClicked(const QModelIndex&)),
-          this, SLOT (onDoubleClick(const QModelIndex&)));
+      connect (ui_->listInit, SIGNAL (currentItemChanged (QListWidgetItem*,QListWidgetItem*)),
+          this, SLOT (updateCurrentConfig(QListWidgetItem*,QListWidgetItem*)));
       connect(ui_->listGoals, SIGNAL(configurationChanged()), SLOT(setConfigs()));
       connect(list(), SIGNAL(configurationChanged()), SLOT(setConfigs()));
     }
@@ -43,21 +67,16 @@ namespace hpp {
 
     void ConfigurationListWidget::onSaveClicked ()
     {
-      hpp::floatSeq* c = plugin_->client()->robot()->getCurrentConfig ();
-      QVariant var;
-      var.setValue (c);
-      QLineEdit* n = name();
-      QListWidgetItem* newItem = new QListWidgetItem (n->text());
-      newItem->setData(ConfigRole, var);
-      list()->addItem(newItem);
-      n->setText(basename_ + QString::number(count_));
+      hpp::floatSeq_var c = plugin_->client()->robot()->getCurrentConfig ();
+      list()->addItem(makeItem(name()->text(), c.in()));
+      name()->setText(basename_ + QString::number(count_));
       count_++;
     }
 
     void ConfigurationListWidget::updateCurrentConfig (QListWidgetItem* current, QListWidgetItem *)
     {
       if (current != 0) {
-          const hpp::floatSeq& c = *(current->data(ConfigRole).value <hpp::floatSeq*> ());
+          const hpp::floatSeq& c = getConfig(current);
           plugin_->client()->robot()->setCurrentConfig (c);
           main_->requestApplyCurrentConfiguration();
           if (previous_ &&
@@ -67,30 +86,6 @@ namespace hpp {
           }
           previous_ = current->listWidget();
         }
-    }
-
-    void ConfigurationListWidget::onDoubleClick (const QModelIndex& pos)
-    {
-      QListWidgetItem* item = list()->item(pos.row());
-      if (!item) {
-        item = ui_->listGoals->item(pos.row());
-        if (!item)
-          return;
-      }
-      QDialog* d = new QDialog;
-      QVBoxLayout* layout = new QVBoxLayout(d);
-      QLineEdit* newName = new QLineEdit(d);
-      QPushButton* button = new QPushButton("Confirm", d);
-
-      layout->addWidget(new QLabel("Name :", d));
-      layout->addWidget(newName);
-      layout->addWidget(button);
-      connect(button, SIGNAL(clicked()), d, SLOT(close()));
-      d->setLayout(layout);
-      d->exec();
-      if (newName->text() != "") {
-        item->setText(newName->text());
-      }
     }
 
     void ConfigurationListWidget::resetGoalConfigs(bool doEmpty)
@@ -111,8 +106,7 @@ namespace hpp {
       resetGoalConfigs(false);
       for (int i = 0; i < ui_->listGoals->count(); ++i) {
         QListWidgetItem* item = ui_->listGoals->item(i);
-
-        plugin_->client()->problem()->addGoalConfig(*(item->data(ConfigRole).value<hpp::floatSeq*>()));
+        plugin_->client()->problem()->addGoalConfig(getConfig(item));
       }
     }
 
@@ -121,149 +115,38 @@ namespace hpp {
       plugin_->client()->problem()->setInitialConfig(*config);
     }
 
+    void ConfigurationListWidget::fetchInitAndGoalConfigs()
+    {
+      hpp::floatSeq_var init = plugin_->client()->problem()->getInitialConfig();
+      ui_->listInit->clear();
+      ui_->listInit->addItem(makeItem("init", init.in()));
+
+      hpp::floatSeqSeq_var goals = plugin_->client()->problem()->getGoalConfigs();
+      ui_->listGoals->clear();
+      for (CORBA::ULong i = 0; i < goals->length(); ++i)
+        ui_->listGoals->addItem(makeItem(QString ("goal_%1").arg(i), goals.in()[i]));
+    }
+
     QLineEdit *ConfigurationListWidget::name() {
       return ui_->lineEdit_configName;
     }
 
-    DropInitial::DropInitial(QWidget *parent)
-      : QLabel(parent)
-    {
-      ConfigurationListWidget* cl = dynamic_cast<ConfigurationListWidget*>(parent);
-
-      list_ = cl->list();
-      setStyleSheet("QLabel { background-color: white; border: 1px solid black }");
-      timer_ = new QBasicTimer();
-      alreadyReleased_ = false;
-    }
-
-    DropInitial::~DropInitial()
-    {
-      delete timer_;
-    }
-
-    void DropInitial::dragEnterEvent(QDragEnterEvent *event)
-    {
-      if (event->mimeData()->hasFormat("application/configuration-data")) event->accept();
-      else event->ignore();
-    }
-
-    void DropInitial::dragMoveEvent(QDragMoveEvent *event)
-    {
-      if (event->mimeData()->hasFormat("application/configuration-data")) {
-        event->setDropAction(Qt::MoveAction);
-        event->accept();
-      }
-      else event->ignore();
-    }
-
-    void DropInitial::mouseReleaseEvent(QMouseEvent* /*event*/)
-    {
-      if (alreadyReleased_) {
-          QDialog* d = new QDialog;
-          QVBoxLayout* layout = new QVBoxLayout(d);
-          QLineEdit* newName = new QLineEdit(d);
-          QPushButton* button = new QPushButton("Confirm", d);
-
-          layout->addWidget(new QLabel("Name :", d));
-          layout->addWidget(newName);
-          layout->addWidget(button);
-          connect(button, SIGNAL(clicked()), d, SLOT(close()));
-          d->setLayout(layout);
-          d->exec();
-          if (newName->text() != "") {
-            setText(newName->text());
-          }
-          alreadyReleased_ = false;
-          timer_->stop();
-      }
-      else alreadyReleased_ = true;
-    }
-
-    void DropInitial::mousePressEvent(QMouseEvent* /*event*/)
-    {
-      if (!timer_->isActive()) {
-        timer_->start(150, this);
-      }
-    }
-
-    void DropInitial::timerEvent(QTimerEvent *)
-    {
-      timer_->stop();
-      alreadyReleased_ = false;
-      if (!alreadyReleased_ && text() != "") {
-        QByteArray data;
-        QDataStream dataStream(&data, QIODevice::WriteOnly);
-
-        dataStream << fs_;
-
-        QMimeData* mime = new QMimeData;
-        mime->setData("application/configuration-data", data);
-        mime->setText(text());
-
-        QDrag* drag = new QDrag(this);
-        drag->setMimeData(mime);
-        if (drag->exec() == Qt::MoveAction) {
-          setText("");
-          fs_ = NULL;
-        }
-      }
-    }
-
-    hpp::floatSeq* DropInitial::getConfig() const
-    {
-      return fs_;
-    }
-
-    void DropInitial::dropEvent(QDropEvent *event)
-    {
-      if (event->source() == this) {
-        event->ignore();
-      }
-      else if (event->mimeData()->hasFormat("application/configuration-data")) {
-        if (text() != "") {
-          QListWidgetItem* item = new QListWidgetItem(list_);
-          QVariant v;
-
-          v.setValue(fs_);
-          item->setText(text());
-          item->setData(ConfigurationListWidget::ConfigRole, v);
-          list_->addItem(item);
-        }
-        QByteArray data = event->mimeData()->data("application/configuration-data");
-        QDataStream dataStream(&data, QIODevice::ReadOnly);
-        fs_ = new hpp::floatSeq;
-
-        dataStream >> fs_;
-        setText(event->mimeData()->text());
-        event->setDropAction(Qt::MoveAction);
-        event->accept();
-        ConfigurationListWidget* clw = dynamic_cast<ConfigurationListWidget*>(parent());
-
-        clw->setInitConfig(fs_);
-      }
-      else event->ignore();
-    }
-
-    QDataStream& operator>>(QDataStream& os, hpp::floatSeq*& tab)
+    QDataStream& operator>>(QDataStream& os, hpp::floatSeq& tab)
     {
       int size = 0;
-      tab->length(1);
       double f;
       while (!os.atEnd()) {
+        tab.length(size + 1);
         os >> f;
-        (*tab)[size] = f;
-        if (!os.atEnd()) {
-          size += 1;
-          tab->length(size + 1);
-        }
+        tab[size] = f;
+        size += 1;
       }
       return os;
     }
 
-    QDataStream& operator<<(QDataStream& os, hpp::floatSeq*& tab) {
-      double f;
-      for (unsigned i = 0; i < tab->length(); ++i) {
-        f = (*tab)[i];
+    QDataStream& operator<<(QDataStream& os, const hpp::floatSeq& tab) {
+      for (unsigned i = 0; i < tab.length(); ++i) {
+        double f = tab[i];
         os << f;
       }
       return os;

@@ -36,18 +36,20 @@ namespace hpp {
 
         virtual ~ConfigurationListWidget();
 
+        static QListWidgetItem* makeItem (QString text, const hpp::floatSeq& q);
+
+        static hpp::floatSeq& getConfig (QListWidgetItem* item);
+
         public slots:
           /// Save the current configuration of the robot.
           void onSaveClicked ();
-
-          /// Open a widget to rename a configuration.
-          /// \param pos position of the configuration in list
-          void onDoubleClick(const QModelIndex& pos);
 
           /// Change the configuration displayed in the viewer.
           /// \param current new configuration
           /// \param previous previous configuration
         void updateCurrentConfig (QListWidgetItem* current,QListWidgetItem* previous);
+
+        void fetchInitAndGoalConfigs ();
 
       private slots:
         /// Reset the goals configuration in the problem.
@@ -74,32 +76,8 @@ namespace hpp {
         int count_;
     };
 
-    class DropInitial : public QLabel
-    {
-    public:
-      DropInitial(QWidget* parent);
-      ~DropInitial();
-      hpp::floatSeq* getConfig() const;
-
-    protected:
-      virtual void dragEnterEvent(QDragEnterEvent* event);
-      virtual void dragMoveEvent(QDragMoveEvent* event);
-      virtual void dropEvent(QDropEvent *event);
-      virtual void mousePressEvent(QMouseEvent *event);
-      virtual void mouseReleaseEvent(QMouseEvent *event);
-
-      virtual void timerEvent(QTimerEvent *event);
-
-    private:
-      QListWidget* list_;
-      hpp::floatSeq* fs_;
-
-      QBasicTimer* timer_;
-      bool alreadyReleased_;
-    };
-
-    QDataStream& operator>>(QDataStream& os, hpp::floatSeq*& tab);
-    QDataStream& operator<<(QDataStream& os, hpp::floatSeq*& tab);
+    QDataStream& operator>>(QDataStream& os, hpp::floatSeq& tab);
+    QDataStream& operator<<(QDataStream& os, const hpp::floatSeq& tab);
   } // namespace gui
 } // namespace hpp
 

@@ -9,6 +9,7 @@ namespace hpp {
   namespace gui {
     ConfigurationList::ConfigurationList(QWidget* parent)
         : QListWidget(parent)
+        , singleItemOnly (false)
     {
     }
 
@@ -38,16 +39,15 @@ namespace hpp {
       else if (event->mimeData()->hasFormat("application/configuration-data")) {
         QByteArray data = event->mimeData()->data("application/configuration-data");
         QDataStream dataStream(&data, QIODevice::ReadOnly);
-        hpp::floatSeq* input = new hpp::floatSeq;
-
+        hpp::floatSeq input;
         dataStream >> input;
 
-        QListWidgetItem* item = new QListWidgetItem(this);
-        QVariant v;
-        v.setValue(input);
-        item->setText(event->mimeData()->text());
-        item->setData(ConfigurationListWidget::ConfigRole, v);
-        addItem(item);
+        if (singleItemOnly)
+          clear();
+
+        addItem(
+              ConfigurationListWidget::makeItem(event->mimeData()->text(), input)
+                );
         event->setDropAction(Qt::MoveAction);
         event->accept();
       }
@@ -60,9 +60,8 @@ namespace hpp {
 
       QByteArray itemData;
       QDataStream dataStream(&itemData, QIODevice::WriteOnly);
-      hpp::floatSeq* fv = item->data(ConfigurationListWidget::ConfigRole).value<hpp::floatSeq*>();
 
-      dataStream << fv;
+      dataStream << ConfigurationListWidget::getConfig(item);
 
       QMimeData* mimeData = new QMimeData;
       mimeData->setData("application/configuration-data", itemData);
@@ -73,9 +72,14 @@ namespace hpp {
       if (drag->exec() == Qt::MoveAction) {
         if (currentRow() == row(item))
           setCurrentRow(-1);
-        delete takeItem(row(item));
+        deleteItem(item);
         emit configurationChanged();
       }
+    }
+
+    void ConfigurationList::deleteItem(QListWidgetItem *item)
+    {
+      delete takeItem(row(item));
     }
   }
 }
