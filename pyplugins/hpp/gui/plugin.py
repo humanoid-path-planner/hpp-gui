@@ -1,8 +1,6 @@
 from PythonQt import QtGui, Qt
 from hpp.corbaserver import Client
 from directpath import DirectPathBox
-import sys
-sys.argv = ["none"]
 
 class _PathTab(QtGui.QWidget):
     def __init__ (self, parent):
@@ -12,6 +10,86 @@ class _PathTab(QtGui.QWidget):
 
         # Create group
         box.addWidget(DirectPathBox(self, self.plugin))
+
+class _RoadmapTab(QtGui.QWidget):
+    def __init__ (self, parent):
+        super(_RoadmapTab, self).__init__ (parent)
+        self.plugin = parent
+        box = QtGui.QGridLayout(self)
+
+        box.addWidget(QtGui.QLabel("Number of nodes:"), 0, 0)
+        self.nbNode = QtGui.QLabel()
+        box.addWidget(self.nbNode, 0, 1)
+
+        box.addWidget(QtGui.QLabel("Number of edges:"), 1, 0)
+        self.nbEdge = QtGui.QLabel()
+        box.addWidget(self.nbEdge, 1, 1)
+
+        self.updateCB = QtGui.QCheckBox("Continuous update")
+        box.addWidget(self.updateCB, 2, 2, 1, 2)
+        self.updateCB.setTristate(False)
+
+        self.timer = Qt.QTimer(self)
+        self.timer.setInterval(500)
+        self.timer.setSingleShot(False)
+
+        self.timer.connect("timeout()", self.updateCount)
+        self.updateCB.connect("stateChanged(int)", self.startStopTimer)
+
+    def updateCount(self):
+        try:
+            self.nbNode.setNum (self.plugin.client.problem.numberNodes())
+            self.nbEdge.setNum (self.plugin.client.problem.numberEdges())
+        except Exception as e:
+            self.plugin.main.logError (str(e))
+            self.updateCB.setChecked(False)
+
+    def startStopTimer(self, state):
+        if state == Qt.Qt.Checked:
+            self.timer.start()
+        else:
+            self.timer.stop()
+
+class _StepByStepSolverTab(QtGui.QWidget):
+    def __init__ (self, parent):
+        super(_StepByStepSolverTab, self).__init__ (parent)
+        self.plugin = parent
+        box = QtGui.QVBoxLayout(self)
+
+        b = QtGui.QPushButton(self)
+        b.text = "Initialize step by step sequence"
+        box.addWidget(b)
+        b.connect("clicked()", self.prepareSolveStepByStep)
+
+        w = QtGui.QWidget(self)
+        hl = QtGui.QHBoxLayout(w)
+        self.stepCount = QtGui.QSpinBox(w)
+        self.stepCount.setRange(1, 1000)
+        self.value = 1
+        hl.addWidget(self.stepCount)
+        b = QtGui.QPushButton(self)
+        b.text = "Execute N step"
+        hl.addWidget(b)
+        b.connect("clicked()", self.executeOneStep)
+        box.addWidget(w)
+
+        b = QtGui.QPushButton(self)
+        b.text = "Finalize"
+        box.addWidget(b)
+        b.connect("clicked()", self.finishSolveStepByStep)
+
+    def prepareSolveStepByStep(self):
+        if self.plugin.client.problem.prepareSolveStepByStep():
+            self.plugin.main.log ("Problem is solved")
+
+    def executeOneStep(self):
+        for i in xrange(self.stepCount.value):
+            if self.plugin.client.problem.executeOneStep():
+                self.plugin.main.log ("Problem is solved")
+                break
+
+    def finishSolveStepByStep(self):
+        self.plugin.client.problem.finishSolveStepByStep()
 
 class Plugin(QtGui.QDockWidget):
     """ Extra HPP functionalities for the Gepetto Viewer GUI """
@@ -26,6 +104,8 @@ class Plugin(QtGui.QDockWidget):
         self.setWidget (self.tabWidget)
         self.nodeCreator = _PathTab(self)
         self.tabWidget.addTab (self.nodeCreator, "Path")
+        self.tabWidget.addTab (_RoadmapTab(self), "Roadmap")
+        self.tabWidget.addTab (_StepByStepSolverTab(self), "Step by step solver")
         self.main = mainWindow
         self.client = Client()
 
