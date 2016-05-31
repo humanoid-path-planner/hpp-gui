@@ -41,6 +41,7 @@ namespace hpp {
     {
       ui_->setupUi (this);
 
+      ui_->listConfigurations->bindDeleteKey();
       ui_->listInit->setSingleItemOnly(true);
 
       connect (ui_->button_SaveConfig, SIGNAL (clicked()), this, SLOT (onSaveClicked()));

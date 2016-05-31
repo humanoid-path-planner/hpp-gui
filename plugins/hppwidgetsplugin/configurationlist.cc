@@ -30,6 +30,12 @@ namespace hpp {
       }
     }
 
+    void ConfigurationList::bindDeleteKey()
+    {
+      QShortcut* shortcut = new QShortcut(QKeySequence(Qt::Key_Delete), this);
+      connect(shortcut, SIGNAL(activated()), this, SLOT(deleteSelection()));
+    }
+
     void ConfigurationList::dragEnterEvent(QDragEnterEvent *event)
     {
       if (event->mimeData()->hasFormat("application/configuration-data")) event->accept();
@@ -93,6 +99,13 @@ namespace hpp {
     void ConfigurationList::deleteItem(QListWidgetItem *item)
     {
       delete takeItem(row(item));
+    }
+
+    void ConfigurationList::deleteSelection()
+    {
+      foreach (QListWidgetItem* item, selectedItems()) {
+        deleteItem(item);
+      }
     }
   }
 }

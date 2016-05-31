@@ -18,12 +18,16 @@ namespace hpp {
       virtual ~ConfigurationList();
 
       void setSingleItemOnly (bool set);
+      void bindDeleteKey ();
 
     protected:
       void dragEnterEvent(QDragEnterEvent* event);
       void dragMoveEvent(QDragMoveEvent* event);
       void dropEvent(QDropEvent *event);
       void startDrag(Qt::DropActions supportedActions);
+
+    private slots:
+      void deleteSelection();
 
     private:
       void deleteItem(QListWidgetItem* item);
