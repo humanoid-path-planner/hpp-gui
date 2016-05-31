@@ -29,10 +29,6 @@ SET(PROJECT_NAME "hpp-gui")
 SET(PROJECT_URL "https://github.com/jmirabel/hpp-gui")
 SET(PROJECT_DESCRIPTION "Graphical interface for HPP ")
 
-SET(CMAKE_MODULE_PATH
-  ${CMAKE_SOURCE_DIR}/cmake-modules/
-  ${CMAKE_MODULE_PATH})
-
 SETUP_PROJECT()
 
 FIND_PACKAGE(Qt4 REQUIRED QtCore QtGui QtOpenGl QtNetwork)
