@@ -28,7 +28,6 @@ namespace hpp {
     }
 
     hpp::floatSeq& ConfigurationListWidget::getConfig (QListWidgetItem* item) {
-      qDebug() << static_cast<ConfigItem*>(item)->q_.length();
       return static_cast<ConfigItem*>(item)->q_;
     }
 
@@ -42,7 +41,7 @@ namespace hpp {
     {
       ui_->setupUi (this);
 
-      ui_->listInit->singleItemOnly = true;
+      ui_->listInit->setSingleItemOnly(true);
 
       connect (ui_->button_SaveConfig, SIGNAL (clicked()), this, SLOT (onSaveClicked()));
       connect (ui_->button_ResetGoalConfig, SIGNAL (clicked()), SLOT(resetGoalConfigs()));

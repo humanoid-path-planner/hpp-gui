@@ -17,7 +17,7 @@ namespace hpp {
       ConfigurationList(QWidget* parent);
       virtual ~ConfigurationList();
 
-      bool singleItemOnly;
+      void setSingleItemOnly (bool set);
 
     protected:
       void dragEnterEvent(QDragEnterEvent* event);
@@ -27,6 +27,8 @@ namespace hpp {
 
     private:
       void deleteItem(QListWidgetItem* item);
+
+      bool singleItemOnly;
     };
   }
 }

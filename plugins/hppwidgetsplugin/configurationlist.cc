@@ -17,6 +17,19 @@ namespace hpp {
     {
     }
 
+    void ConfigurationList::setSingleItemOnly(bool set)
+    {
+      singleItemOnly = set;
+      if (set) {
+        QListWidgetItem* fakeItem = ConfigurationListWidget::makeItem("", hpp::floatSeq());
+        addItem(fakeItem);
+        setFixedHeight(sizeHintForRow(0) + 5);
+        deleteItem(fakeItem);
+      } else {
+        setFixedHeight(QWIDGETSIZE_MAX);
+      }
+    }
+
     void ConfigurationList::dragEnterEvent(QDragEnterEvent *event)
     {
       if (event->mimeData()->hasFormat("application/configuration-data")) event->accept();

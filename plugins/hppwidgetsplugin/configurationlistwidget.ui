@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>403</height>
+    <height>601</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -83,7 +83,7 @@
      <item>
       <widget class="hpp::gui::ConfigurationList" name="listInit">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -127,7 +127,7 @@
      <item>
       <widget class="hpp::gui::ConfigurationList" name="listGoals">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
