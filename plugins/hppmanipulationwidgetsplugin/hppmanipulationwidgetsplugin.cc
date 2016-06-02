@@ -4,6 +4,8 @@
 #include "gepetto/gui/mainwindow.hh"
 #include "gepetto/gui/windows-manager.hh"
 
+#include "hpp/manipulation/graph/helper.hh"
+
 #include "hppwidgetsplugin/jointtreewidget.hh"
 
 using CORBA::ULong;
@@ -298,7 +300,7 @@ namespace hpp {
 
       hpp_->graph ()->createGraph("constraints");
       hpp_->graph ()->autoBuild("constraints", grippers.in(), handles.first,
-                    handles.second, shapes.second, envNames.in());
+				handles.second, shapes.second, envNames.in(), hpp::corbaserver::manipulation::Rules());
       tw_->deleteLater();
       tw_->close();
     }
