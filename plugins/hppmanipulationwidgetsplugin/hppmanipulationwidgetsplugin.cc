@@ -7,6 +7,7 @@
 #include "hpp/manipulation/graph/helper.hh"
 
 #include "hppwidgetsplugin/jointtreewidget.hh"
+#include "linkwidget.hh"
 
 using CORBA::ULong;
 
@@ -297,10 +298,17 @@ namespace hpp {
       HppManipulationWidgetsPlugin::NamesPair shapes = buildNamess(l->selectedItems());
       l = dynamic_cast<QListWidget*>(tw_->widget(3));
       hpp::Names_t_var envNames = convertToNames(l->selectedItems());
+      hpp::corbaserver::manipulation::Rules_var rules = dynamic_cast<LinkWidget *>(tw_->widget(4))->getRules();
+
+      std::cout << "length = " << rules->length() << std::endl;
+      for (unsigned i = 0; i < rules->length(); i++) {
+        std::cout << rules[i].gripper << " - " << rules[i].handle
+                  << " - " << rules[i].link << std::endl;
+      }
 
       hpp_->graph ()->createGraph("constraints");
       hpp_->graph ()->autoBuild("constraints", grippers.in(), handles.first,
-				handles.second, shapes.second, envNames.in(), hpp::corbaserver::manipulation::Rules());
+                handles.second, shapes.second, envNames.in(), rules.in());
       tw_->deleteLater();
       tw_->close();
     }
@@ -353,6 +361,9 @@ namespace hpp {
       lw->addItems(l);
       lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
       tw_->addTab(lw, "Environments Contacts");
+
+      LinkWidget* lWidget = new LinkWidget(this, tw_);
+      tw_->addTab(lWidget, "Rules");
 
       tw_->setCornerWidget(button, Qt::BottomRightCorner);
       tw_->show();

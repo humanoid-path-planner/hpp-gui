@@ -103,7 +103,7 @@ signals:
 
         /// Transform a list of QListWidgetItem to corba sequence of strings.
         hpp::Names_t_var convertToNames(const QList<QListWidgetItem *>& l);
-        
+
         HppManipClient* hpp_;
 
         QToolBar *toolBar_;

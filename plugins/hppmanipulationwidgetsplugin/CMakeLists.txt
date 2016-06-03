@@ -23,6 +23,7 @@ SET(PLUGIN_NAME hppmanipulationwidgetsplugin)
 
 SET(${PLUGIN_NAME}_HEADERS
   ${PLUGIN_NAME}.hh
+  linkwidget.hh
   )
 
 SET(${PLUGIN_NAME}_HEADERS_NO_MOC
@@ -30,6 +31,7 @@ SET(${PLUGIN_NAME}_HEADERS_NO_MOC
   )
 
 SET(${PLUGIN_NAME}_FORMS
+  linkwidget.ui
   )
 
 SET(${PLUGIN_NAME}_RESOURCES
@@ -47,6 +49,7 @@ ADD_DEFINITIONS(-DQT_SHARED)
 SET (${PLUGIN_NAME}_SOURCES
   ${PLUGIN_NAME}.cc
   roadmap.cc
+  linkwidget.cc
   )
 
 ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}
