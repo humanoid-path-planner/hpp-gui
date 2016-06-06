@@ -124,6 +124,7 @@ namespace hpp {
         goals = plugin_->client()->problem()->getGoalConfigs();
       } catch (const hpp::Error& e) {
         qDebug () << "Could not update init and goal config:" << e.msg;
+        return;
       }
       ui_->listInit->clear();
       ui_->listInit->addItem(makeItem("init", init.in()));
