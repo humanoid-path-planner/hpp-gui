@@ -117,11 +117,18 @@ namespace hpp {
 
     void ConfigurationListWidget::fetchInitAndGoalConfigs()
     {
-      hpp::floatSeq_var init = plugin_->client()->problem()->getInitialConfig();
+      hpp::floatSeq_var init;
+      hpp::floatSeqSeq_var goals;
+      try {
+        init = plugin_->client()->problem()->getInitialConfig();
+        goals = plugin_->client()->problem()->getGoalConfigs();
+      } catch (const hpp::Error& e) {
+        qDebug () << "Could not update init and goal config:" << e.msg;
+        return;
+      }
       ui_->listInit->clear();
       ui_->listInit->addItem(makeItem("init", init.in()));
 
-      hpp::floatSeqSeq_var goals = plugin_->client()->problem()->getGoalConfigs();
       ui_->listGoals->clear();
       for (CORBA::ULong i = 0; i < goals->length(); ++i)
         ui_->listGoals->addItem(makeItem(QString ("goal_%1").arg(i), goals.in()[i]));
