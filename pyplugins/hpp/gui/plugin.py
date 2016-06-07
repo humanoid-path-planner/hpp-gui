@@ -1,6 +1,8 @@
 from PythonQt import QtGui, Qt
 from hpp.corbaserver import Client
+from gepetto.corbaserver import Client as GuiClient
 from directpath import DirectPathBox
+from findGrasp import GraspFinder
 
 class _PathTab(QtGui.QWidget):
     def __init__ (self, parent):
@@ -99,6 +101,10 @@ class Plugin(QtGui.QDockWidget):
             super(Plugin, self).__init__ (title, mainWindow)
         else:
             super(Plugin, self).__init__ (title, mainWindow, flags)
+        self.client = Client()
+        self.gui = GuiClient()
+        self.main = mainWindow
+        self.osg = None
         # Initialize the widget
         self.tabWidget = QtGui.QTabWidget(self)
         self.setWidget (self.tabWidget)
@@ -106,8 +112,12 @@ class Plugin(QtGui.QDockWidget):
         self.tabWidget.addTab (self.nodeCreator, "Path")
         self.tabWidget.addTab (_RoadmapTab(self), "Roadmap")
         self.tabWidget.addTab (_StepByStepSolverTab(self), "Step by step solver")
-        self.main = mainWindow
-        self.client = Client()
+        self.tabWidget.addTab (GraspFinder(self), "Grasp Finder")
 
     def resetConnection(self):
         self.client = Client()
+        self.gui = GuiClient()
+
+    def osgWidget(self,osg):
+        if self.osg is None:
+            self.osg = osg
