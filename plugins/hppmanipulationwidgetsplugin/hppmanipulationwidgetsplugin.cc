@@ -300,12 +300,6 @@ namespace hpp {
       hpp::Names_t_var envNames = convertToNames(l->selectedItems());
       hpp::corbaserver::manipulation::Rules_var rules = dynamic_cast<LinkWidget *>(tw_->widget(4))->getRules();
 
-      std::cout << "length = " << rules->length() << std::endl;
-      for (unsigned i = 0; i < rules->length(); i++) {
-        std::cout << rules[i].gripper << " - " << rules[i].handle
-                  << " - " << rules[i].link << std::endl;
-      }
-
       hpp_->graph ()->createGraph("constraints");
       hpp_->graph ()->autoBuild("constraints", grippers.in(), handles.first,
                 handles.second, shapes.second, envNames.in(), rules.in());

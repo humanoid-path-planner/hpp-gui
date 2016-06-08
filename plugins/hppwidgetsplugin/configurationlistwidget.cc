@@ -108,11 +108,13 @@ namespace hpp {
         QListWidgetItem* item = ui_->listGoals->item(i);
         plugin_->client()->problem()->addGoalConfig(getConfig(item));
       }
+      if (ui_->listInit->count() == 1)
+        setInitConfig(getConfig(ui_->listInit->item(0)));
     }
 
-    void ConfigurationListWidget::setInitConfig(floatSeq *config)
+    void ConfigurationListWidget::setInitConfig(floatSeq& config)
     {
-      plugin_->client()->problem()->setInitialConfig(*config);
+      plugin_->client()->problem()->setInitialConfig(config);
     }
 
     void ConfigurationListWidget::fetchInitAndGoalConfigs()

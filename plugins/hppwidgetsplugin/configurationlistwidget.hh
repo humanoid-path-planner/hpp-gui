@@ -30,7 +30,7 @@ namespace hpp {
         inline QListWidget* list ();
 
         /// Set the initial configuration in the problem.
-        void setInitConfig(hpp::floatSeq* config);
+        void setInitConfig(hpp::floatSeq& config);
 
         ConfigurationListWidget(HppWidgetsPlugin* plugin, QWidget* parent = 0);
 
