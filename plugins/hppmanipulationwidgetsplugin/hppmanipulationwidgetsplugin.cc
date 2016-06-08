@@ -263,7 +263,7 @@ namespace hpp {
       return names;
     }
 
-    HppManipulationWidgetsPlugin::NamesPair
+    HppManipulationWidgetsPlugin::MapNames
     HppManipulationWidgetsPlugin::buildNamess(const QList<QListWidgetItem *>& names)
     {
       std::map<std::string, std::list<std::string> > mapNames;
@@ -275,7 +275,7 @@ namespace hpp {
 
 	mapNames[object].push_back(name);
       }
-      return convertMap(mapNames);
+      return mapNames;
     }
 
     hpp::Names_t_var HppManipulationWidgetsPlugin::convertToNames(const QList<QListWidgetItem *>& l)
@@ -288,18 +288,41 @@ namespace hpp {
       return cl;
     }
 
+    void HppManipulationWidgetsPlugin::mergeShapes(MapNames &handles, MapNames &shapes)
+    {
+      MapNames::iterator itH = handles.begin();
+      MapNames::iterator itS = shapes.begin();
+      while (itH != handles.end())
+      {
+        if (itS == shapes.end() || (*itH).first != (*itS).first) {
+          itS = shapes.insert(itS, std::make_pair((*itH).first, std::list<std::string>()));
+        }
+        else
+          ++itS;
+        itH++;
+      }
+      while (itS != shapes.end())
+      {
+        handles.insert(handles.end(), std::make_pair((*itS).first, std::list<std::string>()));
+        itS++;
+      }
+    }
+
     void HppManipulationWidgetsPlugin::buildGraph()
     {
       QListWidget* l = dynamic_cast<QListWidget*>(tw_->widget(0));
       hpp::Names_t_var grippers = convertToNames(l->selectedItems());
       l = dynamic_cast<QListWidget*>(tw_->widget(1));
-      HppManipulationWidgetsPlugin::NamesPair handles = buildNamess(l->selectedItems());
+      HppManipulationWidgetsPlugin::MapNames handlesMap = buildNamess(l->selectedItems());
       l = dynamic_cast<QListWidget*>(tw_->widget(2));
-      HppManipulationWidgetsPlugin::NamesPair shapes = buildNamess(l->selectedItems());
+      HppManipulationWidgetsPlugin::MapNames shapesMap = buildNamess(l->selectedItems());
       l = dynamic_cast<QListWidget*>(tw_->widget(3));
       hpp::Names_t_var envNames = convertToNames(l->selectedItems());
       hpp::corbaserver::manipulation::Rules_var rules = dynamic_cast<LinkWidget *>(tw_->widget(4))->getRules();
 
+      mergeShapes(handlesMap, shapesMap);
+      HppManipulationWidgetsPlugin::NamesPair handles = convertMap(handlesMap);
+      HppManipulationWidgetsPlugin::NamesPair shapes = convertMap(shapesMap);
       hpp_->graph ()->createGraph("constraints");
       hpp_->graph ()->autoBuild("constraints", grippers.in(), handles.first,
                 handles.second, shapes.second, envNames.in(), rules.in());
@@ -321,7 +344,6 @@ namespace hpp {
         l << QString(n[i].in());
       }
       lw = new QListWidget(tw_);
-      std::cout << lw << std::endl;
       lw->addItems(l);
       lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
       tw_->addTab(lw, "Grippers");
