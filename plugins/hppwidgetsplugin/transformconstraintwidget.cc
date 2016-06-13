@@ -1,3 +1,5 @@
+#include <limits>
+
 #include "hppwidgetsplugin/transformconstraintwidget.hh"
 #include "hppwidgetsplugin/ui_transformconstraintwidget.h"
 

@@ -13,16 +13,15 @@ namespace hpp {
         QWidget(parent),
         ui(new Ui::ConstraintWidget)
     {
+        haveWidget = false;
         ui->setupUi(this);
         plugin_ = plugin;
 
-        connect(ui->firstJointSelect, SIGNAL(currentIndexChanged(int)),
-                SLOT(firstJointSelect(int)));
-        connect(ui->createConstraintButton, SIGNAL(clicked()), SLOT(createConstraint()));
+        connect(ui->createButton, SIGNAL(clicked()), SLOT(createConstraint()));
         connect(ui->resetButton, SIGNAL(clicked()), SLOT(reset()));
         connect(ui->confirmButton, SIGNAL(clicked()), SLOT(confirmNumerical()));
         connect(ui->applyButton, SIGNAL(clicked()), SLOT(applyConstraints()));
-        connect(ui->firstGlobalFrame, SIGNAL(toggled(bool)), SLOT(globalSelected(bool)));
+        connect(ui->constraintTypeSelect, SIGNAL(currentIndexChanged(int)), SLOT(typeChanged(int)));
 	lastInsert_ = 0;
 	ui->constraintNameEdit->setText("constraint_0");
     }
@@ -43,7 +42,6 @@ namespace hpp {
     void ConstraintWidget::reset()
     {
       plugin_->client()->problem()->resetConstraints();
-      //ui->nameList->clear();
     }
 
     void ConstraintWidget::applyConstraints()
@@ -75,49 +73,26 @@ namespace hpp {
 
     void ConstraintWidget::reload()
     {
-      try {
-        joints_ = plugin_->client()->robot()->getAllJointNames();
-        ui->firstJointSelect->clear();
-        for (unsigned i = 0; i < joints_->length(); i++) {
-          ui->firstJointSelect->addItem(joints_[i].in());
+      for (std::vector<IConstraint *>::iterator it = funcs_.begin(); it != funcs_.end(); ++it) {
+        try {
+          (*it)->reload();
         }
-        firstJointSelect(0);
-      }
-      catch (hpp::Error& e) {
-        gepetto::gui::MainWindow::instance ()->logError(QString(e.msg));
+        catch (hpp::Error& e) {
+          gepetto::gui::MainWindow::instance ()->logError(QString(e.msg));
+        }
       }
     }
 
     void ConstraintWidget::createConstraint()
     {
       QString name = ui->constraintNameEdit->text();
-      QString firstJoint = (ui->firstGlobalFrame->isChecked()) ? "" : ui->firstJointSelect->currentText();
-      QString secondJoint = (ui->secondGlobalFrame->isChecked()) ? "" : ui->secondJointSelect->currentText();
 
-      if (name == "" || (firstJoint == "" && secondJoint == "")) {
+      if (name == "") {
         QMessageBox::information(this, "hpp-gui", "You have to give a name and select at least one joint");
         return ;
       }
       if (ui->constraintTypeSelect->currentIndex() < funcs_.size()) {
-        (*(this->funcs_[ui->constraintTypeSelect->currentIndex()]))(name, firstJoint, secondJoint);
-      }
-    }
-
-    void ConstraintWidget::firstJointSelect(int index)
-    {
-      ui->secondJointSelect->clear();
-      for (unsigned i = 0; i < joints_->length(); i++) {
-        if (i != index) ui->secondJointSelect->addItem(joints_[i].in());
-      }
-    }
-
-    void ConstraintWidget::globalSelected(bool action)
-    {
-      if (action) {
-        firstJointSelect(-1);
-      }
-      else {
-        firstJointSelect(ui->firstJointSelect->currentIndex());
+        (*(this->funcs_[ui->constraintTypeSelect->currentIndex()]))(name);
       }
     }
 
@@ -126,6 +101,23 @@ namespace hpp {
       ui->nameList->addItem(name);
       lastInsert_++;
       ui->constraintNameEdit->setText("constraint_" + QString::number(lastInsert_));
+    }
+
+    void ConstraintWidget::typeChanged(int index)
+    {
+      QBoxLayout* layoutVar = dynamic_cast<QBoxLayout *>(layout());
+
+
+      if (index < funcs_.size()) {
+        if (haveWidget) {
+          layout()->takeAt(2)->widget()->hide();
+        }
+        QWidget* toAdd = funcs_[index]->getWidget();
+
+        toAdd->show();
+        layoutVar->insertWidget(2, toAdd);
+        haveWidget = true;
+      }
     }
   }
 }

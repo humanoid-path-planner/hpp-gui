@@ -2,13 +2,79 @@
 #include "gepetto/gui/meta.hh"
 
 #include <gepetto/viewer/node.h>
+#include <gepetto/gui/mainwindow.hh>
 
-#include "iconstraint.hh"
+#include "twojointsconstraint.hh"
 #include "hppwidgetsplugin/transformconstraintwidget.hh"
 
 namespace hpp {
   namespace gui {
+    ATwoJointConstraint::ATwoJointConstraint(HppWidgetsPlugin* plugin)
+    {
+        plugin_ = plugin;
+        widget_ = new QWidget;
+        QFormLayout* layout = new QFormLayout(widget_);
+        firstJoint_ = new QComboBox(widget_);
+        secondJoint_ = new QComboBox(widget_);
+        globalFirst_ = new QCheckBox(widget_);
+        globalSecond_ = new QCheckBox(widget_);
+
+        layout->addRow(new QLabel("First Joint"), firstJoint_);
+        layout->addRow(NULL, globalFirst_);
+        layout->addRow(new QLabel("Second Joint"), secondJoint_);
+        layout->addRow(NULL, globalSecond_);
+
+        connect(firstJoint_, SIGNAL(currentIndexChanged(int)), SLOT(firstJointSelect(int)));
+        connect(globalFirst_, SIGNAL(toggled(bool)), SLOT(globalSelected(bool)));
+        connect(globalFirst_, SIGNAL(toggled(bool)), firstJoint_, SLOT(setDisabled(bool)));
+        connect(globalSecond_, SIGNAL(toggled(bool)), secondJoint_, SLOT(setDisabled(bool)));
+
+        try {
+          joints_ = plugin_->client()->robot()->getAllJointNames();
+        } catch (hpp::Error const& e) {
+            gepetto::gui::MainWindow::instance()->logError(QString(e.msg));
+        }
+    }
+
+    ATwoJointConstraint::~ATwoJointConstraint()
+    {
+        delete widget_;
+    }
+
+    void ATwoJointConstraint::firstJointSelect(int index)
+    {
+        secondJoint_->clear();
+        for (unsigned i = 0; i < joints_->length(); i++) {
+          if (i != index) secondJoint_->addItem(joints_[i].in());
+        }
+    }
+
+    void ATwoJointConstraint::globalSelected(bool action)
+    {
+        if (action) {
+          firstJointSelect(-1);
+        }
+        else {
+          firstJointSelect(firstJoint_->currentIndex());
+        }
+    }
+
+    void ATwoJointConstraint::reload()
+    {
+      joints_ = plugin_->client()->robot()->getAllJointNames();
+      firstJoint_->clear();
+      for (unsigned i = 0; i < joints_->length(); ++i) {
+        firstJoint_->addItem(joints_[i].in());
+      }
+    }
+
+    QWidget* ATwoJointConstraint::getWidget() const
+    {
+      return widget_;
+    }
+
     PositionConstraint::PositionConstraint(HppWidgetsPlugin *plugin)
+        : ATwoJointConstraint(plugin)
     {
         plugin_ = plugin;
     }
@@ -22,18 +88,24 @@ namespace hpp {
       return "Position";
     }
 
-    void PositionConstraint::operator ()(QString const& name, QString const& firstJoint,
-                                         QString const& secondJoint)
+    void PositionConstraint::operator ()(QString const& name)
     {
+      QString firstJoint = (firstJoint_->isEnabled()) ? firstJoint_->currentText() : "";
+      QString secondJoint = (secondJoint_->isEnabled()) ? secondJoint_->currentText() : "";
+
+      if (firstJoint == secondJoint) {
+        QMessageBox::information(NULL, "hpp-gui", "You have to select two different joints");
+        return ;
+      }
       TransformConstraintWidget* tcw = new TransformConstraintWidget(firstJoint, secondJoint,
                                                                      true, false, true);
 
       connect(tcw, SIGNAL(finished(std::pair<QVector<double>,QVector<bool> >)),
               SLOT(getPositionConstraint(std::pair<QVector<double>,QVector<bool> >)));
-      name_ = name;
-      firstJoint_ = firstJoint;
-      secondJoint_ = secondJoint;
       tcw->show();
+      name_ = name;
+      firstJointName_ = firstJoint;
+      secondJointName_ = secondJoint;
     }
 
     void PositionConstraint::getPositionConstraint(std::pair<QVector<double>, QVector<bool> > result)
@@ -57,13 +129,15 @@ namespace hpp {
 
         plugin_->client()->problem()->
               createPositionConstraint(gepetto::gui::Traits<QString>::to_corba(name_),
-                                       gepetto::gui::Traits<QString>::to_corba(firstJoint_),
-                                       gepetto::gui::Traits<QString>::to_corba(secondJoint_),
+                                       gepetto::gui::Traits<QString>::to_corba(firstJointName_),
+                                       gepetto::gui::Traits<QString>::to_corba(secondJointName_),
                                        first.in(), second.in(), boolSeq.in());
         emit finished(name_);
     }
 
-    OrientationConstraint::OrientationConstraint(HppWidgetsPlugin *plugin) {
+    OrientationConstraint::OrientationConstraint(HppWidgetsPlugin *plugin)
+        : ATwoJointConstraint(plugin)
+    {
       plugin_ = plugin;
     }
 
@@ -100,15 +174,22 @@ namespace hpp {
 
       plugin_->client()->problem()->
             createOrientationConstraint(gepetto::gui::Traits<QString>::to_corba(name_),
-                                        gepetto::gui::Traits<QString>::to_corba(firstJoint_),
-                                        gepetto::gui::Traits<QString>::to_corba(secondJoint_),
+                                        gepetto::gui::Traits<QString>::to_corba(firstJoint_->currentText()),
+                                        gepetto::gui::Traits<QString>::to_corba(secondJoint_->currentText()),
                                         quat.in(), boolSeq.in());
       emit finished(name_);
     }
 
-    void OrientationConstraint::operator ()(QString const& name, QString const& firstJoint,
-                                            QString const& secondJoint)
+    void OrientationConstraint::operator ()(QString const& name)
     {
+      QString firstJoint = (firstJoint_->isEnabled()) ? firstJoint_->currentText() : "";
+      QString secondJoint = (secondJoint_->isEnabled()) ? secondJoint_->currentText() : "";
+
+      if (firstJoint == secondJoint) {
+        QMessageBox::information(NULL, "hpp-gui", "You have to select two different joints");
+        return ;
+      }
+
       TransformConstraintWidget* tcw = new TransformConstraintWidget(firstJoint, secondJoint,
                                                                      false, true);
 
@@ -116,11 +197,13 @@ namespace hpp {
                    SLOT(getOrientationConstraint(std::pair<QVector<double>,QVector<bool> >)));
       tcw->show();
       name_ = name;
-      firstJoint_ = firstJoint;
-      secondJoint_ = secondJoint;
+      firstJointName_ = firstJoint;
+      secondJointName_ = secondJoint;
     }
 
-    TransformConstraint::TransformConstraint(HppWidgetsPlugin *plugin) {
+    TransformConstraint::TransformConstraint(HppWidgetsPlugin *plugin)
+        : ATwoJointConstraint(plugin)
+    {
       plugin_ = plugin;
     }
 
@@ -163,15 +246,22 @@ namespace hpp {
 
       plugin_->client()->problem()->
             createTransformationConstraint(gepetto::gui::Traits<QString>::to_corba(name_),
-                                        gepetto::gui::Traits<QString>::to_corba(firstJoint_),
-                                        gepetto::gui::Traits<QString>::to_corba(secondJoint_),
+                                        gepetto::gui::Traits<QString>::to_corba(firstJointName_),
+                                        gepetto::gui::Traits<QString>::to_corba(secondJointName_),
                                         trans.in(), boolSeq.in());
       emit finished(name_);
     }
 
-    void TransformConstraint::operator ()(QString const& name, QString const& firstJoint,
-                                            QString const& secondJoint)
+    void TransformConstraint::operator ()(QString const& name)
     {
+      QString firstJoint = (firstJoint_->isEnabled()) ? firstJoint_->currentText() : "";
+      QString secondJoint = (secondJoint_->isEnabled()) ? secondJoint_->currentText() : "";
+
+      if (firstJoint == secondJoint) {
+        QMessageBox::information(NULL, "hpp-gui", "You have to select two different joints");
+        return ;
+      }
+
       TransformConstraintWidget* tcw = new TransformConstraintWidget(firstJoint, secondJoint,
                                                                      true, true);
 
@@ -179,8 +269,8 @@ namespace hpp {
                    SLOT(getTransformConstraint(std::pair<QVector<double>,QVector<bool> >)));
       tcw->show();
       name_ = name;
-      firstJoint_ = firstJoint;
-      secondJoint_ = secondJoint;
+      firstJointName_ = firstJoint;
+      secondJointName_ = secondJoint;
     }
   }
 }

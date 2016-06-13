@@ -58,10 +58,30 @@
        <widget class="QWidget" name="xPositionWidget" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
-          <widget class="QDoubleSpinBox" name="firstXPosition"/>
+          <widget class="QDoubleSpinBox" name="firstXPosition">
+           <property name="minimum">
+            <double>-10000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>10000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
-          <widget class="QDoubleSpinBox" name="secondXPosition"/>
+          <widget class="QDoubleSpinBox" name="secondXPosition">
+           <property name="minimum">
+            <double>-10000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>10000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -77,10 +97,30 @@
        <widget class="QWidget" name="yPositionWidget" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <item>
-          <widget class="QDoubleSpinBox" name="firstYPosition"/>
+          <widget class="QDoubleSpinBox" name="firstYPosition">
+           <property name="minimum">
+            <double>-10000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>10000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
-          <widget class="QDoubleSpinBox" name="secondYPosition"/>
+          <widget class="QDoubleSpinBox" name="secondYPosition">
+           <property name="minimum">
+            <double>-10000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>10000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -97,8 +137,14 @@
         <layout class="QVBoxLayout" name="verticalLayout_7">
          <item>
           <widget class="QDoubleSpinBox" name="firstZPosition">
+           <property name="minimum">
+            <double>-10000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>10000000.000000000000000</double>
+           </property>
            <property name="singleStep">
-            <double>0.500000000000000</double>
+            <double>0.010000000000000</double>
            </property>
            <property name="value">
             <double>0.000000000000000</double>
@@ -106,7 +152,17 @@
           </widget>
          </item>
          <item>
-          <widget class="QDoubleSpinBox" name="secondZPosition"/>
+          <widget class="QDoubleSpinBox" name="secondZPosition">
+           <property name="minimum">
+            <double>-10000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>10000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>

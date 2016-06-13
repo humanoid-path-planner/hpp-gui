@@ -43,28 +43,19 @@ namespace hpp {
         /// Reset the numerical constraints.
         void reset();
 
-        /// Fill the second joint list by excluding the first selected.
-        /// \param index index of the joint selected
-        void firstJointSelect(int index);
-
-        /// Fill the second joint when global frame is selected to be the first joint.
-        /// \param action global frame selected or not
-        void globalSelected(bool action);
-
         /// Add the newly created constraint to the list.
         /// \param name name of the constraint
         void createFinished(QString name);
+
+        void typeChanged(int index);
 
     private:
         HppWidgetsPlugin* plugin_;
         Ui::ConstraintWidget *ui;
         QDockWidget* dock_;
-        hpp::Names_t_var joints_;
         int lastInsert_;
         std::vector<IConstraint*> funcs_;
-
-        /// Fill the list of the first joint.
-        void fillFirstJoint();
+        bool haveWidget;
     };
   } // namespace gui
 } // namespace hpp

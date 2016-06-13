@@ -17,6 +17,8 @@
 #include "hppwidgetsplugin/configurationlistwidget.hh"
 #include "hppwidgetsplugin/joint-tree-item.hh"
 #include "hppwidgetsplugin/constraintwidget.hh"
+#include "hppwidgetsplugin/twojointsconstraint.hh"
+#include "hppwidgetsplugin/listjointconstraint.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
 #include <gepetto/gui/meta.hh>
@@ -96,6 +98,7 @@ namespace hpp {
       constraintWidget_->addConstraint(new PositionConstraint(this));
       constraintWidget_->addConstraint(new OrientationConstraint(this));
       constraintWidget_->addConstraint(new TransformConstraint(this));
+      constraintWidget_->addConstraint(new LockedJointConstraint(this));
 
       // Connect widgets
       connect (solverWidget_, SIGNAL (problemSolved ()), pathPlayer_, SLOT (update()));
