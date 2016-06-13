@@ -5,6 +5,7 @@
 #include "gepetto/gui/windows-manager.hh"
 
 #include "hpp/manipulation/graph/helper.hh"
+#include "hpp/corbaserver/manipulation/graph.hh"
 
 #include "hppwidgetsplugin/jointtreewidget.hh"
 #include "linkwidget.hh"
@@ -30,6 +31,7 @@ namespace hpp {
     void HppManipulationWidgetsPlugin::init()
     {
       HppWidgetsPlugin::init ();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
 
       toolBar_ = gepetto::gui::MainWindow::instance()->addToolBar("Manipulation tools");
       QAction* drawRContact = new QAction ("Draw robot contacts",toolBar_);
@@ -47,6 +49,8 @@ namespace hpp {
       QAction* autoBuildGraph = new QAction ("Autobuild constraint graph",toolBar_);
       toolBar_->addAction (autoBuildGraph);
       connect(autoBuildGraph, SIGNAL(triggered()), SLOT(autoBuildGraph()));
+
+      connect(&main->worker(), SIGNAL(done(int)), SLOT(handleWorkerDone(int)));
     }
 
     QString HppManipulationWidgetsPlugin::name() const
@@ -323,9 +327,17 @@ namespace hpp {
       mergeShapes(handlesMap, shapesMap);
       HppManipulationWidgetsPlugin::NamesPair handles = convertMap(handlesMap);
       HppManipulationWidgetsPlugin::NamesPair shapes = convertMap(shapesMap);
+
       hpp_->graph ()->createGraph("constraints");
-      hpp_->graph ()->autoBuild("constraints", grippers.in(), handles.first,
-                handles.second, shapes.second, envNames.in(), rules.in());
+      gepetto::gui::WorkItem* item = new gepetto::gui::WorkItem_7<hpp::corbaserver::manipulation::_objref_Graph, hpp::intSeq*,
+              const char *, const hpp::Names_t&, const hpp::Names_t&, const hpp::corbaserver::manipulation::Namess_t&, const hpp::corbaserver::manipulation::Namess_t&,
+              const hpp::Names_t&, const hpp::corbaserver::manipulation::Rules&>
+              (hpp_->graph().in(), &hpp::corbaserver::manipulation::_objref_Graph::autoBuild, "constraints", grippers.in(), handles.first,
+               handles.second, shapes.second, envNames.in(), rules.in());
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
+      main->emitSendToBackground(item);
+      main->logJobStarted(item->id(), "Build graph");
+      lastId_ = item->id();
       tw_->deleteLater();
       tw_->close();
     }
@@ -383,6 +395,13 @@ namespace hpp {
 
       tw_->setCornerWidget(button, Qt::BottomRightCorner);
       tw_->show();
+    }
+
+    void HppManipulationWidgetsPlugin::handleWorkerDone(int id)
+    {
+      if (id == lastId_) {
+          gepetto::gui::MainWindow::instance()->logJobDone(id, "Graph is build");
+      }
     }
 
     Q_EXPORT_PLUGIN2 (hppmanipulationwidgetsplugin, HppManipulationWidgetsPlugin)

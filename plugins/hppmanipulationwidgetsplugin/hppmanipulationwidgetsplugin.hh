@@ -90,6 +90,7 @@ signals:
         private slots:
           /// Construct all the corba vars and create the graph.
           void buildGraph();
+          void handleWorkerDone(int id);
 
       private:
         // Type used to make one function to build datas needed for autoBuild
@@ -112,6 +113,7 @@ signals:
         QTabWidget *tw_;
 
         int firstEnter_;
+        int lastId_;
     };
   } // namespace gui
 } // namespace hpp
