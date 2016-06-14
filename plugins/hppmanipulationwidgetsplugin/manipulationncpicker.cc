@@ -40,18 +40,32 @@ namespace hpp {
     {
       QList<QListWidgetItem*> selectedConst = ui->constraintList->selectedItems();
       hpp::Names_t_var constraints = new hpp::Names_t;
+      hpp::Names_t_var locked = new hpp::Names_t;
       hpp::Names_t_var dofs = new hpp::Names_t;
       QList<QListWidgetItem*> selectedComp = listComp_->selectedItems();
       HppManipulationWidgetsPlugin* plugin = dynamic_cast<HppManipulationWidgetsPlugin*>(plugin_);
 
       constraints->length(selectedConst.count());
-      int i = 0;
+      locked->length(selectedConst.count());
+      int iC = -1;
+      int iL = -1;
       foreach (QListWidgetItem* item, selectedConst) {
-        constraints[i] = item->text().toStdString().c_str();
+        if (!item->text().startsWith("lock_")) {
+          constraints[++iC] = item->text().toStdString().c_str();
+        }
+        else {
+          locked[++iL] = item->text().toStdString().c_str();
+        }
       }
+      locked->length(iL + 1);
+      constraints->length(iC + 1);
       foreach (QListWidgetItem* item, selectedComp) {
-        plugin->manipClient()->graph()->setNumericalConstraints(components_[item->text().toStdString()].id,
+        if (constraints->length())
+          plugin->manipClient()->graph()->setNumericalConstraints(components_[item->text().toStdString()].id,
             constraints.in(), dofs.in());
+        if (locked->length())
+          plugin->manipClient()->graph()->setLockedDofConstraints(components_[item->text().toStdString()].id,
+            locked.in());
       }
       onCancelClicked();
     }

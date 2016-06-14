@@ -10,8 +10,8 @@
 #include "hppwidgetsplugin/jointtreewidget.hh"
 #include "hppmanipulationwidgetsplugin/linkwidget.hh"
 #include "hppmanipulationwidgetsplugin/manipulationconstraintwidget.hh"
-#include "hppwidgetsplugin/listjointconstraint.hh"
 #include "hppwidgetsplugin/twojointsconstraint.hh"
+#include "hppmanipulationwidgetsplugin/manipulationlockedjoint.hh"
 
 using CORBA::ULong;
 
@@ -419,6 +419,7 @@ namespace hpp {
       constraintWidget_->addConstraint(new PositionConstraint(this));
       constraintWidget_->addConstraint(new OrientationConstraint(this));
       constraintWidget_->addConstraint(new TransformConstraint(this));
+      constraintWidget_->addConstraint(new ManipulationLockedJoint(this));
     }
 
     Q_EXPORT_PLUGIN2 (hppmanipulationwidgetsplugin, HppManipulationWidgetsPlugin)

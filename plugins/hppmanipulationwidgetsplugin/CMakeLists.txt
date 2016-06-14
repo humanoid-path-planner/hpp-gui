@@ -26,6 +26,7 @@ SET(${PLUGIN_NAME}_HEADERS
   linkwidget.hh
   manipulationconstraintwidget.hh
   manipulationncpicker.hh
+  manipulationlockedjoint.hh
   )
 
 SET(${PLUGIN_NAME}_HEADERS_NO_MOC
@@ -54,6 +55,7 @@ SET (${PLUGIN_NAME}_SOURCES
   linkwidget.cc
   manipulationconstraintwidget.cc
   manipulationncpicker.cc
+  manipulationlockedjoint.cc
   )
 
 ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}

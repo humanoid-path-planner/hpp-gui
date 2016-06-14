@@ -36,7 +36,8 @@ namespace hpp {
     {
       funcs_.push_back(constraint);
       ui->constraintTypeSelect->addItem(constraint->getName());
-      connect(constraint, SIGNAL(finished(QString)), SLOT(createFinished(QString)));
+      connect(constraint, SIGNAL(constraintCreated(QString)), SLOT(onConstraintCreated(QString)));
+      connect(constraint, SIGNAL(finished()), SLOT(onFinished()));
     }
 
     void ConstraintWidget::reset()
@@ -96,9 +97,13 @@ namespace hpp {
       }
     }
 
-    void ConstraintWidget::createFinished(QString name)
+    void ConstraintWidget::onConstraintCreated(QString name)
     {
       ui->nameList->addItem(name);
+    }
+
+    void ConstraintWidget::onFinished()
+    {
       lastInsert_++;
       ui->constraintNameEdit->setText("constraint_" + QString::number(lastInsert_));
     }

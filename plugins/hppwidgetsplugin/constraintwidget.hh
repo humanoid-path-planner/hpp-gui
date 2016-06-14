@@ -45,7 +45,9 @@ namespace hpp {
 
         /// Add the newly created constraint to the list.
         /// \param name name of the constraint
-        void createFinished(QString name);
+        void onConstraintCreated(QString name);
+
+        void onFinished();
 
         void typeChanged(int index);
 

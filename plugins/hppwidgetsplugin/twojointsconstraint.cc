@@ -132,7 +132,8 @@ namespace hpp {
                                        gepetto::gui::Traits<QString>::to_corba(firstJointName_),
                                        gepetto::gui::Traits<QString>::to_corba(secondJointName_),
                                        first.in(), second.in(), boolSeq.in());
-        emit finished(name_);
+        emit constraintCreated(name_);
+        emit finished();
     }
 
     OrientationConstraint::OrientationConstraint(HppWidgetsPlugin *plugin)
@@ -177,7 +178,8 @@ namespace hpp {
                                         gepetto::gui::Traits<QString>::to_corba(firstJoint_->currentText()),
                                         gepetto::gui::Traits<QString>::to_corba(secondJoint_->currentText()),
                                         quat.in(), boolSeq.in());
-      emit finished(name_);
+      emit constraintCreated(name_);
+      emit finished();
     }
 
     void OrientationConstraint::operator ()(QString const& name)
@@ -249,7 +251,8 @@ namespace hpp {
                                         gepetto::gui::Traits<QString>::to_corba(firstJointName_),
                                         gepetto::gui::Traits<QString>::to_corba(secondJointName_),
                                         trans.in(), boolSeq.in());
-      emit finished(name_);
+      emit constraintCreated(name_);
+      emit finished();
     }
 
     void TransformConstraint::operator ()(QString const& name)

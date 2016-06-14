@@ -9,7 +9,8 @@ namespace hpp {
     {
         Q_OBJECT
     signals:
-      void finished(QString name);
+      void constraintCreated(QString name);
+      void finished();
 
     public:
       virtual ~IConstraint() {}
