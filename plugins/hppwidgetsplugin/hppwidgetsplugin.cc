@@ -88,17 +88,7 @@ namespace hpp {
       dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_J);
       dockWidgets_.append(dock);
 
-      // Joint tree widget
-      dock = new QDockWidget ("&Constraint creator", main);
-      constraintWidget_ = new ConstraintWidget (this, dock);
-      dock->setWidget(constraintWidget_);
-      main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
-      dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_V);
-      dockWidgets_.append(dock);
-      constraintWidget_->addConstraint(new PositionConstraint(this));
-      constraintWidget_->addConstraint(new OrientationConstraint(this));
-      constraintWidget_->addConstraint(new TransformConstraint(this));
-      constraintWidget_->addConstraint(new LockedJointConstraint(this));
+      loadConstraintWidget();
 
       // Connect widgets
       connect (solverWidget_, SIGNAL (problemSolved ()), pathPlayer_, SLOT (update()));
@@ -438,6 +428,21 @@ namespace hpp {
         main->osg ()->applyConfiguration(obs[(ULong) i], d);
       }
       main->osg()->refresh();
+    }
+
+    void HppWidgetsPlugin::loadConstraintWidget()
+    {
+      MainWindow* main = MainWindow::instance();
+      QDockWidget* dock = new QDockWidget ("&Constraint creator", main);
+      constraintWidget_ = new ConstraintWidget (this, dock);
+      dock->setWidget(constraintWidget_);
+      main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
+      dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_V);
+      dockWidgets_.append(dock);
+      constraintWidget_->addConstraint(new PositionConstraint(this));
+      constraintWidget_->addConstraint(new OrientationConstraint(this));
+      constraintWidget_->addConstraint(new TransformConstraint(this));
+      constraintWidget_->addConstraint(new LockedJointConstraint(this));
     }
 
     std::string HppWidgetsPlugin::escapeJointName(const std::string jn)

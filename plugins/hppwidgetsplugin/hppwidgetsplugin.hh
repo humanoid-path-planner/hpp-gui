@@ -155,6 +155,8 @@ signals:
         /// Replace all the bodies according to their position in hpp.
         void computeObjectPosition();
 
+        virtual void loadConstraintWidget();
+
         QList <QDockWidget*> dockWidgets_;
         JointTreeWidget* jointTreeWidget_;
         ConstraintWidget* constraintWidget_;

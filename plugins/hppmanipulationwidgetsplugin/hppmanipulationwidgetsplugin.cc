@@ -8,7 +8,10 @@
 #include "hpp/corbaserver/manipulation/graph.hh"
 
 #include "hppwidgetsplugin/jointtreewidget.hh"
-#include "linkwidget.hh"
+#include "hppmanipulationwidgetsplugin/linkwidget.hh"
+#include "hppmanipulationwidgetsplugin/manipulationconstraintwidget.hh"
+#include "hppwidgetsplugin/listjointconstraint.hh"
+#include "hppwidgetsplugin/twojointsconstraint.hh"
 
 using CORBA::ULong;
 
@@ -402,6 +405,20 @@ namespace hpp {
       if (id == lastId_) {
           gepetto::gui::MainWindow::instance()->logJobDone(id, "Graph is build");
       }
+    }
+
+    void HppManipulationWidgetsPlugin::loadConstraintWidget()
+    {
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
+      QDockWidget* dock = new QDockWidget ("&Constraint creator", main);
+      constraintWidget_ = new ManipulationConstraintWidget (this, dock);
+      dock->setWidget(constraintWidget_);
+      main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
+      dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_V);
+      dockWidgets_.append(dock);
+      constraintWidget_->addConstraint(new PositionConstraint(this));
+      constraintWidget_->addConstraint(new OrientationConstraint(this));
+      constraintWidget_->addConstraint(new TransformConstraint(this));
     }
 
     Q_EXPORT_PLUGIN2 (hppmanipulationwidgetsplugin, HppManipulationWidgetsPlugin)

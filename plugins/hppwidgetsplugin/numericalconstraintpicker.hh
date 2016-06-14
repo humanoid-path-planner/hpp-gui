@@ -18,16 +18,16 @@ namespace hpp {
     {
       Q_OBJECT
 
-    private slots:
+    protected slots:
       void onCancelClicked();
-      void onConfirmClicked();
+      virtual void onConfirmClicked();
 
     public:
       explicit NumericalConstraintPicker(QStringList const& names, HppWidgetsPlugin* plugin,
                                          QWidget *parent = 0);
-      ~NumericalConstraintPicker();
+      virtual ~NumericalConstraintPicker();
 
-    private:
+    protected:
       Ui::NumericalConstraintPicker *ui;
       HppWidgetsPlugin* plugin_;
     };

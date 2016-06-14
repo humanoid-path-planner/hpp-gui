@@ -92,6 +92,9 @@ signals:
           void buildGraph();
           void handleWorkerDone(int id);
 
+      protected:
+        virtual void loadConstraintWidget();
+
       private:
         // Type used to make one function to build datas needed for autoBuild
         typedef std::pair<hpp::Names_t, hpp::corbaserver::manipulation::Namess_t> NamesPair;

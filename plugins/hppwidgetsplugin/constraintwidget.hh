@@ -20,7 +20,7 @@ namespace hpp {
 
     public:
         ConstraintWidget(HppWidgetsPlugin* plugin, QWidget *parent = 0);
-        ~ConstraintWidget();
+        virtual ~ConstraintWidget();
 
         /// Add a constraint to the internal vector.
         /// \param constraint constraint to add
@@ -35,13 +35,13 @@ namespace hpp {
         void createConstraint();
 
         /// Set numerical constraints in corbaserver.
-        void confirmNumerical();
+        virtual void confirmNumerical();
 
         /// Apply constraints to the current configuration.
-        void applyConstraints();
+        virtual void applyConstraints();
 
         /// Reset the numerical constraints.
-        void reset();
+        virtual void reset();
 
         /// Add the newly created constraint to the list.
         /// \param name name of the constraint
@@ -49,7 +49,7 @@ namespace hpp {
 
         void typeChanged(int index);
 
-    private:
+    protected:
         HppWidgetsPlugin* plugin_;
         Ui::ConstraintWidget *ui;
         QDockWidget* dock_;

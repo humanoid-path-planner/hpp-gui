@@ -24,6 +24,8 @@ SET(PLUGIN_NAME hppmanipulationwidgetsplugin)
 SET(${PLUGIN_NAME}_HEADERS
   ${PLUGIN_NAME}.hh
   linkwidget.hh
+  manipulationconstraintwidget.hh
+  manipulationncpicker.hh
   )
 
 SET(${PLUGIN_NAME}_HEADERS_NO_MOC
@@ -50,6 +52,8 @@ SET (${PLUGIN_NAME}_SOURCES
   ${PLUGIN_NAME}.cc
   roadmap.cc
   linkwidget.cc
+  manipulationconstraintwidget.cc
+  manipulationncpicker.cc
   )
 
 ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}
