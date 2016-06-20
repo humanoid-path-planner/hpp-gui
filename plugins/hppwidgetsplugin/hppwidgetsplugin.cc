@@ -113,6 +113,8 @@ namespace hpp {
       main->osg()->createGroup("joints");
       main->osg()->addToGroup("joints", "hpp-gui");
       main->osg()->refresh();
+
+      main->registerSlot("requestCreateJointGroup", this);
     }
 
     QString HppWidgetsPlugin::name() const
@@ -326,6 +328,11 @@ namespace hpp {
       solverWidget_->update();
       configListWidget_->fetchInitAndGoalConfigs();
       constraintWidget_->reload();
+    }
+
+    QString HppWidgetsPlugin::requestCreateJointGroup(const QString jn)
+    {
+      return createJointGroup(jn.toStdString()).c_str();
     }
 
     QList<QAction *> HppWidgetsPlugin::getJointActions(const std::string &jointName)

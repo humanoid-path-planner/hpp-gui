@@ -54,6 +54,7 @@ namespace hpp {
       connect(autoBuildGraph, SIGNAL(triggered()), SLOT(autoBuildGraph()));
 
       connect(&main->worker(), SIGNAL(done(int)), SLOT(handleWorkerDone(int)));
+      main->registerSlot("autoBuildGraph", this);
     }
 
     QString HppManipulationWidgetsPlugin::name() const
