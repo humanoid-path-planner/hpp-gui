@@ -236,8 +236,6 @@ class RuleMaker(object):
     def getRules(self):
         return self.rules.copy()
 
-class _
-
 class DynamicBuilder(QWidget):
     def __init__(self, mainWindow, parent = None):
         super(DynamicBuilder, self).__init__(parent)
