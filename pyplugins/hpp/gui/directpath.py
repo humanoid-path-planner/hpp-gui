@@ -26,7 +26,11 @@ class DirectPathBox(QtGui.QGroupBox):
             else: # Success
                 # It would be nice to have access to the Path Player widget in order to
                 # select the good path index...
-                pass
+                if self.projectPath.isChecked ():
+                    success = self.plugin.client.problem.projectPath(pid)
+                    if not success:
+                        self.plugin.main.logError ("Path could not be projected.")
+
         else:
             self.plugin.main.logError ("Configuration does not have the good size. Did you save them ?")
 
@@ -38,11 +42,14 @@ class DirectPathBox(QtGui.QGroupBox):
         box.addWidget(setTo)
         self.validatePath = QtGui.QCheckBox(self)
         box.addWidget(self.validatePath)
+        self.projectPath = QtGui.QCheckBox(self)
+        box.addWidget(self.projectPath)
         makePath = QtGui.QPushButton(self)
         box.addWidget(makePath)
         setFrom.text = 'Save config as origin'
         setTo.text = 'Save config as destination'
         self.validatePath.text = 'Validate path'
+        self.projectPath.text = "Project path"
         makePath.text = 'Create path'
         setFrom.connect('clicked()', self.getFrom)
         setTo.connect('clicked()', self.getTo)
