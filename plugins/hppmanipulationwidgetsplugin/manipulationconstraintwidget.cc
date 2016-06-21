@@ -1,5 +1,5 @@
 #include "hppmanipulationwidgetsplugin/hppmanipulationwidgetsplugin.hh"
-#include "hppmanipulationwidgetsplugin/ui_constraintwidget.h"
+#include "hppwidgetsplugin/ui_constraintwidget.h"
 
 #include "hppmanipulationwidgetsplugin/manipulationncpicker.hh"
 #include "manipulationconstraintwidget.hh"
