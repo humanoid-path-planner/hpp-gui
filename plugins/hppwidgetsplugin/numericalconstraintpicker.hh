@@ -22,6 +22,9 @@ namespace hpp {
       void onCancelClicked();
       virtual void onConfirmClicked();
 
+    protected:
+      void closeEvent(QCloseEvent* event);
+
     public:
       explicit NumericalConstraintPicker(QStringList const& names, HppWidgetsPlugin* plugin,
                                          QWidget *parent = 0);
