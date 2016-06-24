@@ -7,6 +7,8 @@
 #include "hppwidgetsplugin/numericalconstraintpicker.hh"
 #include "hppwidgetsplugin/ui_constraintwidget.h"
 
+using gepetto::gui::MainWindow;
+
 namespace hpp {
   namespace gui {
     ConstraintWidget::ConstraintWidget(HppWidgetsPlugin* plugin, QWidget *parent) :
@@ -24,6 +26,8 @@ namespace hpp {
         connect(ui->constraintTypeSelect, SIGNAL(currentIndexChanged(int)), SLOT(typeChanged(int)));
 	lastInsert_ = 0;
 	ui->constraintNameEdit->setText("constraint_0");
+        MainWindow* main = MainWindow::instance();
+	connect(main, SIGNAL(refresh()), SLOT(refresh()));
     }
 
     ConstraintWidget::~ConstraintWidget()
@@ -81,6 +85,15 @@ namespace hpp {
         catch (hpp::Error& e) {
           gepetto::gui::MainWindow::instance ()->logError(QString(e.msg));
         }
+      }
+    }
+
+    void ConstraintWidget::refresh()
+    {
+      ui->nameList->clear();
+      hpp::Names_t_var nc = plugin_->client()->problem()->getAvailable("NumericalConstraint");
+      for (unsigned i = 0; i < nc->length(); i++) {
+	ui->nameList->addItem(nc[i].in());
       }
     }
 

@@ -30,6 +30,8 @@ namespace hpp {
         /// Reload the list of joints.
         void reload();
 
+      virtual void refresh();
+
     private slots:
         /// Create a constraint according to the currently selected.
         void createConstraint();

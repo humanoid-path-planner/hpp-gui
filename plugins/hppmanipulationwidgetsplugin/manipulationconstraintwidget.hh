@@ -14,7 +14,11 @@ namespace hpp {
     public:
       ManipulationConstraintWidget(HppWidgetsPlugin* plugin, QWidget* parent = 0);
       virtual ~ManipulationConstraintWidget();
+					     
+    public slots:
+      virtual void refresh();
 
+    private slots:
       virtual void applyConstraints();
       virtual void reset();
       virtual void confirmNumerical();
@@ -23,10 +27,5 @@ namespace hpp {
     };
   }
 }
-class ManipulationConstraintWidget
-{
-public:
-    ManipulationConstraintWidget();
-};
 
 #endif // HPP_GUI_MANIPULATIONCONSTRAINTWIDGET_HH

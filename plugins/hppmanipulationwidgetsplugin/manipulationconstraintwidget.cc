@@ -19,6 +19,16 @@ namespace hpp {
     {
     }
 
+    void ManipulationConstraintWidget::refresh()
+    {
+      HppManipulationWidgetsPlugin* plugin = dynamic_cast<HppManipulationWidgetsPlugin*>(plugin_);
+      ConstraintWidget::refresh();
+      hpp::Names_t_var names = plugin->manipClient()->problem()->getAvailable("lockedjoint");
+      for (unsigned i = 0; i < names->length(); i++) {
+	ui->nameList->addItem(names[i].in());
+      }
+    }
+
     void ManipulationConstraintWidget::reset()
     {
       HppManipulationWidgetsPlugin* plugin = dynamic_cast<HppManipulationWidgetsPlugin*>(plugin_);
