@@ -23,6 +23,7 @@ INSTALL(
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/directpath.py
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/graphutility.py
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/findGrasp.py
+  ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/dynamicbuild.py
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/__init__.py
   DESTINATION ${PYTHON_SITELIB}/hpp/gui
   )

@@ -94,6 +94,8 @@ signals:
 
         void update();
 
+      QString requestCreateJointGroup(const QString jn);
+
       public:
         /// Get the possible actions on a joint.
         /// \param jointName name of the joint

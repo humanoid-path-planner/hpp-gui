@@ -27,6 +27,12 @@ namespace hpp {
       delete ui;
     }
 
+    void NumericalConstraintPicker::closeEvent(QCloseEvent* event)
+    {
+      deleteLater();
+      event->accept();
+    }
+
     void NumericalConstraintPicker::onCancelClicked()
     {
       deleteLater();

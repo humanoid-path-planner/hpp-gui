@@ -1,4 +1,4 @@
-from PythonQt.QtGui import QDockWidget, QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QListWidget
+from PythonQt.QtGui import QDockWidget, QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QListWidget, QPushButton, QLineEdit, QLabel
 from hpp.corbaserver.manipulation.robot import Robot
 from hpp.corbaserver.manipulation import ConstraintGraph
 import re
@@ -33,20 +33,23 @@ class GraphUtility (QWidget):
         return names
 
     def applyFilters(self):
-        names = self.edges.copy()
-        names.update(self.nodes)
+        regex = ".*"
         if (self.grippersList.currentItem() is not None):
-            r = re.compile(r".*"+self.grippersList.currentItem().text()+".*")
-            names = self.eraseInvalid(r, names)
-        if (self.graspCheck.isChecked() == True):
-            r = re.compile(r".*(?:>|grasps).*")
-            names = self.eraseInvalid(r, names)
-        elif (self.pregraspCheck.isChecked() == True):
-            r = re.compile(r".*(?:<|pregrasp).*")
-            names = self.eraseInvalid(r, names)
-        if (self.handlesList.currentItem() is not None):
-            r = re.compile(r".*"+self.handlesList.currentItem().text()+".*")
-            names = self.eraseInvalid(r, names)
+            regex += self.grippersList.currentItem().text()
+        else:
+            regex += ".*"
+        if (self.graspCheck.isChecked()):
+            regex += " grasps "
+            if (self.handlesList.currentItem() is not None):
+                regex += self.handlesList.currentItem().text() + ".*"
+            else:
+                regex += ".*"
+        elif (self.pregraspCheck.isChecked()):
+            if (self.handlesList.currentItem() is not None):
+                regex += "(?:<|>)" + self.handlesList.currentItem().text() + ".*pregrasp .*"
+            else:
+                regex += ".*pregrasp.*"
+        names = self.eraseInvalid(re.compile(regex), self.nodes.copy())
         self.resultList.clear()
         for n in names:
             self.resultList.addItem(n)
@@ -56,6 +59,12 @@ class GraphUtility (QWidget):
 
     def fillHandles(self):
         self.handlesList.addItems(self.r.client.manipulation.problem.getAvailable("handle"))
+
+    def applyRegex(self):
+        names = self.eraseInvalid(r.compile(self.textEdit.text()), self.cg.nodes.copy())
+        self.resultList.clear()
+        for n in names:
+            self.resultList.addItem(n)
 
     def refresh(self):
         self.cg = ConstraintGraph(self.r, "", False)
@@ -67,10 +76,10 @@ class GraphUtility (QWidget):
             pass
 
     def addConnection(self):
-        self.edgeCheck.connect("toggled(bool)", self.updateEdges)
-        self.nodeCheck.connect("toggled(bool)", self.updateNodes)
         self.graspCheck.connect("clicked()", self.applyFilters)
         self.pregraspCheck.connect("clicked()", self.applyFilters)
+        self.graspCheck.connect("toggled(bool)", self.pregraspCheck.setDisabled)
+        self.pregraspCheck.connect("toggled(bool)", self.graspCheck.setDisabled)
         self.grippersList.connect("itemSelectionChanged()", self.applyFilters)
         self.handlesList.connect("itemSelectionChanged()", self.applyFilters)
 
@@ -78,13 +87,15 @@ class GraphUtility (QWidget):
         # Main layout
         mainBox = QVBoxLayout(self)
 
-        # Sub layout for the graph type element
-        typeBox = QHBoxLayout()
-        mainBox.addLayout(typeBox)
-        self.edgeCheck = QCheckBox("Edges", self)
-        typeBox.addWidget(self.edgeCheck)
-        self.nodeCheck = QCheckBox("Nodes", self)
-        typeBox.addWidget(self.nodeCheck)
+        # Add text edit to write regex by hand
+        box = QVBoxLayout()
+        mainBox.addLayout(box)
+        self.textEdit = QLineEdit(self)
+        box.addWidget(QLabel("You can write your regexp here", self))
+        box.addWidget(self.textEdit)
+        button = QPushButton("Find", self)
+        button.connect("clicked()", self.applyRegex)
+        box.addWidget(button)
 
         # Add grippers list
         self.grippersList = QListWidget(self)
@@ -105,6 +116,12 @@ class GraphUtility (QWidget):
         # Add a table to display results
         self.resultList = QListWidget(self)
         mainBox.addWidget(self.resultList)
+
+        # Add button to refresh
+        button = QPushButton(self)
+        button.setText("Refresh")
+        button.connect("clicked()", self.refresh)
+        mainBox.addWidget(button)
 
         # Get the grippers and handles names
         # Connect the widget to functions
