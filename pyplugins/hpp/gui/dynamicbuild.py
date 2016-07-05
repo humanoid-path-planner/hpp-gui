@@ -125,7 +125,7 @@ class DualSelect(object):
             self.currentHandle += 1
             if (self.currentHandle == len(self.handles)):
                 self.currentHandle = 0
-            self.gripperLabel.setText(self.grippers[self.currentGripper])
+            self.handleLabel.setText(self.handles[self.currentHandle])
             if (previous != self.currentHandle):
                 self.client.viewer.gui.deleteNode(self.groupName, True)
                 config = self.client.manipulation.robot.getHandlePositionInJoint(self.handles[self.currentHandle])
