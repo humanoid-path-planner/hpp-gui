@@ -28,6 +28,7 @@ namespace hpp {
 	ui->constraintNameEdit->setText("constraint_0");
         MainWindow* main = MainWindow::instance();
 	connect(main, SIGNAL(refresh()), SLOT(refresh()));
+	main->registerSlot("addConstraint", this);
     }
 
     ConstraintWidget::~ConstraintWidget()

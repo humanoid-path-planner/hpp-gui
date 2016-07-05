@@ -22,13 +22,13 @@ namespace hpp {
         ConstraintWidget(HppWidgetsPlugin* plugin, QWidget *parent = 0);
         virtual ~ConstraintWidget();
 
-        /// Add a constraint to the internal vector.
-        /// \param constraint constraint to add
-        void addConstraint(IConstraint* constraint);
-
     public slots:
         /// Reload the list of joints.
         void reload();
+
+        /// Add a constraint to the internal vector.
+        /// \param constraint constraint to add
+        void addConstraint(IConstraint* constraint);
 
       virtual void refresh();
 
