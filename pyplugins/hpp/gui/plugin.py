@@ -145,9 +145,8 @@ class Plugin(QtGui.QDockWidget):
         # Initialize the widget
         self.tabWidget = QtGui.QTabWidget(self)
         self.setWidget (self.tabWidget)
-        self.nodeCreator = _PathTab(self)
         self.concatenateWidget = _ConcatenatePath(self)
-        self.tabWidget.addTab (self.nodeCreator, "Path")
+        self.tabWidget.addTab (_PathTab(self), "Path")
         self.tabWidget.addTab (_RoadmapTab(self), "Roadmap")
         self.tabWidget.addTab (_StepByStepSolverTab(self), "Step by step solver")
         self.tabWidget.addTab (GraspFinder(self), "Grasp Finder")
