@@ -13,6 +13,46 @@ class _PathTab(QtGui.QWidget):
         # Create group
         box.addWidget(DirectPathBox(self, self.plugin))
 
+class _ConcatenatePath(QtGui.QWidget):
+    def __init__(self, parent):
+        super(_ConcatenatePath, self).__init__(parent)
+        self.plugin = parent
+
+        box = QtGui.QVBoxLayout(self)
+        
+        box.addWidget(QtGui.QLabel("Choose the paths you want to concatenate.\n"
+                                   "All the paths will be concatenate in the first choose."))
+        box.addWidget(QtGui.QLabel("List of path:"))
+        self.paths = QtGui.QListWidget()
+        box.addWidget(self.paths)
+        self.paths.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+
+        self.refresh()
+        
+        self.button = QtGui.QPushButton("Concatenate")
+        box.addWidget(self.button)
+
+        self.button.connect("clicked()", self.concatenate)
+        self.plugin.main.connect("refresh()", self.refresh)
+
+    def refresh(self):
+        selected = self.paths.selectedItems()
+        self.paths.clear()
+
+        nbPaths = self.plugin.client.problem.numberPaths()
+        for i in range(0, nbPaths):
+            self.paths.addItem(str(i))
+            if (len(selected) > 0):
+                self.paths.setCurrentItem(selected, QtGui.QItemSelectionModel.Select)
+
+    def concatenate(self):
+        selected = self.paths.selectedItems()
+        if (len(selected) > 1):
+            first = int(selected[0].text())
+            for i in range(1, len(selected)):
+                print "Concatenate %s and %s" % (first, int(selected[i].text()))
+                self.plugin.client.problem.concatenatePath(first, int(selected[i].text()))
+
 class _RoadmapTab(QtGui.QWidget):
     def __init__ (self, parent):
         super(_RoadmapTab, self).__init__ (parent)
@@ -113,6 +153,7 @@ class Plugin(QtGui.QDockWidget):
         self.tabWidget.addTab (_RoadmapTab(self), "Roadmap")
         self.tabWidget.addTab (_StepByStepSolverTab(self), "Step by step solver")
         self.tabWidget.addTab (GraspFinder(self), "Grasp Finder")
+        self.tabWidget.addTab (_ConcatenatePath(self), "Concatenate paths")
 
     def resetConnection(self):
         self.client = Client()

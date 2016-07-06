@@ -17,14 +17,16 @@ namespace hpp {
       components_[graphComp->name.in()] = graphComp;
       listComp_->addItem(graphComp->name.in());
       for (unsigned i = 0; i < graphElems->nodes.length(); ++i) {
-	if (graphElems->nodes[i].id > graphComp->id)
+	if (graphElems->nodes[i].id > graphComp->id) {
 	  components_[graphElems->nodes[i].name.in()] = graphElems->nodes[i];
-        listComp_->addItem(graphElems->nodes[i].name.in());
+	  listComp_->addItem(graphElems->nodes[i].name.in());
+	}
       }
       for (unsigned i = 0; i < graphElems->edges.length(); ++i) {
-	if (graphElems->edges[i].id > graphComp->id)
+	if (graphElems->edges[i].id > graphComp->id) {
 	  components_[graphElems->edges[i].name.in()] = graphElems->edges[i];
-        listComp_->addItem(graphElems->edges[i].name.in());
+	  listComp_->addItem(graphElems->edges[i].name.in());
+	}
       }
       listComp_->setSelectionMode(QAbstractItemView::ExtendedSelection);
       QBoxLayout* l = dynamic_cast<QBoxLayout *>(layout());

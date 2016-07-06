@@ -80,36 +80,6 @@ class DualSelect(object):
                 ret.append(name)
         return ret
         
-    def createGraph(self):
-        if (self.changed and len(self.selectedHandles) == 1 and len(self.selectedGrippers) == 1):
-            objects = list(self.selectedHandles)
-            handles = [self.handles]
-            shapesPerObject = [[]]
-            r = Robot("", "", False)
-            self.cg = ConstraintGraph.buildGenericGraph(r, "graph", self.grippers, objects, handles, shapesPerObject, [], [])
-            self.changed = False
-
-    def findInGraph(self, reg):
-        for node in self.cg.nodes:
-            if (reg.match(node) is not None):
-                return self.cg.nodes[node]
-        return 0
-
-    def generateConfig(self, idNode):
-        if (self.shift):
-            config = self.client.basic.robot.shootRandomConfig()
-        else:
-            config = self.client.basic.robot.getCurrentConfig()
-        result = None
-        error = 0
-        ret = self.client.manipulation.problem.applyConstraints(idNode, config)
-        if (ret[0]):
-            self.client.basic.robot.setCurrentConfig(ret[1])
-        else:
-            # TODO Afficher un message d'erreur quelque part
-            print ("error %s" % ret[2])
-        return ret[0]
-
     def drawXYZAxis(self, name, config):
         obj = self.mainWindow.getFromSlot("requestCreateJointGroup")
         self.groupName = str(obj.requestCreateJointGroup(config[0]))
@@ -143,21 +113,33 @@ class DualSelect(object):
                 config = self.client.manipulation.robot.getGripperPositionInJoint(self.grippers[self.currentGripper])
                 self.drawXYZAxis("gripper_"+self.grippers[self.currentGripper].replace("/", "_"), config)
 
-    def shootFromRegex(self, toBuild):
-        self.createGraph()
-        if (self.cg is not None):
-            gripper = self.grippers[self.currentGripper]
-            handle = self.handles[self.currentHandle]
-            idNode = self.findInGraph(re.compile(toBuild % (gripper, handle)))
-            if (idNode):
-                if (self.generateConfig(idNode)):
-                    return True
+    def grasp(self):
+        config = self.client.basic.robot.shootRandomConfig() if self.shift else self.client.basic.robot.getCurrentConfig()
+        self.client.basic.problem.resetConstraints()
+        print (self.currentGripper)
+        print (self.currentHandle)
+        name = self.grippers[self.currentGripper] + " grasps " + self.handles[self.currentHandle]
+        self.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
+        self.client.basic.problem.setNumericalConstraints("constraints", [name], [True])
+        res = self.client.basic.problem.applyConstraints(config)
+        self.client.basic.robot.setCurrentConfig(res[1])
+        self.mainWindow.requestApplyCurrentConfiguration()
+
+    def pregrasp(self):
+        config = self.client.basic.robot.shootRandomConfig() if self.shift else self.client.basic.robot.getCurrentConfig()
+        self.client.basic.problem.resetConstraints()
+        name = self.grippers[self.currentGripper] + " pregrasps " + self.handles[self.currentHandle]
+        self.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
+        self.client.basic.problem.setNumericalConstraints("constraints", [name], [True])
+        res = self.client.basic.problem.applyConstraints(self.client.basic.robot.getCurrentConfig())
+        self.client.basic.robot.setCurrentConfig(res[1])
+        self.mainWindow.requestApplyCurrentConfiguration()
 
     def handleEvent(self, key):
         if (key == QNamespace.Key_G):
-            return self.shootFromRegex("^%s grasps %s$")
+            return self.grasp()
         elif (key == QNamespace.Key_P):
-            return self.shootFromRegex("^%s > %s \| .*_pregrasp$")
+            return self.pregrasp()
         elif (key == QNamespace.Key_F1):
             self.changeHandle()
         elif (key == QNamespace.Key_F2):
@@ -237,11 +219,11 @@ class RuleMaker(object):
         return self.rules.copy()
 
 class DynamicBuilder(QWidget):
-    def __init__(self, mainWindow, parent = None):
+    def __init__(self, mainWindow, parent):
         super(DynamicBuilder, self).__init__(parent)
-        self.client = Clients()
+        self.plugin = parent
         self.mode = 0
-        self.modeInstance = DualSelect(self.client, mainWindow)
+        self.modeInstance = DualSelect(self.plugin.client, mainWindow)
         self.running = False
         self.selected = ""
         self.mainWindow = mainWindow
@@ -282,9 +264,9 @@ class DynamicBuilder(QWidget):
             if (event.key() == QNamespace.Key_M):
                 self.mode = not self.mode
                 if (self.mode == 0):
-                    self.modeInstance = DualSelect(self.client, self.mainWindow)
+                    self.modeInstance = DualSelect(self.plugin.client, self.mainWindow)
                 else:
-                    self.modeInstance = RuleMaker(self.client, self.mainWindow)
+                    self.modeInstance = RuleMaker(self.plugin.client, self.mainWindow)
             elif (event.key() == QNamespace.Key_H):
                 self.modeInstance.addHandle(self.selected)
             elif (event.key() == QNamespace.Key_R):
@@ -306,5 +288,9 @@ class Plugin(QDockWidget):
             super(Plugin, self).__init__("Dynamic Builder", flags)
         else:
             super(Plugin, self).__init__("Dynamic Builder")
+        self.resetConnection()
         self.dynamicBuilder = DynamicBuilder(mainWindow, self)
         self.setWidget(self.dynamicBuilder)
+
+    def resetConnection(self):
+        self.client = Clients()
