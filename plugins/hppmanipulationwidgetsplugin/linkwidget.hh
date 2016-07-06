@@ -22,16 +22,23 @@ namespace hpp {
 
     public:
       explicit LinkWidget(HppManipulationWidgetsPlugin* plugins,
+			  QListWidget* grippersList, QListWidget* handlesList,
                           QWidget *parent = 0);
       ~LinkWidget();
 
       Rules_var getRules();
+
+    public slots:
+      void gripperChanged(const QItemSelection& selected, const QItemSelection& deselected);
+      void handleChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
     private slots:
       void createRule();
     private:
       Ui::LinkWidget *ui_;
       std::vector<hpp::corbaserver::manipulation::Rule> rules_;
+      QListWidget* grippers_;
+      QListWidget* handles_;
     };
   }
 }

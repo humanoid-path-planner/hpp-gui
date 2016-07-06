@@ -271,21 +271,6 @@ namespace hpp {
       return names;
     }
 
-    HppManipulationWidgetsPlugin::MapNames
-    HppManipulationWidgetsPlugin::buildNamess(const QList<QListWidgetItem *>& names)
-    {
-      std::map<std::string, std::list<std::string> > mapNames;
-
-      for (int i = 0; i < names.count(); i++) {
-        std::string name(names[i]->text().toStdString());
-	size_t pos = name.find_first_of("/");
-	std::string object = name.substr(0, pos);
-
-	mapNames[object].push_back(name);
-      }
-      return mapNames;
-    }
-
     hpp::Names_t_var HppManipulationWidgetsPlugin::convertToNames(const QList<QListWidgetItem *>& l)
     {
       hpp::Names_t_var cl = new hpp::Names_t;
@@ -316,22 +301,63 @@ namespace hpp {
       }
     }
 
+    HppManipulationWidgetsPlugin::MapNames HppManipulationWidgetsPlugin::getObjects()
+    {
+      HppManipulationWidgetsPlugin::MapNames map;
+      hpp::Names_t_var handles = manipClient()->problem()->getAvailable("handle");
+      hpp::Names_t_var surfaces = manipClient()->problem()->getAvailable("robotcontact");
+
+      for (unsigned i = 0; i < handles->length(); ++i) {
+        std::string name(handles[i].in());
+	size_t pos = name.find_first_of("/");
+	std::string object = name.substr(0, pos);
+
+	if (map.find(object) == map.end()) {
+	  map[object] = std::list<std::string>();
+	}
+      }
+      for (unsigned i = 0; i < surfaces->length(); ++i) {
+        std::string name(surfaces[i].in());
+	size_t pos = name.find_first_of("/");
+	std::string object = name.substr(0, pos);
+
+	if (map.find(object) == map.end()) {
+	  map[object] = std::list<std::string>();
+	}
+      }
+      return map;
+    }
+
+    void HppManipulationWidgetsPlugin::fillMap(HppManipulationWidgetsPlugin::MapNames& map,
+					       const QList<QListWidgetItem*>& list)
+    {
+      for (int i = 0; i < list.count(); i++) {
+        std::string name(list[i]->text().toStdString());
+	size_t pos = name.find_first_of("/");
+	std::string object = name.substr(0, pos);
+
+	if (map.find(object) != map.end()) {
+	  map[object].push_back(name);
+	}
+      }
+    }
+
     void HppManipulationWidgetsPlugin::buildGraph()
     {
       QListWidget* l = dynamic_cast<QListWidget*>(tw_->widget(0));
+      HppManipulationWidgetsPlugin::MapNames handlesMap = getObjects();
+      HppManipulationWidgetsPlugin::MapNames shapesMap = getObjects();
       hpp::Names_t_var grippers = convertToNames(l->selectedItems());
-      l = dynamic_cast<QListWidget*>(tw_->widget(1));
-      HppManipulationWidgetsPlugin::MapNames handlesMap = buildNamess(l->selectedItems());
+      l = dynamic_cast<QListWidget*>(tw_->widget(1)->layout()->itemAt(1)->widget());
+      fillMap(handlesMap, l->selectedItems());
       l = dynamic_cast<QListWidget*>(tw_->widget(2));
-      HppManipulationWidgetsPlugin::MapNames shapesMap = buildNamess(l->selectedItems());
+      fillMap(shapesMap, l->selectedItems());
       l = dynamic_cast<QListWidget*>(tw_->widget(3));
       hpp::Names_t_var envNames = convertToNames(l->selectedItems());
       hpp::corbaserver::manipulation::Rules_var rules = dynamic_cast<LinkWidget *>(tw_->widget(4))->getRules();
 
-      mergeShapes(handlesMap, shapesMap);
       HppManipulationWidgetsPlugin::NamesPair handles = convertMap(handlesMap);
       HppManipulationWidgetsPlugin::NamesPair shapes = convertMap(shapesMap);
-
       hpp_->graph ()->createGraph("constraints");
       gepetto::gui::WorkItem* item = new gepetto::gui::WorkItem_7<hpp::corbaserver::manipulation::_objref_Graph, hpp::intSeq*,
               const char *, const hpp::Names_t&, const hpp::Names_t&, const hpp::corbaserver::manipulation::Namess_t&, const hpp::corbaserver::manipulation::Namess_t&,
@@ -350,6 +376,8 @@ namespace hpp {
     {
       tw_ = new QTabWidget;
       QListWidget* lw;
+      QListWidget* grippers;
+      QListWidget* handles;
       QPushButton* button = new QPushButton("Confirm", tw_);
 
       connect(button, SIGNAL(clicked()), SLOT(buildGraph()));
@@ -363,16 +391,22 @@ namespace hpp {
       lw->addItems(l);
       lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
       tw_->addTab(lw, "Grippers");
+      grippers = lw;
 
       n = hpp_->problem()->getAvailable("Handle");
       l.clear();
       for (unsigned i = 0; i < n->length(); i++) {
         l << QString(n[i].in());
       }
+      QWidget* widget = new QWidget(tw_);
+      QVBoxLayout* box = new QVBoxLayout(widget);
+      box->addWidget(new QLabel("The objects not selected will be locked in their current position."));
       lw = new QListWidget(tw_);
+      box->addWidget(lw);
       lw->addItems(l);
       lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
-      tw_->addTab(lw, "Handles");
+      tw_->addTab(widget, "Handles");
+      handles = lw;
 
       n = hpp_->problem()->getRobotContactNames();
       l.clear();
@@ -394,7 +428,7 @@ namespace hpp {
       lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
       tw_->addTab(lw, "Environments Contacts");
 
-      LinkWidget* lWidget = new LinkWidget(this, tw_);
+      LinkWidget* lWidget = new LinkWidget(this, grippers, handles, tw_);
       tw_->addTab(lWidget, "Rules");
 
       tw_->setCornerWidget(button, Qt::BottomRightCorner);

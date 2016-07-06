@@ -100,14 +100,14 @@ signals:
         typedef std::pair<hpp::Names_t, hpp::corbaserver::manipulation::Namess_t> NamesPair;
       typedef std::map<std::string, std::list<std::string> > MapNames;
 
-        MapNames buildNamess(const QList<QListWidgetItem *>& names);
-
         /// Convert a MapNames to a pair of corba types.
         NamesPair convertMap(MapNames& mapNames);
 
         /// Transform a list of QListWidgetItem to corba sequence of strings.
         hpp::Names_t_var convertToNames(const QList<QListWidgetItem *>& l);
 
+      MapNames getObjects();
+      void fillMap(MapNames& map, const QList<QListWidgetItem *>& l);
         void mergeShapes(MapNames& handles, MapNames& shapes);
 
         HppManipClient* hpp_;

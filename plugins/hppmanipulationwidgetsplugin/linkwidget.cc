@@ -4,28 +4,25 @@
 namespace hpp {
   namespace gui {
     LinkWidget::LinkWidget(HppManipulationWidgetsPlugin* plugins,
+			   QListWidget* grippersList, QListWidget* handlesList,
                            QWidget *parent) :
       QWidget(parent),
       ui_(new Ui::LinkWidget)
     {
       ui_->setupUi(this);
-      hpp::Names_t_var n;
-      QStringList l;
-      n = plugins->manipClient()->problem()->getAvailable("gripper");
-      for (unsigned i = 0; i < n->length(); ++i) {
-        l << n[i].in();
-      }
-      ui_->grippersList->addItems(l);
-      l.clear();
-      n = plugins->manipClient()->problem()->getAvailable("handle");
-      for (unsigned i = 0; i < n->length(); ++i) {
-        l << n[i].in();
-      }
-      ui_->handlesList->addItems(l);
+      grippers_ = grippersList;
+      handles_ = handlesList;
 
       connect(ui_->createButton, SIGNAL(clicked()), SLOT(createRule()));
 
       ui_->rulesList->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+      connect(grippersList->selectionModel(),
+	      SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
+	      SLOT(gripperChanged(const QItemSelection&, const QItemSelection&)));
+      connect(handlesList->selectionModel(),
+	      SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
+	      SLOT(handleChanged(const QItemSelection&, const QItemSelection&)));
     }
 
     LinkWidget::~LinkWidget()
@@ -47,6 +44,29 @@ namespace hpp {
         ++i;
       }
       return rules;
+    }
+
+    void LinkWidget::gripperChanged(const QItemSelection& selected,
+				    const QItemSelection& deselected)
+    {
+      foreach(QModelIndex idx, selected.indexes()) {
+	ui_->grippersList->addItem(grippers_->item(idx.row())->text());
+      }
+      foreach(QModelIndex idx, deselected.indexes()) {
+	QList<QListWidgetItem*> list = ui_->grippersList->findItems(grippers_->item(idx.row())->text(), Qt::MatchExactly);
+        delete ui_->grippersList->takeItem(ui_->grippersList->row(list.front()));
+      }
+    }
+
+    void LinkWidget::handleChanged(const QItemSelection& selected, const QItemSelection& deselected)
+    {
+      foreach(QModelIndex idx, selected.indexes()) {
+	ui_->handlesList->addItem(handles_->item(idx.row())->text());
+      }
+      foreach(QModelIndex idx, deselected.indexes()) {
+	QList<QListWidgetItem*> list = ui_->handlesList->findItems(handles_->item(idx.row())->text(), Qt::MatchExactly);
+        delete ui_->handlesList->takeItem(ui_->handlesList->row(list.front()));
+      }
     }
 
     void LinkWidget::createRule()
