@@ -6,7 +6,7 @@ import re
 class GraphUtility (QWidget):
     def __init__(self, parent):
         super(GraphUtility, self).__init__(parent)
-        self.r = Robot("", "", "", False)
+        self.plugin = parent
         self.initWidget()
         self.edges = {}
         self.nodes = {}
@@ -55,10 +55,10 @@ class GraphUtility (QWidget):
             self.resultList.addItem(n)
 
     def fillGripper(self):
-        self.grippersList.addItems(self.r.client.manipulation.problem.getAvailable("gripper"))
+        self.grippersList.addItems(self.plugin.r.client.manipulation.problem.getAvailable("gripper"))
 
     def fillHandles(self):
-        self.handlesList.addItems(self.r.client.manipulation.problem.getAvailable("handle"))
+        self.handlesList.addItems(self.plugin.r.client.manipulation.problem.getAvailable("handle"))
 
     def applyRegex(self):
         names = self.eraseInvalid(r.compile(self.textEdit.text()), self.cg.nodes.copy())
@@ -67,7 +67,7 @@ class GraphUtility (QWidget):
             self.resultList.addItem(n)
 
     def refresh(self):
-        self.cg = ConstraintGraph(self.r, "", False)
+        self.cg = ConstraintGraph(self.plugin.r, "", False)
         try:
             self.fillGripper()
             self.fillHandles()
@@ -125,7 +125,6 @@ class GraphUtility (QWidget):
 
         # Get the grippers and handles names
         # Connect the widget to functions
-        self.refresh()
         self.addConnection()
 
 class Plugin(QDockWidget):
@@ -137,4 +136,11 @@ class Plugin(QDockWidget):
         self.mainWindow = mainWindow
         self.graphUtility = GraphUtility(self)
         self.setWidget(self.graphUtility)
-        mainWindow.connect("refresh()", self.graphUtility.refresh)
+        self.resetConnection()
+
+    def resetConnection(self):
+        self.r = Robot("", "", "", False)
+
+    def refreshInterface(self):
+        print ("refresh")
+        self.graphUtility.refresh()        

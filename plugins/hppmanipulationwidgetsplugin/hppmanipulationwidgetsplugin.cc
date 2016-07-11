@@ -428,7 +428,7 @@ namespace hpp {
       lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
       tw_->addTab(lw, "Environments Contacts");
 
-      LinkWidget* lWidget = new LinkWidget(this, grippers, handles, tw_);
+      LinkWidget* lWidget = new LinkWidget(grippers, handles, tw_);
       tw_->addTab(lWidget, "Rules");
 
       tw_->setCornerWidget(button, Qt::BottomRightCorner);

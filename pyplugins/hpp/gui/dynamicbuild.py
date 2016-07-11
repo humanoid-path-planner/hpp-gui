@@ -13,8 +13,8 @@ class Clients(object):
         self.viewer = ViewerClient()
 
 class DualSelect(object):
-    def __init__(self, client, mainWindow):
-        self.client = client
+    def __init__(self, plugin, mainWindow):
+        self.plugin = plugin
         self.selectedHandles = []
         self.selectedGrippers = []
         self.grippers = []
@@ -52,28 +52,28 @@ class DualSelect(object):
 
     def addHandle(self, handleName):
         if (len(self.selectedHandles) == 1):
-            self.client.viewer.gui.deleteNode(self.groupName, True)
+            self.plugin.client.viewer.gui.deleteNode(self.groupName, True)
         self.changed = True
         self.selectedHandles = [str(handleName)]
         self.handles = self.getAvailable(self.selectedHandles[0] + "/", "handle")
         self.currentHandle = 0
-        config = self.client.manipulation.robot.getHandlePositionInJoint(self.handles[self.currentHandle])
+        config = self.plugin.client.manipulation.robot.getHandlePositionInJoint(self.handles[self.currentHandle])
         self.handleLabel.setText(self.handles[self.currentHandle])
         self.drawXYZAxis("handle_"+self.handles[self.currentHandle].replace("/", "_"), config)
 
     def addGripper(self, gripperName):
         if (len(self.selectedGrippers) == 1):
-            self.client.viewer.gui.deleteNode(self.groupName, True)
+            self.plugin.client.viewer.gui.deleteNode(self.groupName, True)
         self.changed = True
         self.selectedGrippers = [str(gripperName)]
         self.grippers = self.getAvailable(self.selectedGrippers[0] + "/", "gripper")
         self.currentGripper = 0
         self.gripperLabel.setText(self.grippers[self.currentGripper])
-        config = self.client.manipulation.robot.getGripperPositionInJoint(self.grippers[self.currentGripper])
+        config = self.plugin.client.manipulation.robot.getGripperPositionInJoint(self.grippers[self.currentGripper])
         self.drawXYZAxis("gripper_"+self.grippers[self.currentGripper].replace("/", "_"), config)
 
     def getAvailable(self, comp, t):
-        l = self.client.manipulation.problem.getAvailable(t)
+        l = self.plugin.client.manipulation.problem.getAvailable(t)
         ret = []
         for name in l:
             if (name.startswith(comp)):
@@ -83,11 +83,11 @@ class DualSelect(object):
     def drawXYZAxis(self, name, config):
         obj = self.mainWindow.getFromSlot("requestCreateJointGroup")
         self.groupName = str(obj.requestCreateJointGroup(config[0]))
-        self.client.viewer.gui.addXYZaxis(name, [0, 1, 0, 1], 0.005, 1)
-        self.client.viewer.gui.applyConfiguration(name, config[1])
-        self.client.viewer.gui.addToGroup(name, self.groupName)
-        self.client.viewer.gui.setVisibility(name, "ALWAYS_ON_TOP")
-        self.client.viewer.gui.refresh()
+        self.plugin.client.viewer.gui.addXYZaxis(name, [0, 1, 0, 1], 0.005, 1)
+        self.plugin.client.viewer.gui.applyConfiguration(name, config[1])
+        self.plugin.client.viewer.gui.addToGroup(name, self.groupName)
+        self.plugin.client.viewer.gui.setVisibility(name, "ALWAYS_ON_TOP")
+        self.plugin.client.viewer.gui.refresh()
 
     def changeHandle(self):
         if (len(self.handles) > 0):
@@ -97,8 +97,8 @@ class DualSelect(object):
                 self.currentHandle = 0
             self.handleLabel.setText(self.handles[self.currentHandle])
             if (previous != self.currentHandle):
-                self.client.viewer.gui.deleteNode(self.groupName, True)
-                config = self.client.manipulation.robot.getHandlePositionInJoint(self.handles[self.currentHandle])
+                self.plugin.client.viewer.gui.deleteNode(self.groupName, True)
+                config = self.plugin.client.manipulation.robot.getHandlePositionInJoint(self.handles[self.currentHandle])
                 self.drawXYZAxis("handle_"+self.handles[self.currentHandle].replace("/", "_"), config)
 
     def changeGripper(self):
@@ -109,30 +109,30 @@ class DualSelect(object):
                 self.currentGripper = 0
             self.gripperLabel.setText(self.grippers[self.currentGripper])
             if (self.currentGripper != previous):
-                self.client.viewer.gui.deleteNode(self.groupName, True)
-                config = self.client.manipulation.robot.getGripperPositionInJoint(self.grippers[self.currentGripper])
+                self.plugin.client.viewer.gui.deleteNode(self.groupName, True)
+                config = self.plugin.client.manipulation.robot.getGripperPositionInJoint(self.grippers[self.currentGripper])
                 self.drawXYZAxis("gripper_"+self.grippers[self.currentGripper].replace("/", "_"), config)
 
     def grasp(self):
-        config = self.client.basic.robot.shootRandomConfig() if self.shift else self.client.basic.robot.getCurrentConfig()
-        self.client.basic.problem.resetConstraints()
+        config = self.plugin.client.basic.robot.shootRandomConfig() if self.shift else self.plugin.client.basic.robot.getCurrentConfig()
+        self.plugin.client.basic.problem.resetConstraints()
         print (self.currentGripper)
         print (self.currentHandle)
         name = self.grippers[self.currentGripper] + " grasps " + self.handles[self.currentHandle]
-        self.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
-        self.client.basic.problem.setNumericalConstraints("constraints", [name], [True])
-        res = self.client.basic.problem.applyConstraints(config)
-        self.client.basic.robot.setCurrentConfig(res[1])
+        self.plugin.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
+        self.plugin.client.basic.problem.setNumericalConstraints("constraints", [name], [True])
+        res = self.plugin.client.basic.problem.applyConstraints(config)
+        self.plugin.client.basic.robot.setCurrentConfig(res[1])
         self.mainWindow.requestApplyCurrentConfiguration()
 
     def pregrasp(self):
-        config = self.client.basic.robot.shootRandomConfig() if self.shift else self.client.basic.robot.getCurrentConfig()
-        self.client.basic.problem.resetConstraints()
+        config = self.plugin.client.basic.robot.shootRandomConfig() if self.shift else self.plugin.client.basic.robot.getCurrentConfig()
+        self.plugin.client.basic.problem.resetConstraints()
         name = self.grippers[self.currentGripper] + " pregrasps " + self.handles[self.currentHandle]
-        self.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
-        self.client.basic.problem.setNumericalConstraints("constraints", [name], [True])
-        res = self.client.basic.problem.applyConstraints(self.client.basic.robot.getCurrentConfig())
-        self.client.basic.robot.setCurrentConfig(res[1])
+        self.plugin.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
+        self.plugin.client.basic.problem.setNumericalConstraints("constraints", [name], [True])
+        res = self.plugin.client.basic.problem.applyConstraints(self.plugin.client.basic.robot.getCurrentConfig())
+        self.plugin.client.basic.robot.setCurrentConfig(res[1])
         self.mainWindow.requestApplyCurrentConfiguration()
 
     def handleEvent(self, key):
@@ -150,8 +150,8 @@ class DualSelect(object):
         self.shift = not self.shift
 
 class RuleMaker(object):
-    def __init__(self, client, mainWindow):
-        self.client = client
+    def __init__(self, plugin, mainWindow):
+        self.plugin = client
         self.shift = 0
         self.selectedHandles = []
         self.selectedGrippers = []
@@ -161,29 +161,29 @@ class RuleMaker(object):
 
         obj = mainWindow.getFromSlot("requestCreateJointGroup")
         # Draw the handles in the viewer
-        handles = self.client.manipulation.problem.getAvailable("handle")
+        handles = self.plugin.client.manipulation.problem.getAvailable("handle")
         for handle in handles:
-            config = self.client.manipulation.robot.getHandlePositionInJoint(handle)
+            config = self.plugin.client.manipulation.robot.getHandlePositionInJoint(handle)
             groupName = str(obj.requestCreateJointGroup(config[0]))
             name = "handle_" + handle.replace("/", "_")
-            self.client.viewer.gui.addXYZaxis(name, [0, 1, 0, 1], 0.005, 1)
-            self.client.viewer.gui.applyConfiguration(name, config[1])
-            self.client.viewer.gui.addToGroup(name, groupName)
-            self.client.viewer.gui.setVisibility(name, "ALWAYS_ON_TOP")
+            self.plugin.client.viewer.gui.addXYZaxis(name, [0, 1, 0, 1], 0.005, 1)
+            self.plugin.client.viewer.gui.applyConfiguration(name, config[1])
+            self.plugin.client.viewer.gui.addToGroup(name, groupName)
+            self.plugin.client.viewer.gui.setVisibility(name, "ALWAYS_ON_TOP")
             self.knownHandles.append(name)
 
         # Draw the grippers in the viewer
-        grippers = self.client.manipulation.problem.getAvailable("gripper")
+        grippers = self.plugin.client.manipulation.problem.getAvailable("gripper")
         for gripper in grippers:
-            config = self.client.manipulation.robot.getGripperPositionInJoint(gripper)
+            config = self.plugin.client.manipulation.robot.getGripperPositionInJoint(gripper)
             groupName = str(obj.requestCreateJointGroup(config[0]))
             name = "gripper_" + gripper.replace("/", "_")
-            self.client.viewer.gui.addXYZaxis(name, [0, 1, 0, 1], 0.005, 1)
-            self.client.viewer.gui.applyConfiguration(name, config[1])
-            self.client.viewer.gui.addToGroup(name, groupName)
-            self.client.viewer.gui.setVisibility(name, "ALWAYS_ON_TOP")
+            self.plugin.client.viewer.gui.addXYZaxis(name, [0, 1, 0, 1], 0.005, 1)
+            self.plugin.client.viewer.gui.applyConfiguration(name, config[1])
+            self.plugin.client.viewer.gui.addToGroup(name, groupName)
+            self.plugin.client.viewer.gui.setVisibility(name, "ALWAYS_ON_TOP")
             self.knownGrippers.append(name)
-        self.client.viewer.gui.refresh()
+        self.plugin.client.viewer.gui.refresh()
 
     def addHandle(self, handleName):
         if (self.knownHandles.count(handleName) == 1):
@@ -223,7 +223,7 @@ class DynamicBuilder(QWidget):
         super(DynamicBuilder, self).__init__(parent)
         self.plugin = parent
         self.mode = 0
-        self.modeInstance = DualSelect(self.plugin.client, mainWindow)
+        self.modeInstance = DualSelect(self.plugin, mainWindow)
         self.running = False
         self.selected = ""
         self.mainWindow = mainWindow
@@ -261,15 +261,18 @@ class DynamicBuilder(QWidget):
 
     def keyPressEvent(self, event):
         if (self.running):
+            print event.key()
             if (event.key() == QNamespace.Key_M):
                 self.mode = not self.mode
                 if (self.mode == 0):
-                    self.modeInstance = DualSelect(self.plugin.client, self.mainWindow)
+                    self.modeInstance = DualSelect(self.plugin, self.mainWindow)
                 else:
-                    self.modeInstance = RuleMaker(self.plugin.client, self.mainWindow)
+                    self.modeInstance = RuleMaker(self.plugin, self.mainWindow)
             elif (event.key() == QNamespace.Key_H):
+                print "Handle"
                 self.modeInstance.addHandle(self.selected)
             elif (event.key() == QNamespace.Key_R):
+                print "Gripper"
                 self.modeInstance.addGripper(self.selected)
             elif (event.key() == QNamespace.Key_Shift):
                 self.modeInstance.setShift()

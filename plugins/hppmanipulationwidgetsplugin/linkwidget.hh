@@ -21,8 +21,7 @@ namespace hpp {
       Q_OBJECT
 
     public:
-      explicit LinkWidget(HppManipulationWidgetsPlugin* plugins,
-			  QListWidget* grippersList, QListWidget* handlesList,
+      explicit LinkWidget(QListWidget* grippersList, QListWidget* handlesList,
                           QWidget *parent = 0);
       ~LinkWidget();
 

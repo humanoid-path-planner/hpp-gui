@@ -26,14 +26,11 @@ class _ConcatenatePath(QtGui.QWidget):
         self.paths = QtGui.QListWidget()
         box.addWidget(self.paths)
         self.paths.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
-
-        self.refresh()
         
         self.button = QtGui.QPushButton("Concatenate")
         box.addWidget(self.button)
 
         self.button.connect("clicked()", self.concatenate)
-        self.plugin.main.connect("refresh()", self.refresh)
 
     def refresh(self):
         selected = self.paths.selectedItems()
@@ -149,11 +146,12 @@ class Plugin(QtGui.QDockWidget):
         self.tabWidget = QtGui.QTabWidget(self)
         self.setWidget (self.tabWidget)
         self.nodeCreator = _PathTab(self)
+        self.concatenateWidget = _ConcatenatePath(self)
         self.tabWidget.addTab (self.nodeCreator, "Path")
         self.tabWidget.addTab (_RoadmapTab(self), "Roadmap")
         self.tabWidget.addTab (_StepByStepSolverTab(self), "Step by step solver")
         self.tabWidget.addTab (GraspFinder(self), "Grasp Finder")
-        self.tabWidget.addTab (_ConcatenatePath(self), "Concatenate paths")
+        self.tabWidget.addTab (self.concatenateWidget, "Concatenate paths")
 
     def resetConnection(self):
         self.client = Client()
@@ -162,3 +160,6 @@ class Plugin(QtGui.QDockWidget):
     def osgWidget(self,osg):
         if self.osg is None:
             self.osg = osg
+
+    def refreshInterface(self):
+        self.concatenateWidget.refresh()

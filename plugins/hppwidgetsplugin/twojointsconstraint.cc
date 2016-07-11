@@ -28,12 +28,6 @@ namespace hpp {
         connect(globalFirst_, SIGNAL(toggled(bool)), SLOT(globalSelected(bool)));
         connect(globalFirst_, SIGNAL(toggled(bool)), firstJoint_, SLOT(setDisabled(bool)));
         connect(globalSecond_, SIGNAL(toggled(bool)), secondJoint_, SLOT(setDisabled(bool)));
-
-        try {
-          joints_ = plugin_->client()->robot()->getAllJointNames();
-        } catch (hpp::Error const& e) {
-            gepetto::gui::MainWindow::instance()->logError(QString(e.msg));
-        }
     }
 
     ATwoJointConstraint::~ATwoJointConstraint()

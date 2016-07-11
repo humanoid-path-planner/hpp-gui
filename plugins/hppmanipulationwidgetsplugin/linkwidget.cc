@@ -3,8 +3,7 @@
 
 namespace hpp {
   namespace gui {
-    LinkWidget::LinkWidget(HppManipulationWidgetsPlugin* plugins,
-			   QListWidget* grippersList, QListWidget* handlesList,
+    LinkWidget::LinkWidget(QListWidget* grippersList, QListWidget* handlesList,
                            QWidget *parent) :
       QWidget(parent),
       ui_(new Ui::LinkWidget)
