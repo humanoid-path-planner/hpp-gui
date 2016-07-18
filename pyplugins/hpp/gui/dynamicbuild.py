@@ -20,7 +20,7 @@ class _DualSelect(object):
         self.selectedGrippers = []
         self.grippers = []
         self.handles = []
-        self.lock = []
+        self.locked = []
         self.groupName = ""
         self.currentGripper = 0
         self.currentHandle = 0
@@ -66,7 +66,11 @@ class _DualSelect(object):
         self.mainWindow.registerShortcut("Dynamic builder", "Change gripper used", action)
         self.actions.append(action)
 
-        action = QAction("Lock current", self.parent)
+        action = QAction("Lock current object", self.parent)
+        action.connect("triggered()", self.lock)
+        action.setShortcut(QKeySequence(QNamespace.Key_L))
+        self.mainWindow.registerShortcut("Dynamic builder", "Lock current object", action)
+        self.actions.append(action)
 
     def createWidget(self):
         self.w = QWidget(self.parent)
@@ -172,6 +176,8 @@ class _DualSelect(object):
 
     def grasp(self, config):
         self.parent.plugin.client.basic.problem.resetConstraints()
+        for j in self.locked:
+            self.parent.plugin.client.basic.problem.lockJoint(j, self.parent.plugin.client.basic.robot.getJointConfig(j))
         name = self.grippers[self.currentGripper] + " grasps " + self.handles[self.currentHandle]
         self.parent.plugin.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
         self.parent.plugin.client.basic.problem.setNumericalConstraints("constraints", [name], [True])
@@ -190,8 +196,8 @@ class _DualSelect(object):
 
     def pregrasp(self, config):
         self.parent.plugin.client.basic.problem.resetConstraints()
-        for i in range(0, len(constraints)):
-            priorities.append(True)
+        for j in self.locked:
+            self.parent.plugin.client.basic.problem.lockJoint(name, self.parent.plugin.client.basic.robot.getJointConfig())
         name = self.grippers[self.currentGripper] + " pregrasps " + self.handles[self.currentHandle]
         self.parent.plugin.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
         self.parent.plugin.client.basic.problem.setNumericalConstraints("constraints", [name], [True])
@@ -199,6 +205,15 @@ class _DualSelect(object):
         if (res[0] == True):
             self.parent.plugin.client.basic.robot.setCurrentConfig(res[1])
             self.mainWindow.requestApplyCurrentConfiguration()
+
+    def lock(self):
+        if (self.parent.selected != ""):
+            self.locked = []
+            joints = self.parent.plugin.client.basic.robot.getAllJointNames()
+            name = self.parent.selected + "/"
+            for j in joints:
+                if j.startswith(name):
+                    self.locked.append(j)
 
 class _DynamicBuilder(QWidget):
     def __init__(self, mainWindow, parent):
@@ -211,10 +226,9 @@ class _DynamicBuilder(QWidget):
         self.mainWindow.connect("selectJointFromBodyName(QString)", self.changeSelected)
 
         # Init the widget view
+        self.initActions()
         self.modeInstance = _DualSelect(self, mainWindow)
         self.initWidget()
-        self.initActions()
-
 
     def initActions(self):
         action = QAction("Choose as gripper", self)
