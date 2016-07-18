@@ -4,9 +4,6 @@
 #include "gepetto/gui/mainwindow.hh"
 #include "gepetto/gui/windows-manager.hh"
 
-#include "hpp/manipulation/graph/helper.hh"
-#include "hpp/corbaserver/manipulation/graph.hh"
-
 #include "hppwidgetsplugin/jointtreewidget.hh"
 #include "hppmanipulationwidgetsplugin/linkwidget.hh"
 #include "hppmanipulationwidgetsplugin/manipulationconstraintwidget.hh"
