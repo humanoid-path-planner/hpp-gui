@@ -62,6 +62,7 @@ namespace hpp {
       main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
       dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_C);
       dockWidgets_.append(dock);
+      main->registerShortcut("Configuration List", "Toggle view", dock->toggleViewAction());
 
       // Solver widget
       dock = new QDockWidget ("Problem &solver", main);
@@ -70,6 +71,7 @@ namespace hpp {
       main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Horizontal);
       dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_S);
       dockWidgets_.append(dock);
+      main->registerShortcut("Problem solver", "Toggle view", dock->toggleViewAction());
 
       // Path player widget
       dock = new QDockWidget ("&Path player", main);
@@ -78,6 +80,7 @@ namespace hpp {
       main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
       dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_P);
       dockWidgets_.append(dock);
+      main->registerShortcut("PathPlayer", "Toggle view", dock->toggleViewAction());
 
       // Joint tree widget
       dock = new QDockWidget ("&Joint Tree", main);
@@ -87,6 +90,7 @@ namespace hpp {
       main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
       dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_J);
       dockWidgets_.append(dock);
+      main->registerShortcut("JointTree", "Toggle view", dock->toggleViewAction());
 
       loadConstraintWidget();
 
@@ -450,6 +454,7 @@ namespace hpp {
       constraintWidget_->addConstraint(new OrientationConstraint(this));
       constraintWidget_->addConstraint(new TransformConstraint(this));
       constraintWidget_->addConstraint(new LockedJointConstraint(this));
+      main->registerShortcut("Constraint Widget", "Toggle view", dock->toggleViewAction());
     }
 
     std::string HppWidgetsPlugin::escapeJointName(const std::string jn)
