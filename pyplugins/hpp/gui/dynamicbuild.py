@@ -119,6 +119,7 @@ class _DualSelect(object):
         self.selectedGrippers = [str(gripperName)]
         self.grippers = self.getAvailable(gripperName + "/", "gripper")
         self.currentGripper = 0
+        self.locked = []
         if (len(self.grippers) > 0):
             self.gripperLabel.setText(self.grippers[self.currentGripper])
             config = self.parent.plugin.client.manipulation.robot.getGripperPositionInJoint(self.grippers[self.currentGripper])
