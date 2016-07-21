@@ -115,7 +115,6 @@ signals:
         QToolBar *toolBar_;
         QTabWidget *tw_;
 
-        int firstEnter_;
         int lastId_;
     };
   } // namespace gui

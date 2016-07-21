@@ -20,7 +20,6 @@ namespace hpp {
       toolBar_ (NULL),
       tw_ (NULL)
     {
-      firstEnter_ = 0;
     }
 
     HppManipulationWidgetsPlugin::~HppManipulationWidgetsPlugin()
@@ -61,9 +60,10 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::loadRobotModel(gepetto::gui::DialogLoadRobot::RobotDefinition rd)
     {
-      if (firstEnter_ == 0) {
-      	hpp_->robot ()->create (gepetto::gui::Traits<QString>::to_corba("composite").in());
-      	firstEnter_ = 1;
+      try {
+	client ()->robot ()->getCurrentConfig();
+      } catch (hpp::Error const& e) {
+	hpp_->robot ()->create (gepetto::gui::Traits<QString>::to_corba("composite").in());
       }
       hpp_->robot ()->insertRobotModel (gepetto::gui::Traits<QString>::to_corba(rd.robotName_).in(),
 					gepetto::gui::Traits<QString>::to_corba(rd.rootJointType_).in(),
@@ -80,9 +80,10 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::loadEnvironmentModel(gepetto::gui::DialogLoadEnvironment::EnvironmentDefinition ed)
     {
-      if (firstEnter_ == 0) {
-      	hpp_->robot ()->create (gepetto::gui::Traits<QString>::to_corba("composite").in());
-      	firstEnter_ = 1;
+      try {
+	client ()->robot ()->getCurrentConfig();
+      } catch (hpp::Error const& e) {
+	hpp_->robot ()->create (gepetto::gui::Traits<QString>::to_corba("composite").in());
       }
       hpp_->robot ()-> loadEnvironmentModel(gepetto::gui::Traits<QString>::to_corba(ed.package_).in(),
 					    gepetto::gui::Traits<QString>::to_corba(ed.urdfFilename_).in(),
