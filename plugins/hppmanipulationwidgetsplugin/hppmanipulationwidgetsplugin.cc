@@ -51,6 +51,8 @@ namespace hpp {
 
       connect(&main->worker(), SIGNAL(done(int)), SLOT(handleWorkerDone(int)));
       main->registerSlot("autoBuildGraph", this);
+      main->registerSlot("drawRobotContacts", this);
+      main->registerSlot("drawEnvironmentsContacts", this);
     }
 
     QString HppManipulationWidgetsPlugin::name() const
@@ -139,17 +141,45 @@ namespace hpp {
       return r;
     }
 
-    void HppManipulationWidgetsPlugin::drawRobotContacts()
+    void HppManipulationWidgetsPlugin::drawContactSurface(const std::string& name,
+							  hpp::intSeq_var& indexes,
+							  hpp::floatSeqSeq_var& points,
+							  CORBA::ULong j,
+							  double epsilon)
     {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
+      const float color[] = {0, 1, 0, 1};
+      QVector3D norm(0, 0, 0);
+      CORBA::Long iPts = (j == 0) ? 0 : indexes[j - 1];
+      gepetto::corbaserver::PositionSeq ps; ps.length (indexes[j] - iPts);
+      if (ps.length() > 3) {
+	QVector3D a(points[iPts][0] - points[iPts + 1][0],
+		    points[iPts][1] - points[iPts + 1][1],
+		    points[iPts][2] - points[iPts + 1][2]);
+	QVector3D b(points[iPts + 1][0] - points[iPts + 2][0],
+		    points[iPts + 1][1] - points[iPts + 2][1],
+		    points[iPts + 1][2] - points[iPts + 2][2]);
+	QVector3D c = QVector3D::crossProduct(a, b);
+	if (c.length() > 0.00001 || c.length() < -0.00001)
+	  norm = c / c.length();
+      }
+      for (CORBA::Long k = iPts; k < indexes[j]; ++k) {
+	ps[k - iPts][0] = (float)points[k][0] + norm.x() * epsilon;
+	ps[k - iPts][1] = (float)points[k][1] + norm.y() * epsilon;
+	ps[k - iPts][2] = (float)points[k][2] + norm.z() * epsilon;
+      }
+      main->osg()->addCurve (name.c_str(), ps, color);
+      main->osg()->setCurveMode (name.c_str(), GL_POLYGON);
+    }
+
+    void HppManipulationWidgetsPlugin::drawRobotContacts()
+    {
       hpp::Names_t_var rcs = hpp_->problem()->getRobotContactNames();
       hpp::floatSeqSeq_var points;
       hpp::intSeq_var indexes;
-      const float color[] = {0, 1, 0, 1};
       for (CORBA::ULong i = 0; i < rcs->length(); ++i) {
         hpp::Names_t_var cjs = hpp_->problem()->getRobotContact (
             rcs[i], indexes.out(), points.out());
-        CORBA::Long iPts = 0;
         for (CORBA::ULong j = 0; j < cjs->length(); ++j) {
           /// Create group
           std::string target = createJointGroup(std::string(cjs[j]));
@@ -157,17 +187,9 @@ namespace hpp {
           /// Add the contacts
           std::stringstream ssname;
           ssname <<  target << "/contact_"
-            << escapeJointName(std::string (rcs[i])) << "_" << j;
+		 << escapeJointName(std::string (rcs[i])) << "_" << j << "_";
           std::string name = ssname.str ();
-          gepetto::corbaserver::PositionSeq ps; ps.length (indexes[j] - iPts);
-          for (CORBA::Long k = iPts; k < indexes[j]; ++k) {
-            ps[k - iPts][0] = (float)points[k][0];
-            ps[k - iPts][1] = (float)points[k][1];
-            ps[k - iPts][2] = (float)points[k][2];
-          }
-          iPts = indexes[j];
-          main->osg()->addCurve (name.c_str(), ps, color);
-          main->osg()->setCurveMode (name.c_str(), GL_POLYGON);
+	  drawContactSurface(name, indexes, points, j);
         }
       }
       gepetto::gui::MainWindow::instance()->requestRefresh();
@@ -175,30 +197,19 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::drawEnvironmentContacts()
     {
-      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var rcs = hpp_->problem()->getEnvironmentContactNames();
       hpp::floatSeqSeq_var points;
       hpp::intSeq_var indexes;
-      const float color[] = {0, 1, 0, 1};
       for (CORBA::ULong i = 0; i < rcs->length(); ++i) {
         hpp::Names_t_var cjs = hpp_->problem()->getEnvironmentContact (
             rcs[i], indexes.out(), points.out());
-        CORBA::Long iPts = 0;
         for (CORBA::ULong j = 0; j < cjs->length(); ++j) {
           /// Add the contacts
           std::stringstream ssname;
           ssname << "hpp-gui/contact_"
-            << escapeJointName(std::string (rcs[i])) << "_" << j;
+            << escapeJointName(std::string (rcs[i])) << "_" << j << "_";
           std::string name = ssname.str ();
-          gepetto::corbaserver::PositionSeq ps; ps.length (indexes[j] - iPts);
-          for (CORBA::Long k = iPts; k < indexes[j]; ++k) {
-            ps[k - iPts][0] = (float)points[k][0];
-            ps[k - iPts][1] = (float)points[k][1];
-            ps[k - iPts][2] = (float)points[k][2];
-          }
-          iPts = indexes[j];
-          main->osg()->addCurve (name.c_str(), ps, color);
-          main->osg()->setCurveMode (name.c_str(), GL_POLYGON);
+	  drawContactSurface(name, indexes, points, j);
         }
       }
       gepetto::gui::MainWindow::instance()->requestRefresh();

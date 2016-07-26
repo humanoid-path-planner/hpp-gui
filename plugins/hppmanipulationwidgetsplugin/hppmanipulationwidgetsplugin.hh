@@ -110,6 +110,17 @@ signals:
       void fillMap(MapNames& map, const QList<QListWidgetItem *>& l);
         void mergeShapes(MapNames& handles, MapNames& shapes);
 
+      /// Draw the surface name describe by the points at index indexes[j] in points.
+      /// The surface will be moved of epsilon along its normal so that it does not overlap
+      /// others bodies.
+      /// \param name surface name
+      /// \param indexes table of indexes
+      /// \param points table of points
+      /// \param j index in table indexes
+      /// \param epsilon offset
+      void drawContactSurface(const std::string& name, hpp::intSeq_var& indexes,
+			      hpp::floatSeqSeq_var& points, CORBA::ULong j, double epsilon = 0.0001);
+
         HppManipClient* hpp_;
 
         QToolBar *toolBar_;
