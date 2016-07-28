@@ -13,34 +13,41 @@ class _PathTab(QtGui.QWidget):
         # Create group
         box.addWidget(DirectPathBox(self, self.plugin))
 
-class _ConcatenatePath(QtGui.QWidget):
+class _PathManagement(QtGui.QWidget):
     def __init__(self, parent):
-        super(_ConcatenatePath, self).__init__(parent)
+        super(_PathManagement, self).__init__(parent)
         self.plugin = parent
 
         box = QtGui.QVBoxLayout(self)
         
+        button = QtGui.QPushButton("Get paths", self)
+        button.connect("clicked()", self.refresh)
+        box.addWidget(button)
         box.addWidget(QtGui.QLabel("Choose the paths you want to concatenate.\n"
                                    "All the paths will be concatenate in the first choose."))
         box.addWidget(QtGui.QLabel("List of path:"))
         self.paths = QtGui.QListWidget()
         box.addWidget(self.paths)
         self.paths.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
-        
-        self.button = QtGui.QPushButton("Concatenate")
-        box.addWidget(self.button)
 
-        self.button.connect("clicked()", self.concatenate)
+        hBox = QtGui.QHBoxLayout()
+        
+        self.buttonConcatenate = QtGui.QPushButton("Concatenate")
+        hBox.addWidget(self.buttonConcatenate)
+        self.buttonConcatenate.connect("clicked()", self.concatenate)
+
+        self.buttonErase = QtGui.QPushButton("Erase")
+        hBox.addWidget(self.buttonErase)
+        self.buttonErase.connect("clicked()", self.erase)
+
+        box.addLayout(hBox)
 
     def refresh(self):
-        selected = self.paths.selectedItems()
         self.paths.clear()
 
         nbPaths = self.plugin.client.problem.numberPaths()
         for i in range(0, nbPaths):
             self.paths.addItem(str(i))
-            if (len(selected) > 0):
-                self.paths.setCurrentItem(selected, QtGui.QItemSelectionModel.Select)
 
     def concatenate(self):
         selected = self.paths.selectedItems()
@@ -49,6 +56,14 @@ class _ConcatenatePath(QtGui.QWidget):
             for i in range(1, len(selected)):
                 print "Concatenate %s and %s" % (first, int(selected[i].text()))
                 self.plugin.client.problem.concatenatePath(first, int(selected[i].text()))
+
+    def erase(self):
+        selected = self.paths.selectedItems()
+        if (len(selected) > 0):
+            for i in range(len(selected) - 1, -1, -1):
+                print "erase path %s " % (int(selected[i].text()))
+                self.plugin.client.problem.erasePath(int(selected[i].text()))
+            self.refresh()
 
 class _RoadmapTab(QtGui.QWidget):
     def __init__ (self, parent):
@@ -145,12 +160,12 @@ class Plugin(QtGui.QDockWidget):
         # Initialize the widget
         self.tabWidget = QtGui.QTabWidget(self)
         self.setWidget (self.tabWidget)
-        self.concatenateWidget = _ConcatenatePath(self)
+        self.concatenateWidget = _PathManagement(self)
         self.tabWidget.addTab (_PathTab(self), "Path")
         self.tabWidget.addTab (_RoadmapTab(self), "Roadmap")
         self.tabWidget.addTab (_StepByStepSolverTab(self), "Step by step solver")
         self.tabWidget.addTab (GraspFinder(self), "Grasp Finder")
-        self.tabWidget.addTab (self.concatenateWidget, "Concatenate paths")
+        self.tabWidget.addTab (self.concatenateWidget, "Paths management")
 
     def resetConnection(self):
         self.client = Client()
