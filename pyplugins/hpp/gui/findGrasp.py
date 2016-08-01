@@ -60,9 +60,9 @@ class GraspFinder(QtGui.QWidget):
             #self.Q = [(0.8140766620635986, 0.31978103518486023, -0.008532078936696053), (0.9297375082969666, 0.29411521553993225, -0.003007239894941449)]
             #self.names = [""]
             self.plugin.gui.gui.createGroup(self.groupName)
-            self.plugin.osg.connect("selected(QString,QVector3D)", self.selected)
+            self.plugin.osg.connect("clicked(QString,QVector3D)", self.selected)
         else:
-            self.plugin.osg.disconnect("selected(QString,QVector3D)", self.selected)
+            self.plugin.osg.disconnect("clicked(QString,QVector3D)", self.selected)
             self.P = []
             self.Q = []
             self.names = []

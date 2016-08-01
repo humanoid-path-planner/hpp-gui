@@ -255,7 +255,7 @@ class _PlacementMode(QWidget):
     def startPlacement(self):
         if (self.parent().plugin.osg is not None):
             self.step = -1
-            self.parent().plugin.osg.connect("selected(QString, QVector3D)", self.selected)
+            self.parent().plugin.osg.connect("clicked(QString, QVector3D)", self.selected)
 
     def selected(self, bodyName, position):
         selectedName = bodyName[bodyName.rfind("/contact_") + 9:len(bodyName)]
@@ -289,7 +289,7 @@ class _PlacementMode(QWidget):
             elif n.startswith(name):
                 self.parent().plugin.client.basic.robot.setJointPositionInParentFrame(n, [position.x(), position.y(), position.z(), 1, 0, 0, 0])
                 break
-        self.parent().plugin.osg.disconnect("selected(QString, QVector3D)", self.selected)
+        self.parent().plugin.osg.disconnect("clicked(QString, QVector3D)", self.selected)
         self.parent().plugin.client.manipulation.problem.createPlacementConstraint("placement",
                                                                                    [self.surfaceName], [self.carryName])
         self.parent().plugin.client.basic.problem.setNumericalConstraints("numerical", ["placement"], [True])
