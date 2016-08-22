@@ -41,6 +41,7 @@ SET(${PLUGIN_NAME}_HEADERS
 
 SET(${PLUGIN_NAME}_HEADERS_NO_MOC
   roadmap.hh
+  conversions.hh
   )
 
 SET(${PLUGIN_NAME}_FORMS

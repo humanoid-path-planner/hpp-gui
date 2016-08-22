@@ -10,6 +10,8 @@
 
 #include <gepetto/gui/meta.hh>
 
+#include <hppwidgetsplugin/conversions.hh>
+
 namespace hpp {
   namespace gui {
     Roadmap::Roadmap(HppWidgetsPlugin *plugin):
@@ -115,7 +117,7 @@ namespace hpp {
       hpp::floatSeq_var n = hpp->problem()->node(nodeId);
       hpp->robot()->setCurrentConfig(n.in());
       hpp::Transform__var t = hpp->robot()->getLinkPosition(jointName_.c_str());
-      gepetto::gui::convertSequence < ::CORBA::Double, float, 7> (t.in(), frame);
+      fromHPP(t, frame);
     }
 
     void Roadmap::edgePositions (EdgeID edgeId, Position& start, Position& end)
@@ -126,10 +128,10 @@ namespace hpp {
       hpp->problem()->edge(edgeId, n1.out(), n2.out());
       hpp->robot()->setCurrentConfig(n1.in());
       t = hpp->robot()->getLinkPosition(jointName_.c_str());
-      gepetto::gui::convertSequence < ::CORBA::Double, float, 3> (t.in(), start);
+      fromHPP(t, start);
       hpp->robot()->setCurrentConfig(n2.in());
       t = hpp->robot()->getLinkPosition(jointName_.c_str());
-      gepetto::gui::convertSequence < ::CORBA::Double, float, 3> (t.in(), end);
+      fromHPP(t, end);
     }
 
     void Roadmap::nodeColor (NodeID nodeId, Color& color)

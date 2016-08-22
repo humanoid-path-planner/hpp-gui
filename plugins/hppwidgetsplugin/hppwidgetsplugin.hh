@@ -25,7 +25,7 @@ namespace hpp {
 
       public:
         struct JointElement {
-          std::string name;
+          std::string name, prefix;
           // FIXME sort this vector.
           std::vector<std::string> bodyNames;
           JointTreeItem* item;
@@ -33,9 +33,15 @@ namespace hpp {
 
           JointElement ()
             : name (), bodyNames (), item (NULL), updateViewer (0, false) {}
-          JointElement (std::string n, std::vector<std::string> bns, JointTreeItem* i, bool updateV = true)
-            : name (n), bodyNames (bns), item (i), updateViewer (bns.size(), updateV) {}
-          JointElement (std::string n, const hpp::Names_t& bns, JointTreeItem* i, bool updateV = true);
+          JointElement (const std::string& n,
+              const std::string& prefix,
+              const std::vector<std::string>& bns,
+              JointTreeItem* i,
+              bool updateV = true)
+            : name (n), prefix (prefix), bodyNames (bns), item (i),
+            updateViewer (bns.size(), updateV) {}
+          JointElement (const std::string& n, const std::string& prefix,
+              const hpp::Names_t& bns, JointTreeItem* i, bool updateV = true);
         };
         typedef QMap <std::string, JointElement> JointMap;
         typedef hpp::corbaServer::Client HppClient;

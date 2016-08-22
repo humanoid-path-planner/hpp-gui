@@ -7,6 +7,7 @@
 #include <gepetto/gui/windows-manager.hh>
 #include <gepetto/gui/osgwidget.hh>
 
+#include "hppwidgetsplugin/conversions.hh"
 #include "hppwidgetsplugin/ui_pathplayerwidget.h"
 
 namespace hpp {
@@ -69,9 +70,9 @@ namespace hpp {
         float pos1[3], pos2[3];
         hpp->robot()->setCurrentConfig(waypoints[i]);
         hpp::Transform__var t = hpp->robot()->getLinkPosition(jointName.c_str());
-        for (int j = 0; j < 7; ++j) { pos[j] = (float)t.in()[j]; }
+        fromHPP(t, pos);
         for (int j = 0; j < 3; ++j) { pos1[j] = pos2[j]; }
-        for (int j = 0; j < 3; ++j) { pos2[j] = (float)t.in()[j]; }
+        for (int j = 0; j < 3; ++j) { pos2[j] = pos[j]; }
         QString xyzName = QString::fromStdString(pn).append("/node%1").arg (i);
         wsm->addXYZaxis(xyzName.toLocal8Bit().data(), colorN, 0.01f, 1.f);
         wsm->applyConfiguration(xyzName.toLocal8Bit().data(), pos);
