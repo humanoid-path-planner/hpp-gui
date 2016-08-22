@@ -26,14 +26,16 @@ namespace hpp {
       public:
         struct JointElement {
           std::string name;
-          std::string bodyName;
+          // FIXME sort this vector.
+          std::vector<std::string> bodyNames;
           JointTreeItem* item;
-          bool updateViewer;
+          std::vector<bool> updateViewer;
 
           JointElement ()
-            : name (), bodyName (), item (NULL), updateViewer (false) {}
-          JointElement (std::string n, std::string bn, JointTreeItem* i, bool updateV = true)
-            : name (n), bodyName (bn), item (i), updateViewer (updateV) {}
+            : name (), bodyNames (), item (NULL), updateViewer (0, false) {}
+          JointElement (std::string n, std::vector<std::string> bns, JointTreeItem* i, bool updateV = true)
+            : name (n), bodyNames (bns), item (i), updateViewer (bns.size(), updateV) {}
+          JointElement (std::string n, const hpp::Names_t& bns, JointTreeItem* i, bool updateV = true);
         };
         typedef QMap <std::string, JointElement> JointMap;
         typedef hpp::corbaServer::Client HppClient;
@@ -60,9 +62,10 @@ namespace hpp {
         /// \param ed environment definition
         void loadEnvironmentModel (gepetto::gui::DialogLoadEnvironment::EnvironmentDefinition ed);
 
-
         /// Get the name of a joint's body.
         /// \param jointName joint name
+        /// \todo this should be changed because there can be several body per
+        /// joints now.
         std::string getBodyFromJoint (const std::string& jointName) const;
 signals:
         void configurationValidationStatus (bool valid);

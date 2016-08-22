@@ -20,8 +20,8 @@ namespace hpp {
 
     JointTreeItem::JointTreeItem(const char* name, const hpp::floatSeq &q,
         const hpp::corbaserver::jointBoundSeq &b,
-        const unsigned int nbDof, graphics::NodePtr_t node)
-      : QStandardItem (QString (name)), name_ (name), node_ (node), value_ ()
+        const unsigned int nbDof, const NodesPtr_t& nodes)
+      : QStandardItem (QString (name)), name_ (name), nodes_ (nodes), value_ ()
     {
       setData((int)-1, IndexRole);
       setData(nbDof, NumberDofRole);
@@ -51,7 +51,7 @@ namespace hpp {
         b[2*(ULong) i] = value_[(ULong) i][0]->data(LowerBoundRole).toFloat();
         b[2*(ULong) i+1] = value_[(ULong) i][0]->data(UpperBoundRole).toFloat();
       }
-      return new JointTreeItem (name_.c_str(), q, b, data (NumberDofRole).toInt(), node_);
+      return new JointTreeItem (name_.c_str(), q, b, data (NumberDofRole).toInt(), nodes_);
     }
 
     hpp::floatSeq JointTreeItem::config() const

@@ -81,13 +81,17 @@ namespace hpp {
     {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
       HppWidgetsPlugin::JointElement& je = plugin_->jointMap() [name];
-      graphics::NodePtr_t node = main->osg ()->getNode(je.bodyName);
-      if (!node) node = main->osg ()->getScene(je.bodyName);
+      JointTreeItem::NodesPtr_t nodes(je.bodyNames.size());
+      for (std::size_t i = 0; i < je.bodyNames.size(); ++i) {
+        nodes[i] = main->osg ()->getNode(je.bodyNames[i]);
+        // TODO I do not remember why this is important...
+        if (!nodes[i]) nodes[i] = main->osg ()->getScene(je.bodyNames[i]);
+      }
       hpp::floatSeq_var c = plugin_->client()->robot ()->getJointConfig (name.c_str());
       CORBA::Short nbDof = plugin_->client()->robot ()->getJointNumberDof (name.c_str());
       hpp::corbaserver::jointBoundSeq_var b = plugin_->client()->robot ()->getJointBounds (name.c_str());
 
-      JointTreeItem* j = new JointTreeItem (name.c_str(), c.in(), b.in(), nbDof, node);
+      JointTreeItem* j = new JointTreeItem (name.c_str(), c.in(), b.in(), nbDof, nodes);
       je.item = j;
       if (parent) parent->appendRow(j);
       else        model_->appendRow(j);

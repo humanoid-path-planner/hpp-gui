@@ -29,6 +29,14 @@ namespace hpp {
   namespace gui {
     using gepetto::gui::MainWindow;
 
+    HppWidgetsPlugin::JointElement::JointElement (
+        std::string n, const hpp::Names_t& bns, JointTreeItem* i, bool updateV)
+      : name (n), bodyNames (bns.length()), item (i), updateViewer (bns.length(), updateV)
+    {
+      for (std::size_t i = 0; i < bns.length(); ++i)
+        bodyNames[i] = std::string(bns[i]);
+    }
+
     HppWidgetsPlugin::HppWidgetsPlugin() :
       pathPlayer_ (NULL),
       solverWidget_ (NULL),
@@ -162,7 +170,7 @@ namespace hpp {
     {
       JointMap::const_iterator itj = jointMap_.find(jointName);
       if (itj == jointMap_.constEnd()) return std::string();
-      return itj->bodyName;
+      return itj->bodyNames[0];
     }
 
     bool HppWidgetsPlugin::corbaException(int jobId, const CORBA::Exception &excep) const
@@ -219,10 +227,13 @@ namespace hpp {
       float T[7];
       for (JointMap::iterator ite = jointMap_.begin ();
           ite != jointMap_.end (); ite++) {
-        hpp::Transform__var t = client()->robot()->getLinkPosition(ite->name.c_str());
-        gepetto::gui::convertSequence < ::CORBA::Double, float, 7> (t.in(), T);
-        if (ite->updateViewer)
-          ite->updateViewer = main->osg()->applyConfiguration(ite->bodyName.c_str(), T);
+        for (std::size_t i = 0; i < ite->bodyNames.size(); ++i)
+        {
+          hpp::Transform__var t = client()->robot()->getLinkPosition(ite->bodyNames[i].c_str());
+          gepetto::gui::convertSequence < ::CORBA::Double, float, 7> (t.in(), T);
+          if (ite->updateViewer[i])
+            ite->updateViewer[i] = main->osg()->applyConfiguration(ite->bodyNames[i].c_str(), T);
+        }
         if (!ite->item) continue;
         hpp::floatSeq_var c = client()->robot ()->getJointConfig (ite->name.c_str());
         ite->item->updateConfig (c.in());
@@ -259,14 +270,17 @@ namespace hpp {
             std::string c = collision.cap (i).toStdString();
             bool found = false;
             foreach (const JointElement& je, jointMap_) {
-              if (je.bodyName.length() <= pos)
-                continue;
-              size_t len = je.bodyName.length() - pos;
-              if (je.bodyName.compare(pos, len, c, 0, len) == 0) {
-                col.append(QString::fromStdString(je.bodyName));
-                found = true;
-                break;
+              for (std::size_t i = 0; je.bodyNames.size(); ++i) {
+                if (je.bodyNames[i].length() <= pos)
+                  continue;
+                size_t len = je.bodyNames[i].length() - pos;
+                if (je.bodyNames[i].compare(pos, len, c, 0, len) == 0) {
+                  col.append(QString::fromStdString(je.bodyNames[i]));
+                  found = true;
+                  break;
+                }
               }
+              if (found) break;
             }
             if (!found) col.append(collision.cap (i));
           }
@@ -316,10 +330,15 @@ namespace hpp {
         return;
       }
       foreach (const JointElement& je, jointMap_) {
-        if (bname.compare(je.bodyName) == 0) {
-          // TODO: use je.item for a faster selection.
-          jointTreeWidget_->selectJoint (je.name);
-          return;
+        // je.bodyNames will be of size 1 most of the time
+        // so it is fine to use a vector + line search, vs map + binary
+        // FIXME A good intermediate is to sort the vector.
+        for (std::size_t i = 0; je.bodyNames.size(); ++i) {
+          if (bname.compare(je.bodyNames[i]) == 0) {
+            // TODO: use je.item for a faster selection.
+            jointTreeWidget_->selectJoint (je.name);
+            return;
+          }
         }
       }
       qDebug () << "Joint for body" << bodyName << "not found.";
@@ -385,10 +404,10 @@ namespace hpp {
       jointMap_.clear();
       for (size_t i = 0; i < joints->length (); ++i) {
         const char* jname = joints[(ULong) i];
-        const char* lname = client()->robot()->getLinkName (jname);
-        std::string linkName = robotName.toStdString() + "/" + std::string (lname);
-        jointMap_[jname] = JointElement(jname, linkName, 0, true);
-        delete[] lname;
+        hpp::Names_t_var lnames = client()->robot()->getLinkNames (jname);
+        std::vector<std::string> linkNames (lnames->length(), robotName.toStdString() + "/");
+        for (std::size_t i = 0; i < lnames->length(); ++i) linkNames[i] += lnames[i];
+        jointMap_[jname] = JointElement(jname, linkNames, 0, true);
       }
     }
 
