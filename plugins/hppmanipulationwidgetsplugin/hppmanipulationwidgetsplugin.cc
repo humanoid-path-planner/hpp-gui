@@ -130,8 +130,8 @@ namespace hpp {
       hpp::Names_t_var joints = client()->robot()->getAllJointNames ();
       for (size_t i = 0; i < joints->length (); ++i) {
         const char* jname = joints[(ULong) i];
-        std::string linkName (client()->robot()->getLinkName (jname));
-        jointMap_[jname] = JointElement(jname, linkName, 0, true);
+        hpp::Names_t_var lnames = client()->robot()->getLinkNames (jname);
+        jointMap_[jname] = JointElement(jname, "", lnames, 0, true);
       }
     }
 
