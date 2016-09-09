@@ -275,12 +275,12 @@ namespace hpp {
             std::string c = collision.cap (i).toStdString();
             bool found = false;
             foreach (const JointElement& je, jointMap_) {
-              for (std::size_t i = 0; je.bodyNames.size(); ++i) {
-                if (je.bodyNames[i].length() <= pos)
+              for (std::size_t j = 0; j < je.bodyNames.size(); ++j) {
+                if (je.bodyNames[j].length() <= pos)
                   continue;
-                size_t len = je.bodyNames[i].length() - pos;
-                if (je.bodyNames[i].compare(pos, len, c, 0, len) == 0) {
-                  col.append(QString::fromStdString(je.bodyNames[i]));
+                size_t len = je.bodyNames[j].length() - pos;
+                if (je.bodyNames[j].compare(pos, len, c, 0, len) == 0) {
+                  col.append(QString::fromStdString(je.bodyNames[j]));
                   found = true;
                   break;
                 }
