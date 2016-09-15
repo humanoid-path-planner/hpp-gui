@@ -17,7 +17,9 @@ namespace hpp {
 
         virtual ~ManipulationRoadmap () {}
 
-        virtual void initRoadmap (const std::string jointName);
+        virtual void initRoadmapFromJoint (const std::string jointName);
+
+        virtual void initRoadmapFromBody  (const std::string  bodyName);
 
         virtual void nodeColor (NodeID nodeId, Color& color);
 

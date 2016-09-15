@@ -423,7 +423,7 @@ namespace hpp {
     Roadmap* HppWidgetsPlugin::createRoadmap(const std::string &jointName)
     {
       Roadmap* r = new Roadmap (this);
-      r->initRoadmap(jointName);
+      r->initRoadmapFromJoint(jointName);
       return r;
     }
 
