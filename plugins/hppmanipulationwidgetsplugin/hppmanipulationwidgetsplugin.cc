@@ -108,7 +108,7 @@ namespace hpp {
     {
       HppWidgetsPlugin::openConnection();
       hpp_ = new HppManipClient (0,0);
-      QByteArray iiop = getIIOPurl ().toAscii();
+      QByteArray iiop = getHppIIOPurl ().toAscii();
       hpp_->connect (iiop.constData ());
     }
 
@@ -138,7 +138,7 @@ namespace hpp {
     Roadmap *HppManipulationWidgetsPlugin::createRoadmap(const std::string &jointName)
     {
       ManipulationRoadmap* r = new ManipulationRoadmap(this);
-      r->initRoadmap(jointName);
+      r->initRoadmapFromJoint(jointName);
       return r;
     }
 

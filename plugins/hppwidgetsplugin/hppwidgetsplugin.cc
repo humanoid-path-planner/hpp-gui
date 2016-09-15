@@ -130,6 +130,7 @@ namespace hpp {
       main->osg()->refresh();
 
       main->registerSlot("requestCreateJointGroup", this);
+      main->registerSlot("getHppIIOPurl", this);
     }
 
     QString HppWidgetsPlugin::name() const
@@ -184,7 +185,7 @@ namespace hpp {
       return false;
     }
 
-    QString HppWidgetsPlugin::getIIOPurl () const
+    QString HppWidgetsPlugin::getHppIIOPurl () const
     {
       QString host = gepetto::gui::MainWindow::instance ()->settings_->getSetting
         ("hpp/host", QString ()).toString ();
@@ -197,7 +198,7 @@ namespace hpp {
     {
       closeConnection ();
       hpp_ = new hpp::corbaServer::Client (0,0);
-      QByteArray iiop = getIIOPurl ().toAscii();
+      QByteArray iiop = getHppIIOPurl ().toAscii();
       hpp_->connect (iiop.constData ());
     }
 
@@ -336,8 +337,8 @@ namespace hpp {
         // FIXME A good intermediate is to sort the vector.
         const std::size_t len = je.prefix.length();
         if (bname.compare(0, len, je.prefix) == 0) {
-          for (std::size_t i = 0; je.bodyNames.size(); ++i) {
-            if (bname.compare(len + 1, std::string::npos, je.bodyNames[i]) == 0) {
+          for (std::size_t i = 0; i < je.bodyNames.size(); ++i) {
+            if (bname.compare(len, std::string::npos, je.bodyNames[i]) == 0) {
               // TODO: use je.item for a faster selection.
               jointTreeWidget_->selectJoint (je.name);
               return;

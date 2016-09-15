@@ -103,7 +103,10 @@ signals:
 
         void update();
 
-      QString requestCreateJointGroup(const QString jn);
+        /// See createJointGroup
+        QString requestCreateJointGroup(const QString jn);
+
+        QString getHppIIOPurl () const;
 
       public:
         /// Get the possible actions on a joint.
@@ -160,8 +163,6 @@ signals:
         /// Create a group from the given joint.
         /// \param jn joint name
         std::string createJointGroup (const std::string jn);
-
-        QString getIIOPurl () const;
 
         /// Replace all the bodies according to their position in hpp.
         void computeObjectPosition();
