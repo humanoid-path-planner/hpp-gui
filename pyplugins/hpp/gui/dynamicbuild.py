@@ -15,9 +15,10 @@ def fromHPP(t):
     return ret
 
 class _Clients(object):
-    def __init__(self):
-        self.basic = BasicClient()
-        self.manipulation = ManipClient()
+    def __init__(self, mainWindow):
+        self.hppPlugin = mainWindow.getFromSlot("getHppIIOPurl")
+        self.basic = BasicClient(url= str(self.hppPlugin.getHppIIOPurl()))
+        self.manipulation = ManipClient(url= str(self.hppPlugin.getHppIIOPurl()))
         self.viewer = ViewerClient()
 
 class _GraspMode(QWidget):
@@ -363,8 +364,9 @@ class Plugin(QDockWidget):
             super(Plugin, self).__init__("Dynamic Builder", flags)
         else:
             super(Plugin, self).__init__("Dynamic Builder")
-        self.resetConnection()
         self.osg = None
+        self.mainWindow = mainWindow
+        self.resetConnection()
         mainWindow.registerShortcut("Dynamic builder", "Toggle view", self.toggleViewAction())
         self.dynamicBuilder = _DynamicBuilder(mainWindow, self)
         self.setWidget(self.dynamicBuilder)
@@ -374,4 +376,4 @@ class Plugin(QDockWidget):
             self.osg = osg
 
     def resetConnection(self):
-        self.client = _Clients()
+        self.client = _Clients(self.mainWindow)
