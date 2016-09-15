@@ -70,7 +70,7 @@ class _GraspMode(QWidget):
         self.actionsList.append(action)
 
         action = QAction("Change handle used", self.parentInstance)
-        action.connect("triggered()", self.changeGripper)
+        action.connect("triggered()", self.changeHandle)
         action.setShortcut(QKeySequence(QNamespace.Key_F1))
         self.mainWindow.registerShortcut(self.parentInstance.plugin.windowTitle, action)
         self.actionsList.append(action)

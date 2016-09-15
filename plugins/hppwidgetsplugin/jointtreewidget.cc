@@ -85,7 +85,7 @@ namespace hpp {
       for (std::size_t i = 0; i < je.bodyNames.size(); ++i) {
         nodes[i] = main->osg ()->getNode(je.bodyNames[i]);
         // TODO I do not remember why this is important...
-        if (!nodes[i]) nodes[i] = main->osg ()->getScene(je.bodyNames[i]);
+        if (!nodes[i]) nodes[i] = main->osg ()->getGroup(je.bodyNames[i]);
       }
       hpp::floatSeq_var c = plugin_->client()->robot ()->getJointConfig (name.c_str());
       CORBA::Short nbDof = plugin_->client()->robot ()->getJointNumberDof (name.c_str());
