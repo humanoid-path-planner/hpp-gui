@@ -74,8 +74,8 @@ namespace hpp {
 					gepetto::gui::Traits<QString>::to_corba(rd.modelName_).in(),
 					gepetto::gui::Traits<QString>::to_corba(rd.urdfSuf_).in(),
 					gepetto::gui::Traits<QString>::to_corba(rd.srdfSuf_).in());
-      updateRobotJoints (rd.robotName_);
-      jointTreeWidget_->addJointToTree("base_joint", 0);
+      // This is already done in requestRefresh
+      // jointTreeWidget_->reload();
       applyCurrentConfiguration();
       gepetto::gui::MainWindow::instance()->requestRefresh();
       emit logSuccess ("Robot " + rd.name_ + " loaded");

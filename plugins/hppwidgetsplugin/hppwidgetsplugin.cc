@@ -146,12 +146,8 @@ namespace hpp {
           gepetto::gui::Traits<QString>::to_corba(rd.modelName_    ).in(),
           gepetto::gui::Traits<QString>::to_corba(rd.urdfSuf_      ).in(),
           gepetto::gui::Traits<QString>::to_corba(rd.srdfSuf_      ).in());
-      std::string bjn;
-      if (rd.rootJointType_.compare("freeflyer") == 0)   bjn = "base_joint_xyz";
-      else if (rd.rootJointType_.compare("planar") == 0) bjn = "base_joint_xy";
-      else if (rd.rootJointType_.compare("anchor") == 0) bjn = "base_joint";
-      updateRobotJoints (rd.robotName_);
-      jointTreeWidget_->addJointToTree(bjn, 0);
+      // This is already done in requestRefresh
+      // jointTreeWidget_->reload();
       applyCurrentConfiguration();
       gepetto::gui::MainWindow::instance()->requestRefresh();
       emit logSuccess ("Robot " + rd.name_ + " loaded");
