@@ -6,6 +6,14 @@ from hpp.corbaserver.manipulation.pr2 import Robot
 from gepetto.corbaserver import Client as ViewerClient
 import re
 
+def xyzwTowxyz(q):
+    return [q[(i+1)%4] for i in range(4)]
+
+def fromHPP(t):
+    ret = t[0:3]
+    ret.extend(xyzwTowxyz(t[3:7]))
+    return ret
+
 class _Clients(object):
     def __init__(self):
         self.basic = BasicClient()
@@ -158,7 +166,7 @@ class _GraspMode(QWidget):
         obj = self.mainWindow.getFromSlot("requestCreateJointGroup")
         self.groupName = str(obj.requestCreateJointGroup(config[0]))
         self.parentInstance.plugin.client.viewer.gui.addXYZaxis(name, [0, 1, 0, 1], 0.005, 1)
-        self.parentInstance.plugin.client.viewer.gui.applyConfiguration(name, config[1])
+        self.parentInstance.plugin.client.viewer.gui.applyConfiguration(name, fromHPP(config[1])) # XYZW -> WXYZ
         self.parentInstance.plugin.client.viewer.gui.addToGroup(name, self.groupName)
         self.parentInstance.plugin.client.viewer.gui.refresh()
 
