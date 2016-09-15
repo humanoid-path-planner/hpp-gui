@@ -76,8 +76,8 @@ namespace hpp {
 					gepetto::gui::Traits<QString>::to_corba(rd.srdfSuf_).in());
       // This is already done in requestRefresh
       // jointTreeWidget_->reload();
-      applyCurrentConfiguration();
       gepetto::gui::MainWindow::instance()->requestRefresh();
+      gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
       emit logSuccess ("Robot " + rd.name_ + " loaded");
     }
 
