@@ -26,12 +26,10 @@ namespace hpp {
       ui_ (new ::Ui::SolverWidget),
       plugin_ (plugin),
       main_(MainWindow::instance()),
-      solveDoneId_ (-1),
-      solveAndDisplay_ (plugin, this)
+      solve_ (plugin, this)
     {
       ui_->setupUi (this);
       selectButtonSolve(true);
-      connect (&main_->worker(), SIGNAL (done(int)), this, SLOT (handleWorkerDone (int)));
 
       connect(planner(), SIGNAL (activated(const QString&)), this, SLOT (selectPathPlanner(const QString&)));
       connect(ui_->pathOptimizerButton, SIGNAL (clicked()), this, SLOT (openPathOptimizerSelector()));
@@ -42,8 +40,7 @@ namespace hpp {
       connect(ui_->pushButtonInterrupt, SIGNAL (clicked ()), this, SLOT (interrupt ()));
       connect(ui_->pushButtonSolveAndDisplay, SIGNAL (clicked ()),
           SLOT (solveAndDisplay ()));
-      connect(&solveAndDisplay_.watcher, SIGNAL (finished()),
-          SLOT(solveAndDisplayDone ()));
+      connect(&solve_.watcher, SIGNAL (finished()), SLOT(solveDone ()));
       connect(ui_->loadRoadmap, SIGNAL (clicked()), SLOT (loadRoadmap()));
       connect(ui_->saveRoadmap, SIGNAL (clicked()), SLOT (saveRoadmap()));
       connect(ui_->clearRoadmap, SIGNAL (clicked()), SLOT (clearRoadmap()));
@@ -195,41 +192,56 @@ namespace hpp {
 
     void SolverWidget::solve()
     {
-      /* double time = */
-      gepetto::gui::WorkItem* item = new gepetto::gui::WorkItem_0 <hpp::corbaserver::_objref_Problem, hpp::intSeq*>
-        (plugin_->client()->problem().in(), &hpp::corbaserver::_objref_Problem::solve);
-      main_->emitSendToBackground(item);
-      main_->logJobStarted(item->id(), "solve problem.");
-      solveDoneId_ = item->id();
+      if (solve_.status.isRunning ()) {
+        main_->logError("The solver is already running.");
+        return;
+      }
+      solve_.stepByStep = false;
+      solve_.status = QtConcurrent::run(&solve_, &Solve::solve);
+      solve_.watcher.setFuture (solve_.status);
+      main_->logJobStarted(0, "solve problem.");
       selectButtonSolve(false);
     }
 
     void SolverWidget::solveAndDisplay()
     {
-      solveAndDisplay_.interrupt = false;
-      solveAndDisplay_.status = QtConcurrent::run (&solveAndDisplay_, &SolveAndDisplay::solve);
-      solveAndDisplay_.watcher.setFuture (solveAndDisplay_.status);
+      if (solve_.status.isRunning ()) {
+        main_->logError("The solver is already running.");
+        return;
+      }
+      solve_.stepByStep = true;
+      solve_.interrupt = false;
+      solve_.status = QtConcurrent::run (&solve_, &Solve::solveAndDisplay);
+      solve_.watcher.setFuture (solve_.status);
       selectButtonSolve (false);
     }
 
-    void SolverWidget::solveAndDisplayDone()
+    void SolverWidget::solveDone()
     {
-      qDebug () << "Step by step done";
-      selectButtonSolve (true);
-      if (solveAndDisplay_.isSolved) {
+      if (solve_.done())
         emit problemSolved ();
-        QMessageBox::information(this, "Problem solver", "Problem is solved.");
+    }
+
+    bool SolverWidget::Solve::done()
+    {
+      qDebug () << "Solve done";
+      parent->selectButtonSolve (true);
+      if (isSolved) {
+        QMessageBox::information(parent, "Problem solver", "Problem is solved.");
+        parent->main_->logJobDone(0, "Problem solved.");
+        return true;
       }
+      return false;
     }
 
     void SolverWidget::interrupt()
     {
-      if (solveAndDisplay_.status.isRunning ()) {
-        solveAndDisplay_.interrupt = true;
-        solveAndDisplay_.status.waitForFinished ();
+      if (solve_.stepByStep) {
+        solve_.interrupt = true;
       } else {
         plugin_->client()->problem()->interruptPathPlanning();
       }
+      solve_.status.waitForFinished ();
       selectButtonSolve(true);
     }
 
@@ -266,28 +278,43 @@ namespace hpp {
 
     void SolverWidget::optimizePath()
     {
-      /* double time = */
-      gepetto::gui::WorkItem* item = new gepetto::gui::WorkItem_1 <hpp::corbaserver::_objref_Problem, hpp::intSeq*,
-				       unsigned short>
-        (plugin_->client()->problem().in(), &hpp::corbaserver::_objref_Problem::optimizePath,
-	 plugin_->pathPlayer()->getCurrentPath());
-      main_->emitSendToBackground(item);
-      main_->logJobStarted(item->id(), "Optimize path.");
-      solveDoneId_ = item->id();
+      if (solve_.status.isRunning ()) {
+        main_->logError("The solver is already running.");
+        return;
+      }
+      solve_.stepByStep = false;
+      solve_.status = QtConcurrent::run(&solve_,
+          &Solve::optimize, plugin_->pathPlayer()->getCurrentPath());
+      solve_.watcher.setFuture (solve_.status);
+      main_->logJobStarted(0, "Optimize path.");
       selectButtonSolve(false);
     }
 
-    void SolverWidget::handleWorkerDone(int id)
+    void SolverWidget::Solve::solve()
     {
-      if (id == solveDoneId_) {
-        emit problemSolved();
-        selectButtonSolve(true);
-        QMessageBox::information(this, "Problem solver", "Problem is solved.");
-        main_->logJobDone(id, "Problem solved.");
+      isSolved = false;
+      HppWidgetsPlugin::HppClient* hpp = plugin->client();
+      try {
+        hpp::intSeq_var time = hpp->problem()->solve();
+        isSolved = true;
+      } catch (hpp::Error const& e) {
+        parent->main_->logJobFailed(0, QString(e.msg));
       }
     }
 
-    void SolverWidget::SolveAndDisplay::solve()
+    void SolverWidget::Solve::optimize(const int pathId)
+    {
+      isSolved = false;
+      HppWidgetsPlugin::HppClient* hpp = plugin->client();
+      try {
+        hpp->problem()->optimizePath((CORBA::UShort)pathId);
+        isSolved = true;
+      } catch (hpp::Error const& e) {
+        parent->main_->logJobFailed(0, QString(e.msg));
+      }
+    }
+
+    void SolverWidget::Solve::solveAndDisplay()
     {
       isSolved = false;
       HppWidgetsPlugin::HppClient* hpp = plugin->client();
@@ -298,7 +325,7 @@ namespace hpp {
         return;
       }
       isSolved = hpp->problem()->prepareSolveStepByStep();
-      Roadmap* r = plugin->createRoadmap(plugin->getSelectedJoint());
+      Roadmap* r = plugin->createRoadmap(jn);
       while (!isSolved) {
         isSolved = hpp->problem()->executeOneStep();
         r->displayRoadmap();

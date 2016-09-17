@@ -368,6 +368,7 @@ namespace hpp {
       HppManipulationWidgetsPlugin::NamesPair handles = convertMap(handlesMap);
       HppManipulationWidgetsPlugin::NamesPair shapes = convertMap(shapesMap);
       hpp_->graph ()->createGraph("constraints");
+      // TODO the return value is never deleted.
       gepetto::gui::WorkItem* item = new gepetto::gui::WorkItem_7<hpp::corbaserver::manipulation::_objref_Graph, hpp::intSeq*,
               const char *, const hpp::Names_t&, const hpp::Names_t&, const hpp::corbaserver::manipulation::Namess_t&, const hpp::corbaserver::manipulation::Namess_t&,
               const hpp::Names_t&, const hpp::corbaserver::manipulation::Rules&>

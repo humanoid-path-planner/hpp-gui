@@ -76,7 +76,6 @@ signals:
         /// Ask hpp to solve the problem and display the roadmap of the joint
         /// selected in the joint tree.
         void solveAndDisplay ();
-        void solveAndDisplayDone ();
 
         /// Interrupt the solver.
         void interrupt ();
@@ -93,21 +92,22 @@ signals:
         /// Optimize the path currently selected in PathPlayer widget.
         void optimizePath();
 
-        void handleWorkerDone (int id);
+        void solveDone ();
 
       private:
-        class SolveAndDisplay {
-          public:
-            bool interrupt;
-            bool isSolved;
-            QFuture <void> status;
-            QFutureWatcher <void> watcher;
-            HppWidgetsPlugin* plugin;
-            SolverWidget* parent;
-            void solve ();
-            SolveAndDisplay (HppWidgetsPlugin* p, SolverWidget* par) :
-              interrupt (false), isSolved (false),
-              plugin (p), parent (par)
+        struct Solve {
+          bool interrupt, stepByStep, isSolved;
+          QFuture <void> status;
+          QFutureWatcher <void> watcher;
+          HppWidgetsPlugin* plugin;
+          SolverWidget* parent;
+          void solve ();
+          void optimize (const int pathId);
+          void solveAndDisplay ();
+          bool done ();
+          Solve (HppWidgetsPlugin* p, SolverWidget* par) :
+            interrupt (false), stepByStep(false), isSolved (false),
+            plugin (p), parent (par)
           {}
         };
 
@@ -126,8 +126,8 @@ signals:
 
         QStringList optimizers_;
 
-        int solveDoneId_;
-        SolveAndDisplay solveAndDisplay_;
+        Solve solve_;
+        friend struct Solve;
     };
   } // namespace gui
 } // namespace hpp
