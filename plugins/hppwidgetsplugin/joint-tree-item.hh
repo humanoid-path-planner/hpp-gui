@@ -72,6 +72,9 @@ namespace hpp {
     class JointTreeItem : public QStandardItem
     {
       public:
+        typedef graphics::NodePtr_t NodePtr_t;
+        typedef std::vector<NodePtr_t> NodesPtr_t;
+
         static const int IndexRole     ;
         static const int NumberDofRole ;
         static const int LowerBoundRole;
@@ -87,7 +90,9 @@ namespace hpp {
         };
 
         JointTreeItem (const char* name, const hpp::floatSeq& q,
-            const hpp::corbaserver::jointBoundSeq& b, const unsigned int nbDof, graphics::NodePtr_t node);
+            const hpp::corbaserver::jointBoundSeq& b,
+            const unsigned int nbDof,
+            const NodesPtr_t& node);
 
         virtual QStandardItem* clone () const;
 
@@ -113,7 +118,7 @@ namespace hpp {
         typedef QList<QStandardItem*> StandardItemList;
 
         std::string name_;
-        graphics::NodePtr_t node_;
+        NodesPtr_t nodes_;
         QVector<StandardItemList> value_;
     };
 

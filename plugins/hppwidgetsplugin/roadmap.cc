@@ -10,18 +10,19 @@
 
 #include <gepetto/gui/meta.hh>
 
+#include <hppwidgetsplugin/conversions.hh>
+
 namespace hpp {
   namespace gui {
     Roadmap::Roadmap(HppWidgetsPlugin *plugin):
       radius (0.01f), axisSize (1.f),
       currentNodeId_ (0), currentEdgeId_ (0),
       nodeColorMap_ (0), edgeColorMap_ (0),
-      plugin_ (plugin)
+      plugin_ (plugin), link_ (false)
     {}
 
-    void Roadmap::initRoadmap(const std::string jointName)
+    void Roadmap::initRoadmap ()
     {
-      jointName_ = jointName;
       HppWidgetsPlugin::HppClient* hpp = plugin_->client();
       int nbCC = hpp->problem()->numberConnectedComponents();
       nodeColorMap_ = gepetto::gui::ColorMap (nbCC + 10);
@@ -34,6 +35,20 @@ namespace hpp {
         qDebug () << "Roadmap" <<
           QString::fromStdString (roadmapName ()) << "already exists.";
       }
+    }
+
+    void Roadmap::initRoadmapFromJoint(const std::string& jointName)
+    {
+      name_ = jointName;
+      link_ = false;
+      initRoadmap();
+    }
+
+    void Roadmap::initRoadmapFromBody (const std::string& bodyName)
+    {
+      name_ = bodyName;
+      link_ = true;
+      initRoadmap();
     }
 
     void Roadmap::displayRoadmap ()
@@ -92,7 +107,7 @@ namespace hpp {
 
     std::string Roadmap::roadmapName ()
     {
-      return "roadmap_" + jointName_;
+      return "roadmap_" + name_;
     }
 
     std::string Roadmap::nodeName (NodeID nodeId)
@@ -114,8 +129,8 @@ namespace hpp {
       HppWidgetsPlugin::HppClient* hpp = plugin_->client();
       hpp::floatSeq_var n = hpp->problem()->node(nodeId);
       hpp->robot()->setCurrentConfig(n.in());
-      hpp::Transform__var t = hpp->robot()->getLinkPosition(jointName_.c_str());
-      gepetto::gui::convertSequence < ::CORBA::Double, float, 7> (t.in(), frame);
+      hpp::Transform__var t; getPosition (t);
+      fromHPP(t, frame);
     }
 
     void Roadmap::edgePositions (EdgeID edgeId, Position& start, Position& end)
@@ -125,11 +140,11 @@ namespace hpp {
       hpp::Transform__var t;
       hpp->problem()->edge(edgeId, n1.out(), n2.out());
       hpp->robot()->setCurrentConfig(n1.in());
-      t = hpp->robot()->getLinkPosition(jointName_.c_str());
-      gepetto::gui::convertSequence < ::CORBA::Double, float, 3> (t.in(), start);
+      getPosition (t);
+      fromHPP(t, start);
       hpp->robot()->setCurrentConfig(n2.in());
-      t = hpp->robot()->getLinkPosition(jointName_.c_str());
-      gepetto::gui::convertSequence < ::CORBA::Double, float, 3> (t.in(), end);
+      getPosition (t);
+      fromHPP(t, end);
     }
 
     void Roadmap::nodeColor (NodeID nodeId, Color& color)
@@ -142,6 +157,13 @@ namespace hpp {
     {
       CORBA::Long iCC = plugin_->client()->problem()->connectedComponentOfEdge(edgeId);
       edgeColorMap_.getColor (iCC, color);
+    }
+
+    inline void Roadmap::getPosition (hpp::Transform__var& t) const
+    {
+      HppWidgetsPlugin::HppClient* hpp = plugin_->client();
+      if (link_) t = hpp->robot()->getLinkPosition (name_.c_str());
+      else       t = hpp->robot()->getJointPosition(name_.c_str());
     }
   } // namespace gui
 } // namespace hpp

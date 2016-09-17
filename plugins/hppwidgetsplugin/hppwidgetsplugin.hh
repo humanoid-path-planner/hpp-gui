@@ -25,15 +25,23 @@ namespace hpp {
 
       public:
         struct JointElement {
-          std::string name;
-          std::string bodyName;
+          std::string name, prefix;
+          // FIXME sort this vector.
+          std::vector<std::string> bodyNames;
           JointTreeItem* item;
-          bool updateViewer;
+          std::vector<bool> updateViewer;
 
           JointElement ()
-            : name (), bodyName (), item (NULL), updateViewer (false) {}
-          JointElement (std::string n, std::string bn, JointTreeItem* i, bool updateV = true)
-            : name (n), bodyName (bn), item (i), updateViewer (updateV) {}
+            : name (), bodyNames (), item (NULL), updateViewer (0, false) {}
+          JointElement (const std::string& n,
+              const std::string& prefix,
+              const std::vector<std::string>& bns,
+              JointTreeItem* i,
+              bool updateV = true)
+            : name (n), prefix (prefix), bodyNames (bns), item (i),
+            updateViewer (bns.size(), updateV) {}
+          JointElement (const std::string& n, const std::string& prefix,
+              const hpp::Names_t& bns, JointTreeItem* i, bool updateV = true);
         };
         typedef QMap <std::string, JointElement> JointMap;
         typedef hpp::corbaServer::Client HppClient;
@@ -60,9 +68,10 @@ namespace hpp {
         /// \param ed environment definition
         void loadEnvironmentModel (gepetto::gui::DialogLoadEnvironment::EnvironmentDefinition ed);
 
-
         /// Get the name of a joint's body.
         /// \param jointName joint name
+        /// \todo this should be changed because there can be several body per
+        /// joints now.
         std::string getBodyFromJoint (const std::string& jointName) const;
 signals:
         void configurationValidationStatus (bool valid);
@@ -94,7 +103,10 @@ signals:
 
         void update();
 
-      QString requestCreateJointGroup(const QString jn);
+        /// See createJointGroup
+        QString requestCreateJointGroup(const QString jn);
+
+        QString getHppIIOPurl () const;
 
       public:
         /// Get the possible actions on a joint.
@@ -151,8 +163,6 @@ signals:
         /// Create a group from the given joint.
         /// \param jn joint name
         std::string createJointGroup (const std::string jn);
-
-        QString getIIOPurl () const;
 
         /// Replace all the bodies according to their position in hpp.
         void computeObjectPosition();

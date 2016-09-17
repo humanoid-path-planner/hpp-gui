@@ -153,9 +153,9 @@ class Plugin(QtGui.QDockWidget):
             super(Plugin, self).__init__ (title, mainWindow)
         else:
             super(Plugin, self).__init__ (title, mainWindow, flags)
-        self.client = Client()
-        self.gui = GuiClient()
         self.main = mainWindow
+        self.hppPlugin = self.main.getFromSlot("getHppIIOPurl")
+        self.resetConnection()
         self.osg = None
         # Initialize the widget
         self.tabWidget = QtGui.QTabWidget(self)
@@ -168,7 +168,7 @@ class Plugin(QtGui.QDockWidget):
         self.tabWidget.addTab (self.concatenateWidget, "Paths management")
 
     def resetConnection(self):
-        self.client = Client()
+        self.client = Client(url= str(self.hppPlugin.getHppIIOPurl()))
         self.gui = GuiClient()
 
     def osgWidget(self,osg):

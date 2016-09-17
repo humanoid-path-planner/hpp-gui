@@ -21,7 +21,9 @@ namespace hpp {
 
         virtual ~Roadmap () {}
 
-        virtual void initRoadmap (const std::string jointName);
+        virtual void initRoadmapFromJoint (const std::string& jointName);
+
+        virtual void initRoadmapFromBody  (const std::string& bodyName);
 
         /// You can call this function several times. It will continue displaying the roadmap
         /// where it stopped.
@@ -58,8 +60,12 @@ namespace hpp {
         gepetto::gui::ColorMap nodeColorMap_, edgeColorMap_;
 
       private:
+        void initRoadmap (); 
+        inline void getPosition(hpp::Transform__var& t) const;
+
         HppWidgetsPlugin* plugin_;
-        std::string jointName_;
+        std::string name_;
+        bool link_;
         hpp::floatSeq_var config_;
     };
   } // namespace gui

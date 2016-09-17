@@ -4,6 +4,7 @@
 #include "gepetto/gui/mainwindow.hh"
 #include "gepetto/gui/windows-manager.hh"
 
+#include "hppwidgetsplugin/conversions.hh"
 #include "hppwidgetsplugin/jointtreewidget.hh"
 #include "hppmanipulationwidgetsplugin/linkwidget.hh"
 #include "hppmanipulationwidgetsplugin/manipulationconstraintwidget.hh"
@@ -73,10 +74,10 @@ namespace hpp {
 					gepetto::gui::Traits<QString>::to_corba(rd.modelName_).in(),
 					gepetto::gui::Traits<QString>::to_corba(rd.urdfSuf_).in(),
 					gepetto::gui::Traits<QString>::to_corba(rd.srdfSuf_).in());
-      updateRobotJoints (rd.robotName_);
-      jointTreeWidget_->addJointToTree("base_joint", 0);
-      applyCurrentConfiguration();
+      // This is already done in requestRefresh
+      // jointTreeWidget_->reload();
       gepetto::gui::MainWindow::instance()->requestRefresh();
+      gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
       emit logSuccess ("Robot " + rd.name_ + " loaded");
     }
 
@@ -107,7 +108,7 @@ namespace hpp {
     {
       HppWidgetsPlugin::openConnection();
       hpp_ = new HppManipClient (0,0);
-      QByteArray iiop = getIIOPurl ().toAscii();
+      QByteArray iiop = getHppIIOPurl ().toAscii();
       hpp_->connect (iiop.constData ());
     }
 
@@ -129,15 +130,15 @@ namespace hpp {
       hpp::Names_t_var joints = client()->robot()->getAllJointNames ();
       for (size_t i = 0; i < joints->length (); ++i) {
         const char* jname = joints[(ULong) i];
-        std::string linkName (client()->robot()->getLinkName (jname));
-        jointMap_[jname] = JointElement(jname, linkName, 0, true);
+        hpp::Names_t_var lnames = client()->robot()->getLinkNames (jname);
+        jointMap_[jname] = JointElement(jname, "", lnames, 0, true);
       }
     }
 
     Roadmap *HppManipulationWidgetsPlugin::createRoadmap(const std::string &jointName)
     {
       ManipulationRoadmap* r = new ManipulationRoadmap(this);
-      r->initRoadmap(jointName);
+      r->initRoadmapFromJoint(jointName);
       return r;
     }
 
@@ -227,7 +228,7 @@ namespace hpp {
           hpp_->robot()->getHandlePositionInJoint (rcs[i],t.out());
         std::string groupName = createJointGroup (jn.c_str());
         std::string hn = "handle_" + escapeJointName (std::string(rcs[i]));
-        for (int i = 0; i < 7; ++i) t_gv[i] = t.in()[i];
+        fromHPP(t, t_gv);
         main->osg()->addXYZaxis (hn.c_str(), color, 0.005f, 1.f);
         main->osg()->applyConfiguration (hn.c_str(), t_gv);
         main->osg()->addToGroup (hn.c_str(), groupName.c_str());
@@ -248,7 +249,7 @@ namespace hpp {
           hpp_->robot()->getGripperPositionInJoint (rcs[i],t.out());
         std::string groupName = createJointGroup (jn.c_str());
         std::string hn = "gripper_" + escapeJointName (std::string(rcs[i]));
-        for (int i = 0; i < 7; ++i) t_gv[i] = t.in()[i];
+        fromHPP(t, t_gv);
         main->osg()->addXYZaxis (hn.c_str(), color, 0.005f, 1.f);
         main->osg()->applyConfiguration (hn.c_str(), t_gv);
         main->osg()->addToGroup (hn.c_str(), groupName.c_str());

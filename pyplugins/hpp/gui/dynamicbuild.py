@@ -6,10 +6,19 @@ from hpp.corbaserver.manipulation.pr2 import Robot
 from gepetto.corbaserver import Client as ViewerClient
 import re
 
+def xyzwTowxyz(q):
+    return [q[(i+1)%4] for i in range(4)]
+
+def fromHPP(t):
+    ret = t[0:3]
+    ret.extend(xyzwTowxyz(t[3:7]))
+    return ret
+
 class _Clients(object):
-    def __init__(self):
-        self.basic = BasicClient()
-        self.manipulation = ManipClient()
+    def __init__(self, mainWindow):
+        self.hppPlugin = mainWindow.getFromSlot("getHppIIOPurl")
+        self.basic = BasicClient(url= str(self.hppPlugin.getHppIIOPurl()))
+        self.manipulation = ManipClient(url= str(self.hppPlugin.getHppIIOPurl()))
         self.viewer = ViewerClient()
 
 class _GraspMode(QWidget):
@@ -158,7 +167,7 @@ class _GraspMode(QWidget):
         obj = self.mainWindow.getFromSlot("requestCreateJointGroup")
         self.groupName = str(obj.requestCreateJointGroup(config[0]))
         self.parentInstance.plugin.client.viewer.gui.addXYZaxis(name, [0, 1, 0, 1], 0.005, 1)
-        self.parentInstance.plugin.client.viewer.gui.applyConfiguration(name, config[1])
+        self.parentInstance.plugin.client.viewer.gui.applyConfiguration(name, fromHPP(config[1])) # XYZW -> WXYZ
         self.parentInstance.plugin.client.viewer.gui.addToGroup(name, self.groupName)
         self.parentInstance.plugin.client.viewer.gui.refresh()
 
@@ -355,8 +364,9 @@ class Plugin(QDockWidget):
             super(Plugin, self).__init__("Dynamic Builder", flags)
         else:
             super(Plugin, self).__init__("Dynamic Builder")
-        self.resetConnection()
         self.osg = None
+        self.mainWindow = mainWindow
+        self.resetConnection()
         mainWindow.registerShortcut("Dynamic builder", "Toggle view", self.toggleViewAction())
         self.dynamicBuilder = _DynamicBuilder(mainWindow, self)
         self.setWidget(self.dynamicBuilder)
@@ -366,4 +376,4 @@ class Plugin(QDockWidget):
             self.osg = osg
 
     def resetConnection(self):
-        self.client = _Clients()
+        self.client = _Clients(self.mainWindow)

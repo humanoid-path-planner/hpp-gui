@@ -19,6 +19,7 @@
 #include "hppwidgetsplugin/constraintwidget.hh"
 #include "hppwidgetsplugin/twojointsconstraint.hh"
 #include "hppwidgetsplugin/listjointconstraint.hh"
+#include "hppwidgetsplugin/conversions.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
 #include <gepetto/gui/meta.hh>
@@ -28,6 +29,16 @@ using CORBA::ULong;
 namespace hpp {
   namespace gui {
     using gepetto::gui::MainWindow;
+
+    HppWidgetsPlugin::JointElement::JointElement (
+        const std::string& n, const std::string& prefix,
+        const hpp::Names_t& bns, JointTreeItem* i, bool updateV)
+      : name (n), prefix (prefix),
+      bodyNames (bns.length()), item (i), updateViewer (bns.length(), updateV)
+    {
+      for (std::size_t i = 0; i < bns.length(); ++i)
+        bodyNames[i] = std::string(bns[i]);
+    }
 
     HppWidgetsPlugin::HppWidgetsPlugin() :
       pathPlayer_ (NULL),
@@ -119,6 +130,7 @@ namespace hpp {
       main->osg()->refresh();
 
       main->registerSlot("requestCreateJointGroup", this);
+      main->registerSlot("getHppIIOPurl", this);
     }
 
     QString HppWidgetsPlugin::name() const
@@ -135,14 +147,10 @@ namespace hpp {
           gepetto::gui::Traits<QString>::to_corba(rd.modelName_    ).in(),
           gepetto::gui::Traits<QString>::to_corba(rd.urdfSuf_      ).in(),
           gepetto::gui::Traits<QString>::to_corba(rd.srdfSuf_      ).in());
-      std::string bjn;
-      if (rd.rootJointType_.compare("freeflyer") == 0)   bjn = "base_joint_xyz";
-      else if (rd.rootJointType_.compare("planar") == 0) bjn = "base_joint_xy";
-      else if (rd.rootJointType_.compare("anchor") == 0) bjn = "base_joint";
-      updateRobotJoints (rd.robotName_);
-      jointTreeWidget_->addJointToTree(bjn, 0);
-      applyCurrentConfiguration();
+      // This is already done in requestRefresh
+      // jointTreeWidget_->reload();
       gepetto::gui::MainWindow::instance()->requestRefresh();
+      gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
       emit logSuccess ("Robot " + rd.name_ + " loaded");
     }
 
@@ -162,7 +170,7 @@ namespace hpp {
     {
       JointMap::const_iterator itj = jointMap_.find(jointName);
       if (itj == jointMap_.constEnd()) return std::string();
-      return itj->bodyName;
+      return itj->prefix + itj->bodyNames[0];
     }
 
     bool HppWidgetsPlugin::corbaException(int jobId, const CORBA::Exception &excep) const
@@ -177,7 +185,7 @@ namespace hpp {
       return false;
     }
 
-    QString HppWidgetsPlugin::getIIOPurl () const
+    QString HppWidgetsPlugin::getHppIIOPurl () const
     {
       QString host = gepetto::gui::MainWindow::instance ()->settings_->getSetting
         ("hpp/host", QString ()).toString ();
@@ -190,7 +198,7 @@ namespace hpp {
     {
       closeConnection ();
       hpp_ = new hpp::corbaServer::Client (0,0);
-      QByteArray iiop = getIIOPurl ().toAscii();
+      QByteArray iiop = getHppIIOPurl ().toAscii();
       hpp_->connect (iiop.constData ());
     }
 
@@ -219,10 +227,15 @@ namespace hpp {
       float T[7];
       for (JointMap::iterator ite = jointMap_.begin ();
           ite != jointMap_.end (); ite++) {
-        hpp::Transform__var t = client()->robot()->getLinkPosition(ite->name.c_str());
-        gepetto::gui::convertSequence < ::CORBA::Double, float, 7> (t.in(), T);
-        if (ite->updateViewer)
-          ite->updateViewer = main->osg()->applyConfiguration(ite->bodyName.c_str(), T);
+        for (std::size_t i = 0; i < ite->bodyNames.size(); ++i)
+        {
+          hpp::Transform__var t = client()->robot()->getLinkPosition(ite->bodyNames[i].c_str());
+          fromHPP(t, T);
+          if (ite->updateViewer[i]) {
+            std::string n = ite->prefix + ite->bodyNames[i];
+            ite->updateViewer[i] = main->osg()->applyConfiguration(n.c_str(), T);
+          }
+        }
         if (!ite->item) continue;
         hpp::floatSeq_var c = client()->robot ()->getJointConfig (ite->name.c_str());
         ite->item->updateConfig (c.in());
@@ -231,7 +244,7 @@ namespace hpp {
           it != jointFrames_.end (); ++it) {
         std::string n = escapeJointName(*it);
         hpp::Transform__var t = client()->robot()->getJointPosition(it->c_str());
-        gepetto::gui::convertSequence < ::CORBA::Double, float, 7> (t.in(), T);
+        fromHPP(t, T);
         main->osg()->applyConfiguration (n.c_str (), T);
       }
       main->osg()->refresh();
@@ -259,14 +272,17 @@ namespace hpp {
             std::string c = collision.cap (i).toStdString();
             bool found = false;
             foreach (const JointElement& je, jointMap_) {
-              if (je.bodyName.length() <= pos)
-                continue;
-              size_t len = je.bodyName.length() - pos;
-              if (je.bodyName.compare(pos, len, c, 0, len) == 0) {
-                col.append(QString::fromStdString(je.bodyName));
-                found = true;
-                break;
+              for (std::size_t j = 0; j < je.bodyNames.size(); ++j) {
+                if (je.bodyNames[j].length() <= pos)
+                  continue;
+                size_t len = je.bodyNames[j].length() - pos;
+                if (je.bodyNames[j].compare(pos, len, c, 0, len) == 0) {
+                  col.append(QString::fromStdString(je.bodyNames[j]));
+                  found = true;
+                  break;
+                }
               }
+              if (found) break;
             }
             if (!found) col.append(collision.cap (i));
           }
@@ -288,7 +304,7 @@ namespace hpp {
         std::string group; group.assign(what[1].first, what[1].second);
         std::string joint; joint.assign(what[2].first, what[2].second);
         std::string type;  type .assign(what[3].first, what[3].second);
-        int n = std::atoi (what[4].first);
+        std::size_t n = std::atoi (what[4].first);
         qDebug () << "Detected the" << group.c_str() << type.c_str() << n << "of joint" << joint.c_str();
         if (group == "roadmap") {
           if (type == "node") {
@@ -316,10 +332,18 @@ namespace hpp {
         return;
       }
       foreach (const JointElement& je, jointMap_) {
-        if (bname.compare(je.bodyName) == 0) {
-          // TODO: use je.item for a faster selection.
-          jointTreeWidget_->selectJoint (je.name);
-          return;
+        // je.bodyNames will be of size 1 most of the time
+        // so it is fine to use a vector + line search, vs map + binary
+        // FIXME A good intermediate is to sort the vector.
+        const std::size_t len = je.prefix.length();
+        if (bname.compare(0, len, je.prefix) == 0) {
+          for (std::size_t i = 0; i < je.bodyNames.size(); ++i) {
+            if (bname.compare(len, std::string::npos, je.bodyNames[i]) == 0) {
+              // TODO: use je.item for a faster selection.
+              jointTreeWidget_->selectJoint (je.name);
+              return;
+            }
+          }
         }
       }
       qDebug () << "Joint for body" << bodyName << "not found.";
@@ -385,10 +409,9 @@ namespace hpp {
       jointMap_.clear();
       for (size_t i = 0; i < joints->length (); ++i) {
         const char* jname = joints[(ULong) i];
-        const char* lname = client()->robot()->getLinkName (jname);
-        std::string linkName = robotName.toStdString() + "/" + std::string (lname);
-        jointMap_[jname] = JointElement(jname, linkName, 0, true);
-        delete[] lname;
+        hpp::Names_t_var lnames = client()->robot()->getLinkNames (jname);
+        std::string prefix (robotName.toStdString() + "/");
+        jointMap_[jname] = JointElement(jname, prefix, lnames, 0, true);
       }
     }
 
@@ -400,7 +423,7 @@ namespace hpp {
     Roadmap* HppWidgetsPlugin::createRoadmap(const std::string &jointName)
     {
       Roadmap* r = new Roadmap (this);
-      r->initRoadmap(jointName);
+      r->initRoadmapFromJoint(jointName);
       return r;
     }
 
@@ -435,7 +458,7 @@ namespace hpp {
       float d[7];
       for (size_t i = 0; i < obs->length(); ++i) {
         client()->obstacle()->getObstaclePosition (obs[(ULong) i], cfg.out());
-        gepetto::gui::convertSequence < ::CORBA::Double, float, 7> (cfg.inout(), d);
+        fromHPP(cfg, d);
         main->osg ()->applyConfiguration(obs[(ULong) i], d);
       }
       main->osg()->refresh();
@@ -474,7 +497,7 @@ namespace hpp {
         hpp::Transform__var t = client()->robot()->getJointPosition
           (jn.c_str());
         float p[7];
-        gepetto::gui::convertSequence < ::CORBA::Double, float, 7> (t.in(), p);
+        fromHPP(t, p);
         jointFrames_.push_back(jn);
         main->osg()->applyConfiguration (target.c_str(), p);
         main->osg()->refresh();
