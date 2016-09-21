@@ -116,9 +116,9 @@ namespace hpp {
       try {
         hpp::corbaserver::jointBoundSeq_var bounds =
           plugin_->client()->robot()->getJointBounds(jointName.c_str());
-        int nbDof = plugin_->client()->robot()->getJointNumberDof(jointName.c_str());
-        if (nbDof > 0) {
-          JointBoundDialog dialog (QString::fromStdString(jointName), nbDof);
+        int nbCfg = plugin_->client()->robot()->getJointConfigSize(jointName.c_str());
+        if (nbCfg > 0) {
+          JointBoundDialog dialog (QString::fromStdString(jointName), nbCfg);
           dialog.setBounds(bounds.in());
           if (dialog.exec() == QDialog::Accepted) {
             dialog.getBounds(bounds.inout());
