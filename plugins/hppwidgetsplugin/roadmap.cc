@@ -58,7 +58,7 @@ namespace hpp {
       if (currentNodeId_ >= nbNodes && currentEdgeId_ >= nbEdges) return;
 
       std::string rn = roadmapName ();
-      float color[4];
+      Color color;
       gepetto::gui::WindowsManagerPtr_t wsm = gepetto::gui::MainWindow::instance()->osg();
       if (nbNodes == 0) {
         gepetto::gui::MainWindow::instance()->logError("There is no node in the roadmap.");
@@ -70,17 +70,17 @@ namespace hpp {
         nodePosition (currentNodeId_, pos);
         nodeColor (currentNodeId_, color);
         std::string name = nodeName (currentNodeId_);
-        wsm->addXYZaxis(name.c_str(), color, radius, axisSize);
-        wsm->applyConfiguration(name.c_str(), pos);
+        wsm->addXYZaxis(name, color, radius, axisSize);
+        wsm->applyConfiguration(name, pos);
       }
       for (; currentEdgeId_ < nbEdges; ++currentEdgeId_) {
         Position pos1, pos2;
         edgePositions (currentEdgeId_, pos1, pos2);
         edgeColor (currentEdgeId_, color);
         std::string name = edgeName (currentEdgeId_);
-        wsm->addLine(name.c_str(), pos1, pos2, color);
+        wsm->addLine(name, pos1, pos2, color);
       }
-      wsm->addToGroup(rn.c_str(), "hpp-gui");
+      wsm->addToGroup(rn, "hpp-gui");
       afterDisplay ();
       wsm->refresh();
     }

@@ -146,31 +146,30 @@ namespace hpp {
 							  hpp::intSeq_var& indexes,
 							  hpp::floatSeqSeq_var& points,
 							  CORBA::ULong j,
-							  double epsilon)
+							  float epsilon)
     {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
-      const float color[] = {0, 1, 0, 1};
-      QVector3D norm(0, 0, 0);
+      osgVector4 color (0, 1, 0, 1);
+      osgVector3 norm(0, 0, 0);
       CORBA::Long iPts = (j == 0) ? 0 : indexes[j - 1];
-      gepetto::corbaserver::PositionSeq ps; ps.length (indexes[j] - iPts);
-      if (ps.length() > 3) {
-	QVector3D a(points[iPts][0] - points[iPts + 1][0],
-		    points[iPts][1] - points[iPts + 1][1],
-		    points[iPts][2] - points[iPts + 1][2]);
-	QVector3D b(points[iPts + 1][0] - points[iPts + 2][0],
-		    points[iPts + 1][1] - points[iPts + 2][1],
-		    points[iPts + 1][2] - points[iPts + 2][2]);
-	QVector3D c = QVector3D::crossProduct(a, b);
-	if (c.length() > 0.00001 || c.length() < -0.00001)
+      graphics::WindowsManager::Vec3ArrayPtr_t ps;
+      ps->resize (indexes[j] - iPts);
+      if (ps->size() > 3) {
+	osgVector3 a((float)(points[iPts][0] - points[iPts + 1][0]),
+		     (float)(points[iPts][1] - points[iPts + 1][1]),
+		     (float)(points[iPts][2] - points[iPts + 1][2]));
+	osgVector3 b((float)(points[iPts + 1][0] - points[iPts + 2][0]),
+		     (float)(points[iPts + 1][1] - points[iPts + 2][1]),
+		     (float)(points[iPts + 1][2] - points[iPts + 2][2]));
+	osgVector3 c = a ^ b;
+	if (c.length() > 0.00001)
 	  norm = c / c.length();
       }
       for (CORBA::Long k = iPts; k < indexes[j]; ++k) {
-	ps[k - iPts][0] = (float)points[k][0] + norm.x() * epsilon;
-	ps[k - iPts][1] = (float)points[k][1] + norm.y() * epsilon;
-	ps[k - iPts][2] = (float)points[k][2] + norm.z() * epsilon;
+        (*ps)[k - iPts] = osgVector3((float)points[k][0],(float)points[k][1],(float)points[k][2]) + norm * epsilon;
       }
-      main->osg()->addCurve (name.c_str(), ps, color);
-      main->osg()->setCurveMode (name.c_str(), GL_POLYGON);
+      main->osg()->addCurve (name, ps, color);
+      main->osg()->setCurveMode (name, GL_POLYGON);
     }
 
     void HppManipulationWidgetsPlugin::drawRobotContacts()
@@ -221,17 +220,17 @@ namespace hpp {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var rcs = hpp_->problem()->getAvailable("handle");
       hpp::Transform__var t (new Transform_);
-      graphics::WindowsManager::value_type t_gv[7];
-      const float color[] = {0, 1, 0, 1};
+      graphics::Configuration config;
+      const graphics::WindowsManager::Color_t color (0, 1, 0, 1);
       for (CORBA::ULong i = 0; i < rcs->length(); ++i) {
         const std::string jn =
           hpp_->robot()->getHandlePositionInJoint (rcs[i],t.out());
-        std::string groupName = createJointGroup (jn.c_str());
+        std::string groupName = createJointGroup (jn);
         std::string hn = "handle_" + escapeJointName (std::string(rcs[i]));
-        fromHPP(t, t_gv);
-        main->osg()->addXYZaxis (hn.c_str(), color, 0.005f, 1.f);
-        main->osg()->applyConfiguration (hn.c_str(), t_gv);
-        main->osg()->addToGroup (hn.c_str(), groupName.c_str());
+        fromHPP(t, config);
+        main->osg()->addXYZaxis (hn, color, 0.005f, 1.f);
+        main->osg()->applyConfiguration (hn, config);
+        main->osg()->addToGroup (hn, groupName);
       }
       main->osg()->refresh();
       gepetto::gui::MainWindow::instance()->requestRefresh();
@@ -242,17 +241,17 @@ namespace hpp {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var rcs = hpp_->problem()->getAvailable("gripper");
       hpp::Transform__var t (new Transform_);
-      graphics::WindowsManager::value_type t_gv[7];
-      const float color[] = {0, 1, 0, 1};
+      graphics::Configuration config;
+      const graphics::WindowsManager::Color_t color (0, 1, 0, 1);
       for (CORBA::ULong i = 0; i < rcs->length(); ++i) {
         const std::string jn =
           hpp_->robot()->getGripperPositionInJoint (rcs[i],t.out());
-        std::string groupName = createJointGroup (jn.c_str());
+        std::string groupName = createJointGroup (jn);
         std::string hn = "gripper_" + escapeJointName (std::string(rcs[i]));
-        fromHPP(t, t_gv);
-        main->osg()->addXYZaxis (hn.c_str(), color, 0.005f, 1.f);
-        main->osg()->applyConfiguration (hn.c_str(), t_gv);
-        main->osg()->addToGroup (hn.c_str(), groupName.c_str());
+        fromHPP(t, config);
+        main->osg()->addXYZaxis (hn, color, 0.005f, 1.f);
+        main->osg()->applyConfiguration (hn, config);
+        main->osg()->addToGroup (hn, groupName);
       }
       main->osg()->refresh();
       gepetto::gui::MainWindow::instance()->requestRefresh();

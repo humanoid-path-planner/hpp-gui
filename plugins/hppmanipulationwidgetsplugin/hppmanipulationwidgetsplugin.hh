@@ -119,7 +119,7 @@ signals:
       /// \param j index in table indexes
       /// \param epsilon offset
       void drawContactSurface(const std::string& name, hpp::intSeq_var& indexes,
-			      hpp::floatSeqSeq_var& points, CORBA::ULong j, double epsilon = 0.0001);
+			      hpp::floatSeqSeq_var& points, CORBA::ULong j, float epsilon = 0.0001f);
 
         HppManipClient* hpp_;
 

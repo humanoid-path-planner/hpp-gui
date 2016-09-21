@@ -29,6 +29,8 @@ using CORBA::ULong;
 namespace hpp {
   namespace gui {
     using gepetto::gui::MainWindow;
+    typedef graphics::WindowsManager::Color_t OsgColor_t;
+    typedef graphics::Configuration OsgConfiguration_t;
 
     HppWidgetsPlugin::JointElement::JointElement (
         const std::string& n, const std::string& prefix,
@@ -37,7 +39,7 @@ namespace hpp {
       bodyNames (bns.length()), item (i), updateViewer (bns.length(), updateV)
     {
       for (std::size_t i = 0; i < bns.length(); ++i)
-        bodyNames[i] = std::string(bns[i]);
+        bodyNames[i] = std::string(bns[(CORBA::ULong)i]);
     }
 
     HppWidgetsPlugin::HppWidgetsPlugin() :
@@ -224,7 +226,9 @@ namespace hpp {
                             "interface) and you did not refresh this GUI. "
                             "Use the refresh button \"Tools\" menu.");
       }
-      float T[7];
+      // Something smarter could be done here.
+      // For instance, the joint tree item could know the NodePtr_t of their bodies.
+      OsgConfiguration_t T;
       for (JointMap::iterator ite = jointMap_.begin ();
           ite != jointMap_.end (); ite++) {
         for (std::size_t i = 0; i < ite->bodyNames.size(); ++i)
@@ -233,7 +237,7 @@ namespace hpp {
           fromHPP(t, T);
           if (ite->updateViewer[i]) {
             std::string n = ite->prefix + ite->bodyNames[i];
-            ite->updateViewer[i] = main->osg()->applyConfiguration(n.c_str(), T);
+            ite->updateViewer[i] = main->osg()->applyConfiguration(n, T);
           }
         }
         if (!ite->item) continue;
@@ -245,7 +249,7 @@ namespace hpp {
         std::string n = escapeJointName(*it);
         hpp::Transform__var t = client()->robot()->getJointPosition(it->c_str());
         fromHPP(t, T);
-        main->osg()->applyConfiguration (n.c_str (), T);
+        main->osg()->applyConfiguration (n, T);
       }
       main->osg()->refresh();
     }
@@ -304,7 +308,7 @@ namespace hpp {
         std::string group; group.assign(what[1].first, what[1].second);
         std::string joint; joint.assign(what[2].first, what[2].second);
         std::string type;  type .assign(what[3].first, what[3].second);
-        std::size_t n = std::atoi (what[4].first);
+        CORBA::ULong n = (CORBA::ULong)std::atoi (what[4].first);
         qDebug () << "Detected the" << group.c_str() << type.c_str() << n << "of joint" << joint.c_str();
         if (group == "roadmap") {
           if (type == "node") {
@@ -439,14 +443,14 @@ namespace hpp {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       std::string target = createJointGroup(jointName);
       const std::string n = target + "/XYZ";
-      const float color[4] = {1,0,0,1};
+      const OsgColor_t color(1,0,0,1);
 
       /// This returns false if the frame already exists
-      if (main->osg()->addXYZaxis (n.c_str(), color, 0.005f, 1.f)) {
-        main->osg()->setVisibility (n.c_str(), "ALWAYS_ON_TOP");
+      if (main->osg()->addXYZaxis (n, color, 0.005f, 1.f)) {
+        main->osg()->setVisibility (n, "ALWAYS_ON_TOP");
         return;
       } else {
-        main->osg()->setVisibility (n.c_str(), "ALWAYS_ON_TOP");
+        main->osg()->setVisibility (n, "ALWAYS_ON_TOP");
       }
     }
 
@@ -455,11 +459,11 @@ namespace hpp {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var obs = client()->obstacle()->getObstacleNames (true, false);
       hpp::Transform__var cfg = hpp::Transform__alloc () ;
-      float d[7];
-      for (size_t i = 0; i < obs->length(); ++i) {
-        client()->obstacle()->getObstaclePosition (obs[(ULong) i], cfg.out());
+      OsgConfiguration_t d;
+      for (ULong i = 0; i < obs->length(); ++i) {
+        client()->obstacle()->getObstaclePosition (obs[i], cfg.out());
         fromHPP(cfg, d);
-        main->osg ()->applyConfiguration(obs[(ULong) i], d);
+        main->osg ()->applyConfiguration(std::string(obs[i]), d);
       }
       main->osg()->refresh();
     }
@@ -494,12 +498,11 @@ namespace hpp {
       if (main->osg()->createGroup(target.c_str())) {
         main->osg()->addToGroup(target.c_str(), "joints");
 
-        hpp::Transform__var t = client()->robot()->getJointPosition
-          (jn.c_str());
-        float p[7];
+        hpp::Transform__var t = client()->robot()->getJointPosition (jn.c_str());
+        OsgConfiguration_t p;
         fromHPP(t, p);
         jointFrames_.push_back(jn);
-        main->osg()->applyConfiguration (target.c_str(), p);
+        main->osg()->applyConfiguration (target, p);
         main->osg()->refresh();
       }
       return target;

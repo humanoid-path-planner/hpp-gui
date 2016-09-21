@@ -3,6 +3,7 @@
 
 #include <hpp/corbaserver/common.hh>
 #include <gepetto/gui/color-map.hh>
+#include <gepetto/gui/windows-manager.hh>
 #include <hppwidgetsplugin/hppwidgetsplugin.hh>
 
 namespace hpp {
@@ -11,9 +12,9 @@ namespace hpp {
       public:
         typedef unsigned int NodeID;
         typedef unsigned int EdgeID;
-        typedef float Frame[7];
-        typedef float Position[3];
-        typedef float Color[4];
+        typedef graphics::Configuration Frame;
+        typedef osgVector3 Position;
+        typedef graphics::WindowsManager::Color_t Color;
 
         float radius, axisSize;
 
