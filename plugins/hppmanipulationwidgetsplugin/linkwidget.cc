@@ -14,6 +14,9 @@ namespace hpp {
 
       connect(ui_->createButton, SIGNAL(clicked()), SLOT(createRule()));
 
+      QShortcut* shortcut = new QShortcut(QKeySequence(Qt::Key_Delete), ui_->rulesList);
+      connect(shortcut, SIGNAL(activated()), this, SLOT(deleteSelectedRules()));
+
       ui_->rulesList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
       connect(grippersList->selectionModel(),
@@ -31,15 +34,24 @@ namespace hpp {
 
     Rules_var LinkWidget::getRules()
     {
-      QList<QListWidgetItem *> selected = ui_->rulesList->selectedItems();
       Rules_var rules = new Rules();
+      rules->length(rules_.size());
 
       int i = 0;
-      rules->length(selected.count());
-      foreach (QListWidgetItem *item, selected) {
-        int row = ui_->rulesList->row(item);
-
-        rules[i] = rules_[row];
+      foreach (const RuleProxy& rule, rules_) {
+        rules[i].grippers.length(rule.grippers.size());
+        rules[i].handles .length(rule.handles .size());
+        for(std::size_t j = 0; j < rule.grippers.size(); ++j) {
+          QByteArray a = rule.grippers[j].toLocal8Bit();
+          rules[i].grippers[j] = new char[a.length()+1];
+          strcpy(rules[i].grippers[0], a.constData());
+        }
+        for(std::size_t j = 0; j < rule.grippers.size(); ++j) {
+          QByteArray a = rule.handles[j].toLocal8Bit();
+          rules[i].handles[j] = new char[a.length()+1];
+          strcpy(rules[i].handles[j], a.constData());
+        }
+        rules[i].link = rule.link;
         ++i;
       }
       return rules;
@@ -75,18 +87,33 @@ namespace hpp {
 
       foreach (QListWidgetItem *gripper, grippers) {
         foreach (QListWidgetItem *handle, handles) {
-          hpp::corbaserver::manipulation::Rule rule;
-          std::string gripperName = gripper->text().toStdString();
-          std::string handleName = handle->text().toStdString();
+          rules_.push_back(RuleProxy());
+          RuleProxy& rule = rules_.back();
 
-          rule.gripper = gripperName.c_str();
-          rule.handle = handleName.c_str();
+          QString gripperName = gripper->text();
+          QString handleName  = handle->text();
+
+          rule.grippers.push_back(gripperName);
+          rule.handles.push_back(handleName);
+
           rule.link = ui_->linked->isChecked();
-          rules_.push_back(rule);
-          std::string text(((rule.link == true) ? "Link " : "Don't link ")
+
+          QString text (((rule.link == true) ? "Link " : "Don't link ")
                        + gripperName + " and " + handleName);
-          ui_->rulesList->addItem(text.c_str());
+          ui_->rulesList->addItem(text);
         }
+      }
+    }
+
+    void LinkWidget::deleteSelectedRules()
+    {
+      foreach (QListWidgetItem *item, ui_->rulesList->selectedItems()) {
+        for (std::size_t row = 0; row < ui_->rulesList->count(); ++row)
+          if (item == ui_->rulesList->item(row)) {
+            rules_.remove(row);
+            ui_->rulesList->takeItem(row);
+            break;
+          }
       }
     }
   }
