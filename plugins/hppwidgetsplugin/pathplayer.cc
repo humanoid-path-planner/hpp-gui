@@ -15,6 +15,7 @@ namespace hpp {
       QWidget (parent)
       , ui_ (new ::Ui::PathPlayerWidget)
       , frameRate_ (25)
+      , timerId_ (0)
       , process_ (new QProcess (this))
       , showPOutput_ (new QDialog (this, Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint))
       , pOutput_ (new QTextBrowser())
@@ -177,8 +178,12 @@ namespace hpp {
 
     void PathPlayer::playPauseToggled(bool toggled)
     {
-      if (toggled) timerId_ = startTimer(0);
-      else killTimer(timerId_);
+      if (toggled) {
+        if (timerId_ == 0) timerId_ = startTimer(timeBetweenRefresh());
+      } else {
+        killTimer(timerId_);
+        timerId_ = 0;
+      }
     }
 
     void PathPlayer::stopClicked()
@@ -242,8 +247,6 @@ namespace hpp {
           currentParam_ = pathLength_;
           playPause()->setChecked(false);
         }
-        else
-          timerId_ = startTimer(timeBetweenRefresh());
         pathSlider()->setSliderPosition(lengthToSlider(currentParam_));
         updateConfiguration();
       }
