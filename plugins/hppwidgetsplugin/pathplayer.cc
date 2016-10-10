@@ -14,7 +14,6 @@ namespace hpp {
     PathPlayer::PathPlayer (HppWidgetsPlugin *plugin, QWidget *parent) :
       QWidget (parent)
       , ui_ (new ::Ui::PathPlayerWidget)
-      , frameRate_ (25)
       , timerId_ (0)
       , process_ (new QProcess (this))
       , showPOutput_ (new QDialog (this, Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint))
@@ -289,12 +288,13 @@ namespace hpp {
 
     inline int PathPlayer::timeBetweenRefresh() const
     {
-      return 1000/frameRate_;
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
+      return main->settings_->refreshRate;
     }
 
     double PathPlayer::lengthBetweenRefresh() const
     {
-      return pathLength_ / (timeSpinBox()->value() * frameRate_);
+      return pathLength_ * timeBetweenRefresh() / (1000 * timeSpinBox()->value());
     }
 
     QDoubleSpinBox *PathPlayer::timeSpinBox() const
