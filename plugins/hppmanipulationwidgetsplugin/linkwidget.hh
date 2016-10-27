@@ -33,9 +33,16 @@ namespace hpp {
 
     private slots:
       void createRule();
+      void deleteSelectedRules();
+
     private:
+      struct RuleProxy {
+        QVector<QString> grippers, handles;
+        bool link;
+      };
+      typedef QVector<RuleProxy> RuleProxies;
       Ui::LinkWidget *ui_;
-      std::vector<hpp::corbaserver::manipulation::Rule> rules_;
+      RuleProxies rules_;
       QListWidget* grippers_;
       QListWidget* handles_;
     };

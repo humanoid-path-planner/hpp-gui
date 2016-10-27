@@ -125,6 +125,7 @@ signals:
 
         QToolBar *toolBar_;
         QTabWidget *tw_;
+        QDialog* graphBuilder_;
 
         int lastId_;
     };

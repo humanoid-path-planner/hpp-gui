@@ -19,13 +19,17 @@ namespace hpp {
       HppWidgetsPlugin (),
       hpp_ (NULL),
       toolBar_ (NULL),
-      tw_ (NULL)
+      tw_ (NULL),
+      graphBuilder_ (NULL)
     {
     }
 
     HppManipulationWidgetsPlugin::~HppManipulationWidgetsPlugin()
     {
-      if (tw_) tw_->deleteLater();
+      if (graphBuilder_) {
+        delete graphBuilder_;
+        graphBuilder_ = NULL;
+      }
     }
 
     void HppManipulationWidgetsPlugin::init()
@@ -378,71 +382,76 @@ namespace hpp {
       main->emitSendToBackground(item);
       main->logJobStarted(item->id(), "Build graph");
       lastId_ = item->id();
-      tw_->deleteLater();
-      tw_->close();
+      graphBuilder_->close();
     }
 
     void HppManipulationWidgetsPlugin::autoBuildGraph()
     {
-      tw_ = new QTabWidget;
-      QListWidget* lw;
-      QListWidget* grippers;
-      QListWidget* handles;
-      QPushButton* button = new QPushButton("Confirm", tw_);
+      if (graphBuilder_ == NULL) {
+        graphBuilder_ = new QDialog(NULL, Qt::Dialog);
+        tw_ = new QTabWidget(graphBuilder_);
+        graphBuilder_->setLayout(new QVBoxLayout(graphBuilder_));
+        graphBuilder_->layout()->addWidget(tw_);
 
-      connect(button, SIGNAL(clicked()), SLOT(buildGraph()));
-      hpp::Names_t_var n;
-      n = hpp_->problem()->getAvailable("Gripper");
-      QStringList l;
-      for (unsigned i = 0; i < n->length(); i++) {
-        l << QString(n[i].in());
+        QListWidget* lw;
+        QListWidget* grippers;
+        QListWidget* handles;
+        QPushButton* button = new QPushButton("Confirm", tw_);
+
+        connect(button, SIGNAL(clicked()), SLOT(buildGraph()));
+        hpp::Names_t_var n;
+        n = hpp_->problem()->getAvailable("Gripper");
+        QStringList l;
+        for (unsigned i = 0; i < n->length(); i++) {
+          l << QString(n[i].in());
+        }
+        lw = new QListWidget(tw_);
+        lw->addItems(l);
+        lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        tw_->addTab(lw, "Grippers");
+        grippers = lw;
+
+        n = hpp_->problem()->getAvailable("Handle");
+        l.clear();
+        for (unsigned i = 0; i < n->length(); i++) {
+          l << QString(n[i].in());
+        }
+        QWidget* widget = new QWidget(tw_);
+        QVBoxLayout* box = new QVBoxLayout(widget);
+        box->addWidget(new QLabel("The objects not selected will be locked in their current position."));
+        lw = new QListWidget(tw_);
+        box->addWidget(lw);
+        lw->addItems(l);
+        lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        tw_->addTab(widget, "Handles");
+        handles = lw;
+
+        n = hpp_->problem()->getRobotContactNames();
+        l.clear();
+        for (unsigned i = 0; i < n->length(); i++) {
+          l << QString(n[i].in());
+        }
+        lw = new QListWidget(tw_);
+        lw->addItems(l);
+        lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        tw_->addTab(lw, "Robot Contacts");
+
+        n = hpp_->problem()->getEnvironmentContactNames();
+        l.clear();
+        for (unsigned i = 0; i < n->length(); i++) {
+          l << QString(n[i].in());
+        }
+        lw = new QListWidget(tw_);
+        lw->addItems(l);
+        lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        tw_->addTab(lw, "Environments Contacts");
+
+        LinkWidget* lWidget = new LinkWidget(grippers, handles, tw_);
+        tw_->addTab(lWidget, "Rules");
+
+        tw_->setCornerWidget(button, Qt::BottomRightCorner);
       }
-      lw = new QListWidget(tw_);
-      lw->addItems(l);
-      lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
-      tw_->addTab(lw, "Grippers");
-      grippers = lw;
-
-      n = hpp_->problem()->getAvailable("Handle");
-      l.clear();
-      for (unsigned i = 0; i < n->length(); i++) {
-        l << QString(n[i].in());
-      }
-      QWidget* widget = new QWidget(tw_);
-      QVBoxLayout* box = new QVBoxLayout(widget);
-      box->addWidget(new QLabel("The objects not selected will be locked in their current position."));
-      lw = new QListWidget(tw_);
-      box->addWidget(lw);
-      lw->addItems(l);
-      lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
-      tw_->addTab(widget, "Handles");
-      handles = lw;
-
-      n = hpp_->problem()->getRobotContactNames();
-      l.clear();
-      for (unsigned i = 0; i < n->length(); i++) {
-        l << QString(n[i].in());
-      }
-      lw = new QListWidget(tw_);
-      lw->addItems(l);
-      lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
-      tw_->addTab(lw, "Robot Contacts");
-
-      n = hpp_->problem()->getEnvironmentContactNames();
-      l.clear();
-      for (unsigned i = 0; i < n->length(); i++) {
-        l << QString(n[i].in());
-      }
-      lw = new QListWidget(tw_);
-      lw->addItems(l);
-      lw->setSelectionMode(QAbstractItemView::ExtendedSelection);
-      tw_->addTab(lw, "Environments Contacts");
-
-      LinkWidget* lWidget = new LinkWidget(grippers, handles, tw_);
-      tw_->addTab(lWidget, "Rules");
-
-      tw_->setCornerWidget(button, Qt::BottomRightCorner);
-      tw_->show();
+      graphBuilder_->show();
     }
 
     void HppManipulationWidgetsPlugin::handleWorkerDone(int id)

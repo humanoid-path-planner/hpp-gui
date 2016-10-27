@@ -77,7 +77,6 @@ signals:
         QPushButton* stop () const;
         QPushButton* record () const;
 
-        const int frameRate_;
         double pathLength_;
         double currentParam_;
         int timerId_;
