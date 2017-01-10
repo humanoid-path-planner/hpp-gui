@@ -41,7 +41,7 @@ namespace hpp {
           this, SLOT (updateJointAttitude (double, double, double, double)));
 
       gepetto::gui::MainWindow* m = gepetto::gui::MainWindow::instance();
-      float black[4] = {1,1,1,1};
+      graphics::WindowsManager::Color_t black(1,1,1,1);
       m->osg()->addBox("hpp-gui/attitudeControl", 0.001f, 0.001f, 0.001f, black);
       m->osg()->addLandmark("hpp-gui/attitudeControl", 0.1f);
       m->osg()->setVisibility("hpp-gui/attitudeControl", "OFF");
@@ -68,9 +68,8 @@ namespace hpp {
       hpp::floatSeq pos1, pos2; pos1.length(3); pos2.length(3);
       for (int i = 0; i < 3; i++) pos1[i] = 0;
       for (int i = 0; i < 3; i++) pos2[i] = transform.in()[i];
-      for (int i = 0; i < 3; i++) frameViz[i]=(float)pos2[i];
-      frameViz [3] = 1;
-      for (int i = 0; i < 3; i++) frameViz[i+4]=0;
+      for (int i = 0; i < 3; i++) frameViz.position[i]=(float)pos2[i];
+      frameViz.quat.set(0, 0, 0, 1);
 
       qDebug() << transform.in()[0+3] << ","
         << transform.in()[1+3] << ","
@@ -115,15 +114,13 @@ namespace hpp {
     {
       gepetto::gui::MainWindow* m = gepetto::gui::MainWindow::instance();
 
-      q[0] = w; q[1] = x; q[2] = y; q[3] = z;
-      for (int i = 0; i < 4; i++) {
-        frameViz[i+3] = (float)q[i];
-      }
+      q[3] = w; q[0] = x; q[1] = y; q[2] = z;
+      frameViz.quat.set(x, y, z, w);
       m->osg()->applyConfiguration("hpp-gui/attitudeControl", frameViz);
 
       hpp::floatSeq pos1, pos2; pos1.length(3); pos2.length(3);
       for (int i = 0; i < 3; i++) pos1[i] = 0;
-      for (int i = 0; i < 3; i++) pos2[i] = frameViz[i];
+      for (int i = 0; i < 3; i++) pos2[i] = frameViz.position[i];
 
       hpp_.problem()->createPositionConstraint (
           "attitudeDeviceControl/pos", "", jn.c_str(),
@@ -152,11 +149,12 @@ namespace hpp {
     }
 
     void AttitudeDevice::updateTargetPosition (double x, double y, double z) {
-      Eigen::Quaternion<double> q (frameViz[3], frameViz[4], frameViz[5], frameViz[6]);
+      Eigen::Quaternion<double> q
+        (frameViz.quat.w(), frameViz.quat.x(), frameViz.quat.y(), frameViz.quat.z());
       Eigen::Vector3d dx = q.inverse() * Eigen::Vector3d (x,y,z);
-      frameViz[0] += (float)dx[0];
-      frameViz[1] += (float)dx[1];
-      frameViz[2] += (float)dx[2];
+      frameViz.position[0] += (float)dx[0];
+      frameViz.position[1] += (float)dx[1];
+      frameViz.position[2] += (float)dx[2];
     }
 
     AttitudeDeviceMsgBox::AttitudeDeviceMsgBox (QWidget *parent) :

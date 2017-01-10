@@ -10,6 +10,7 @@
 #include <QWidget>
 
 #include <gepetto/gui/plugin-interface.hh>
+#include <gepetto/viewer/corba/windows-manager.hh>
 
 #include <iostream>
 
@@ -73,7 +74,7 @@ namespace hpp {
         hpp::Quaternion_ q;
         hpp::boolSeq_var mask;
 
-        float frameViz[7];
+        graphics::Configuration frameViz;
 
         QFuture <void> lock_;
     };
