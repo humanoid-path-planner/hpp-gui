@@ -45,7 +45,7 @@ namespace hpp {
       dock_ = dock;
     }
 
-    std::string JointTreeWidget::selectedJoint()
+    std::string JointTreeWidget::selectedJoint() const
     {
       QItemSelectionModel* sm = ui_->jointTree->selectionModel();
       JointTreeItem *item = NULL;
@@ -56,6 +56,11 @@ namespace hpp {
           return item->name();
       }
       return std::string ();
+    }
+
+    QString JointTreeWidget::getSelectedJoint() const
+    {
+      return QString::fromStdString(selectedJoint());
     }
 
     void JointTreeWidget::customContextMenu(const QPoint &pos)

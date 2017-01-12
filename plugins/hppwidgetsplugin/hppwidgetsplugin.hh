@@ -128,7 +128,7 @@ signals:
         virtual void updateRobotJoints (const QString robotName);
 
         /// Get the currently selected joint name.
-        std::string getSelectedJoint ();
+        std::string getSelectedJoint () const;
 
         /// Create the roadmap of a given joint.
         /// \param jointName name of the joint

@@ -25,7 +25,7 @@ namespace hpp {
         void dockWidget (QDockWidget* dock);
 
         /// Get the currently selected joint.
-        std::string selectedJoint ();
+        std::string selectedJoint () const;
 
 signals:
 
@@ -42,6 +42,9 @@ signals:
         /// select the joint in the tree.
         /// \param jointName name of the joint selected
         void selectJoint (const std::string& jointName);
+
+        /// Get the currently selected joint name.
+        QString getSelectedJoint () const;
 
         /// Open a dialog to set a joint bounds.
         /// \param jointName name of the joint

@@ -3,6 +3,7 @@ from hpp.corbaserver import Client
 from gepetto.corbaserver import Client as GuiClient
 from directpath import DirectPathBox
 from findGrasp import GraspFinder
+from inspector import InspectBodies
 
 class _PathTab(QtGui.QWidget):
     def __init__ (self, parent):
@@ -166,6 +167,7 @@ class Plugin(QtGui.QDockWidget):
         self.tabWidget.addTab (_StepByStepSolverTab(self), "Step by step solver")
         self.tabWidget.addTab (GraspFinder(self), "Grasp Finder")
         self.tabWidget.addTab (self.concatenateWidget, "Paths management")
+        self.tabWidget.addTab (InspectBodies(self), "Inspector")
 
     def resetConnection(self):
         self.client = Client(url= str(self.hppPlugin.getHppIIOPurl()))

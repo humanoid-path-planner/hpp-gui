@@ -133,6 +133,7 @@ namespace hpp {
 
       main->registerSlot("requestCreateJointGroup", this);
       main->registerSlot("getHppIIOPurl", this);
+      main->registerSlot("getSelectedJoint", jointTreeWidget_);
     }
 
     QString HppWidgetsPlugin::name() const
@@ -419,7 +420,7 @@ namespace hpp {
       }
     }
 
-    std::string HppWidgetsPlugin::getSelectedJoint()
+    std::string HppWidgetsPlugin::getSelectedJoint() const
     {
       return jointTreeWidget_->selectedJoint();
     }
