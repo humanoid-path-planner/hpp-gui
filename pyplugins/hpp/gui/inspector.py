@@ -66,3 +66,4 @@ class InspectBodies(QtGui.QWidget):
                     print e
                     print event.point(False)
                     print vec(event.point(False))
+        event.done()
