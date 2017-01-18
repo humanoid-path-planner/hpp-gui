@@ -4,14 +4,29 @@
 
 namespace hpp {
   namespace gui {
+    namespace {
+      QDoubleSpinBox* makeSpinBox(double val, TransformWidget* recv, const char* slot, double bound)
+      {
+        QDoubleSpinBox* sb = new QDoubleSpinBox;
+        sb->setDecimals(DBL_MAX_10_EXP + DBL_DIG);
+        sb->setMinimum(-bound);
+        sb->setMaximum(bound);
+        sb->setSingleStep(0.01);
+        sb->setValue(val);
+        recv->connect(sb, SIGNAL(valueChanged(double)), slot);
+        return sb;
+      }
+    }
+
     TransformWidget::TransformWidget(hpp::Transform__slice* transform, std::string const& jointName,
                                      QWidget* parent, bool doPosition, bool doQuaternion)
       : QDialog(parent, Qt::Dialog | Qt::WindowStaysOnTopHint),
 	transform_(NULL)
     {
       transform_ = transform;
-      QQuaternion q (transform_[3], transform_[4], transform_[5], transform_[6]);
+      QQuaternion q (transform_[6], transform_[3], transform_[4], transform_[5]);
       q.normalize();
+      qDebug()<< q;
       rAxis_ = q.vector().normalized() * 2 * std::atan2(q.vector().length(), q.scalar());
       jointName_ = jointName;
       QVBoxLayout* l = new QVBoxLayout;
@@ -19,61 +34,26 @@ namespace hpp {
 
       if (doPosition) {
         l->addWidget(new QLabel("Position", this));
-        xSlider_ = new QDoubleSpinBox;
-        xSlider_->setMinimum(-DBL_MAX);
-        xSlider_->setMaximum(DBL_MAX);
-        xSlider_->setSingleStep(0.01);
-        xSlider_->setValue(transform_[0]);
+        xSlider_ = makeSpinBox(transform_[0], this, SLOT(xChanged(double)), DBL_MAX);
         l->addWidget(xSlider_);
 
-        ySlider_ = new QDoubleSpinBox;
-        ySlider_->setMinimum(-DBL_MAX);
-        ySlider_->setMaximum(DBL_MAX);
-        ySlider_->setSingleStep(0.01);
-        ySlider_->setValue(transform_[1]);
+        ySlider_ = makeSpinBox(transform_[1], this, SLOT(yChanged(double)), DBL_MAX);
         l->addWidget(ySlider_);
 
-        zSlider_ = new QDoubleSpinBox;
-        zSlider_->setMinimum(-DBL_MAX);
-        zSlider_->setMaximum(DBL_MAX);
-        zSlider_->setSingleStep(0.01);
-        xSlider_->setValue(transform_[2]);
+        zSlider_ = makeSpinBox(transform_[2], this, SLOT(zChanged(double)), DBL_MAX);
         l->addWidget(zSlider_);
-
-        xSlider_->connect(xSlider_, SIGNAL(valueChanged(double)), this, SLOT(xChanged(double)));
-        ySlider_->connect(ySlider_, SIGNAL(valueChanged(double)), this, SLOT(yChanged(double)));
-        zSlider_->connect(zSlider_, SIGNAL(valueChanged(double)), this, SLOT(zChanged(double)));
       }
 
       if (doQuaternion) {
         l->addWidget(new QLabel("Quaternion", this));
-        xQuaternion_ = new QDoubleSpinBox;
-        xQuaternion_->setMinimum(-M_PI);
-        xQuaternion_->setMaximum(M_PI);
-        xQuaternion_->setSingleStep(0.01);
-        xQuaternion_->setValue(rAxis_.x());
+        xQuaternion_ = makeSpinBox(rAxis_.x(), this, SLOT(xRotateChanged(double)), M_PI);
         l->addWidget(xQuaternion_);
 
-        yQuaternion_ = new QDoubleSpinBox;
-        yQuaternion_->setMinimum(-M_PI);
-        yQuaternion_->setMaximum(M_PI);
-        yQuaternion_->setSingleStep(0.01);
-        yQuaternion_->setValue(rAxis_.y());
+        yQuaternion_ = makeSpinBox(rAxis_.y(), this, SLOT(yRotateChanged(double)), M_PI);
         l->addWidget(yQuaternion_);
 
-        zQuaternion_ = new QDoubleSpinBox;
-        zQuaternion_->setMinimum(-M_PI);
-        zQuaternion_->setMaximum(M_PI);
-        zQuaternion_->setSingleStep(0.01);
-        xQuaternion_->setValue(rAxis_.z());
+        zQuaternion_ = makeSpinBox(rAxis_.z(), this, SLOT(zRotateChanged(double)), M_PI);
         l->addWidget(zQuaternion_);
-
-	xQuaternion_->connect(xQuaternion_, SIGNAL(valueChanged(double)),
-			      this, SLOT(xRotateChanged(double)));
-	yQuaternion_->connect(yQuaternion_, SIGNAL(valueChanged(double)),
-			      this, SLOT(yRotateChanged(double)));
-	zQuaternion_->connect(zQuaternion_, SIGNAL(valueChanged(double)),
-			      this, SLOT(zRotateChanged(double)));
       }
 
       setWindowTitle(QString::fromStdString("Transform "));
@@ -85,17 +65,14 @@ namespace hpp {
       if (axisChanged) {
         QQuaternion quaternion;
         if (!rAxis_.isNull()) {
-          quaternion = QQuaternion::fromAxisAndAngle(rAxis_.normalized(), rAxis_.length());
           const double theta = rAxis_.length();
           quaternion = QQuaternion(std::cos(theta/2), std::sin(theta/2) * rAxis_ / theta);
         }
 
-        qDebug()<< rAxis_;
-        qDebug()<< quaternion;
-        transform_[3] = quaternion.scalar();
-        transform_[4] = quaternion.x();
-        transform_[5] = quaternion.y();
-        transform_[6] = quaternion.z();
+        transform_[6] = quaternion.scalar();
+        transform_[3] = quaternion.x();
+        transform_[4] = quaternion.y();
+        transform_[5] = quaternion.z();
       }
       emit valueChanged(transform_, jointName_);
     }
