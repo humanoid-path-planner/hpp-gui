@@ -90,7 +90,7 @@ namespace hpp {
         };
 
         JointTreeItem (const char* name, const hpp::floatSeq& q,
-            const hpp::corbaserver::jointBoundSeq& b,
+            const hpp::floatSeq& b,
             const unsigned int nbDof,
             const NodesPtr_t& node);
 
@@ -106,9 +106,9 @@ namespace hpp {
 
         hpp::floatSeq config () const;
 
-        hpp::corbaserver::jointBoundSeq bounds () const;
+        hpp::floatSeq bounds () const;
 
-        void updateBounds (const hpp::corbaserver::jointBoundSeq &b);
+        void updateBounds (const hpp::floatSeq &b);
 
         void updateConfig (const hpp::floatSeq &c);
 

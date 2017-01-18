@@ -35,7 +35,7 @@ namespace hpp {
 
     }
 
-    void JointBoundDialog::setBounds(const hpp::corbaserver::jointBoundSeq &bounds)
+    void JointBoundDialog::setBounds(const hpp::floatSeq &bounds)
     {
       if (bounds.length () != (ULong) lines_.length() * 2) {
         qDebug () << "Wrong bounds dimensions";
@@ -48,7 +48,7 @@ namespace hpp {
       }
     }
 
-    void JointBoundDialog::getBounds(hpp::corbaserver::jointBoundSeq& bounds) const
+    void JointBoundDialog::getBounds(hpp::floatSeq& bounds) const
     {
       bounds.length (lines_.length() * 2);
       std::size_t i = 0;

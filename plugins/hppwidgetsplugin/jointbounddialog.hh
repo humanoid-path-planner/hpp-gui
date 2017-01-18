@@ -15,9 +15,9 @@ namespace hpp {
       public:
         explicit JointBoundDialog(QString name, std::size_t nbDof, QWidget *parent = 0);
 
-        void setBounds (const hpp::corbaserver::jointBoundSeq& bounds);
+        void setBounds (const hpp::floatSeq& bounds);
 
-        void getBounds (hpp::corbaserver::jointBoundSeq& bounds) const;
+        void getBounds (hpp::floatSeq& bounds) const;
 
         ~JointBoundDialog();
 

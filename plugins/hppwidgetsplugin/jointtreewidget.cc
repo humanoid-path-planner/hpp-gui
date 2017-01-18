@@ -119,7 +119,7 @@ namespace hpp {
     void JointTreeWidget::openJointBoundDialog(const std::string jointName)
     {
       try {
-        hpp::corbaserver::jointBoundSeq_var bounds =
+        hpp::floatSeq_var bounds =
           plugin_->client()->robot()->getJointBounds(jointName.c_str());
         int nbCfg = plugin_->client()->robot()->getJointConfigSize(jointName.c_str());
         if (nbCfg > 0) {

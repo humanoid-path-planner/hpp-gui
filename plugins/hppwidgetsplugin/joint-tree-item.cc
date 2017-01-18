@@ -19,7 +19,7 @@ namespace hpp {
     const int JointTreeItem::TypeRole       = Qt::UserRole + 10;
 
     JointTreeItem::JointTreeItem(const char* name, const hpp::floatSeq &q,
-        const hpp::corbaserver::jointBoundSeq &b,
+        const hpp::floatSeq &b,
         const unsigned int nbDof, const NodesPtr_t& nodes)
       : QStandardItem (QString (name)), name_ (name), nodes_ (nodes), value_ ()
     {
@@ -44,7 +44,7 @@ namespace hpp {
     {
       hpp::floatSeq q = hpp::floatSeq();
       q.length(value_.size());
-      hpp::corbaserver::jointBoundSeq b = hpp::corbaserver::jointBoundSeq();
+      hpp::floatSeq b = hpp::floatSeq();
       b.length (2*value_.size());
       for (size_t i = 0; i < q.length(); ++i) {
         q[(ULong) i] = value_[(ULong) i][0]->data(Qt::EditRole).toFloat();
@@ -63,10 +63,9 @@ namespace hpp {
       return q;
     }
 
-    hpp::corbaserver::jointBoundSeq JointTreeItem::bounds() const
+    hpp::floatSeq JointTreeItem::bounds() const
     {
-      hpp::corbaserver::jointBoundSeq b =
-        hpp::corbaserver::jointBoundSeq();
+      hpp::floatSeq b = hpp::floatSeq();
       b.length (2*value_.size());
       for (int i = 0; i < value_.size(); ++i) {
         b[2*i  ] = value_[i][1]->data(Qt::EditRole).toFloat();
@@ -82,7 +81,7 @@ namespace hpp {
         value_[i][0]->setData(c[i], Qt::EditRole);
     }
 
-    void JointTreeItem::updateBounds(const hpp::corbaserver::jointBoundSeq& b)
+    void JointTreeItem::updateBounds(const hpp::floatSeq& b)
     {
       assert ((int)b.length() == 2*value_.size());
       for (int i = 0; i < value_.size(); ++i) {
