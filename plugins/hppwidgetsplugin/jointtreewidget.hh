@@ -34,11 +34,6 @@ signals:
           /// \param pos poistion of the joint in the tree
           void customContextMenu (const QPoint& pos);
 
-        /// Add a joint to the tree.
-        /// \param name name of the joint to add
-        /// \param parent parent of the joint
-        void addJointToTree (const std::string name, JointTreeItem *parent);
-
         /// select the joint in the tree.
         /// \param jointName name of the joint selected
         void selectJoint (const std::string& jointName);
@@ -68,6 +63,8 @@ signals:
       private:
         /// Reset the tree.
         void reset ();
+
+        JointTreeItem* buildJointTreeItem (const char* name);
 
         HppWidgetsPlugin* plugin_;
         ::Ui::JointTreeWidget* ui_;

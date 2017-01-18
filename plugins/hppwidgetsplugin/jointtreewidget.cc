@@ -82,7 +82,7 @@ namespace hpp {
       }
     }
 
-    void JointTreeWidget::addJointToTree(const std::string name, JointTreeItem *parent)
+    JointTreeItem* JointTreeWidget::buildJointTreeItem(const char* name)
     {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
       HppWidgetsPlugin::JointElement& je = plugin_->jointMap() [name];
@@ -92,17 +92,17 @@ namespace hpp {
         // TODO I do not remember why this is important...
         if (!nodes[i]) nodes[i] = main->osg ()->getGroup(je.bodyNames[i]);
       }
-      hpp::floatSeq_var c = plugin_->client()->robot ()->getJointConfig (name.c_str());
-      CORBA::Short nbDof = plugin_->client()->robot ()->getJointNumberDof (name.c_str());
-      hpp::corbaserver::jointBoundSeq_var b = plugin_->client()->robot ()->getJointBounds (name.c_str());
-
-      JointTreeItem* j = new JointTreeItem (name.c_str(), c.in(), b.in(), nbDof, nodes);
+      CORBA::Short nbDof = plugin_->client()->robot ()->getJointNumberDof (name);
+      JointTreeItem* j;
+      if (nbDof > 0) {
+        hpp::floatSeq_var c = plugin_->client()->robot ()->getJointConfig (name);
+        hpp::floatSeq_var b = plugin_->client()->robot ()->getJointBounds (name);
+        j = new JointTreeItem (name, c.in(), b.in(), nbDof, nodes);
+      } else {
+        j = new JointTreeItem (name, hpp::floatSeq(), hpp::floatSeq(), nbDof, nodes);
+      }
       je.item = j;
-      if (parent) parent->appendRow(j);
-      else        model_->appendRow(j);
-      hpp::Names_t_var children = plugin_->client()->robot ()->getChildJointNames (name.c_str());
-      for (size_t i = 0; i < children->length(); ++i)
-        addJointToTree(std::string(children[(ULong) i]),j);
+      return j;
     }
 
     void JointTreeWidget::selectJoint(const std::string &jointName)
@@ -163,18 +163,29 @@ namespace hpp {
     {
       reset ();
       plugin_->jointMap ().clear();
-      char* robotName;
       try {
-        robotName = plugin_->client ()->robot()->getRobotName();
+        CORBA::String_var robotName = plugin_->client ()->robot()->getRobotName();
+        plugin_->updateRobotJoints(robotName.in());
         hpp::Names_t_var joints = plugin_->client()->robot()->getAllJointNames ();
-        std::string bjn (joints[0]);
-        plugin_->updateRobotJoints(robotName);
-        addJointToTree(bjn, 0);
+        typedef std::map<std::string, JointTreeItem*> JointTreeItemMap_t;
+        JointTreeItemMap_t items;
+        for (size_t i = 0; i < joints->length (); ++i) {
+          const char* jname = joints[(ULong) i];
+          std::string bjn (joints[0]);
+          items[jname] = buildJointTreeItem(jname);
+        }
+        for (JointTreeItemMap_t::const_iterator _jti = items.begin();
+            _jti != items.end(); ++_jti) {
+          CORBA::String_var _pname = plugin_->client()->robot ()->getParentJointName(_jti->first.c_str());
+          std::string pname (_pname);
+          JointTreeItemMap_t::iterator parent = items.find(pname);
+          if (parent == items.end()) model_->        appendRow(_jti->second);
+          else                       parent->second->appendRow(_jti->second);
+        }
       } catch (hpp::Error& e) {
         gepetto::gui::MainWindow::instance ()->logError(QString(e.msg));
         return;
       }
-      delete[] robotName;
     }
 
     void JointTreeWidget::reset()

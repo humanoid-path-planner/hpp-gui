@@ -242,8 +242,10 @@ namespace hpp {
           }
         }
         if (!ite->item) continue;
-        hpp::floatSeq_var c = client()->robot ()->getJointConfig (ite->name.c_str());
-        ite->item->updateConfig (c.in());
+        if (ite->item->config().length() > 0) {
+          hpp::floatSeq_var c = client()->robot ()->getJointConfig (ite->name.c_str());
+          ite->item->updateConfig (c.in());
+        }
       }
       for (std::list<std::string>::const_iterator it = jointFrames_.begin ();
           it != jointFrames_.end (); ++it) {
