@@ -48,8 +48,6 @@ namespace hpp {
         /// Get the name of a joint's body.
         /// \param jointName joint name
         std::string getBodyFromJoint (const std::string& jointName) const;
-signals:
-        void configurationValidationStatus (bool valid);
 
         // CorbaInterface
       public:
