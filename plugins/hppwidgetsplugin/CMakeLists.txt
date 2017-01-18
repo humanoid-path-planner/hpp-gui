@@ -37,6 +37,7 @@ SET(${PLUGIN_NAME}_HEADERS
   configurationlist.hh
   twojointsconstraint.hh
   listjointconstraint.hh
+  joint-action.hh
   )
 
 SET(${PLUGIN_NAME}_HEADERS_NO_MOC
@@ -83,6 +84,7 @@ SET (${PLUGIN_NAME}_SOURCES
   configurationlist.cc
   twojointsconstraint.cc
   listjointconstraint.cc
+  joint-action.cc
   )
 
 ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}

@@ -94,6 +94,8 @@ namespace hpp {
             const unsigned int nbDof,
             const NodesPtr_t& node);
 
+        ~JointTreeItem ();
+
         virtual QStandardItem* clone () const;
 
         virtual int type() {
@@ -114,12 +116,17 @@ namespace hpp {
 
         void updateTypeRole ();
 
+        void setupActions(HppWidgetsPlugin* plugin);
+
+        const QList<QAction*>& actions () const;
+
       private:
         typedef QList<QStandardItem*> StandardItemList;
 
         std::string name_;
         NodesPtr_t nodes_;
         QVector<StandardItemList> value_;
+        QList<QAction*> actions_;
     };
 
     class JointItemDelegate : public QItemDelegate

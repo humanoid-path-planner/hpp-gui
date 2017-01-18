@@ -370,31 +370,6 @@ namespace hpp {
       return createJointGroup(jn.toStdString()).c_str();
     }
 
-    QList<QAction *> HppWidgetsPlugin::getJointActions(const std::string &jointName)
-    {
-      QList <QAction*> l;
-      gepetto::gui::JointAction* a;
-      a= new gepetto::gui::JointAction (tr("Move &joint..."), jointName, 0);
-      connect (a, SIGNAL (triggered(std::string)), jointTreeWidget_, SLOT (openJointMoveDialog(std::string)));
-      l.append(a);
-      a= new gepetto::gui::JointAction (tr("Set &bounds..."), jointName, 0);
-      connect (a, SIGNAL (triggered(std::string)), jointTreeWidget_, SLOT (openJointBoundDialog(std::string)));
-      l.append(a);
-      a= new gepetto::gui::JointAction (tr("Add joint &frame"), jointName, 0);
-      connect (a, SIGNAL (triggered(std::string)), SLOT (addJointFrame(std::string)));
-      l.append(a);
-      a = new gepetto::gui::JointAction (tr("Display &roadmap"), jointName, 0);
-      connect (a, SIGNAL (triggered(std::string)), this, SLOT (displayRoadmap(std::string)));
-      l.append(a);
-      a = new gepetto::gui::JointAction (tr("Display &waypoints of selected path"), jointName, 0);
-      connect (a, SIGNAL (triggered(std::string)), pathPlayer_, SLOT (displayWaypointsOfPath(std::string)));
-      l.append(a);
-      a = new gepetto::gui::JointAction (tr("Display selected &path"), jointName, 0);
-      connect (a, SIGNAL (triggered(std::string)), pathPlayer_, SLOT (displayPath(std::string)));
-      l.append(a);
-      return l;
-    }
-
     HppWidgetsPlugin::HppClient *HppWidgetsPlugin::client() const
     {
       return hpp_;

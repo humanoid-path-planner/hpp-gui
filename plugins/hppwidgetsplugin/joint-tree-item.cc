@@ -40,6 +40,11 @@ namespace hpp {
       updateBounds(b);
     }
 
+    JointTreeItem::~JointTreeItem ()
+    {
+      qDeleteAll(actions_);
+    }
+
     QStandardItem *JointTreeItem::clone() const
     {
       hpp::floatSeq q = hpp::floatSeq();
@@ -105,6 +110,46 @@ namespace hpp {
         else if (lo < up) value_[i][0]->setData(BoundedValueType,   TypeRole);
         else              value_[i][0]->setData(UnboundedValueType, TypeRole);
       }
+    }
+
+    void JointTreeItem::setupActions (HppWidgetsPlugin* plugin)
+    {
+      JointAction* a;
+
+      a = new JointAction (QObject::tr("Move &joint..."), name_, 0);
+      plugin->jointTreeWidget()->connect (a, SIGNAL (triggered(std::string)),
+          SLOT (openJointMoveDialog(std::string)));
+      actions_.append(a);
+
+      a = new JointAction (QObject::tr("Set &bounds..."), name_, 0);
+      plugin->jointTreeWidget()->connect (a, SIGNAL (triggered(std::string)),
+          SLOT (openJointBoundDialog(std::string)));
+      actions_.append(a);
+
+      a = new JointAction (QObject::tr("Add joint &frame"), name_, 0);
+      plugin->connect (a, SIGNAL (triggered(std::string)),
+          SLOT (addJointFrame(std::string)));
+      actions_.append(a);
+
+      a = new JointAction (QObject::tr("Display &roadmap"), name_, 0);
+      plugin->connect (a, SIGNAL (triggered(std::string)),
+          SLOT (displayRoadmap(std::string)));
+      actions_.append(a);
+
+      a = new JointAction (QObject::tr("Display &waypoints of selected path"), name_, 0);
+      plugin->pathPlayer()->connect (a, SIGNAL (triggered(std::string)),
+          SLOT (displayWaypointsOfPath(std::string)));
+      actions_.append(a);
+
+      a = new JointAction (QObject::tr("Display selected &path"), name_, 0);
+      plugin->pathPlayer()->connect (a, SIGNAL (triggered(std::string)),
+          SLOT (displayPath(std::string)));
+      actions_.append(a);
+    }
+
+    const QList<QAction*>& JointTreeItem::actions () const
+    {
+      return actions_;
     }
 
     JointItemDelegate::JointItemDelegate(QPushButton *forceVelocity, HppWidgetsPlugin *plugin, gepetto::gui::MainWindow *parent)

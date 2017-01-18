@@ -109,11 +109,6 @@ signals:
         QString getHppIIOPurl () const;
 
       public:
-        /// Get the possible actions on a joint.
-        /// \param jointName name of the joint
-        QList <QAction*> getJointActions (const std::string &jointName);
-
-      public:
         /// Get the corbaserver client.
         HppClient* client () const;
 

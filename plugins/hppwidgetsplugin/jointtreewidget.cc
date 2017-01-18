@@ -9,6 +9,7 @@
 #include "hppwidgetsplugin/joint-tree-item.hh"
 #include "hppwidgetsplugin/jointbounddialog.hh"
 #include "hppwidgetsplugin/transformwidget.hh"
+#include "hppwidgetsplugin/joint-action.hh"
 
 using CORBA::ULong;
 
@@ -71,7 +72,7 @@ namespace hpp {
         JointTreeItem *item =
           dynamic_cast <JointTreeItem*> (model_->itemFromIndex(index));
         if (!item) return;
-        contextMenu.addActions (plugin_->getJointActions(item->name()));
+        contextMenu.addActions (item->actions());
         foreach (gepetto::gui::JointModifierInterface* adi,
             gepetto::gui::MainWindow::instance()->pluginManager ()->get<gepetto::gui::JointModifierInterface> ()) {
           if (!adi) continue;
@@ -102,6 +103,7 @@ namespace hpp {
         j = new JointTreeItem (name, hpp::floatSeq(), hpp::floatSeq(), nbDof, nodes);
       }
       je.item = j;
+      j->setupActions(plugin_);
       return j;
     }
 
