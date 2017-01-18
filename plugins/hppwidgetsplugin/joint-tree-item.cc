@@ -8,6 +8,10 @@
 
 #include "gepetto/gui/mainwindow.hh"
 
+#include "hppwidgetsplugin/jointtreewidget.hh"
+#include "hppwidgetsplugin/pathplayer.hh"
+#include "hppwidgetsplugin/joint-action.hh"
+
 using CORBA::ULong;
 
 namespace hpp {

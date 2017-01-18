@@ -5,6 +5,7 @@
 
 #include <gepetto/gui/mainwindow.hh>
 #include <gepetto/gui/windows-manager.hh>
+#include <gepetto/gui/action-search-bar.hh>
 
 #include "hppwidgetsplugin/joint-tree-item.hh"
 #include "hppwidgetsplugin/jointbounddialog.hh"
@@ -15,6 +16,9 @@ using CORBA::ULong;
 
 namespace hpp {
   namespace gui {
+    using gepetto::gui::MainWindow;
+    using gepetto::gui::ActionSearchBar;
+
     JointTreeWidget::JointTreeWidget(HppWidgetsPlugin *plugin, QWidget *parent) :
       QWidget(parent),
       plugin_ (plugin),
@@ -29,6 +33,7 @@ namespace hpp {
             plugin_,
             gepetto::gui::MainWindow::instance()));
       reset ();
+      initSearchActions ();
 
       connect(ui_->jointTree, SIGNAL (customContextMenuRequested(QPoint)),
           SLOT (customContextMenu(QPoint)));
@@ -39,6 +44,20 @@ namespace hpp {
     JointTreeWidget::~JointTreeWidget()
     {
       delete ui_;
+    }
+
+    void JointTreeWidget::initSearchActions()
+    {
+      ActionSearchBar* asb = MainWindow::instance()->actionSearchBar();
+      JointAction* a;
+
+      a = new JointAction (tr("Move &joint..."), this, this);
+      connect (a, SIGNAL (triggered(std::string)), SLOT (openJointMoveDialog(std::string)));
+      asb->addAction(a);
+
+      a = new JointAction (tr("Set &bounds..."), this, this);
+      connect (a, SIGNAL (triggered(std::string)), SLOT (openJointBoundDialog(std::string)));
+      asb->addAction(a);
     }
 
     void JointTreeWidget::dockWidget(QDockWidget *dock)

@@ -6,12 +6,17 @@
 #include "gepetto/gui/mainwindow.hh"
 #include <gepetto/gui/windows-manager.hh>
 #include <gepetto/gui/osgwidget.hh>
+#include <gepetto/gui/action-search-bar.hh>
 
 #include "hppwidgetsplugin/conversions.hh"
 #include "hppwidgetsplugin/ui_pathplayerwidget.h"
+#include "hppwidgetsplugin/joint-action.hh"
 
 namespace hpp {
   namespace gui {
+    using gepetto::gui::MainWindow;
+    using gepetto::gui::ActionSearchBar;
+
     PathPlayer::PathPlayer (HppWidgetsPlugin *plugin, QWidget *parent) :
       QWidget (parent)
       , ui_ (new ::Ui::PathPlayerWidget)
@@ -36,6 +41,8 @@ namespace hpp {
       showPOutput_->setModal(false);
       showPOutput_->setLayout(new QHBoxLayout ());
       showPOutput_->layout()->addWidget(pOutput_);
+
+      initSearchActions();
     }
 
     PathPlayer::~PathPlayer()
@@ -46,6 +53,20 @@ namespace hpp {
         delete process_;
       }
       delete ui_;
+    }
+
+    void PathPlayer::initSearchActions()
+    {
+      ActionSearchBar* asb = MainWindow::instance()->actionSearchBar();
+      JointAction* a;
+
+      a = new JointAction (tr("Display &waypoints of selected path"), plugin_->jointTreeWidget(), this);
+      connect (a, SIGNAL (triggered(std::string)), SLOT (displayWaypointsOfPath(std::string)));
+      asb->addAction(a);
+
+      a = new JointAction (tr("Display selected &path"), plugin_->jointTreeWidget(), this);
+      connect (a, SIGNAL (triggered(std::string)), SLOT (displayPath(std::string)));
+      asb->addAction(a);
     }
 
     void PathPlayer::displayWaypointsOfPath(const std::string jointName)

@@ -61,6 +61,7 @@ signals:
         void readyReadProcessOutput ();
 
       private:
+        void initSearchActions();
         void updateConfiguration ();
         double sliderToLength (int v) const;
         int lengthToSlider (double l) const;

@@ -61,6 +61,8 @@ signals:
           void resize (const QModelIndex index);
 
       private:
+        void initSearchActions();
+
         /// Reset the tree.
         void reset ();
 

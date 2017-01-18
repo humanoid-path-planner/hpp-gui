@@ -8,6 +8,7 @@
 #include <gepetto/gui/mainwindow.hh>
 #include <gepetto/gui/windows-manager.hh>
 #include <gepetto/gui/omniorb/url.hh>
+#include <gepetto/gui/action-search-bar.hh>
 
 #include <omniORB4/CORBA.h>
 
@@ -20,6 +21,7 @@
 #include "hppwidgetsplugin/twojointsconstraint.hh"
 #include "hppwidgetsplugin/listjointconstraint.hh"
 #include "hppwidgetsplugin/conversions.hh"
+#include "hppwidgetsplugin/joint-action.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
 #include <gepetto/gui/meta.hh>
@@ -31,6 +33,7 @@ namespace hpp {
     using gepetto::gui::MainWindow;
     typedef graphics::WindowsManager::Color_t OsgColor_t;
     typedef graphics::Configuration OsgConfiguration_t;
+    typedef gepetto::gui::ActionSearchBar ActionSearchBar;
 
     HppWidgetsPlugin::JointElement::JointElement (
         const std::string& n, const std::string& prefix,
@@ -134,6 +137,17 @@ namespace hpp {
       main->registerSlot("requestCreateJointGroup", this);
       main->registerSlot("getHppIIOPurl", this);
       main->registerSlot("getSelectedJoint", jointTreeWidget_);
+
+      ActionSearchBar* asb = main->actionSearchBar();
+      JointAction* a;
+
+      a = new JointAction (tr("Add joint &frame"), jointTreeWidget_, this);
+      connect (a, SIGNAL (triggered(std::string)), SLOT (addJointFrame(std::string)));
+      asb->addAction(a);
+
+      a = new JointAction (tr("Display &roadmap"), jointTreeWidget_, this);
+      connect (a, SIGNAL (triggered(std::string)), SLOT (displayRoadmap(std::string)));
+      asb->addAction(a);
     }
 
     QString HppWidgetsPlugin::name() const
@@ -383,6 +397,11 @@ namespace hpp {
     PathPlayer* HppWidgetsPlugin::pathPlayer() const
     {
       return pathPlayer_;
+    }
+
+    JointTreeWidget* HppWidgetsPlugin::jointTreeWidget() const
+    {
+      return jointTreeWidget_;
     }
 
     void HppWidgetsPlugin::updateRobotJoints(const QString robotName)
