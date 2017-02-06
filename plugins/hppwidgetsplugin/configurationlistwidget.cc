@@ -45,6 +45,7 @@ namespace hpp {
       ui_->listInit->setSingleItemOnly(true);
 
       connect (ui_->button_SaveConfig, SIGNAL (clicked()), this, SLOT (onSaveClicked()));
+      connect (name(), SIGNAL (returnPressed()), SLOT (onSaveClicked()));
       connect (ui_->button_ResetGoalConfig, SIGNAL (clicked()), SLOT(resetGoalConfigs()));
       connect (list (), SIGNAL (currentItemChanged (QListWidgetItem*,QListWidgetItem*)),
           this, SLOT (updateCurrentConfig(QListWidgetItem*,QListWidgetItem*)));
