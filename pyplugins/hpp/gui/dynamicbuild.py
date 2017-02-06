@@ -335,7 +335,7 @@ class _DynamicBuilder(QWidget):
     def initActions(self):
         self.action = QAction("Switch mode", self)
         self.action.connect("triggered()", self.switchMode)
-        self.action.setShortcut(QKeySequence(QNamespace.Key_M))
+        self.action.setShortcut(QKeySequence(QNamespace.ControlModifier + QNamespace.Key_M))
         self.addAction(self.action)
         self.mainWindow.registerShortcut(self.plugin.windowTitle, self.action)
 
