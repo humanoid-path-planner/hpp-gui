@@ -8,7 +8,7 @@ namespace hpp {
       QDoubleSpinBox* makeSpinBox(double val, TransformWidget* recv, const char* slot, double bound)
       {
         QDoubleSpinBox* sb = new QDoubleSpinBox;
-        sb->setDecimals(DBL_MAX_10_EXP + DBL_DIG);
+        sb->setDecimals(10 /*DBL_MAX_10_EXP + DBL_DIG*/);
         sb->setMinimum(-bound);
         sb->setMaximum(bound);
         sb->setSingleStep(0.01);
