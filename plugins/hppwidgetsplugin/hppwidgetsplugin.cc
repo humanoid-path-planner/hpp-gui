@@ -492,6 +492,8 @@ namespace hpp {
     {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       std::string target = escapeJointName(jn);
+      graphics::GroupNodePtr_t group = main->osg()->getGroup (target.c_str(), false);
+      if (group) return target;
       if (main->osg()->createGroup(target.c_str())) {
         main->osg()->addToGroup(target.c_str(), "joints");
 
