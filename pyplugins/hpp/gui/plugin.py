@@ -1,9 +1,11 @@
 from PythonQt import QtGui, Qt
 from hpp.corbaserver import Client
+from hpp.corbaserver.robot import Robot
 from gepetto.corbaserver import Client as GuiClient
 from directpath import DirectPathBox
 from findGrasp import GraspFinder
 from inspector import InspectBodies
+from collision_pairs import CollisionPairs
 
 class _PathTab(QtGui.QWidget):
     def __init__ (self, parent):
@@ -18,6 +20,7 @@ class _PathManagement(QtGui.QWidget):
     def __init__(self, parent):
         super(_PathManagement, self).__init__(parent)
         self.plugin = parent
+        parent.widgetToRefresh.append(self)
 
         box = QtGui.QVBoxLayout(self)
         
@@ -157,25 +160,34 @@ class Plugin(QtGui.QDockWidget):
         self.main = mainWindow
         self.hppPlugin = self.main.getFromSlot("getHppIIOPurl")
         self.resetConnection()
+        self.widgetToRefresh = list()
         self.osg = None
         # Initialize the widget
         self.tabWidget = QtGui.QTabWidget(self)
         self.setWidget (self.tabWidget)
-        self.concatenateWidget = _PathManagement(self)
         self.tabWidget.addTab (_PathTab(self), "Path")
         self.tabWidget.addTab (_RoadmapTab(self), "Roadmap")
         self.tabWidget.addTab (_StepByStepSolverTab(self), "Step by step solver")
         self.tabWidget.addTab (GraspFinder(self), "Grasp Finder")
-        self.tabWidget.addTab (self.concatenateWidget, "Paths management")
+        self.tabWidget.addTab (_PathManagement(self), "Paths management")
         self.tabWidget.addTab (InspectBodies(self), "Inspector")
+        self.tabWidget.addTab (CollisionPairs(self), "Collision pairs")
 
     def resetConnection(self):
         self.client = Client(url= str(self.hppPlugin.getHppIIOPurl()))
+        self.resetRobot();
         self.gui = GuiClient()
+
+    def resetRobot(self):
+        try:
+            self.robot = Robot(client = self.client)
+        except:
+            self.robot = None
 
     def osgWidget(self,osg):
         if self.osg is None:
             self.osg = osg
 
     def refreshInterface(self):
-        self.concatenateWidget.refresh()
+        self.resetRobot()
+        for w in self.widgetToRefresh: w.refresh()
