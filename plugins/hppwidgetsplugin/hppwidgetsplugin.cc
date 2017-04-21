@@ -124,7 +124,7 @@ namespace hpp {
       connect (main, SIGNAL (applyCurrentConfiguration()),
           SLOT (applyCurrentConfiguration()));
       connect (main, SIGNAL (selectJointFromBodyName (QString)),
-          SLOT (selectJointFromBodyName (QString)));
+          SLOT (selectJointFromBodyName (QString)), Qt::QueuedConnection);
       main->connect (this, SIGNAL (logJobFailed(int,QString)),
           SLOT (logJobFailed(int, QString)));
       main->connect (this, SIGNAL (logSuccess(QString)), SLOT (log(QString)));
@@ -443,7 +443,7 @@ namespace hpp {
       const OsgColor_t color(1,0,0,1);
 
       /// This returns false if the frame already exists
-      if (main->osg()->addXYZaxis (n, color, 0.005f, 1.f)) {
+      if (main->osg()->addXYZaxis (n, color, 0.005f, 0.015f)) {
         main->osg()->setVisibility (n, "ALWAYS_ON_TOP");
         return;
       } else {
@@ -494,8 +494,9 @@ namespace hpp {
       std::string target = escapeJointName(jn);
       graphics::GroupNodePtr_t group = main->osg()->getGroup (target.c_str(), false);
       if (group) return target;
-      if (main->osg()->createGroup(target.c_str())) {
-        main->osg()->addToGroup(target.c_str(), "joints");
+      if (!main->osg()->getGroup(target)) {
+        main->osg()->createGroup(target);
+        main->osg()->addToGroup(target, "joints");
 
         hpp::Transform__var t = client()->robot()->getJointPosition (jn.c_str());
         OsgConfiguration_t p;

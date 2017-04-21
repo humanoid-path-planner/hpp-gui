@@ -232,7 +232,7 @@ namespace hpp {
         std::string groupName = createJointGroup (jn);
         std::string hn = "handle_" + escapeJointName (std::string(rcs[i]));
         fromHPP(t, config);
-        main->osg()->addXYZaxis (hn, color, 0.005f, 1.f);
+        main->osg()->addXYZaxis (hn, color, 0.005f, 0.015f);
         main->osg()->applyConfiguration (hn, config);
         main->osg()->addToGroup (hn, groupName);
       }
@@ -253,7 +253,7 @@ namespace hpp {
         std::string groupName = createJointGroup (jn);
         std::string hn = "gripper_" + escapeJointName (std::string(rcs[i]));
         fromHPP(t, config);
-        main->osg()->addXYZaxis (hn, color, 0.005f, 1.f);
+        main->osg()->addXYZaxis (hn, color, 0.005f, 0.015f);
         main->osg()->applyConfiguration (hn, config);
         main->osg()->addToGroup (hn, groupName);
       }

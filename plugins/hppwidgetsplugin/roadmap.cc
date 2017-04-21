@@ -15,7 +15,7 @@
 namespace hpp {
   namespace gui {
     Roadmap::Roadmap(HppWidgetsPlugin *plugin):
-      radius (0.01f), axisSize (1.f),
+      radius (0.01f), axisSize (0.05f),
       currentNodeId_ (0), currentEdgeId_ (0),
       nodeColorMap_ (0), edgeColorMap_ (0),
       plugin_ (plugin), link_ (false)

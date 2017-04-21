@@ -84,7 +84,10 @@ namespace hpp {
       gepetto::gui::WindowsManagerPtr_t wsm = main->osg();
       HppWidgetsPlugin::HppClient* hpp = plugin_->client();
       hpp::floatSeqSeq_var waypoints = hpp->problem()->getWaypoints((CORBA::UShort)pid);
-      wsm->createScene (pn);
+      if (!wsm->getGroup(pn, false)) {
+        wsm->createGroup (pn);
+        wsm->addToGroup(pn, "hpp-gui");
+      }
       hpp::floatSeq_var curCfg = hpp->robot()->getCurrentConfig();
       graphics::Configuration pos;
       osgVector3 pos1, pos2;
@@ -94,20 +97,21 @@ namespace hpp {
         std::string xyzName = ss.str();
         // Get positions
         hpp->robot()->setCurrentConfig(waypoints[i]);
-        hpp::Transform__var t = hpp->robot()->getLinkPosition(jointName.c_str());
+        hpp::Transform__var t = hpp->robot()->getJointPosition(jointName.c_str());
         fromHPP(t, pos);
         pos1 = pos2; pos2 = pos.position;
         // Create the nodes
-        wsm->addXYZaxis(xyzName, colorN, 0.01f, 1.f);
+        if (wsm->nodeExists(xyzName)) wsm->deleteNode(xyzName, false);
+        wsm->addXYZaxis(xyzName, colorN, 0.01f, 0.05f);
         wsm->applyConfiguration(xyzName, pos);
         if  (i > 0) {
           xyzName.replace(pn.length() + 1, 4, "edge");
           qDebug () << xyzName.c_str();
+          if (wsm->nodeExists(xyzName)) wsm->deleteNode(xyzName, false);
           wsm->addLine(xyzName, pos1, pos2, colorE);
         }
       }
       hpp->robot()->setCurrentConfig(curCfg.in());
-      wsm->addToGroup(pn, "hpp-gui");
       wsm->refresh();
     }
 
