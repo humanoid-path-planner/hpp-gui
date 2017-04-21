@@ -25,6 +25,9 @@ namespace hpp {
       connect(handlesList->selectionModel(),
 	      SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
 	      SLOT(handleChanged(const QItemSelection&, const QItemSelection&)));
+
+      ui_->handlesList->addItem(".*");
+      ui_->handlesList->addItem("");
     }
 
     LinkWidget::~LinkWidget()
