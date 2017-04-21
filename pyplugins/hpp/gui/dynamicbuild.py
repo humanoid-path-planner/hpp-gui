@@ -166,7 +166,7 @@ class _GraspMode(QWidget):
     def drawXYZAxis(self, name, config):
         obj = self.mainWindow.getFromSlot("requestCreateJointGroup")
         self.groupName = str(obj.requestCreateJointGroup(config[0]))
-        self.parentInstance.plugin.client.viewer.gui.addXYZaxis(name, [0, 1, 0, 1], 0.005, 1)
+        self.parentInstance.plugin.client.viewer.gui.addXYZaxis(name, [0, 1, 0, 1], 0.005, 0.015)
         self.parentInstance.plugin.client.viewer.gui.applyConfiguration(name, fromHPP(config[1])) # XYZW -> WXYZ
         self.parentInstance.plugin.client.viewer.gui.addToGroup(name, self.groupName)
         self.parentInstance.plugin.client.viewer.gui.refresh()
