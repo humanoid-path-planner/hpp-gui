@@ -11,6 +11,11 @@ class DirectPathBox(QtGui.QGroupBox):
         self.plugin = plugin
         self.initWidget()
 
+    def shootRandom(self):
+        q = self.plugin.client.robot.shootRandomConfig()
+        self.plugin.client.robot.setCurrentConfig(q)
+        self.plugin.main.requestApplyCurrentConfiguration()
+
     def getFrom (self):
         self.fromCfg = self.plugin.client.robot.getCurrentConfig()
 
@@ -36,6 +41,8 @@ class DirectPathBox(QtGui.QGroupBox):
 
     def initWidget (self):
         box = QtGui.QVBoxLayout(self)
+        random =  QtGui.QPushButton(self)
+        box.addWidget(random)
         setFrom =  QtGui.QPushButton(self)
         box.addWidget(setFrom)
         setTo =  QtGui.QPushButton(self)
@@ -46,11 +53,13 @@ class DirectPathBox(QtGui.QGroupBox):
         box.addWidget(self.projectPath)
         makePath = QtGui.QPushButton(self)
         box.addWidget(makePath)
+        random.text = "Shoot random config"
         setFrom.text = 'Save config as origin'
         setTo.text = 'Save config as destination'
         self.validatePath.text = 'Validate path'
         self.projectPath.text = "Project path"
         makePath.text = 'Create path'
+        random.connect('clicked()', self.shootRandom)
         setFrom.connect('clicked()', self.getFrom)
         setTo.connect('clicked()', self.getTo)
         makePath.connect('clicked()', self.makePath)
