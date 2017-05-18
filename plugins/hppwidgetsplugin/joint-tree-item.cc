@@ -106,13 +106,18 @@ namespace hpp {
 
     void JointTreeItem::updateTypeRole()
     {
-      bool integrate = (data(NumberDofRole).toInt() != value_.size());
+      // SO3 and Freeflyer
+      int threshold = value_.size();
+      if (data(NumberDofRole).toInt() == 3 && value_.size() == 4 )
+        threshold = 0;
+      else if (data(NumberDofRole).toInt() == 6 && value_.size() == 7 )
+        threshold = 3;
       for (int i = 0; i < value_.size(); ++i) {
         float lo = value_[i][1]->data (Qt::EditRole).toFloat();
         float up = value_[i][2]->data (Qt::EditRole).toFloat();
-        if (integrate)    value_[i][0]->setData(IntegratorType,     TypeRole);
-        else if (lo < up) value_[i][0]->setData(BoundedValueType,   TypeRole);
-        else              value_[i][0]->setData(UnboundedValueType, TypeRole);
+        if (i >= threshold) value_[i][0]->setData(IntegratorType,     TypeRole);
+        else if (lo < up)   value_[i][0]->setData(BoundedValueType,   TypeRole);
+        else                value_[i][0]->setData(UnboundedValueType, TypeRole);
       }
     }
 
