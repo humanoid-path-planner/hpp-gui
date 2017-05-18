@@ -53,6 +53,11 @@ class CollisionPairs(QtGui.QWidget):
         self.pairToRow = dict()
         box = QtGui.QVBoxLayout(self)
 
+        button = QtGui.QPushButton("Toggle between collision and visual robot bodies", self)
+        button.checkable = True
+        button.connect("clicked(bool)", self.toggleVisual)
+        box.addWidget(button)
+
         button = QtGui.QPushButton(QtGui.QIcon.fromTheme("view-refresh"), "Refresh list", self)
         button.connect("clicked()", self.refresh)
         box.addWidget(button)
@@ -160,6 +165,11 @@ class CollisionPairs(QtGui.QWidget):
             self.setCollisionPair(r, l1, l2, a, "From SRDF")
         self.table.sortingEnabled = True
         print(time.time() - start_time)
+
+    def toggleVisual(self, visual):
+        rn = self.plugin.client.robot.getRobotName()
+        for n in self.plugin.gui.gui.getGroupNodeList(rn):
+            self.plugin.gui.gui.setBoolProperty(n, "ShowVisual", visual)
 
     def writeToFile(self):
         _ = _bodyNameToUrdfLinkName
