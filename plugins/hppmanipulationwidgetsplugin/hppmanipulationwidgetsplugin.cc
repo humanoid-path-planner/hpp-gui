@@ -355,6 +355,35 @@ namespace hpp {
       }
     }
 
+    void print(const hpp::Names_t& v) {
+      std::cout << "[ ";
+      for (int i = 0; i < v.length(); i++) std::cout << '"' << v[i] << "\", ";
+      std::cout << "]";
+    }
+    void print(const hpp::corbaserver::manipulation::Namess_t& v) {
+      std::cout << "[ ";
+      for (int i = 0; i < v.length(); i++) {
+        print(v[i]);
+        std::cout << ", ";
+      }
+      std::cout << "]";
+    }
+    void print(const hpp::corbaserver::manipulation::Rule& v) {
+      std::cout << "Rule(";
+      print(v.grippers);
+      std::cout << ", ";
+      print(v.handles);
+      std::cout << ", " << (v.link ? "True" : "False" ) << ')';
+    }
+    void print(const hpp::corbaserver::manipulation::Rules& v) {
+      std::cout << "[ ";
+      for (int i = 0; i < v.length(); i++) {
+        print(v[i]);
+        std::cout << ", ";
+      }
+      std::cout << "]";
+    }
+
     void HppManipulationWidgetsPlugin::buildGraph()
     {
       QListWidget* l = dynamic_cast<QListWidget*>(tw_->widget(0));
@@ -373,6 +402,13 @@ namespace hpp {
       HppManipulationWidgetsPlugin::NamesPair shapes = convertMap(shapesMap);
       hpp_->graph ()->createGraph("constraints");
       // TODO the return value is never deleted.
+      std::cout << "graph.buildGenericGraph(robot, 'graph', ";
+      print(grippers.in());       std::cout << ", ";
+      print(handles.first);       std::cout << ", ";
+      print(handles.second);      std::cout << ", ";
+      print(shapes.second);       std::cout << ", ";
+      print(envNames.in());       std::cout << ", ";
+      print(rules.in());          std::cout << ")" << std::endl;
       gepetto::gui::WorkItem* item = new gepetto::gui::WorkItem_7<hpp::corbaserver::manipulation::_objref_Graph, hpp::intSeq*,
               const char *, const hpp::Names_t&, const hpp::Names_t&, const hpp::corbaserver::manipulation::Namess_t&, const hpp::corbaserver::manipulation::Namess_t&,
               const hpp::Names_t&, const hpp::corbaserver::manipulation::Rules&>
