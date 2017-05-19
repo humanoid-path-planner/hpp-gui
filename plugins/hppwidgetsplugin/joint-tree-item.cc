@@ -106,10 +106,11 @@ namespace hpp {
 
     void JointTreeItem::updateTypeRole()
     {
-      // SO3 and Freeflyer
+      // planar and freeflyer joints
       int threshold = value_.size();
+      // TODO SO3 joint fall in that case too whereas threshold should be 0 for them.
       if (data(NumberDofRole).toInt() == 3 && value_.size() == 4 )
-        threshold = 0;
+        threshold = 2;
       else if (data(NumberDofRole).toInt() == 6 && value_.size() == 7 )
         threshold = 3;
       for (int i = 0; i < value_.size(); ++i) {
