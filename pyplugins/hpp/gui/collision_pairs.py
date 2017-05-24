@@ -200,7 +200,8 @@ class CollisionPairs(QtGui.QWidget):
                 attrib["link2"]  = pp.l2
                 attrib["reason"] = reason
                 el = ET.Element("disable_collisions", attrib = attrib)
-                el.tail = "\n  "
+                if len(robot.getchildren()) > 0:
+                    robot.getchildren()[-1].tail = "\n  "
                 robot.append(el)
 
         tree.write(filename)
