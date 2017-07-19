@@ -343,7 +343,8 @@ namespace hpp {
           if (type == "node") {
             int pid = std::atoi(&group[4]);
             // compute pid
-            hpp::floatSeqSeq_var waypoints = hpp_->problem()->getWaypoints((CORBA::UShort)pid);
+            hpp::floatSeq_var times;
+            hpp::floatSeqSeq_var waypoints = hpp_->problem()->getWaypoints((CORBA::UShort)pid, times.out());
             if (n < waypoints->length()) {
               hpp_->robot()->setCurrentConfig(waypoints[n]);
               MainWindow::instance()->requestApplyCurrentConfiguration();

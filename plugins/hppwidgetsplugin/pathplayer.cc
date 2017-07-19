@@ -83,7 +83,8 @@ namespace hpp {
                        colorE (1.f, 0.f, 0.f, 1.f);
       gepetto::gui::WindowsManagerPtr_t wsm = main->osg();
       HppWidgetsPlugin::HppClient* hpp = plugin_->client();
-      hpp::floatSeqSeq_var waypoints = hpp->problem()->getWaypoints((CORBA::UShort)pid);
+      hpp::floatSeq_var times;
+      hpp::floatSeqSeq_var waypoints = hpp->problem()->getWaypoints((CORBA::UShort)pid, times.out());
       if (!wsm->getGroup(pn, false)) {
         wsm->createGroup (pn);
         wsm->addToGroup(pn, "hpp-gui");
