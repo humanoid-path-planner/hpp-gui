@@ -283,7 +283,7 @@ namespace hpp {
         emit logFailure(QString (e.msg));
         return;
       }
-      QRegExp collision ("Collision between object (.*) and (.*)");
+      static QRegExp collision ("Collision between object (.*) and (.*)");
       QStringList col;
       if (!bb) {
         if (collision.exactMatch(QString::fromLocal8Bit(report))) {
