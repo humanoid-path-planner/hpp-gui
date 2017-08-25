@@ -48,6 +48,7 @@ namespace hpp {
         virtual void displayPath_impl (const std::string jointName);
 signals:
         void displayPath_status (int progress);
+        void appliedConfigAtParam (int pid, double param);
 
         private slots:
           void pathIndexChanged (int i);

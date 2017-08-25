@@ -137,6 +137,7 @@ namespace hpp {
       main->registerSlot("requestCreateJointGroup", this);
       main->registerSlot("getHppIIOPurl", this);
       main->registerSlot("getSelectedJoint", jointTreeWidget_);
+      main->registerSignal(SIGNAL(appliedConfigAtParam(int,double)), pathPlayer_);
 
       ActionSearchBar* asb = main->actionSearchBar();
       JointAction* a;

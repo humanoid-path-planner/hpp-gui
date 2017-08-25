@@ -300,6 +300,7 @@ namespace hpp {
         plugin_->client()->problem()->configAtParam ((short unsigned int)pathIndex()->value(),currentParam_);
       plugin_->client()->robot()->setCurrentConfig (config.in());
       gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
+      emit appliedConfigAtParam (getCurrentPath(), currentParam_);
     }
 
     inline double PathPlayer::sliderToLength(int v) const
