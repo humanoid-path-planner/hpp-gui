@@ -33,7 +33,7 @@ SETUP_PROJECT()
 
 FIND_PACKAGE(Qt4 REQUIRED QtCore QtGui QtOpenGl QtNetwork)
 
-ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba")
+ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba >= 1.3")
 
 SET(BOOST_COMPONENTS thread regex)
 SEARCH_FOR_BOOST ()
