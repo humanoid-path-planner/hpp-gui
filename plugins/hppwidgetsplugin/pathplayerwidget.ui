@@ -48,19 +48,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QSlider" name="pathSlider">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="maximum">
-      <number>99999</number>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QPushButton" name="playPauseButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -167,6 +154,19 @@
      </property>
      <property name="value">
       <double>10.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSlider" name="pathSlider">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="maximum">
+      <number>99999</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
