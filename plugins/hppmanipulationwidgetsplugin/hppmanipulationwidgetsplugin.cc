@@ -409,15 +409,13 @@ namespace hpp {
       print(shapes.second);       std::cout << ", ";
       print(envNames.in());       std::cout << ", ";
       print(rules.in());          std::cout << ")" << std::endl;
-      gepetto::gui::WorkItem* item = new gepetto::gui::WorkItem_7<hpp::corbaserver::manipulation::_objref_Graph, hpp::intSeq*,
-              const char *, const hpp::Names_t&, const hpp::Names_t&, const hpp::corbaserver::manipulation::Namess_t&, const hpp::corbaserver::manipulation::Namess_t&,
-              const hpp::Names_t&, const hpp::corbaserver::manipulation::Rules&>
-              (hpp_->graph().in(), &hpp::corbaserver::manipulation::_objref_Graph::autoBuild, "constraints", grippers.in(), handles.first,
-               handles.second, shapes.second, envNames.in(), rules.in());
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
-      main->emitSendToBackground(item);
-      main->logJobStarted(item->id(), "Build graph");
-      lastId_ = item->id();
+      hpp_->graph()->autoBuild("constraints", grippers.in(),
+          handles.first, handles.second,
+          shapes.second,
+          envNames.in(), rules.in());
+      hpp_->graph()->initialize();
+      main->log("Built and initialized graph");
       graphBuilder_->close();
     }
 
