@@ -24,7 +24,7 @@ namespace hpp {
       foreach (QListWidgetItem *item, selected) {
         std::string jointName = item->text().toStdString().c_str();
         hpp::floatSeq_var config = plugin->client()->robot()->getJointConfig(jointName.c_str());
-        plugin->manipClient()->problem()->createLockedJoint(std::string("lock_" + jointName).c_str(),
+        plugin->client()->problem()->createLockedJoint(std::string("lock_" + jointName).c_str(),
                                                             jointName.c_str(),
                                                             config.in());
         emit constraintCreated(std::string("lock_" + jointName).c_str());
