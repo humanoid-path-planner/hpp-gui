@@ -106,6 +106,9 @@ signals:
         /// See createJointGroup
         QString requestCreateJointGroup(const QString jn);
 
+        /// See createComGroup
+        QString requestCreateComGroup(const QString com);
+
         QString getHppIIOPurl () const;
 
       public:
@@ -162,6 +165,10 @@ signals:
         /// \param jn joint name
         std::string createJointGroup (const std::string jn);
 
+        /// Create a group from the given COM.
+        /// \param com COM name
+        std::string createComGroup (const std::string com);
+
         /// Replace all the bodies according to their position in hpp.
         void computeObjectPosition();
 
@@ -172,6 +179,7 @@ signals:
         ConstraintWidget* constraintWidget_;
         JointMap jointMap_;
         std::list <std::string> jointFrames_;
+        std::list <std::string> comFrames_;
     };
   } // namespace gui
 } // namespace hpp

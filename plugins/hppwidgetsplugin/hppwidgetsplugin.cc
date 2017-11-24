@@ -135,6 +135,7 @@ namespace hpp {
       main->osg()->refresh();
 
       main->registerSlot("requestCreateJointGroup", this);
+      main->registerSlot("requestCreateComGroup", this);
       main->registerSlot("getHppIIOPurl", this);
       main->registerSlot("getSelectedJoint", jointTreeWidget_);
       main->registerSignal(SIGNAL(appliedConfigAtParam(int,double)), pathPlayer_);
@@ -269,6 +270,14 @@ namespace hpp {
         fromHPP(t, T);
         main->osg()->applyConfiguration (n, T);
       }
+      T.quat.set(0,0,0,1);
+      for (std::list<std::string>::const_iterator it = comFrames_.begin ();
+          it != comFrames_.end (); ++it) {
+        std::string n = "com_" + escapeJointName(*it);
+        hpp::floatSeq_var t = client()->robot()->getPartialCom(it->c_str());
+        fromHPP (t, T.position);
+        main->osg()->applyConfiguration (n, T);
+      }
       main->osg()->refresh();
     }
 
@@ -384,6 +393,11 @@ namespace hpp {
     QString HppWidgetsPlugin::requestCreateJointGroup(const QString jn)
     {
       return createJointGroup(jn.toStdString()).c_str();
+    }
+
+    QString HppWidgetsPlugin::requestCreateComGroup(const QString com)
+    {
+      return QString::fromStdString(createComGroup(com.toStdString()));
     }
 
     HppWidgetsPlugin::HppClient *HppWidgetsPlugin::client() const
@@ -505,6 +519,27 @@ namespace hpp {
         fromHPP(t, p);
         jointFrames_.push_back(jn);
         main->osg()->applyConfiguration (target, p);
+        main->osg()->refresh();
+      }
+      return target;
+    }
+
+    std::string HppWidgetsPlugin::createComGroup(const std::string com)
+    {
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
+      std::string target = "com_" + escapeJointName(com);
+      graphics::GroupNodePtr_t group = main->osg()->getGroup (target.c_str(), false);
+      if (group) return target;
+      if (!main->osg()->getGroup(target)) {
+        main->osg()->createGroup(target);
+        main->osg()->addToGroup(target, "joints");
+
+        hpp::floatSeq_var p = client()->robot()->getPartialCom (com.c_str());
+        OsgConfiguration_t t;
+        t.quat.set(0,0,0,1);
+        fromHPP (p, t.position);
+        comFrames_.push_back(com);
+        main->osg()->applyConfiguration (target, t);
         main->osg()->refresh();
       }
       return target;
