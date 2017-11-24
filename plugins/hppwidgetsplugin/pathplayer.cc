@@ -21,6 +21,7 @@ namespace hpp {
       QWidget (parent)
       , ui_ (new ::Ui::PathPlayerWidget)
       , timerId_ (0)
+      , velocity_ (false)
       , process_ (new QProcess (this))
       , showPOutput_ (new QDialog (this, Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint))
       , pOutput_ (new QTextBrowser())
@@ -192,6 +193,11 @@ namespace hpp {
       }
     }
 
+    void PathPlayer::setRobotVelocity (bool set)
+    {
+      velocity_ = set;
+    }
+
     void PathPlayer::pathIndexChanged(int i)
     {
       assert (i >= 0);
@@ -282,6 +288,18 @@ namespace hpp {
       }
     }
 
+    void PathPlayer::setCurrentTime (const double& param)
+    {
+      if (!pathIndex()->isEnabled()) return;
+      if (currentParam_ > pathLength_)
+        currentParam_ = pathLength_;
+      if (0 < currentParam_)
+        currentParam_ = 0;
+      currentParam_ = param;
+      pathSlider()->setSliderPosition(lengthToSlider(currentParam_));
+      updateConfiguration();
+    }
+
     void PathPlayer::timerEvent(QTimerEvent *event)
     {
       if (timerId_ == event->timerId()) {
@@ -299,6 +317,11 @@ namespace hpp {
       hpp::floatSeq_var config =
         plugin_->client()->problem()->configAtParam ((short unsigned int)pathIndex()->value(),currentParam_);
       plugin_->client()->robot()->setCurrentConfig (config.in());
+      if (velocity_) {
+        config =
+          plugin_->client()->problem()->velocityAtParam ((short unsigned int)pathIndex()->value(),currentParam_);
+        plugin_->client()->robot()->setCurrentVelocity (config.in());
+      }
       gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
       emit appliedConfigAtParam (getCurrentPath(), currentParam_);
     }
@@ -361,6 +384,7 @@ namespace hpp {
 
     int	PathPlayer::getCurrentPath() const
     {
+      if (!pathIndex()->isEnabled()) return -1;
       return pathIndex()->value();
     }
   } // namespace gui

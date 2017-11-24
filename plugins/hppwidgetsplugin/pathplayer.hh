@@ -24,10 +24,10 @@ namespace hpp {
         PathPlayer (HppWidgetsPlugin* plugin, QWidget* parent = 0);
         ~PathPlayer();
 
+        public slots:
         /// Returns the path currently selected.
         int getCurrentPath() const;
 
-        public slots:
         /// Display the waypoints of a joint in the viewer.
         /// The waypoints are those of the currently selected path index.
         /// \param jointName name of the joint
@@ -40,6 +40,15 @@ namespace hpp {
 
         /// Get the number of paths in hpp and refresh the gui accordingly.
         void update ();
+
+        /// Tells the path player to set the robot current velocity.
+        void setRobotVelocity(bool set);
+
+        /// Distance between two sampling point
+        double lengthBetweenRefresh () const;
+
+        /// Set the slider position
+        void setCurrentTime (const double& param);
 
       protected:
         /// Display the path of the jointName in the viewer.
@@ -68,7 +77,6 @@ signals:
         int lengthToSlider (double l) const;
         double timeToLength (double time) const;
         int timeBetweenRefresh() const;
-        double lengthBetweenRefresh () const;
 
         ::Ui::PathPlayerWidget* ui_;
 
@@ -82,6 +90,7 @@ signals:
         double pathLength_;
         double currentParam_;
         int timerId_;
+        bool velocity_;
 
         QProcess* process_;
         QDialog* showPOutput_;
