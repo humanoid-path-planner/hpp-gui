@@ -6,6 +6,9 @@
 #include <gepetto/gui/mainwindow.hh>
 #include <gepetto/gui/windows-manager.hh>
 #include <gepetto/gui/action-search-bar.hh>
+#if GEPETTO_GUI_HAS_PYTHONQT
+#include <gepetto/gui/pythonwidget.hh>
+#endif
 
 #include "hppwidgetsplugin/joint-tree-item.hh"
 #include "hppwidgetsplugin/jointbounddialog.hh"
@@ -92,11 +95,30 @@ namespace hpp {
           dynamic_cast <JointTreeItem*> (model_->itemFromIndex(index));
         if (!item) return;
         contextMenu.addActions (item->actions());
+        MainWindow* main = MainWindow::instance();
         foreach (gepetto::gui::JointModifierInterface* adi,
-            gepetto::gui::MainWindow::instance()->pluginManager ()->get<gepetto::gui::JointModifierInterface> ()) {
+            main->pluginManager ()->get<gepetto::gui::JointModifierInterface> ()) {
           if (!adi) continue;
           contextMenu.addAction (adi->action (item->name()));
         }
+#if GEPETTO_GUI_HAS_PYTHONQT
+        QVariantList jass = main->pythonWidget()->callPluginMethod
+          ("getJointActions", QVariantList() << item->text());
+        foreach (QVariant jas, jass)
+        {
+          if (!jas.canConvert(QVariant::List)) {
+            qDebug () << "Could not convert to QVariantList" << jas;
+            continue;
+          }
+          foreach (QVariant ja, jas.toList()) {
+            QAction* action = qobject_cast<QAction*>(ja.value<QObject*>());
+            if (action) contextMenu.addAction (action);
+            else {
+              qDebug () << "Could not convert to QAction" << ja;
+            }
+          }
+        }
+#endif
         contextMenu.exec(ui_->jointTree->mapToGlobal(pos));
         return;
       }
