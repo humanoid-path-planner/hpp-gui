@@ -5,6 +5,13 @@
 
 namespace hpp {
   namespace gui {
+    inline void fromHPP(const hpp::floatSeq_var& in, osgVector3& v)
+    {
+      typedef graphics::WindowsManager::value_type type;
+      const hpp::floatSeq& t (in.in());
+      v.set((type)t[0], (type)t[1], (type)t[2]);
+    }
+
     inline void fromHPP(const hpp::Transform__var& in, osgVector3& v)
     {
       typedef graphics::WindowsManager::value_type type;
