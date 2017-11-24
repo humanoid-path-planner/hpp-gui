@@ -136,6 +136,9 @@ namespace hpp {
 
       main->registerSlot("requestCreateJointGroup", this);
       main->registerSlot("requestCreateComGroup", this);
+      main->registerSlot("setRobotVelocity", pathPlayer_);
+      main->registerSlot("lengthBetweenRefresh", pathPlayer_);
+      main->registerSlot("getCurrentPath", pathPlayer_);
       main->registerSlot("getHppIIOPurl", this);
       main->registerSlot("getSelectedJoint", jointTreeWidget_);
       main->registerSignal(SIGNAL(appliedConfigAtParam(int,double)), pathPlayer_);
