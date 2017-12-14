@@ -155,11 +155,12 @@ namespace hpp {
         double t = std::min (i * dt, length);
         hpp::floatSeq_var q = hpp->problem()->configAtParam(pid, t);
         hpp->robot()->setCurrentConfig(q);
-        hpp::Transform__var transform = hpp->robot()->getLinkPosition(jointName.c_str());
+        hpp::Transform__var transform = hpp->robot()->getJointPosition(jointName.c_str());
         const hpp::Transform__slice* tt = transform.in();
         posSeq->push_back(::osg::Vec3 ((float)tt[0],(float)tt[1],(float)tt[2]));
         emit displayPath_status(qFloor ((float)i * statusStep));
       }
+      if (wsm->nodeExists(pn)) wsm->deleteNode (pn, true);
       wsm->addCurve(pn, posSeq, colorE);
       hpp->robot()->setCurrentConfig(curCfg.in());
       wsm->addToGroup(pn.c_str(), "hpp-gui");
