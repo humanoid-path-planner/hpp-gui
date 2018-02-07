@@ -85,7 +85,7 @@ namespace hpp {
       gepetto::gui::WindowsManagerPtr_t wsm = main->osg();
       HppWidgetsPlugin::HppClient* hpp = plugin_->client();
       hpp::floatSeq_var times;
-      hpp::floatSeqSeq_var waypoints = hpp->problem()->getWaypoints((CORBA::UShort)pid, times.out());
+      hpp::floatSeqSeq_var waypoints = hpp->problem()->getWaypoints((CORBA::ULong)pid, times.out());
       if (!wsm->getGroup(pn, false)) {
         wsm->createGroup (pn);
         wsm->addToGroup(pn, "hpp-gui");
@@ -138,7 +138,7 @@ namespace hpp {
         emit displayPath_status(100);
         return;
       }
-      CORBA::UShort pid = (CORBA::UShort) pathIndex()->value();
+      CORBA::ULong pid = (CORBA::ULong) pathIndex()->value();
       std::stringstream ss; ss << "curvedpath_" << pid << "_" << jointName;
       std::string pn = ss.str();
       graphics::WindowsManager::Color_t colorE (1.f, 0.f, 0.f, 1.f);
@@ -170,7 +170,7 @@ namespace hpp {
 
     void PathPlayer::update ()
     {
-      CORBA::Short nbPath = plugin_->client()->problem ()->numberPaths ();
+      CORBA::Long nbPath = plugin_->client()->problem ()->numberPaths ();
       if (nbPath > 0)
       {
         pathIndex()->setEnabled(true);
@@ -316,11 +316,11 @@ namespace hpp {
     void PathPlayer::updateConfiguration ()
     {
       hpp::floatSeq_var config =
-        plugin_->client()->problem()->configAtParam ((short unsigned int)pathIndex()->value(),currentParam_);
+        plugin_->client()->problem()->configAtParam ((CORBA::ULong)pathIndex()->value(),currentParam_);
       plugin_->client()->robot()->setCurrentConfig (config.in());
       if (velocity_) {
         config =
-          plugin_->client()->problem()->velocityAtParam ((short unsigned int)pathIndex()->value(),currentParam_);
+          plugin_->client()->problem()->velocityAtParam ((CORBA::ULong)pathIndex()->value(),currentParam_);
         plugin_->client()->robot()->setCurrentVelocity (config.in());
       }
       gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
