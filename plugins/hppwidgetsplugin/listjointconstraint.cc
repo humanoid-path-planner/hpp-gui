@@ -48,7 +48,7 @@ namespace hpp {
       return "Lock joints";
     }
 
-    void LockedJointConstraint::operator ()(QString const& name)
+    void LockedJointConstraint::operator ()(QString const&)
     {
       QList<QListWidgetItem *> selected = jointList_->selectedItems();
 

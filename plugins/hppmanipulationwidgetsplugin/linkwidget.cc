@@ -44,12 +44,12 @@ namespace hpp {
       foreach (const RuleProxy& rule, rules_) {
         rules[i].grippers.length(rule.grippers.size());
         rules[i].handles .length(rule.handles .size());
-        for(std::size_t j = 0; j < rule.grippers.size(); ++j) {
+        for(int j = 0; j < rule.grippers.size(); ++j) {
           QByteArray a = rule.grippers[j].toLocal8Bit();
           rules[i].grippers[j] = new char[a.length()+1];
           strcpy(rules[i].grippers[0], a.constData());
         }
-        for(std::size_t j = 0; j < rule.grippers.size(); ++j) {
+        for(int j = 0; j < rule.grippers.size(); ++j) {
           QByteArray a = rule.handles[j].toLocal8Bit();
           rules[i].handles[j] = new char[a.length()+1];
           strcpy(rules[i].handles[j], a.constData());
@@ -111,7 +111,7 @@ namespace hpp {
     void LinkWidget::deleteSelectedRules()
     {
       foreach (QListWidgetItem *item, ui_->rulesList->selectedItems()) {
-        for (std::size_t row = 0; row < ui_->rulesList->count(); ++row)
+        for (int row = 0; row < ui_->rulesList->count(); ++row)
           if (item == ui_->rulesList->item(row)) {
             rules_.remove(row);
             ui_->rulesList->takeItem(row);

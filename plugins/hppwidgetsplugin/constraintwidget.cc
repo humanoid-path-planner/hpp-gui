@@ -106,7 +106,7 @@ namespace hpp {
         QMessageBox::information(this, "hpp-gui", "You have to give a name and select at least one joint");
         return ;
       }
-      if (ui->constraintTypeSelect->currentIndex() < funcs_.size()) {
+      if (ui->constraintTypeSelect->currentIndex() < int(funcs_.size())) {
         (*(this->funcs_[ui->constraintTypeSelect->currentIndex()]))(name);
       }
     }
@@ -127,7 +127,7 @@ namespace hpp {
       QBoxLayout* layoutVar = dynamic_cast<QBoxLayout *>(layout());
 
 
-      if (index < funcs_.size()) {
+      if (index < int(funcs_.size())) {
         if (haveWidget) {
           layout()->takeAt(2)->widget()->hide();
         }

@@ -134,7 +134,7 @@ namespace hpp {
         // TODO I do not remember why this is important...
         if (!nodes[i]) nodes[i] = main->osg ()->getGroup(je.bodyNames[i]);
       }
-      CORBA::Short nbDof = plugin_->client()->robot ()->getJointNumberDof (name);
+      CORBA::Long nbDof = plugin_->client()->robot ()->getJointNumberDof (name);
       JointTreeItem* j;
       if (nbDof > 0) {
         hpp::floatSeq_var c = plugin_->client()->robot ()->getJointConfig (name);

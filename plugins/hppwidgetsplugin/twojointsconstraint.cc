@@ -38,8 +38,8 @@ namespace hpp {
     void ATwoJointConstraint::firstJointSelect(int index)
     {
         secondJoint_->clear();
-        for (unsigned i = 0; i < joints_->length(); i++) {
-          if (i != index) secondJoint_->addItem(joints_[i].in());
+        for (std::size_t i = 0; i < joints_->length(); i++) {
+          if (int(i) != index) secondJoint_->addItem(joints_[i].in());
         }
     }
 

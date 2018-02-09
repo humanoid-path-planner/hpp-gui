@@ -357,12 +357,12 @@ namespace hpp {
 
     void print(const hpp::Names_t& v) {
       std::cout << "[ ";
-      for (int i = 0; i < v.length(); i++) std::cout << '"' << v[i] << "\", ";
+      for (std::size_t i = 0; i < v.length(); i++) std::cout << '"' << v[i] << "\", ";
       std::cout << "]";
     }
     void print(const hpp::corbaserver::manipulation::Namess_t& v) {
       std::cout << "[ ";
-      for (int i = 0; i < v.length(); i++) {
+      for (std::size_t i = 0; i < v.length(); i++) {
         print(v[i]);
         std::cout << ", ";
       }
@@ -377,7 +377,7 @@ namespace hpp {
     }
     void print(const hpp::corbaserver::manipulation::Rules& v) {
       std::cout << "[ ";
-      for (int i = 0; i < v.length(); i++) {
+      for (std::size_t i = 0; i < v.length(); i++) {
         print(v[i]);
         std::cout << ", ";
       }
