@@ -7,7 +7,11 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <QSlider>
-#include <QtConcurrent>
+#if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
+# include <QtCore>
+#else
+# include <QtConcurrent>
+#endif
 
 #include <hpp/corbaserver/common.hh>
 #include <hpp/corbaserver/client.hh>
