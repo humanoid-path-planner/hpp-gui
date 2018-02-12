@@ -25,13 +25,29 @@ INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/boost.cmake)
 INCLUDE(cmake/python.cmake)
 
+# Tells pkg-config to read qtversion from pkg config file.
+LIST(APPEND PKG_CONFIG_ADDITIONAL_VARIABLES qtversion)
+
 SET(PROJECT_NAME "hpp-gui")
 SET(PROJECT_URL "https://github.com/jmirabel/hpp-gui")
 SET(PROJECT_DESCRIPTION "Graphical interface for HPP ")
 
-SET(USE_QT4 FALSE CACHE BOOL "Use Qt4 instead of Qt5")
-
 SETUP_PROJECT()
+
+ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba >= 1.3")
+
+# Get desired Qt version
+string(REPLACE "." ";" DESIRED_QT_VERSION_LIST ${GEPETTO_VIEWER_CORBA_QTVERSION})
+list(GET DESIRED_QT_VERSION_LIST 0 DESIRED_QT_VERSION_MAJOR)
+
+IF(${DESIRED_QT_VERSION_MAJOR} EQUAL 4)
+  SET(USE_QT4 True)
+ELSEIF(${DESIRED_QT_VERSION_MAJOR} EQUAL 5)
+  SET(USE_QT4 False)
+ELSE()
+  MESSAGE(FATAL_ERROR "This package is only compatible with Qt 4 and Qt 5")
+ENDIF()
+MESSAGE(STATUS "Looking for Qt ${DESIRED_QT_VERSION_MAJOR}.")
 
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 IF(USE_QT4)
@@ -43,8 +59,6 @@ ELSE(USE_QT4)
     LIST(APPEND QT_LIBRARIES    ${Qt5${component}_LIBRARIES}   )
   ENDFOREACH (component "Core" "Widgets" "Gui" "OpenGL" "Network")
 ENDIF(USE_QT4)
-
-ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba >= 1.3")
 
 SET(BOOST_COMPONENTS thread regex)
 SEARCH_FOR_BOOST ()
