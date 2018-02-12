@@ -1,5 +1,12 @@
 #include "hppmanipulationwidgetsplugin/hppmanipulationwidgetsplugin.hh"
 
+#include <QAction>
+#include <QDockWidget>
+#include <QLayout>
+#include <QListWidgetItem>
+#include <QPushButton>
+#include <QVBoxLayout>
+
 #include "hppmanipulationwidgetsplugin/roadmap.hh"
 #include "gepetto/gui/mainwindow.hh"
 #include "gepetto/gui/windows-manager.hh"
@@ -112,7 +119,7 @@ namespace hpp {
     {
       HppWidgetsPlugin::openConnection();
       hpp_ = new HppManipClient (0,0);
-      QByteArray iiop = getHppIIOPurl ().toAscii();
+      QByteArray iiop = getHppIIOPurl ().toLatin1();
       hpp_->connect (iiop.constData ());
     }
 
@@ -510,6 +517,8 @@ namespace hpp {
       constraintWidget_->addConstraint(new ManipulationLockedJoint(this));
     }
 
+#ifdef USE_QT4
     Q_EXPORT_PLUGIN2 (hppmanipulationwidgetsplugin, HppManipulationWidgetsPlugin)
+#endif // USE_QT4
   } // namespace gui
 } // namespace hpp
