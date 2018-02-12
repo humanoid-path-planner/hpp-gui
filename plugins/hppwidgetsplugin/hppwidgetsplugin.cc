@@ -549,6 +549,8 @@ namespace hpp {
       return target;
     }
 
+#ifdef USE_QT4
     Q_EXPORT_PLUGIN2 (hppwidgetsplugin, HppWidgetsPlugin)
+#endif // USE_QT4
   } // namespace gui
 } // namespace hpp

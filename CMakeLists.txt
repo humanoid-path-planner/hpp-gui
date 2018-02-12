@@ -29,9 +29,20 @@ SET(PROJECT_NAME "hpp-gui")
 SET(PROJECT_URL "https://github.com/jmirabel/hpp-gui")
 SET(PROJECT_DESCRIPTION "Graphical interface for HPP ")
 
+SET(USE_QT4 FALSE CACHE BOOL "Use Qt4 instead of Qt5")
+
 SETUP_PROJECT()
 
-FIND_PACKAGE(Qt4 REQUIRED QtCore QtGui QtOpenGl QtNetwork)
+SET(CMAKE_INCLUDE_CURRENT_DIR ON)
+IF(USE_QT4)
+  FIND_PACKAGE(Qt4 REQUIRED QtCore QtGui QtOpenGl QtNetwork)
+ELSE(USE_QT4)
+  FOREACH (component "Core" "Widgets" "Gui" "OpenGL" "Concurrent" "Network")
+    FIND_PACKAGE ("Qt5${component}" REQUIRED)
+    LIST(APPEND QT_INCLUDE_DIRS ${Qt5${component}_INCLUDE_DIRS})
+    LIST(APPEND QT_LIBRARIES    ${Qt5${component}_LIBRARIES}   )
+  ENDFOREACH (component "Core" "Widgets" "Gui" "OpenGL" "Network")
+ENDIF(USE_QT4)
 
 ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba >= 1.3")
 
