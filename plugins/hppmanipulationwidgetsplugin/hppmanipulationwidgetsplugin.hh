@@ -22,6 +22,10 @@ namespace hpp {
             gepetto::gui::ModelInterface
             gepetto::gui::CorbaInterface)
 
+#ifndef USE_QT4
+    Q_PLUGIN_METADATA (IID "hpp-gui.hppmanipulationwidgetsplugin")
+#endif // USE_QT4
+
       public:
         typedef hpp::corbaServer::manipulation::Client HppManipClient;
 
