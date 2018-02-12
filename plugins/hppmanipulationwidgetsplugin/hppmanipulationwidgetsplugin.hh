@@ -9,6 +9,8 @@
 #undef __problem_hh__
 #include <hppwidgetsplugin/hppwidgetsplugin.hh>
 
+class QListWidgetItem;
+
 namespace hpp {
   namespace gui {
     /// HppManipulationWidgetsPlugin add functionalities to interact with hpp-manipulation-corba

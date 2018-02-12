@@ -1,4 +1,8 @@
 #include "linkwidget.hh"
+
+#include <QListWidget>
+#include <QShortcut>
+
 #include "hppmanipulationwidgetsplugin/ui_linkwidget.h"
 
 namespace hpp {

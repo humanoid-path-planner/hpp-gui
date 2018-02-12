@@ -1,6 +1,8 @@
 #include "hppmanipulationwidgetsplugin.hh"
 #include "manipulationlockedjoint.hh"
 
+#include <QListWidgetItem>
+
 namespace hpp {
   namespace gui {
     ManipulationLockedJoint::ManipulationLockedJoint(HppManipulationWidgetsPlugin* plugin)

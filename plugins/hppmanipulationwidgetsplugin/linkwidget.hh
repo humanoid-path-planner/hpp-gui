@@ -7,6 +7,8 @@
 
 #include "hppmanipulationwidgetsplugin.hh"
 
+class QListWidget;
+
 namespace Ui {
 class LinkWidget;
 }
