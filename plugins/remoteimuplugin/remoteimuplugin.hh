@@ -103,6 +103,9 @@ namespace hpp {
     {
       Q_OBJECT
         Q_INTERFACES (gepetto::gui::PluginInterface gepetto::gui::JointModifierInterface)
+#ifndef USE_QT4
+        Q_PLUGIN_METADATA(IID "hpp-gui.remoteimuplugin")
+#endif // USE_QT4
 
       public:
         virtual ~RemoteImuPlugin ();
@@ -111,7 +114,7 @@ namespace hpp {
 
         QString name () const;
 
-        gepetto::gui::JointAction* action (const std::string &jointName) const;
+        QAction* action (const std::string &jointName) const;
 
         public slots:
           void newDevice (const std::string jointName);

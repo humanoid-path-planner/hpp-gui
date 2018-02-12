@@ -6,11 +6,12 @@
 #include <gepetto/gui/mainwindow.hh>
 #include <gepetto/gui/windows-manager.hh>
 
+#include <../hppwidgetsplugin/joint-action.hh>
+
 namespace hpp {
   namespace gui {
     using gepetto::gui::ModelInterface;
     using gepetto::gui::MainWindow;
-    using gepetto::gui::JointAction;
 
     AttitudeEventSender::AttitudeEventSender()
     {
@@ -237,7 +238,7 @@ namespace hpp {
       return QString ("Remote IMU");
     }
 
-    JointAction *RemoteImuPlugin::action(const std::string &jointName) const
+    QAction *RemoteImuPlugin::action(const std::string &jointName) const
     {
       JointAction* action = new JointAction (tr("Attach to attitude device..."), jointName, NULL);
       action->setIcon (QIcon::fromTheme("smartphone"));
@@ -252,6 +253,8 @@ namespace hpp {
       msgBox_->show();
     }
 
+#ifdef USE_QT4
     Q_EXPORT_PLUGIN2 (remoteimuplugin, RemoteImuPlugin)
+#endif // USE_QT4
   } // namespace gui
 } // namespace hpp
