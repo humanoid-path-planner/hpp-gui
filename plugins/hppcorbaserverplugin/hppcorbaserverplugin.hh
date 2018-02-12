@@ -15,6 +15,9 @@ namespace hpp {
     {
       Q_OBJECT
       Q_INTERFACES (gepetto::gui::PluginInterface)
+#ifndef USE_QT4
+      Q_PLUGIN_METADATA (IID "hpp-gui.hppcorbaserverplugin")
+#endif // USE_QT4
 
       public:
         explicit HppCorbaserverPlugin ();
