@@ -253,8 +253,8 @@ namespace hpp {
       msgBox_->show();
     }
 
-#ifdef USE_QT4
+#if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
     Q_EXPORT_PLUGIN2 (remoteimuplugin, RemoteImuPlugin)
-#endif // USE_QT4
+#endif
   } // namespace gui
 } // namespace hpp

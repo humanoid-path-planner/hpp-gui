@@ -42,8 +42,8 @@ namespace hpp {
       return QString ("hpp-corbaserver plugin");
     }
 
-#ifdef USE_QT4
+#if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
     Q_EXPORT_PLUGIN2 (hppcorbaserverplugin, HppCorbaserverPlugin)
-#endif // USE_QT4
+#endif
   } // namespace gui
 } // namespace hpp

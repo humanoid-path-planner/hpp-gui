@@ -103,9 +103,9 @@ namespace hpp {
     {
       Q_OBJECT
         Q_INTERFACES (gepetto::gui::PluginInterface gepetto::gui::JointModifierInterface)
-#ifndef USE_QT4
+#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
         Q_PLUGIN_METADATA(IID "hpp-gui.remoteimuplugin")
-#endif // USE_QT4
+#endif
 
       public:
         virtual ~RemoteImuPlugin ();

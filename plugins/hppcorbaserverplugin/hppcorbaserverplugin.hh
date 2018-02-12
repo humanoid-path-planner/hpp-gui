@@ -15,9 +15,9 @@ namespace hpp {
     {
       Q_OBJECT
       Q_INTERFACES (gepetto::gui::PluginInterface)
-#ifndef USE_QT4
+#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
       Q_PLUGIN_METADATA (IID "hpp-gui.hppcorbaserverplugin")
-#endif // USE_QT4
+#endif
 
       public:
         explicit HppCorbaserverPlugin ();
