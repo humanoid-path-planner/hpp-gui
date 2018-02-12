@@ -1,7 +1,12 @@
-#include <omniORB4/CORBA.h>
 #include "hppwidgetsplugin/joint-tree-item.hh"
 
 #include <iostream>
+
+#include <QDoubleSpinBox>
+#include <QMenu>
+#include <QPushButton>
+
+#include <omniORB4/CORBA.h>
 
 #include <hpp/corbaserver/client.hh>
 #include <gepetto/viewer/group-node.h>

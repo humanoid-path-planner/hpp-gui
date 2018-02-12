@@ -1,8 +1,13 @@
+#include "hppwidgetsplugin/constraintwidget.hh"
+
+#include <QMessageBox>
+#include <QDockWidget>
+
 #include <omniORB4/CORBA.h>
 #include "gepetto/gui/meta.hh"
 #include "gepetto/gui/mainwindow.hh"
 
-#include "hppwidgetsplugin/constraintwidget.hh"
+#include "hppwidgetsplugin/hppwidgetsplugin.hh"
 #include "hppwidgetsplugin/transformconstraintwidget.hh"
 #include "hppwidgetsplugin/numericalconstraintpicker.hh"
 #include "hppwidgetsplugin/ui_constraintwidget.h"

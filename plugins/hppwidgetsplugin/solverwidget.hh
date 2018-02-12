@@ -2,11 +2,12 @@
 #define HPP_GUI_SOLVERWIDGET_HH
 
 #include <QWidget>
-#include <QComboBox>
-#include <QFormLayout>
 
 #include "gepetto/gui/fwd.hh"
 #include "hppwidgetsplugin/hppwidgetsplugin.hh"
+
+class QComboBox;
+class QDoubleSpinBox;
 
 namespace Ui {
   class SolverWidget;

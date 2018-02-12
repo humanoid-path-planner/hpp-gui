@@ -4,6 +4,8 @@
 #include "hpp/corbaserver/common.hh"
 #include "hpp/corbaserver/client.hh"
 
+#include <hppwidgetsplugin/hppwidgetsplugin.hh>
+
 namespace hpp {
   namespace gui {
     const int ConfigurationListWidget::ConfigRole = Qt::UserRole + 1;

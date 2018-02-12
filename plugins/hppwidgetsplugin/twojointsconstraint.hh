@@ -1,10 +1,13 @@
 #ifndef HPP_GUI_TWOJOINTSCONSTRAINT_HH
 #define HPP_GUI_TWOJOINTSCONSTRAINT_HH
 
-#include <QWidget>
-
 #include "hppwidgetsplugin/hppwidgetsplugin.hh"
 #include "iconstraint.hh"
+
+class QCheckBox;
+class QComboBox;
+class QString;
+class QWidget;
 
 namespace hpp {
   namespace gui {

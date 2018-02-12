@@ -6,7 +6,6 @@
 
 #include <omniORB4/CORBA.h>
 #include "gepetto/gui/meta.hh"
-#include "hppwidgetsplugin/hppwidgetsplugin.hh"
 
 namespace Ui {
 class NumericalConstraintPicker;
@@ -14,6 +13,8 @@ class NumericalConstraintPicker;
 
 namespace hpp {
   namespace gui {
+    class HppWidgetsPlugin;
+
     class NumericalConstraintPicker : public QWidget
     {
       Q_OBJECT

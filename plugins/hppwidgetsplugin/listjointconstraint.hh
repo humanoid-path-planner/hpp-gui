@@ -1,10 +1,11 @@
 #ifndef LISTJOINTCONSTRAINT_HH
 #define LISTJOINTCONSTRAINT_HH
 
-#include <QWidget>
-
 #include "iconstraint.hh"
 #include "hppwidgetsplugin.hh"
+
+class QListWidget;
+class QWidget;
 
 namespace hpp {
   namespace gui {

@@ -1,10 +1,16 @@
 #include "hppwidgetsplugin/solverwidget.hh"
 #include "hppwidgetsplugin/ui_solverwidget.h"
 
+#include <QComboBox>
+#include <QDialogButtonBox>
+#include <QDoubleSpinBox>
+#include <QFileDialog>
+#include <QListWidget>
+#include <QMessageBox>
+#include <QtConcurrent>
+
 #include <hpp/corbaserver/client.hh>
 
-#include <QFormLayout>
-#include <QMessageBox>
 #include "gepetto/gui/mainwindow.hh"
 #include "gepetto/gui/windows-manager.hh"
 

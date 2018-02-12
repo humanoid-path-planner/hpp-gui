@@ -1,18 +1,19 @@
 #ifndef HPP_GUI_JOINTTREEITEM_HH
 #define HPP_GUI_JOINTTREEITEM_HH
 
-#include <QStandardItem>
 #include <QItemDelegate>
-#include <QDoubleSpinBox>
 #include <QSlider>
-#include <QMenu>
-#include <QPushButton>
+#include <QStandardItem>
 
 #include <hpp/corbaserver/robot.hh>
 #include <gepetto/gui/fwd.hh>
 #include <gepetto/viewer/node.h>
 
 #include "hppwidgetsplugin/hppwidgetsplugin.hh"
+
+class QDoubleSpinBox;
+class QMenu;
+class QPushButton;
 
 namespace hpp {
   namespace gui {

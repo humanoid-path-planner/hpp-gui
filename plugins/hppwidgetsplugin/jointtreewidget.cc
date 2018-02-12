@@ -1,5 +1,7 @@
 #include <omniORB4/CORBA.h>
 
+#include <QMenu>
+
 #include "hppwidgetsplugin/jointtreewidget.hh"
 #include "hppwidgetsplugin/ui_jointtreewidget.h"
 

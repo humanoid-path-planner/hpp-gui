@@ -1,8 +1,10 @@
-#include <QHBoxLayout>
 #include "hppwidgetsplugin/numericalconstraintpicker.hh"
-#include "hppwidgetsplugin/ui_numericalconstraintpicker.h"
 
 #include <iostream>
+#include <QHBoxLayout>
+
+#include "hppwidgetsplugin/ui_numericalconstraintpicker.h"
+#include "hppwidgetsplugin/hppwidgetsplugin.hh"
 
 namespace hpp {
   namespace gui {

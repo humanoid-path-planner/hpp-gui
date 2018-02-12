@@ -2,13 +2,15 @@
 #define HPP_GUI_PATHPLAYER_HH
 
 #include <QWidget>
-#include <QSpinBox>
-#include <QSlider>
-#include <QPushButton>
 
 #include <gepetto/gui/fwd.hh>
 
-#include <hppwidgetsplugin/hppwidgetsplugin.hh>
+class QDoubleSpinBox;
+class QProcess;
+class QPushButton;
+class QSpinBox;
+class QSlider;
+class QTextBrowser;
 
 namespace Ui {
   class PathPlayerWidget;
@@ -16,6 +18,8 @@ namespace Ui {
 
 namespace hpp {
   namespace gui {
+    class HppWidgetsPlugin;
+
     class PathPlayer : public QWidget
     {
       Q_OBJECT

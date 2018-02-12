@@ -1,5 +1,14 @@
 #include "hppwidgetsplugin/pathplayer.hh"
 
+#include <QDoubleSpinBox>
+#include <QFileDialog>
+#include <QTextBrowser>
+#include <QProgressDialog>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QSlider>
+#include <QtConcurrent>
+
 #include <hpp/corbaserver/common.hh>
 #include <hpp/corbaserver/client.hh>
 
@@ -11,6 +20,7 @@
 #include "hppwidgetsplugin/conversions.hh"
 #include "hppwidgetsplugin/ui_pathplayerwidget.h"
 #include "hppwidgetsplugin/joint-action.hh"
+#include <hppwidgetsplugin/hppwidgetsplugin.hh>
 
 namespace hpp {
   namespace gui {

@@ -1,5 +1,10 @@
 #include "listjointconstraint.hh"
 
+#include <QVBoxLayout>
+#include <QWidget>
+#include <QLabel>
+#include <QListWidget>
+
 namespace hpp {
   namespace gui {
     ListJointConstraint::ListJointConstraint(HppWidgetsPlugin *plugin)

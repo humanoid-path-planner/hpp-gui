@@ -1,6 +1,8 @@
-#include "gepetto/gui/mainwindow.hh"
-
 #include "transformwidget.hh"
+
+#include <QVBoxLayout>
+
+#include "gepetto/gui/mainwindow.hh"
 
 namespace hpp {
   namespace gui {

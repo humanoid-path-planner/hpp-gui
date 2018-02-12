@@ -1,8 +1,11 @@
-#include <QDropEvent>
-#include <QUrl>
+#include "configurationlist.hh"
+
 #include <iostream>
 
-#include "configurationlist.hh"
+#include <QDropEvent>
+#include <QUrl>
+#include <QShortcut>
+
 #include "configurationlistwidget.hh"
 
 namespace hpp {

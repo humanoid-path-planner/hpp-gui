@@ -2,10 +2,10 @@
 #define HPP_GUI_CONSTRAINTWIDGET_HH
 
 #include <QWidget>
-#include <QDockWidget>
 
-#include "hppwidgetsplugin/hppwidgetsplugin.hh"
 #include "hppwidgetsplugin/iconstraint.hh"
+
+class QDockWidget;
 
 namespace Ui {
   class ConstraintWidget;
@@ -13,6 +13,8 @@ namespace Ui {
 
 namespace hpp {
   namespace gui {
+    class HppWidgetsPlugin;
+
     /// Widget that allows to create constraints.
     class ConstraintWidget : public QWidget
     {

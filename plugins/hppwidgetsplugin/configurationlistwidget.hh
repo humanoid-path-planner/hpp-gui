@@ -8,7 +8,6 @@
 
 #include "hpp/corbaserver/common.hh"
 
-#include <hppwidgetsplugin/hppwidgetsplugin.hh>
 #include "configurationlist.hh"
 
 Q_DECLARE_METATYPE (hpp::floatSeq*)
@@ -19,6 +18,8 @@ namespace Ui {
 
 namespace hpp {
   namespace gui {
+    class HppWidgetsPlugin;
+
     /// Widget to define initial and goal configurations of the problem.
     class ConfigurationListWidget : public QWidget
     {

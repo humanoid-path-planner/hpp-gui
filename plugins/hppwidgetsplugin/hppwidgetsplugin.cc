@@ -4,6 +4,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include <QDockWidget>
+#include <QMessageBox>
 
 #include <gepetto/gui/mainwindow.hh>
 #include <gepetto/gui/windows-manager.hh>
@@ -220,7 +221,7 @@ namespace hpp {
     {
       closeConnection ();
       hpp_ = new hpp::corbaServer::Client (0,0);
-      QByteArray iiop = getHppIIOPurl ().toAscii();
+      QByteArray iiop = getHppIIOPurl ().toLatin1();
       hpp_->connect (iiop.constData ());
     }
 

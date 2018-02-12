@@ -4,6 +4,8 @@
 #include <gepetto/gui/plugin-interface.hh>
 #include <hpp/corbaserver/client.hh>
 
+class QDockWidget;
+
 namespace hpp {
   namespace gui {
     class SolverWidget;

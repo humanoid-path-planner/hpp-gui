@@ -36,13 +36,13 @@ SET(${PLUGIN_NAME}_HEADERS
   numericalconstraintpicker.hh
   configurationlist.hh
   twojointsconstraint.hh
-  listjointconstraint.hh
   joint-action.hh
   )
 
 SET(${PLUGIN_NAME}_HEADERS_NO_MOC
   roadmap.hh
   conversions.hh
+  listjointconstraint.hh
   )
 
 SET(${PLUGIN_NAME}_FORMS
