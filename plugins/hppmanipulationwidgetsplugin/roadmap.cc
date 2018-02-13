@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Joseph Mirabel and Heidy Dallard
+//
+
 #include <hppmanipulationwidgetsplugin/roadmap.hh>
 
 #include <string>

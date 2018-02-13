@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Author: Joseph Mirabel
+//
+
 #ifndef HPP_GUI_JOINT_ACTION_HH
 #define HPP_GUI_JOINT_ACTION_HH
 

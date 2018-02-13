@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Heidy Dallard
+//
+
 #include <QHBoxLayout>
 #include "hppwidgetsplugin/numericalconstraintpicker.hh"
 #include "hppwidgetsplugin/ui_numericalconstraintpicker.h"

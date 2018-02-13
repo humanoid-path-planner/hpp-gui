@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Author: Joseph Mirabel and Heidy Dallard
+//
+
 #ifndef HPP_GUI_JOINTTREEWIDGET_HH
 #define HPP_GUI_JOINTTREEWIDGET_HH
 

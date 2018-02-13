@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Joseph Mirabel and Heidy Dallard
+//
+
 #ifndef HPP_GUI_MANIPULATION_ROADMAP_HH
 #define HPP_GUI_MANIPULATION_ROADMAP_HH
 

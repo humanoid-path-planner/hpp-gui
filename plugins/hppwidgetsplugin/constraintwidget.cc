@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Heidy Dallard
+//
+
 #include <omniORB4/CORBA.h>
 #include "gepetto/gui/meta.hh"
 #include "gepetto/gui/mainwindow.hh"

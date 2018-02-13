@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Joseph Mirabel and Heidy Dallard
+//
+
 #include "gepetto/gui/mainwindow.hh"
 
 #include "transformwidget.hh"

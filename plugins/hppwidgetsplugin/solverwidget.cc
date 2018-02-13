@@ -1,3 +1,7 @@
+//
+// Copyright (c) CNRS
+// Authors: Joseph Mirabel and Heidy Dallard
+//
 #include "hppwidgetsplugin/solverwidget.hh"
 #include "hppwidgetsplugin/ui_solverwidget.h"
 

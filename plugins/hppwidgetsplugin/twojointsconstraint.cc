@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Joseph Mirabel
+//
+
 #include <omniORB4/CORBA.h>
 #include "gepetto/gui/meta.hh"
 

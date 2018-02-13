@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Author: Heidy Dallard
+//
+
 #ifndef LISTJOINTCONSTRAINT_HH
 #define LISTJOINTCONSTRAINT_HH
 

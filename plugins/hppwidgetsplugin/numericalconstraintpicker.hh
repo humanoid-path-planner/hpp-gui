@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Author: Heidy Dallard
+//
+
 #ifndef NUMERICALCONSTRAINTPICKER_HH
 #define NUMERICALCONSTRAINTPICKER_HH
 

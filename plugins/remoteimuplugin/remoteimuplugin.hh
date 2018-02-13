@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Author: Joseph Mirabel
+//
+
 #ifndef HPP_GUI_REMOTEIMUPLUGIN_HH
 #define HPP_GUI_REMOTEIMUPLUGIN_HH
 

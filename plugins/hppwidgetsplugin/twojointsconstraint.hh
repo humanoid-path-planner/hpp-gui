@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Author: Heidy Dallard
+//
+
 #ifndef HPP_GUI_TWOJOINTSCONSTRAINT_HH
 #define HPP_GUI_TWOJOINTSCONSTRAINT_HH
 

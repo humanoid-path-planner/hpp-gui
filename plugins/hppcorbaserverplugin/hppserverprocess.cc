@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Joseph Mirabel
+//
+
 #include "hppserverprocess.hh"
 
 #include <hpp/corbaserver/server.hh>

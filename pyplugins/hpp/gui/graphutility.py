@@ -1,3 +1,8 @@
+#
+#  Copyright (c) CNRS
+#  Author: Heidy Dallard
+#
+
 from PythonQt.QtGui import QDockWidget, QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QListWidget, QPushButton, QLineEdit, QLabel
 from hpp.corbaserver.manipulation.robot import Robot
 from hpp.corbaserver.manipulation import ConstraintGraph

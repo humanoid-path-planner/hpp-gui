@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Joseph Mirabel and Heidy Dallard
+//
+
 #include "hppwidgetsplugin/configurationlistwidget.hh"
 #include "hppwidgetsplugin/ui_configurationlistwidget.h"
 
