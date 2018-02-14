@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Joseph Mirabel and Heidy Dallard
+//
+
 #ifndef MANIPULATIONNCPICKER_HH
 #define MANIPULATIONNCPICKER_HH
 

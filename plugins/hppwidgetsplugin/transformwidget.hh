@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Author: Heidy Dallard
+//
+
 #ifndef HPP_GUI_TRANSFORMWIDGET_HH__
 # define HPP_GUI_TRANSFORMWIDGET_H__
 

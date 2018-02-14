@@ -1,3 +1,8 @@
+#
+#  Copyright (c) CNRS
+#  Authors: Heidy Dallard, Joseph Mirabel
+#
+
 from PythonQt.QtGui import QDockWidget, QWidget, QLabel, QPushButton, QVBoxLayout, QFormLayout
 from PythonQt.Qt import Qt as QNamespace, QAction, QKeySequence
 from hpp.corbaserver import Client as BasicClient

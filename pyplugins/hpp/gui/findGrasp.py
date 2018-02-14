@@ -1,3 +1,8 @@
+#
+#  Copyright (c) CNRS
+#  Author: Joseph Mirabel
+#
+
 from PythonQt import QtGui, Qt
 import numpy as np
 from gepetto import Quaternion, Color

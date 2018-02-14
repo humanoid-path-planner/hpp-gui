@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Joseph Mirabel and Heidy Dallard
+//
+
 #include "hppcorbaserverplugin.hh"
 
 #include <hpp/core/problem-solver.hh>

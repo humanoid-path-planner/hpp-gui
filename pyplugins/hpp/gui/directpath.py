@@ -1,3 +1,8 @@
+#
+#  Copyright (c) CNRS
+#  Author: Joseph Mirabel
+#
+
 from PythonQt import QtGui, Qt
 from hpp.corbaserver import Client
 import sys

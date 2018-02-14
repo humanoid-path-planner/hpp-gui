@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Joseph Mirabel and Heidy Dallard
+//
+
 #include "hppmanipulationwidgetsplugin/hppmanipulationwidgetsplugin.hh"
 
 #include <QAction>

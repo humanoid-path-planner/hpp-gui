@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Author: Joseph Mirabel
+//
+
 #include <QObject>
 #include <QWidget>
 

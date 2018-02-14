@@ -1,3 +1,8 @@
+#
+#  Copyright (c) CNRS
+#  Author: Joseph Mirabel
+#
+
 from PythonQt import QtGui, Qt
 import xml.etree.ElementTree as ET
 from itertools import izip

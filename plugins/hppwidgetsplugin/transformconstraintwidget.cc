@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Heidy Dallard
+//
+
 #include <limits>
 
 #include "hppwidgetsplugin/transformconstraintwidget.hh"

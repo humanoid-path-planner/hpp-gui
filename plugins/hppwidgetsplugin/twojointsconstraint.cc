@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Joseph Mirabel
+//
+
 #include "twojointsconstraint.hh"
 
 #include <QCheckBox>

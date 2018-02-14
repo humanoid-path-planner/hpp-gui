@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Joseph Mirabel
+//
+
 #ifndef HPP_GUI_HPPSERVERPROCESS_HH
 #define HPP_GUI_HPPSERVERPROCESS_HH
 

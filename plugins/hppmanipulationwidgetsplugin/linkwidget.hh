@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Joseph Mirabel and Heidy Dallard
+//
+
 #ifndef HPP_GUI_LINKWIDGET_HH
 #define LINKWIDGET_HH
 

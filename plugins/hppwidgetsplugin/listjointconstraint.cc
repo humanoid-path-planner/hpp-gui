@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Heidy Dallard
+//
+
 #include "listjointconstraint.hh"
 
 #include <QVBoxLayout>

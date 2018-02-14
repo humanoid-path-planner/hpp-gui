@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Authors: Joseph Mirabel
+//
+
 #include "hppwidgetsplugin/joint-tree-item.hh"
 
 #include <iostream>

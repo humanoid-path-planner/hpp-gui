@@ -1,3 +1,8 @@
+#
+#  Copyright (c) CNRS
+#  Author: Joseph Mirabel and Heidy Dallard
+#
+
 from PythonQt import QtGui, Qt
 from hpp.corbaserver import Client
 from hpp.corbaserver.robot import Robot

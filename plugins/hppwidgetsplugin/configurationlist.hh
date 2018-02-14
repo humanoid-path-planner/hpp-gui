@@ -1,3 +1,8 @@
+//
+// Copyright (c) CNRS
+// Author: Joseph Mirabel and Heidy Dallard
+//
+
 #ifndef CONFIGURATIONLIST_HH
 #define CONFIGURATIONLIST_HH
 
