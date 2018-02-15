@@ -7,7 +7,6 @@ from PythonQt.QtGui import QDockWidget, QWidget, QLabel, QPushButton, QVBoxLayou
 from PythonQt.Qt import Qt as QNamespace, QAction, QKeySequence
 from hpp.corbaserver import Client as BasicClient
 from hpp.corbaserver.manipulation import Client as ManipClient, ConstraintGraph, Rule
-from hpp.corbaserver.manipulation.pr2 import Robot
 from gepetto.corbaserver import Client as ViewerClient
 import re
 
