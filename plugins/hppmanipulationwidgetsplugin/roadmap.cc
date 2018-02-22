@@ -17,13 +17,13 @@ namespace hpp {
       Roadmap (plugin), plugin_ (plugin)
     {}
 
-    void ManipulationRoadmap::initRoadmapFromJoint (const std::string jointName)
+    void ManipulationRoadmap::initRoadmapFromJoint (const std::string& jointName)
     {
       Roadmap::initRoadmapFromJoint (jointName);
       nodeColorMap_ = gepetto::gui::ColorMap ((1 << 7) - 1);
     }
 
-    void ManipulationRoadmap::initRoadmapFromBody  (const std::string  bodyName)
+    void ManipulationRoadmap::initRoadmapFromBody  (const std::string& bodyName)
     {
       Roadmap::initRoadmapFromBody (bodyName);
       nodeColorMap_ = gepetto::gui::ColorMap ((1 << 7) - 1);
