@@ -50,6 +50,7 @@ namespace hpp {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
 
       toolBar_ = gepetto::gui::MainWindow::instance()->addToolBar("Manipulation tools");
+      toolBar_->setObjectName ("hppmanipulationwidgetsplugin.manipulationtools");
       QAction* drawRContact = new QAction ("Draw robot contacts",toolBar_);
       QAction* drawEContact = new QAction ("Draw environment contacts",toolBar_);
       toolBar_->addAction (drawRContact);
@@ -511,6 +512,7 @@ namespace hpp {
     {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
       QDockWidget* dock = new QDockWidget ("&Constraint creator", main);
+      dock->setObjectName ("hppmanipulationwidgetsplugin.constraintcreator");
       constraintWidget_ = new ManipulationConstraintWidget (this, dock);
       dock->setWidget(constraintWidget_);
       main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);

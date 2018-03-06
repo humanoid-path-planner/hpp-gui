@@ -79,6 +79,7 @@ namespace hpp {
 
       // Configuration list widget
       dock = new QDockWidget ("&Configuration List", main);
+      dock->setObjectName ("hppwidgetplugin.configurationlist");
       configListWidget_ = new ConfigurationListWidget (this, dock);
       dock->setWidget(configListWidget_);
       main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
@@ -88,6 +89,7 @@ namespace hpp {
 
       // Solver widget
       dock = new QDockWidget ("Problem &solver", main);
+      dock->setObjectName ("hppwidgetplugin.problemsolver");
       solverWidget_ = new SolverWidget (this, dock);
       dock->setWidget(solverWidget_);
       main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Horizontal);
@@ -97,6 +99,7 @@ namespace hpp {
 
       // Path player widget
       dock = new QDockWidget ("&Path player", main);
+      dock->setObjectName ("hppwidgetplugin.pathplayer");
       pathPlayer_ = new PathPlayer (this, dock);
       dock->setWidget(pathPlayer_);
       main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
@@ -106,6 +109,7 @@ namespace hpp {
 
       // Joint tree widget
       dock = new QDockWidget ("&Joint Tree", main);
+      dock->setObjectName ("hppwidgetplugin.jointtree");
       jointTreeWidget_ = new JointTreeWidget (this, dock);
       dock->setWidget(jointTreeWidget_);
       jointTreeWidget_->dockWidget (dock);
@@ -494,6 +498,7 @@ namespace hpp {
     {
       MainWindow* main = MainWindow::instance();
       QDockWidget* dock = new QDockWidget ("&Constraint creator", main);
+      dock->setObjectName ("hppwidgetplugin.constraintcreator");
       constraintWidget_ = new ConstraintWidget (this, dock);
       dock->setWidget(constraintWidget_);
       main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);

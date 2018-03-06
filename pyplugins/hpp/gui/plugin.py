@@ -162,6 +162,7 @@ class Plugin(QtGui.QDockWidget):
             super(Plugin, self).__init__ (title, mainWindow)
         else:
             super(Plugin, self).__init__ (title, mainWindow, flags)
+        self.setObjectName ("hpp.gui.plugin")
         self.main = mainWindow
         self.hppPlugin = self.main.getFromSlot("getHppIIOPurl")
         self.resetConnection()
