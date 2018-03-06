@@ -74,10 +74,8 @@ signals:
         //  void timeChanged (double d);
         void playPauseToggled (bool toggled);
         void stopClicked ();
-        void recordToggled (bool toggled);
         void pathPulse ();
         void timerEvent(QTimerEvent *event);
-        void readyReadProcessOutput ();
 
       private:
         void initSearchActions();
@@ -100,10 +98,6 @@ signals:
         double currentParam_;
         int timerId_;
         bool velocity_;
-
-        QProcess* process_;
-        QDialog* showPOutput_;
-        QTextBrowser* pOutput_;
 
         HppWidgetsPlugin* plugin_;
     };

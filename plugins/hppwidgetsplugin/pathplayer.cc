@@ -5,12 +5,7 @@
 
 #include "hppwidgetsplugin/pathplayer.hh"
 
-#include <QDoubleSpinBox>
-#include <QFileDialog>
-#include <QTextBrowser>
 #include <QProgressDialog>
-#include <QPushButton>
-#include <QSpinBox>
 #include <QSlider>
 #if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
 # include <QtCore>
@@ -41,9 +36,6 @@ namespace hpp {
       , ui_ (new ::Ui::PathPlayerWidget)
       , timerId_ (0)
       , velocity_ (false)
-      , process_ (new QProcess (this))
-      , showPOutput_ (new QDialog (this, Qt::Dialog | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint))
-      , pOutput_ (new QTextBrowser())
       , plugin_ (plugin)
     {
       ui_->setupUi (this);
@@ -52,26 +44,13 @@ namespace hpp {
       connect (pathIndex(), SIGNAL (valueChanged(int)), this, SLOT (pathIndexChanged(int)));
       connect (playPause(), SIGNAL (toggled (bool)), this, SLOT (playPauseToggled(bool)));
       connect (stop(), SIGNAL (clicked()), this, SLOT (stopClicked()));
-      connect (record(), SIGNAL (toggled(bool)), this, SLOT (recordToggled(bool)));
       connect (ui_->refreshButton_path, SIGNAL (clicked()), this, SLOT (update()));
-
-      process_->setProcessChannelMode(QProcess::MergedChannels);
-      connect (process_, SIGNAL (readyReadStandardOutput ()), SLOT (readyReadProcessOutput()));
-
-      showPOutput_->setModal(false);
-      showPOutput_->setLayout(new QHBoxLayout ());
-      showPOutput_->layout()->addWidget(pOutput_);
 
       initSearchActions();
     }
 
     PathPlayer::~PathPlayer()
     {
-      if (process_ != NULL) {
-        if (process_->state() == QProcess::Running)
-          process_->kill();
-        delete process_;
-      }
       delete ui_;
     }
 
@@ -252,48 +231,6 @@ namespace hpp {
       updateConfiguration();
     }
 
-    void PathPlayer::recordToggled(bool toggled)
-    {
-      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
-      if (toggled) {
-        QDir tmp ("/tmp");
-        tmp.mkpath ("hpp-gui/record"); tmp.cd("hpp-gui/record");
-        foreach (QString f, tmp.entryList(QStringList() << "img_0_*.jpeg", QDir::Files))
-          tmp.remove(f);
-        QString path = tmp.absoluteFilePath("img");
-        QString ext = "jpeg";
-        main->osg ()->startCapture(
-            main->centralWidget()->windowID(),
-            path.toLocal8Bit().data(),
-            ext.toLocal8Bit().data());
-        main->log("Saving images to " + path + "_*." + ext);
-      } else {
-        main->osg()->stopCapture(main->centralWidget()->windowID());
-        QString outputFile = QFileDialog::getSaveFileName(this, tr("Save video to"), "untitled.mp4");
-        if (!outputFile.isNull()) {
-          if (QFile::exists(outputFile))
-            QFile::remove(outputFile);
-          QString avconv = "avconv";
-
-          QStringList args;
-          QString input = "/tmp/hpp-gui/record/img_0_%d.jpeg";
-          args << "-r" << "50"
-            << "-i" << input
-            << "-vf" << "scale=trunc(iw/2)*2:trunc(ih/2)*2"
-            << "-r" << "25"
-            << "-vcodec" << "libx264"
-            << outputFile;
-          qDebug () << args;
-
-          showPOutput_->setWindowTitle(avconv + " " + args.join(" "));
-          pOutput_->clear();
-          showPOutput_->resize(main->size() / 2);
-          showPOutput_->show();
-          process_->start(avconv, args);
-        }
-      }
-    }
-
     void PathPlayer::pathPulse()
     {
       if (playPause()->isChecked()) {
@@ -325,11 +262,6 @@ namespace hpp {
       if (timerId_ == event->timerId()) {
         pathPulse();
       }
-    }
-
-    void PathPlayer::readyReadProcessOutput()
-    {
-      pOutput_->append(process_->readAll());
     }
 
     void PathPlayer::updateConfiguration ()
