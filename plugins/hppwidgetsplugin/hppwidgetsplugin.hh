@@ -7,6 +7,7 @@
 #define HPP_GUI_HPPWIDGETSPLUGIN_HH
 
 #include <gepetto/gui/plugin-interface.hh>
+#include <gepetto/gui/windows-manager.hh>
 #include <hpp/corbaserver/client.hh>
 
 class QDockWidget;
@@ -160,6 +161,7 @@ signals:
         void addJointFrame (const std::string& jointName);
 
       private:
+        void prepareApplyConfiguration ();
 
         PathPlayer* pathPlayer_;
         SolverWidget* solverWidget_;
@@ -191,6 +193,11 @@ signals:
         JointMap jointMap_;
         std::list <std::string> jointFrames_;
         std::list <std::string> comFrames_;
+
+        // Cache variables
+        hpp::Names_t             linkNames_;
+        std::vector<std::string> bodyNames_;
+        std::vector<graphics::Configuration> bodyConfs_;
     };
   } // namespace gui
 } // namespace hpp

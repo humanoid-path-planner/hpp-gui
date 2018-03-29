@@ -240,6 +240,38 @@ namespace hpp {
       hpp_ = NULL;
     }
 
+    inline char* c_str (const std::string& in)
+    {
+      char* out = new char[in.length()+1];
+      strcpy (out, in.c_str());
+      return out;
+    }
+
+    void HppWidgetsPlugin::prepareApplyConfiguration()
+    {
+      gepetto::gui::MainWindow * main = gepetto::gui::MainWindow::instance ();
+      CORBA::ULong size = 0; const CORBA::ULong sall = 100;
+      linkNames_.length(sall);
+      for (JointMap::iterator ite = jointMap_.begin ();
+          ite != jointMap_.end (); ite++) {
+        for (std::size_t i = 0; i < ite->bodyNames.size(); ++i)
+        {
+          std::string bodyName = ite->prefix + ite->bodyNames[i];
+          ite->updateViewer[i] = main->osg()->nodeExists (bodyName);
+          if (ite->updateViewer[i]) {
+            if (size >= linkNames_.length()) {
+              // Allocate
+              linkNames_.length(linkNames_.length() + sall);
+            }
+            linkNames_[size] = c_str(ite->bodyNames[i]);
+            ++size;
+            bodyNames_.push_back(bodyName);
+          }
+        }
+      }
+      linkNames_.length(size);
+    }
+
     void HppWidgetsPlugin::applyCurrentConfiguration()
     {
       gepetto::gui::MainWindow * main = gepetto::gui::MainWindow::instance ();
@@ -258,23 +290,19 @@ namespace hpp {
       }
       // Something smarter could be done here.
       // For instance, the joint tree item could know the NodePtr_t of their bodies.
-      OsgConfiguration_t T;
+      hpp::TransformSeq_var Ts = client()->robot ()->getLinksPosition (linkNames_);
+      fromHPP (Ts, bodyConfs_);
+      main->osg()->applyConfigurations (bodyNames_, bodyConfs_);
+
+      hpp::floatSeq_var c = client()->robot ()->getCurrentConfig ();
       for (JointMap::iterator ite = jointMap_.begin ();
           ite != jointMap_.end (); ite++) {
-        for (std::size_t i = 0; i < ite->bodyNames.size(); ++i)
-        {
-          hpp::Transform__var t = client()->robot()->getLinkPosition(ite->bodyNames[i].c_str());
-          fromHPP(t, T);
-          if (ite->updateViewer[i]) {
-            std::string n = ite->prefix + ite->bodyNames[i];
-            ite->updateViewer[i] = main->osg()->applyConfiguration(n, T);
-          }
-        }
         if (!ite->item) continue;
         if (ite->item->config().length() > 0) {
           ite->item->updateFromRobotConfig (c.in());
         }
       }
+      OsgConfiguration_t T;
       for (std::list<std::string>::const_iterator it = jointFrames_.begin ();
           it != jointFrames_.end (); ++it) {
         std::string n = escapeJointName(*it);
@@ -400,6 +428,7 @@ namespace hpp {
       solverWidget_->update();
       configListWidget_->fetchInitAndGoalConfigs();
       constraintWidget_->reload();
+      prepareApplyConfiguration();
     }
 
     QString HppWidgetsPlugin::requestCreateJointGroup(const QString jn)
