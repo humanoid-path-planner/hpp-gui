@@ -71,7 +71,7 @@ signals:
         /// Reset the tree.
         void reset ();
 
-        JointTreeItem* buildJointTreeItem (const char* name);
+        JointTreeItem* buildJointTreeItem (const char* name, std::size_t& rkConfig);
 
         HppWidgetsPlugin* plugin_;
         ::Ui::JointTreeWidget* ui_;

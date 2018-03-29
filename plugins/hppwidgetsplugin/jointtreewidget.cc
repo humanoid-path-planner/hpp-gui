@@ -131,7 +131,7 @@ namespace hpp {
       }
     }
 
-    JointTreeItem* JointTreeWidget::buildJointTreeItem(const char* name)
+    JointTreeItem* JointTreeWidget::buildJointTreeItem(const char* name, std::size_t& rkConfig)
     {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
       HppWidgetsPlugin::JointElement& je = plugin_->jointMap() [name];
@@ -141,17 +141,19 @@ namespace hpp {
         // TODO I do not remember why this is important...
         if (!nodes[i]) nodes[i] = main->osg ()->getGroup(je.bodyNames[i]);
       }
-      CORBA::Long nbDof = plugin_->client()->robot ()->getJointNumberDof (name);
+      CORBA::Long nbCfg = plugin_->client()->robot ()->getJointConfigSize (name);
+      CORBA::Long nbDof = plugin_->client()->robot ()->getJointNumberDof  (name);
       JointTreeItem* j;
       if (nbDof > 0) {
         hpp::floatSeq_var c = plugin_->client()->robot ()->getJointConfig (name);
         hpp::floatSeq_var b = plugin_->client()->robot ()->getJointBounds (name);
-        j = new JointTreeItem (name, c.in(), b.in(), nbDof, nodes);
+        j = new JointTreeItem (name, rkConfig, c.in(), b.in(), nbDof, nodes);
       } else {
-        j = new JointTreeItem (name, hpp::floatSeq(), hpp::floatSeq(), nbDof, nodes);
+        j = new JointTreeItem (name, rkConfig, hpp::floatSeq(), hpp::floatSeq(), nbDof, nodes);
       }
       je.item = j;
       j->setupActions(plugin_);
+      rkConfig += nbCfg;
       return j;
     }
 
@@ -219,10 +221,11 @@ namespace hpp {
         hpp::Names_t_var joints = plugin_->client()->robot()->getAllJointNames ();
         typedef std::map<std::string, JointTreeItem*> JointTreeItemMap_t;
         JointTreeItemMap_t items;
+        std::size_t rk = 0;
         for (size_t i = 0; i < joints->length (); ++i) {
           const char* jname = joints[(ULong) i];
           std::string bjn (joints[0]);
-          items[jname] = buildJointTreeItem(jname);
+          items[jname] = buildJointTreeItem(jname, rk);
         }
         for (JointTreeItemMap_t::const_iterator _jti = items.begin();
             _jti != items.end(); ++_jti) {

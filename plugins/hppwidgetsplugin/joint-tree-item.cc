@@ -32,10 +32,12 @@ namespace hpp {
     const int JointTreeItem::NumberDofRole  = Qt::UserRole + 4;
     const int JointTreeItem::TypeRole       = Qt::UserRole + 10;
 
-    JointTreeItem::JointTreeItem(const char* name, const hpp::floatSeq &q,
+    JointTreeItem::JointTreeItem(const char* name,
+        const std::size_t& idxQ,
+        const hpp::floatSeq &q,
         const hpp::floatSeq &b,
         const unsigned int nbDof, const NodesPtr_t& nodes)
-      : QStandardItem (QString (name)), name_ (name), nodes_ (nodes), value_ ()
+      : QStandardItem (QString (name)), name_ (name), idxQ_ (idxQ), nodes_ (nodes), value_ ()
     {
       setData((int)-1, IndexRole);
       setData(nbDof, NumberDofRole);
@@ -70,7 +72,7 @@ namespace hpp {
         b[2*(ULong) i] = value_[(ULong) i][0]->data(LowerBoundRole).toFloat();
         b[2*(ULong) i+1] = value_[(ULong) i][0]->data(UpperBoundRole).toFloat();
       }
-      return new JointTreeItem (name_.c_str(), q, b, data (NumberDofRole).toInt(), nodes_);
+      return new JointTreeItem (name_.c_str(), idxQ_, q, b, data (NumberDofRole).toInt(), nodes_);
     }
 
     hpp::floatSeq JointTreeItem::config() const
@@ -98,6 +100,13 @@ namespace hpp {
       assert ((int)c.length() == value_.size());
       for (int i = 0; i < value_.size(); ++i)
         value_[i][0]->setData(c[i], Qt::EditRole);
+    }
+
+    void JointTreeItem::updateFromRobotConfig (const hpp::floatSeq& rc)
+    {
+      assert (idxQ_ + value_.size() <= rc.length());
+      for (int i = 0; i < value_.size(); ++i)
+        value_[i][0]->setData(rc[(int)idxQ_ + i], Qt::EditRole);
     }
 
     void JointTreeItem::updateBounds(const hpp::floatSeq& b)

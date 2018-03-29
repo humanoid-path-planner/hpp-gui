@@ -95,7 +95,9 @@ namespace hpp {
           BoundType
         };
 
-        JointTreeItem (const char* name, const hpp::floatSeq& q,
+        JointTreeItem (const char* name,
+            const std::size_t& idxQ,
+            const hpp::floatSeq& q,
             const hpp::floatSeq& b,
             const unsigned int nbDof,
             const NodesPtr_t& node);
@@ -120,6 +122,8 @@ namespace hpp {
 
         void updateConfig (const hpp::floatSeq &c);
 
+        void updateFromRobotConfig (const hpp::floatSeq &c);
+
         void updateTypeRole ();
 
         void setupActions(HppWidgetsPlugin* plugin);
@@ -130,6 +134,7 @@ namespace hpp {
         typedef QList<QStandardItem*> StandardItemList;
 
         std::string name_;
+        std::size_t idxQ_;
         NodesPtr_t nodes_;
         QVector<StandardItemList> value_;
         QList<QAction*> actions_;
