@@ -25,8 +25,8 @@ INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/boost.cmake)
 INCLUDE(cmake/python.cmake)
 
-# Tells pkg-config to read qtversion from pkg config file.
-LIST(APPEND PKG_CONFIG_ADDITIONAL_VARIABLES qtversion)
+# Tells pkg-config to read qtversion and cmake_plugin from pkg config file.
+LIST(APPEND PKG_CONFIG_ADDITIONAL_VARIABLES qtversion cmake_plugin)
 
 SET(PROJECT_NAME "hpp-gui")
 SET(PROJECT_URL "https://github.com/jmirabel/hpp-gui")

@@ -19,10 +19,17 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-SET(PLUGIN_NAME hppwidgetsplugin)
+IF(USE_QT4)
+  SET(QT "QT4")
+ELSE(USE_QT4)
+  SET(QT "")
+ENDIF(USE_QT4)
 
-SET(${PLUGIN_NAME}_HEADERS
-  ${PLUGIN_NAME}.hh
+GEPETTO_GUI_PLUGIN(hppwidgetsplugin
+  ${QT}
+
+  HEADERS
+  hppwidgetsplugin.hh
   pathplayer.hh
   solverwidget.hh
   jointtreewidget.hh
@@ -37,15 +44,13 @@ SET(${PLUGIN_NAME}_HEADERS
   configurationlist.hh
   twojointsconstraint.hh
   joint-action.hh
-  )
 
-SET(${PLUGIN_NAME}_HEADERS_NO_MOC
+  HEADERS_NO_MOC
   roadmap.hh
   conversions.hh
   listjointconstraint.hh
-  )
 
-SET(${PLUGIN_NAME}_FORMS
+  FORMS
   pathplayerwidget.ui
   solverwidget.ui
   jointtreewidget.ui
@@ -53,28 +58,9 @@ SET(${PLUGIN_NAME}_FORMS
   constraintwidget.ui
   transformconstraintwidget.ui
   numericalconstraintpicker.ui
-  )
 
-SET(${PLUGIN_NAME}_RESOURCES
-  )
-
-IF(USE_QT4)
-  QT4_WRAP_CPP(${PLUGIN_NAME}_HEADERS_MOC ${${PLUGIN_NAME}_HEADERS} OPTIONS -I${GEPETTO_VIEWER_CORBA_INCLUDEDIR})
-  QT4_WRAP_UI(${PLUGIN_NAME}_FORMS_HEADERS ${${PLUGIN_NAME}_FORMS})
-  QT4_ADD_RESOURCES(${PLUGIN_NAME}_RESOURCES_RCC ${${PLUGIN_NAME}_RESOURCES})
-  INCLUDE(${QT_USE_FILE})
-ELSE(USE_QT4)
-  QT5_WRAP_CPP(${PLUGIN_NAME}_HEADERS_MOC ${${PLUGIN_NAME}_HEADERS} OPTIONS -I${GEPETTO_VIEWER_CORBA_INCLUDEDIR})
-  QT5_WRAP_UI(${PLUGIN_NAME}_FORMS_HEADERS ${${PLUGIN_NAME}_FORMS})
-  QT5_ADD_RESOURCES(${PLUGIN_NAME}_RESOURCES_RCC ${${PLUGIN_NAME}_RESOURCES})
-ENDIF(USE_QT4)
-
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-ADD_DEFINITIONS(-DQT_PLUGIN)
-ADD_DEFINITIONS(-DQT_SHARED)
-
-SET (${PLUGIN_NAME}_SOURCES
-  ${PLUGIN_NAME}.cc
+  SOURCES
+  hppwidgetsplugin.cc
   pathplayer.cc
   solverwidget.cc
   jointtreewidget.cc
@@ -90,16 +76,7 @@ SET (${PLUGIN_NAME}_SOURCES
   twojointsconstraint.cc
   listjointconstraint.cc
   joint-action.cc
+
+  PKG_CONFIG_DEPENDENCIES
+  "hpp-corbaserver"
   )
-
-ADD_LIBRARY(${PLUGIN_NAME} SHARED ${${PLUGIN_NAME}_SOURCES}
-  ${${PLUGIN_NAME}_HEADERS_NO_MOC}
-  ${${PLUGIN_NAME}_HEADERS_MOC}
-  ${${PLUGIN_NAME}_FORMS_HEADERS}
-  ${${PLUGIN_NAME}_RESOURCES_RCC}
-  )
-
-TARGET_LINK_LIBRARIES(${PLUGIN_NAME} ${QT_LIBRARIES})
-PKG_CONFIG_USE_DEPENDENCY(${PLUGIN_NAME} "hpp-corbaserver")
-
-INSTALL(TARGETS ${PLUGIN_NAME} DESTINATION lib/gepetto-gui-plugins)
