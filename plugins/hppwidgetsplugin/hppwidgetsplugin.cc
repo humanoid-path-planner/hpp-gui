@@ -249,6 +249,7 @@ namespace hpp {
 
     void HppWidgetsPlugin::prepareApplyConfiguration()
     {
+      bodyNames_.clear();
       gepetto::gui::MainWindow * main = gepetto::gui::MainWindow::instance ();
       CORBA::ULong size = 0; const CORBA::ULong sall = 100;
       linkNames_.length(sall);
