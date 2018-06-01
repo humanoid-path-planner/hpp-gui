@@ -213,7 +213,7 @@ class _GraspMode(QWidget):
             self.parentInstance.plugin.client.basic.problem.lockJoint(j, self.parentInstance.plugin.client.basic.robot.getJointConfig(j))
         name = self.grippers[self.currentGripper] + " grasps " + self.handles[self.currentHandle]
         self.parentInstance.plugin.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
-        self.parentInstance.plugin.client.basic.problem.setNumericalConstraints("constraints", [name], [True])
+        self.parentInstance.plugin.client.basic.problem.setNumericalConstraints("constraints", [name,], [0,])
         res = self.parentInstance.plugin.client.basic.problem.applyConstraints(config)
         if res[0] == True:
             self.parentInstance.plugin.client.basic.robot.setCurrentConfig(res[1])
