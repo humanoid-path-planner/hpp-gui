@@ -70,7 +70,10 @@ class CollisionPairs(QtGui.QWidget):
         # Create table
         self.table = QtGui.QTableWidget(0, 6)
         self.table.setHorizontalHeaderLabels(["Active", "Link 1", "Link 2", "Reason", "Current configuration", "% of collision"])
-        self.table.horizontalHeader().setResizeMode(QtGui.QHeaderView.Interactive)
+        if Qt.qVersion().startswith('4'):
+            self.table.horizontalHeader().setResizeMode(QtGui.QHeaderView.Interactive)
+        else:
+            self.table.horizontalHeader().setSectionResizeMode(QtGui.QHeaderView.Interactive)
         self.table.selectionBehavior = QtGui.QAbstractItemView.SelectRows
         self.table.connect("currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)", self.currentItemChanged)
         box.addWidget(self.table)
