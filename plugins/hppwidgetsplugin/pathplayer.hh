@@ -92,7 +92,6 @@ signals:
         QSlider* pathSlider () const;
         QPushButton* playPause () const;
         QPushButton* stop () const;
-        QPushButton* record () const;
 
         double pathLength_;
         double currentParam_;

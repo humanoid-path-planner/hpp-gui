@@ -329,11 +329,6 @@ namespace hpp {
       return ui_->stopButton;
     }
 
-    QPushButton *PathPlayer::record() const
-    {
-      return ui_->recordButton;
-    }
-
     int	PathPlayer::getCurrentPath() const
     {
       if (!pathIndex()->isEnabled()) return -1;
