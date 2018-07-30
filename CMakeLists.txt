@@ -86,4 +86,14 @@ INCLUDE_DIRECTORIES(${GEPETTO_VIEWER_CORBA_INCLUDE_DIRS})
 ADD_SUBDIRECTORY(plugins)
 ADD_SUBDIRECTORY(pyplugins)
 
+# If settings.conf not yet installed, install it
+IF (EXISTS "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_SYSCONFDIR}/gepetto-gui/settings.conf")
+  MESSAGE (STATUS
+    "File ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_SYSCONFDIR}/gepetto-gui/settings.conf detected.")
+ELSE ()
+  MESSAGE (STATUS "File ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_SYSCONFDIR}/gepetto-gui/settings.conf does not exist. Will install it.")
+  INSTALL (FILES etc/gepetto-gui/settings.conf
+    DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/gepetto-gui)
+ENDIF ()
+
 SETUP_PROJECT_FINALIZE()
