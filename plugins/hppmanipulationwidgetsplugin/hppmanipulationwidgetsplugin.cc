@@ -282,12 +282,12 @@ namespace hpp {
       int i = 0;
       int j;
 
-      names.first.length(mapNames.size());
-      names.second.length(mapNames.size());
+      names.first.length ((CORBA::ULong) mapNames.size ());
+      names.second.length ((CORBA::ULong) mapNames.size ());
       for (HppManipulationWidgetsPlugin::MapNames::iterator itMap = mapNames.begin();
 	   itMap != mapNames.end(); itMap++, i++){
 	names.first[i] = (*itMap).first.c_str();
-	names.second[i].length((*itMap).second.size());
+	names.second[i].length ((CORBA::ULong) (*itMap).second.size());
         j = 0;
 	for (std::list<std::string>::iterator itList = (*itMap).second.begin();
 	     itList != (*itMap).second.end(); itList++, j++) {
@@ -370,13 +370,14 @@ namespace hpp {
 
     void print(const hpp::Names_t& v) {
       std::cout << "[ ";
-      for (std::size_t i = 0; i < v.length(); i++) std::cout << '"' << v[i] << "\", ";
+      for (std::size_t i = 0; i < v.length(); i++)
+        std::cout << '"' << v[(CORBA::ULong) i] << "\", ";
       std::cout << "]";
     }
     void print(const hpp::corbaserver::manipulation::Namess_t& v) {
       std::cout << "[ ";
-      for (std::size_t i = 0; i < v.length(); i++) {
-        print(v[i]);
+      for (std::size_t i = 0; (std::size_t) i < v.length(); i++) {
+        print(v[(CORBA::ULong) i]);
         std::cout << ", ";
       }
       std::cout << "]";
@@ -391,7 +392,7 @@ namespace hpp {
     void print(const hpp::corbaserver::manipulation::Rules& v) {
       std::cout << "[ ";
       for (std::size_t i = 0; i < v.length(); i++) {
-        print(v[i]);
+        print(v[(CORBA::ULong) i]);
         std::cout << ", ";
       }
       std::cout << "]";
