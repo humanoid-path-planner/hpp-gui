@@ -32,7 +32,7 @@ namespace hpp {
       void closeEvent(QCloseEvent* event);
 
     public:
-      explicit NumericalConstraintPicker(QStringList const& names, HppWidgetsPlugin* plugin,
+      explicit NumericalConstraintPicker(HppWidgetsPlugin* plugin,
                                          QWidget *parent = 0);
       virtual ~NumericalConstraintPicker();
 

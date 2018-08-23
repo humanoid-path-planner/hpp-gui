@@ -13,17 +13,25 @@
 
 namespace hpp {
   namespace gui {
-    NumericalConstraintPicker::NumericalConstraintPicker(QStringList const& names,
-                                                         HppWidgetsPlugin* plugin,
+    NumericalConstraintPicker::NumericalConstraintPicker(HppWidgetsPlugin* plugin,
                                                          QWidget *parent) :
       QWidget(parent),
       ui(new Ui::NumericalConstraintPicker)
     {
       ui->setupUi(this);
-      ui->constraintList->setSelectionMode(QAbstractItemView::ExtendedSelection);
-      foreach (QString name, names) {
-        ui->constraintList->addItem(name);
+
+      hpp::Names_t_var names = plugin->client()->problem()->getAvailable("lockedjoint");
+      ui->lockedJointList->setSelectionMode(QAbstractItemView::ExtendedSelection);
+      for (unsigned i = 0; i < names->length(); ++i) {
+          ui->lockedJointList->addItem(QString(names[i]));
       }
+
+      names = plugin->client()->problem()->getAvailable("numericalconstraint");
+      ui->numericalList->setSelectionMode(QAbstractItemView::ExtendedSelection);
+      for (unsigned i = 0; i < names->length(); ++i) {
+        ui->numericalList->addItem(QString(names[i]));
+      }
+
       connect(ui->cancelButton, SIGNAL(clicked()), SLOT(onCancelClicked()));
       connect(ui->confirmButton, SIGNAL(clicked()), SLOT(onConfirmClicked()));
       plugin_ = plugin;
@@ -48,20 +56,31 @@ namespace hpp {
 
     void NumericalConstraintPicker::onConfirmClicked()
     {
-      QList<QListWidgetItem *> list = ui->constraintList->selectedItems();
+      QList<QListWidgetItem *> lj = ui->lockedJointList->selectedItems();
+      QList<QListWidgetItem *> nc = ui->numericalList->selectedItems();
+
       hpp::Names_t_var names = new hpp::Names_t;
       hpp::intSeq_var priorities = new hpp::intSeq;
 
-      names->length(list.count());
-      priorities->length(list.count());
+      names->length(nc.count());
+      priorities->length(nc.count());
       int i = 0;
-      foreach(QListWidgetItem* item, list) {
+      foreach(QListWidgetItem* item, nc) {
         names[i] = gepetto::gui::Traits<QString>::to_corba(item->text());
         priorities[i] = 0;
         i++;
       }
-      plugin_->client()->problem()->setNumericalConstraints(gepetto::gui::Traits<QString>::to_corba(ui->numericalName->text()),
+      plugin_->client()->problem()->setNumericalConstraints(gepetto::gui::Traits<QString>::to_corba(ui->constraintName->text()),
                                                             names.in(), priorities.in());
+
+      names->length(lj.count());
+      i = 0;
+      foreach(QListWidgetItem* item, lj) {
+        names[i] = gepetto::gui::Traits<QString>::to_corba(item->text());
+        i++;
+      }
+      plugin_->client()->problem()->setLockedJointConstraints(gepetto::gui::Traits<QString>::to_corba(ui->constraintName->text()),
+                                                              names.in());
       onCancelClicked();
     }
   }

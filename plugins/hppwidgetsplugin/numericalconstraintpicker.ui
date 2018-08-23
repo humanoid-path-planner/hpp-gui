@@ -17,26 +17,40 @@
    <item>
     <layout class="QFormLayout" name="formLayout">
      <item row="0" column="0">
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="constraintLabel">
        <property name="text">
         <string>Name</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="numericalName"/>
+      <widget class="QLineEdit" name="constraintName">
+       <property name="text">
+        <string>constraint</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="lockedJointLabel">
      <property name="text">
-      <string>Select the constraint you want to add</string>
+      <string>Select the locked joint constraints:</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QListWidget" name="constraintList"/>
+    <widget class="QListWidget" name="lockedJointList"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="numericalLabel">
+     <property name="text">
+      <string>Select the numerical constraints:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QListWidget" name="numericalList"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">

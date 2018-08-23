@@ -52,13 +52,7 @@ namespace hpp {
     void ManipulationConstraintWidget::confirmNumerical()
     {
       HppManipulationWidgetsPlugin* plugin = dynamic_cast<HppManipulationWidgetsPlugin*>(plugin_);
-      QStringList l;
-
-      for (int i = 0; i < ui->nameList->count(); i++) {
-        QListWidgetItem* item = ui->nameList->item(i);
-        l << item->text();
-      }
-      ManipulationNCPicker* ncp = new ManipulationNCPicker(l, plugin);
+      ManipulationNCPicker* ncp = new ManipulationNCPicker(plugin);
 
       ncp->show();
     }
