@@ -63,9 +63,13 @@ namespace hpp {
       QList<QListWidgetItem *> selected = jointList_->selectedItems();
 
       foreach(QListWidgetItem* item, selected) {
-          const char* jointName = item->text().toStdString().c_str();
-          hpp::floatSeq_var config = plugin_->client()->robot()->getJointConfig(jointName);
-          plugin_->client()->problem()->lockJoint(jointName, config.in());
+          std::string jointName = item->text().toStdString();
+          std::string lockName = "lock_" + jointName;
+          hpp::floatSeq_var config = plugin_->client()->robot()->getJointConfig(jointName.c_str());
+          plugin_->client()->problem()->createLockedJoint(lockName.c_str(),
+                                                          jointName.c_str(),
+                                                          config.in());
+          emit constraintCreated(lockName.c_str());
       }
     }
   }
