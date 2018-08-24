@@ -11,6 +11,7 @@
 #include "hppwidgetsplugin/ui_jointtreewidget.h"
 
 #include <gepetto/gui/mainwindow.hh>
+#include <gepetto/gui/bodytreewidget.hh>
 #include <gepetto/gui/windows-manager.hh>
 #include <gepetto/gui/action-search-bar.hh>
 #if GEPETTO_GUI_HAS_PYTHONQT
@@ -49,6 +50,8 @@ namespace hpp {
           SLOT (customContextMenu(QPoint)));
       connect(ui_->jointTree, SIGNAL (expanded(QModelIndex)),
           SLOT (resize(QModelIndex)));
+      connect(ui_->jointTree->selectionModel(), SIGNAL (currentChanged(QModelIndex, QModelIndex)),
+          SLOT (currentJointChanged(QModelIndex,QModelIndex)));
     }
 
     JointTreeWidget::~JointTreeWidget()
@@ -256,6 +259,27 @@ namespace hpp {
     {
       Q_UNUSED (index);
       ui_->jointTree->resizeColumnToContents(0);
+    }
+
+    void JointTreeWidget::currentJointChanged(const QModelIndex& current, const QModelIndex& previous)
+    {
+      Q_UNUSED (previous);
+      if (current.isValid())
+      {
+        JointTreeItem* item = dynamic_cast <JointTreeItem*>
+          (model_->itemFromIndex(current));
+        if (item == NULL) return;
+
+        HppWidgetsPlugin::JointMap::const_iterator itj = plugin_->jointMap().find(item->name());
+        if (itj == plugin_->jointMap().constEnd()) return;
+        const HppWidgetsPlugin::JointElement& je = itj.value();
+
+        MainWindow* main = MainWindow::instance();
+        for (std::size_t i = 0; i < je.bodyNames.size(); ++i)
+        {
+          main->bodyTree()->selectBodyByName (je.bodyNames[i]);
+        }
+      }
     }
   } // namespace gui
 } // namespace hpp
