@@ -70,7 +70,7 @@ namespace hpp {
         priorities[i] = 0;
         i++;
       }
-      plugin_->client()->problem()->setNumericalConstraints(gepetto::gui::Traits<QString>::to_corba(ui->constraintName->text()),
+      plugin_->client()->problem()->addNumericalConstraints(gepetto::gui::Traits<QString>::to_corba(ui->constraintName->text()),
                                                             names.in(), priorities.in());
 
       names->length(lj.count());
@@ -79,7 +79,7 @@ namespace hpp {
         names[i] = gepetto::gui::Traits<QString>::to_corba(item->text());
         i++;
       }
-      plugin_->client()->problem()->setLockedJointConstraints(gepetto::gui::Traits<QString>::to_corba(ui->constraintName->text()),
+      plugin_->client()->problem()->addLockedJointConstraints(gepetto::gui::Traits<QString>::to_corba(ui->constraintName->text()),
                                                               names.in());
       onCancelClicked();
     }
