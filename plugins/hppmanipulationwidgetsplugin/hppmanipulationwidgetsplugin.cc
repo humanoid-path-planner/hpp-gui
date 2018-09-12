@@ -125,8 +125,9 @@ namespace hpp {
     {
       HppWidgetsPlugin::openConnection();
       hpp_ = new HppManipClient (0,0);
-      QByteArray iiop = getHppIIOPurl ().toLatin1();
-      hpp_->connect (iiop.constData ());
+      QByteArray iiop    = getHppIIOPurl ().toLatin1();
+      QByteArray context = getHppContext ().toLatin1();
+      hpp_->connect (iiop.constData (), context.constData ());
     }
 
     void HppManipulationWidgetsPlugin::closeConnection()
