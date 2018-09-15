@@ -123,6 +123,8 @@ signals:
 
         QString getHppIIOPurl () const;
 
+        QString getHppContext () const;
+
       public:
         /// Get the corbaserver client.
         HppClient* client () const;

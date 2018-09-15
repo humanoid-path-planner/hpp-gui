@@ -9,10 +9,9 @@
 
 namespace hpp {
   namespace gui {
-    ManipulationNCPicker::ManipulationNCPicker(QStringList const& names,
-                                               HppManipulationWidgetsPlugin* plugin,
+    ManipulationNCPicker::ManipulationNCPicker(HppManipulationWidgetsPlugin* plugin,
                                                QWidget* parent)
-        : NumericalConstraintPicker(names, plugin, parent)
+        : NumericalConstraintPicker(plugin, parent)
     {
       listComp_ = new QListWidget(this);
       hpp::GraphComp_var graphComp;
@@ -47,27 +46,27 @@ namespace hpp {
 
     void ManipulationNCPicker::onConfirmClicked()
     {
-      QList<QListWidgetItem*> selectedConst = ui->constraintList->selectedItems();
+      QList<QListWidgetItem*> lj = ui->lockedJointList->selectedItems();
+      QList<QListWidgetItem*> nc = ui->numericalList->selectedItems();
       hpp::Names_t_var constraints = new hpp::Names_t;
       hpp::Names_t_var locked = new hpp::Names_t;
       hpp::Names_t_var dofs = new hpp::Names_t;
       QList<QListWidgetItem*> selectedComp = listComp_->selectedItems();
       HppManipulationWidgetsPlugin* plugin = dynamic_cast<HppManipulationWidgetsPlugin*>(plugin_);
 
-      constraints->length(selectedConst.count());
-      locked->length(selectedConst.count());
-      int iC = -1;
-      int iL = -1;
-      foreach (QListWidgetItem* item, selectedConst) {
-        if (!item->text().startsWith("lock_")) {
-          constraints[++iC] = item->text().toStdString().c_str();
-        }
-        else {
-          locked[++iL] = item->text().toStdString().c_str();
-        }
+      constraints->length(nc.count());
+      locked->length(lj.count());
+      int i = 0;
+      foreach (QListWidgetItem* item, lj) {
+          locked[i] = item->text().toStdString().c_str();
+          ++i;
       }
-      locked->length(iL + 1);
-      constraints->length(iC + 1);
+      i = 0;
+      foreach (QListWidgetItem* item, nc) {
+          constraints[i] = item->text().toStdString().c_str();
+          ++i;
+      }
+
       foreach (QListWidgetItem* item, selectedComp) {
         if (constraints->length())
           plugin->manipClient()->graph()->setNumericalConstraints(components_[item->text().toStdString()].id,

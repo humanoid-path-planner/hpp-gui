@@ -65,6 +65,10 @@ signals:
         private slots:
           void resize (const QModelIndex index);
 
+          /// Connected to signal "currentChanged" of the selection model of the 
+          /// joint tree view.
+          void currentJointChanged (const QModelIndex& current, const QModelIndex& previous);
+
       private:
         void initSearchActions();
 

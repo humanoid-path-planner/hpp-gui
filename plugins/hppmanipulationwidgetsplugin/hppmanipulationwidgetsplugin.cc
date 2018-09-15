@@ -21,7 +21,7 @@
 #include "hppmanipulationwidgetsplugin/linkwidget.hh"
 #include "hppmanipulationwidgetsplugin/manipulationconstraintwidget.hh"
 #include "hppwidgetsplugin/twojointsconstraint.hh"
-#include "hppmanipulationwidgetsplugin/manipulationlockedjoint.hh"
+#include "hppwidgetsplugin/listjointconstraint.hh"
 
 using CORBA::ULong;
 
@@ -125,8 +125,9 @@ namespace hpp {
     {
       HppWidgetsPlugin::openConnection();
       hpp_ = new HppManipClient (0,0);
-      QByteArray iiop = getHppIIOPurl ().toLatin1();
-      hpp_->connect (iiop.constData ());
+      QByteArray iiop    = getHppIIOPurl ().toLatin1();
+      QByteArray context = getHppContext ().toLatin1();
+      hpp_->connect (iiop.constData (), context.constData ());
     }
 
     void HppManipulationWidgetsPlugin::closeConnection()
@@ -522,7 +523,7 @@ namespace hpp {
       constraintWidget_->addConstraint(new PositionConstraint(this));
       constraintWidget_->addConstraint(new OrientationConstraint(this));
       constraintWidget_->addConstraint(new TransformConstraint(this));
-      constraintWidget_->addConstraint(new ManipulationLockedJoint(this));
+      constraintWidget_->addConstraint(new LockedJointConstraint(this));
     }
 
 #if (QT_VERSION < QT_VERSION_CHECK(5,0,0))

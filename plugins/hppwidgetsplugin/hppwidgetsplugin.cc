@@ -150,6 +150,7 @@ namespace hpp {
       main->registerSlot("lengthBetweenRefresh", pathPlayer_);
       main->registerSlot("getCurrentPath", pathPlayer_);
       main->registerSlot("getHppIIOPurl", this);
+      main->registerSlot("getHppContext", this);
       main->registerSlot("getSelectedJoint", jointTreeWidget_);
       main->registerSignal(SIGNAL(appliedConfigAtParam(int,double)), pathPlayer_);
 
@@ -226,12 +227,20 @@ namespace hpp {
       return gepetto::gui::omniOrb::IIOPurl (host, port);
     }
 
+    QString HppWidgetsPlugin::getHppContext () const
+    {
+      QString context = gepetto::gui::MainWindow::instance ()->settings_->getSetting
+        ("hpp/context", QString ()).toString ();
+      return context;
+    }
+
     void HppWidgetsPlugin::openConnection ()
     {
       closeConnection ();
       hpp_ = new hpp::corbaServer::Client (0,0);
-      QByteArray iiop = getHppIIOPurl ().toLatin1();
-      hpp_->connect (iiop.constData ());
+      QByteArray iiop    = getHppIIOPurl ().toLatin1();
+      QByteArray context = getHppContext ().toLatin1();
+      hpp_->connect (iiop.constData (), context.constData ());
     }
 
     void HppWidgetsPlugin::closeConnection ()

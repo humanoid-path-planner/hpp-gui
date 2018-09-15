@@ -4,7 +4,6 @@
 #
 
 from PythonQt import QtGui, Qt, QtCore
-from hpp.corbaserver import Client
 from hpp import Transform
 from numpy import array
 

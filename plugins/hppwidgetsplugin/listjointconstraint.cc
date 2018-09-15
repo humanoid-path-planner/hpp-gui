@@ -61,25 +61,15 @@ namespace hpp {
     void LockedJointConstraint::operator ()(QString const&)
     {
       QList<QListWidgetItem *> selected = jointList_->selectedItems();
-      std::size_t len (0);
-      std::vector <std::string> lockedJointName;
       foreach(QListWidgetItem* item, selected) {
-        std::string jointName = item->text().toStdString();
-        lockedJointName.push_back (std::string ("locked_") + jointName);
-        hpp::floatSeq_var config =
-          plugin_->client ()->robot ()->getJointConfig (jointName.c_str ());
-        plugin_->client()->problem()->createLockedJoint
-          (lockedJointName.back ().c_str (), jointName.c_str (), config.in());
-        ++len;
+          std::string jointName = item->text().toStdString();
+          std::string lockName = "lock_" + jointName;
+          hpp::floatSeq_var config = plugin_->client()->robot()->getJointConfig(jointName.c_str());
+          plugin_->client()->problem()->createLockedJoint(lockName.c_str(),
+                                                          jointName.c_str(),
+                                                          config.in());
+          emit constraintCreated(lockName.c_str());
       }
-      char** nameList = hpp::Names_t::allocbuf((CORBA::ULong) len);
-      Names_t names ((CORBA::ULong) len, (CORBA::ULong) len, nameList);
-      for (std::size_t i=0; i < len; ++i) {
-        nameList[i] = const_cast <char*> (lockedJointName [i].c_str ());
-      }
-      plugin_->client()->problem()->setLockedJointConstraints
-        ("config-projector", names);
-      delete nameList;
     }
   }
 }

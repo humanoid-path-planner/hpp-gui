@@ -4,7 +4,6 @@
 #
 
 from PythonQt import QtGui, Qt
-from hpp.corbaserver import Client
 import sys
 sys.argv = ["none"]
 

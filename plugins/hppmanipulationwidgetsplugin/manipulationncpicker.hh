@@ -21,7 +21,7 @@ namespace hpp {
       virtual void onConfirmClicked();
 
     public:
-      ManipulationNCPicker(QStringList const& names, HppManipulationWidgetsPlugin* plugin,
+      ManipulationNCPicker(HppManipulationWidgetsPlugin* plugin,
                            QWidget* parent = 0);
       virtual ~ManipulationNCPicker();
 

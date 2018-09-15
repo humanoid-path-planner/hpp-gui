@@ -180,7 +180,8 @@ class Plugin(QtGui.QDockWidget):
         self.tabWidget.addTab (CollisionPairs(self), "Collision pairs")
 
     def resetConnection(self):
-        self.client = Client(url= str(self.hppPlugin.getHppIIOPurl()))
+        self.client = Client(url= str(self.hppPlugin.getHppIIOPurl()),
+                postContextId= str(self.hppPlugin.getHppContext()))
         self.resetRobot();
         self.gui = GuiClient()
 

@@ -77,12 +77,7 @@ namespace hpp {
 
     void ConstraintWidget::confirmNumerical()
     {
-      QStringList l;
-      for (int i = 0; i < ui->nameList->count(); i++) {
-        QListWidgetItem* item = ui->nameList->item(i);
-        l << item->text();
-      }
-      NumericalConstraintPicker* ncp = new NumericalConstraintPicker(l, plugin_);
+      NumericalConstraintPicker* ncp = new NumericalConstraintPicker(plugin_);
 
       ncp->show();
     }
