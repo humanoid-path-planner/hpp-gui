@@ -23,7 +23,7 @@ class _Clients(object):
         self.hppPlugin = mainWindow.getFromSlot("getHppIIOPurl")
         self.basic = BasicClient(url= str(self.hppPlugin.getHppIIOPurl()),
                 postContextId= str(self.hppPlugin.getHppContext()))
-        self.manipulation = ManipClient(url= str(self.hppPlugin.getHppIIOPurl()),)
+        self.manipulation = ManipClient(url= str(self.hppPlugin.getHppIIOPurl()),
                 postContextId= str(self.hppPlugin.getHppContext()))
         self.viewer = ViewerClient()
 
@@ -215,7 +215,7 @@ class _GraspMode(QWidget):
             self.parentInstance.plugin.client.basic.problem.lockJoint(j, self.parentInstance.plugin.client.basic.robot.getJointConfig(j))
         name = self.grippers[self.currentGripper] + " grasps " + self.handles[self.currentHandle]
         self.parentInstance.plugin.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
-        self.parentInstance.plugin.client.basic.problem.setNumericalConstraints("constraints", [name,], [0,])
+        self.parentInstance.plugin.client.basic.problem.addNumericalConstraints("constraints", [name,], [0,])
         res = self.parentInstance.plugin.client.basic.problem.applyConstraints(config)
         if res[0] == True:
             self.parentInstance.plugin.client.basic.robot.setCurrentConfig(res[1])
@@ -235,7 +235,7 @@ class _GraspMode(QWidget):
             self.parentInstance.plugin.client.basic.problem.lockJoint(name, self.parentInstance.plugin.client.basic.robot.getJointConfig())
         name = self.grippers[self.currentGripper] + " pregrasps " + self.handles[self.currentHandle]
         self.parentInstance.plugin.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
-        self.parentInstance.plugin.client.basic.problem.setNumericalConstraints("constraints", [name], [True])
+        self.parentInstance.plugin.client.basic.problem.addNumericalConstraints("constraints", [name], [True])
         res = self.parentInstance.plugin.client.basic.problem.applyConstraints(self.parentInstance.plugin.client.basic.robot.getCurrentConfig())
         if (res[0] == True):
             self.parentInstance.plugin.client.basic.robot.setCurrentConfig(res[1])
@@ -292,22 +292,22 @@ class _PlacementMode(QWidget):
                     break
 
     def endPlacement(self, position):
-        name = self.surfaceName[0:self.surfaceName.find("/")] + "/base_joint"
+        name = self.surfaceName[0:self.surfaceName.find("/")] + "/root_joint"
         names = self.parent().plugin.client.basic.robot.getAllJointNames()
-        for n in names:
-            if n.startswith(name + "_xyz"):
-                self.parent().plugin.client.basic.robot.setJointConfig(n, [position.x(), position.y(), position.z()])
-                break
-            elif n.startswith(name + "_xy"):
-                self.parent().plugin.client.basic.robot.setJointConfig(n, [position.x(), position.y()])
-                break
-            elif n.startswith(name):
-                self.parent().plugin.client.basic.robot.setJointPositionInParentFrame(n, [position.x(), position.y(), position.z(), 1, 0, 0, 0])
-                break
+        if name in names:
+            jointType = self.parent().plugin.client.basic.robot.getJointType()
+            if jointType == "JointModelFreeFlyer":
+                self.parent().plugin.client.basic.robot.setJointConfig(n, [position.x(), position.y(), position.z(), 0, 0, 0, 1])
+            elif jointType == "JointModelPlanar":
+                self.parent().plugin.client.basic.robot.setJointConfig(n, [position.x(), position.y(), 1, 0])
+            elif jointType == "anchor":
+                self.parent().plugin.client.basic.robot.setJointPositionInParentFrame(n, [position.x(), position.y(), position.z(), 0, 0, 0, 1])
+        self.parent().plugin.client.basic.problem.resetConstraints()
         self.parent().plugin.osg.disconnect("clicked(QString, QVector3D)", self.selected)
         self.parent().plugin.client.manipulation.problem.createPlacementConstraint("placement",
                                                                                    [self.surfaceName], [self.carryName])
-        self.parent().plugin.client.basic.problem.setNumericalConstraints("numerical", ["placement"], [True])
+
+        self.parent().plugin.client.basic.problem.addNumericalConstraints("numerical", ["placement"], [True])
         res = self.parent().plugin.client.basic.problem.applyConstraints(self.parent().plugin.client.basic.robot.getCurrentConfig())
         if res[0]:
             self.parent().plugin.client.basic.robot.setCurrentConfig(res[1])
