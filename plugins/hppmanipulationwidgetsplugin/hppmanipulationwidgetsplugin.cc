@@ -415,7 +415,10 @@ namespace hpp {
 
       HppManipulationWidgetsPlugin::NamesPair handles = convertMap(handlesMap);
       HppManipulationWidgetsPlugin::NamesPair shapes = convertMap(shapesMap);
-      hpp_->graph ()->createGraph("constraints");
+      try {
+        hpp_->graph ()->deleteGraph("constraints");
+      } catch (const hpp::Error&) {
+      }
       // TODO the return value is never deleted.
       std::cout << "graph.buildGenericGraph(robot, 'graph', ";
       print(grippers.in());       std::cout << ", ";
