@@ -88,6 +88,10 @@ class _RoadmapTab(QtGui.QWidget):
         self.nbEdge = QtGui.QLabel()
         box.addWidget(self.nbEdge, 1, 1)
 
+        box.addWidget(QtGui.QLabel("Number of connected components :"), 0, 2)
+        self.nbComponent = QtGui.QLabel()
+        box.addWidget(self.nbComponent, 0, 3)
+
         self.updateCB = QtGui.QCheckBox("Continuous update")
         box.addWidget(self.updateCB, 2, 2, 1, 2)
         self.updateCB.setTristate(False)
@@ -103,6 +107,7 @@ class _RoadmapTab(QtGui.QWidget):
         try:
             self.nbNode.setNum (self.plugin.client.problem.numberNodes())
             self.nbEdge.setNum (self.plugin.client.problem.numberEdges())
+            self.nbComponent.setNum(self.plugin.client.problem.numberConnectedComponents())
         except Exception as e:
             self.plugin.main.logError (str(e))
             self.updateCB.setChecked(False)
