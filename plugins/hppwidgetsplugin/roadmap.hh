@@ -62,7 +62,7 @@ namespace hpp {
         virtual void edgeColor (EdgeID edgeId, Color& color);
 
       protected:
-        std::size_t currentNodeId_, currentEdgeId_;
+        NodeID currentNodeId_, currentEdgeId_;
         gepetto::gui::ColorMap nodeColorMap_, edgeColorMap_;
 
       private:

@@ -31,7 +31,7 @@ namespace hpp {
 	transform_(NULL)
     {
       transform_ = transform;
-      QQuaternion q (transform_[6], transform_[3], transform_[4], transform_[5]);
+      QQuaternion q ((float)transform_[6], (float)transform_[3], (float)transform_[4], (float)transform_[5]);
       q.normalize();
       qDebug()<< q;
       rAxis_ = q.vector().normalized() * 2 * std::atan2(q.vector().length(), q.scalar());
@@ -72,7 +72,7 @@ namespace hpp {
       if (axisChanged) {
         QQuaternion quaternion;
         if (!rAxis_.isNull()) {
-          const double theta = rAxis_.length();
+          const float theta = rAxis_.length();
           quaternion = QQuaternion(std::cos(theta/2), std::sin(theta/2) * rAxis_ / theta);
         }
 
@@ -104,19 +104,19 @@ namespace hpp {
     
     void TransformWidget::xRotateChanged(double value)
     {
-      rAxis_.setX(value);
+      rAxis_.setX((float)value);
       changed(true);
     }
 
     void TransformWidget::yRotateChanged(double value)
     {
-      rAxis_.setY(value);
+      rAxis_.setY((float)value);
       changed(true);
     }
 
     void TransformWidget::zRotateChanged(double value)
     {
-      rAxis_.setZ(value);
+      rAxis_.setZ((float)value);
       changed(true);
     }
   }

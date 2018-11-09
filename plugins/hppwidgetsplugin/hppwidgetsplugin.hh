@@ -22,6 +22,9 @@ namespace hpp {
     class Roadmap;
     class ConstraintWidget;
 
+    inline CORBA::String_var to_corba(const QString& s)
+    { return (const char*)s.toLocal8Bit().data(); }
+
     /// Plugin that add a lot of features to work with hpp.
     class HppWidgetsPlugin : public QObject, public gepetto::gui::PluginInterface,
     public gepetto::gui::ModelInterface, public gepetto::gui::CorbaInterface

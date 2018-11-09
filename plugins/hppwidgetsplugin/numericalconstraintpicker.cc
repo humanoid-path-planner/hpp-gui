@@ -66,20 +66,20 @@ namespace hpp {
       priorities->length(nc.count());
       int i = 0;
       foreach(QListWidgetItem* item, nc) {
-        names[i] = gepetto::gui::Traits<QString>::to_corba(item->text());
+        names[i] = to_corba(item->text());
         priorities[i] = 0;
         i++;
       }
-      plugin_->client()->problem()->addNumericalConstraints(gepetto::gui::Traits<QString>::to_corba(ui->constraintName->text()),
+      plugin_->client()->problem()->addNumericalConstraints(to_corba(ui->constraintName->text()),
                                                             names.in(), priorities.in());
 
       names->length(lj.count());
       i = 0;
       foreach(QListWidgetItem* item, lj) {
-        names[i] = gepetto::gui::Traits<QString>::to_corba(item->text());
+        names[i] = to_corba(item->text());
         i++;
       }
-      plugin_->client()->problem()->addLockedJointConstraints(gepetto::gui::Traits<QString>::to_corba(ui->constraintName->text()),
+      plugin_->client()->problem()->addLockedJointConstraints(to_corba(ui->constraintName->text()),
                                                               names.in());
       onCancelClicked();
     }

@@ -51,7 +51,7 @@ namespace hpp {
     void ATwoJointConstraint::firstJointSelect(int index)
     {
         secondJoint_->clear();
-        for (std::size_t i = 0; i < joints_->length(); i++) {
+        for (CORBA::ULong i = 0; i < joints_->length(); i++) {
           if (int(i) != index) secondJoint_->addItem(joints_[i].in());
         }
     }
@@ -135,9 +135,9 @@ namespace hpp {
         boolSeq[2] = result.second[2];
 
         plugin_->client()->problem()->
-              createPositionConstraint(gepetto::gui::Traits<QString>::to_corba(name_),
-                                       gepetto::gui::Traits<QString>::to_corba(firstJointName_),
-                                       gepetto::gui::Traits<QString>::to_corba(secondJointName_),
+              createPositionConstraint(to_corba(name_),
+                                       to_corba(firstJointName_),
+                                       to_corba(secondJointName_),
                                        first.in(), second.in(), boolSeq.in());
         emit constraintCreated(name_);
         emit finished();
@@ -160,14 +160,14 @@ namespace hpp {
 
     void OrientationConstraint::getOrientationConstraint(std::pair<QVector<double>, QVector<bool> > result)
     {
-      QVector3D vec3d(result.first[0], result.first[1], result.first[2]);
+      QVector3D vec3d((float)result.first[0], (float)result.first[1], (float)result.first[2]);
       QQuaternion qtQuat;
       hpp::Quaternion__var quat = new hpp::Quaternion_;
       hpp::boolSeq_var boolSeq = new hpp::boolSeq;
 
       if (!vec3d.isNull()) {
           qtQuat = QQuaternion::fromAxisAndAngle(vec3d.normalized(), vec3d.length());
-          const double theta = vec3d.length();
+          const float theta = vec3d.length();
           qtQuat = QQuaternion(std::cos(theta/2), std::sin(theta/2) * vec3d / theta);
       }
 
@@ -181,9 +181,9 @@ namespace hpp {
       boolSeq[2] = result.second[2];
 
       plugin_->client()->problem()->
-            createOrientationConstraint(gepetto::gui::Traits<QString>::to_corba(name_),
-                                        gepetto::gui::Traits<QString>::to_corba(firstJoint_->currentText()),
-                                        gepetto::gui::Traits<QString>::to_corba(secondJoint_->currentText()),
+            createOrientationConstraint(to_corba(name_),
+                                        to_corba(firstJoint_->currentText()),
+                                        to_corba(secondJoint_->currentText()),
                                         quat.in(), boolSeq.in());
       emit constraintCreated(name_);
       emit finished();
@@ -227,14 +227,14 @@ namespace hpp {
 
     void TransformConstraint::getTransformConstraint(std::pair<QVector<double>, QVector<bool> > result)
     {
-      QVector3D vec3d(result.first[3], result.first[4], result.first[5]);
+      QVector3D vec3d((float)result.first[3], (float)result.first[4], (float)result.first[5]);
       QQuaternion qtQuat;
       hpp::Transform__var trans = new hpp::Transform_;
       hpp::boolSeq_var boolSeq = new hpp::boolSeq;
 
       if (!vec3d.isNull()) {
           qtQuat = QQuaternion::fromAxisAndAngle(vec3d.normalized(), vec3d.length());
-          const double theta = vec3d.length();
+          const float theta = vec3d.length();
           qtQuat = QQuaternion(std::cos(theta/2), std::sin(theta/2) * vec3d / theta);
       }
 
@@ -254,9 +254,9 @@ namespace hpp {
       boolSeq[5] = result.second[5];
 
       plugin_->client()->problem()->
-            createTransformationConstraint(gepetto::gui::Traits<QString>::to_corba(name_),
-                                        gepetto::gui::Traits<QString>::to_corba(firstJointName_),
-                                        gepetto::gui::Traits<QString>::to_corba(secondJointName_),
+            createTransformationConstraint(to_corba(name_),
+                                        to_corba(firstJointName_),
+                                        to_corba(secondJointName_),
                                         trans.in(), boolSeq.in());
       emit constraintCreated(name_);
       emit finished();

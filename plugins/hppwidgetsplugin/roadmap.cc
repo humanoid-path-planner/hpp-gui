@@ -12,8 +12,7 @@
 
 #include <gepetto/gui/mainwindow.hh>
 #include <gepetto/gui/windows-manager.hh>
-
-#include <gepetto/gui/meta.hh>
+#include <gepetto/viewer/corba/graphical-interface.hh>
 
 #include <hppwidgetsplugin/conversions.hh>
 

@@ -174,12 +174,12 @@ namespace hpp {
     void HppWidgetsPlugin::loadRobotModel(gepetto::gui::DialogLoadRobot::RobotDefinition rd)
     {
       client()->robot()->loadRobotModel(
-          gepetto::gui::Traits<QString>::to_corba(rd.robotName_    ).in(),
-          gepetto::gui::Traits<QString>::to_corba(rd.rootJointType_).in(),
-          gepetto::gui::Traits<QString>::to_corba(rd.package_      ).in(),
-          gepetto::gui::Traits<QString>::to_corba(rd.modelName_    ).in(),
-          gepetto::gui::Traits<QString>::to_corba(rd.urdfSuf_      ).in(),
-          gepetto::gui::Traits<QString>::to_corba(rd.srdfSuf_      ).in());
+          to_corba(rd.robotName_    ).in(),
+          to_corba(rd.rootJointType_).in(),
+          to_corba(rd.package_      ).in(),
+          to_corba(rd.modelName_    ).in(),
+          to_corba(rd.urdfSuf_      ).in(),
+          to_corba(rd.srdfSuf_      ).in());
       // This is already done in requestRefresh
       // jointTreeWidget_->reload();
       gepetto::gui::MainWindow::instance()->requestRefresh();
@@ -191,9 +191,9 @@ namespace hpp {
     {
       QString prefix = ed.envName_ + "/";
       client()->obstacle()->loadObstacleModel(
-          gepetto::gui::Traits<QString>::to_corba(ed.package_     ).in(),
-          gepetto::gui::Traits<QString>::to_corba(ed.urdfFilename_).in(),
-          gepetto::gui::Traits<QString>::to_corba(prefix          ).in());
+          to_corba(ed.package_     ).in(),
+          to_corba(ed.urdfFilename_).in(),
+          to_corba(prefix          ).in());
       computeObjectPosition ();
       gepetto::gui::MainWindow::instance()->requestRefresh();
       emit logSuccess ("Environment " + ed.name_ + " loaded");
