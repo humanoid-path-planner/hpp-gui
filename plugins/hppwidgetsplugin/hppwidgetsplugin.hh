@@ -88,6 +88,29 @@ namespace hpp {
         /// \todo this should be changed because there can be several body per
         /// joints now.
         std::string getBodyFromJoint (const std::string& jointName) const;
+
+        const hpp::floatSeq& currentConfig () const
+        {
+          return config_;
+        }
+
+        hpp::floatSeq& currentConfig ()
+        {
+          return config_;
+        }
+
+        const hpp::floatSeq& currentVelocity () const
+        {
+          return velocity_;
+        }
+
+        hpp::floatSeq& currentVelocity ()
+        {
+          return velocity_;
+        }
+
+        void fetchConfiguration ();
+
 signals:
         void configurationValidationStatus (bool valid);
         void configurationValidationStatus (QStringList collision);
@@ -196,13 +219,16 @@ signals:
         JointTreeWidget* jointTreeWidget_;
         ConstraintWidget* constraintWidget_;
         JointMap jointMap_;
-        std::list <std::string> jointFrames_;
+        hpp::Names_t jointFrames_;
         std::list <std::string> comFrames_;
+
+        hpp::floatSeq config_, velocity_;
 
         // Cache variables
         hpp::Names_t             linkNames_;
         std::vector<std::string> bodyNames_;
         std::vector<graphics::Configuration> bodyConfs_;
+        std::vector<std::string> jointGroupNames_;
     };
   } // namespace gui
 } // namespace hpp

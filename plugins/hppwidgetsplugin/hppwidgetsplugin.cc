@@ -205,6 +205,12 @@ namespace hpp {
       return itj->prefix + itj->bodyNames[0];
     }
 
+    void HppWidgetsPlugin::fetchConfiguration ()
+    {
+      hpp::floatSeq_var c = client()->robot ()->getCurrentConfig ();
+      config_ = c.in();
+    }
+
     bool HppWidgetsPlugin::corbaException(int jobId, const CORBA::Exception &excep) const
     {
       try {
@@ -258,6 +264,8 @@ namespace hpp {
     void HppWidgetsPlugin::prepareApplyConfiguration()
     {
       bodyNames_.clear();
+      config_  .length (client()->robot()->getConfigSize());
+      velocity_.length (client()->robot()->getNumberDof ());
       gepetto::gui::MainWindow * main = gepetto::gui::MainWindow::instance ();
       CORBA::ULong size = 0; const CORBA::ULong sall = 100;
       linkNames_.length(sall);
@@ -299,33 +307,40 @@ namespace hpp {
       }
       // Something smarter could be done here.
       // For instance, the joint tree item could know the NodePtr_t of their bodies.
-      hpp::TransformSeq_var Ts = client()->robot ()->getLinksPosition (linkNames_);
+      hpp::TransformSeq_var Ts = client()->robot ()->getLinksPosition (config_, linkNames_);
       fromHPP (Ts, bodyConfs_);
       main->osg()->applyConfigurations (bodyNames_, bodyConfs_);
 
-      hpp::floatSeq_var c = client()->robot ()->getCurrentConfig ();
       for (JointMap::iterator ite = jointMap_.begin ();
           ite != jointMap_.end (); ite++) {
         if (!ite->item) continue;
         if (ite->item->config().length() > 0) {
-          ite->item->updateFromRobotConfig (c.in());
+          ite->item->updateFromRobotConfig (config_);
         }
       }
-      OsgConfiguration_t T;
-      for (std::list<std::string>::const_iterator it = jointFrames_.begin ();
-          it != jointFrames_.end (); ++it) {
-        std::string n = escapeJointName(*it);
-        hpp::Transform__var t = client()->robot()->getJointPosition(it->c_str());
-        fromHPP(t, T);
-        main->osg()->applyConfiguration (n, T);
-      }
-      T.quat.set(0,0,0,1);
-      for (std::list<std::string>::const_iterator it = comFrames_.begin ();
-          it != comFrames_.end (); ++it) {
-        std::string n = "com_" + escapeJointName(*it);
-        hpp::floatSeq_var t = client()->robot()->getPartialCom(it->c_str());
-        fromHPP (t, T.position);
-        main->osg()->applyConfiguration (n, T);
+      hpp::floatSeq_var c = client()->robot ()->getCurrentConfig ();
+      // for (std::list<std::string>::const_iterator it = jointFrames_.begin ();
+          // it != jointFrames_.end (); ++it) {
+      Ts = client()->robot()->getJointsPosition(config_, jointFrames_);
+      fromHPP (Ts, bodyConfs_);
+      main->osg()->applyConfigurations (jointGroupNames_, bodyConfs_);
+
+      if (comFrames_.size() > 0) {
+        static bool firstTime = true;
+        if (firstTime) {
+          main->log ("COM frames is not thread safe. Use with care.");
+          firstTime = false;
+        }
+        OsgConfiguration_t T;
+        T.quat.set(0,0,0,1);
+        client()->robot()->setCurrentConfig (config_);
+        for (std::list<std::string>::const_iterator it = comFrames_.begin ();
+            it != comFrames_.end (); ++it) {
+          std::string n = "com_" + escapeJointName(*it);
+          hpp::floatSeq_var t = client()->robot()->getPartialCom(it->c_str());
+          fromHPP (t, T.position);
+          main->osg()->applyConfiguration (n, T);
+        }
       }
       main->osg()->refresh();
     }
@@ -568,7 +583,9 @@ namespace hpp {
         hpp::Transform__var t = client()->robot()->getJointPosition (jn.c_str());
         OsgConfiguration_t p;
         fromHPP(t, p);
-        jointFrames_.push_back(jn);
+        jointFrames_.length(jointFrames_.length()+1);
+        jointFrames_[jointFrames_.length() -1] = jn.c_str();
+        jointGroupNames_.push_back(target);
         main->osg()->applyConfiguration (target, p);
         main->osg()->refresh();
       }

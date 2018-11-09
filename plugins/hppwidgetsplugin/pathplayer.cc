@@ -268,11 +268,11 @@ namespace hpp {
     {
       hpp::floatSeq_var config =
         plugin_->client()->problem()->configAtParam ((CORBA::ULong)pathIndex()->value(),currentParam_);
-      plugin_->client()->robot()->setCurrentConfig (config.in());
+      plugin_->currentConfig() = config.in();
       if (velocity_) {
         config =
           plugin_->client()->problem()->derivativeAtParam ((CORBA::ULong)pathIndex()->value(),1,currentParam_);
-        plugin_->client()->robot()->setCurrentVelocity (config.in());
+        plugin_->currentVelocity() = config.in();
       }
       gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
       emit appliedConfigAtParam (getCurrentPath(), currentParam_);

@@ -22,67 +22,14 @@ class QPushButton;
 
 namespace hpp {
   namespace gui {
-    class IntegratorWheel : public QSlider
-    {
-      Q_OBJECT
-
-      public:
-        IntegratorWheel (Qt::Orientation o, HppWidgetsPlugin* plugin, QWidget *parent,
-            gepetto::gui::MainWindow *main, std::string jointName,
-            int nbDof, int index);
-
-      protected:
-        void timerEvent(QTimerEvent *);
-
-        protected slots:
-          void reset ();
-        void updateIntegrator (int value);
-
-      private:
-        int rate_; // in millisecond
-        int timerId_;
-        gepetto::gui::MainWindow* main_;
-        HppWidgetsPlugin* plugin_;
-
-        std::string jointName_;
-        const int bound_;
-        const double maxVelocity_;
-        double currentValue_;
-        hpp::floatSeq_var dq_;
-        int nbDof_, index_;
-    };
-
-    class SliderBoundedJoint : public QSlider
-    {
-      Q_OBJECT
-
-      public:
-        SliderBoundedJoint (Qt::Orientation orientation, HppWidgetsPlugin* plugin, QWidget* parent,
-            gepetto::gui::MainWindow *main, std::string jointName,
-            hpp::floatSeq* q, int index, double min, double max);
-
-        double getValue ();
-
-        private slots:
-          void updateConfig (int value);
-
-      private:
-        gepetto::gui::MainWindow* main_;
-        HppWidgetsPlugin* plugin_;
-        std::string jointName_;
-        hpp::floatSeq_var q_;
-        int index_;
-        double m_, M_;
-    };
-
     class JointTreeItem : public QStandardItem
     {
       public:
+        typedef CORBA::ULong ULong;
         typedef graphics::NodePtr_t NodePtr_t;
         typedef std::vector<NodePtr_t> NodesPtr_t;
 
         static const int IndexRole     ;
-        static const int NumberDofRole ;
         static const int LowerBoundRole;
         static const int UpperBoundRole;
         static const int TypeRole      ;
@@ -96,10 +43,11 @@ namespace hpp {
         };
 
         JointTreeItem (const char* name,
-            const std::size_t& idxQ,
+            const ULong& idxQ,
+            const ULong& idxV,
             const hpp::floatSeq& q,
             const hpp::floatSeq& b,
-            const unsigned int nbDof,
+            const ULong& nbDof,
             const NodesPtr_t& node);
 
         ~JointTreeItem ();
@@ -118,6 +66,14 @@ namespace hpp {
 
         hpp::floatSeq bounds () const;
 
+        ULong rankInConfig () const { return idxQ_; }
+
+        ULong rankInVelocity () const { return idxV_; }
+
+        ULong configSize () const { return nq_; }
+
+        ULong numberDof () const { return nv_; }
+
         void updateBounds (const hpp::floatSeq &b);
 
         void updateConfig (const hpp::floatSeq &c);
@@ -134,10 +90,60 @@ namespace hpp {
         typedef QList<QStandardItem*> StandardItemList;
 
         std::string name_;
-        std::size_t idxQ_;
+        ULong idxQ_, idxV_, nq_, nv_;
         NodesPtr_t nodes_;
         QVector<StandardItemList> value_;
         QList<QAction*> actions_;
+    };
+
+    class IntegratorWheel : public QSlider
+    {
+      Q_OBJECT
+
+      public:
+        IntegratorWheel (Qt::Orientation o, HppWidgetsPlugin* plugin, QWidget *parent,
+            gepetto::gui::MainWindow *main, JointTreeItem const* item, int index);
+
+      protected:
+        void timerEvent(QTimerEvent *);
+
+        protected slots:
+          void reset ();
+        void updateIntegrator (int value);
+
+      private:
+        int rate_; // in millisecond
+        int timerId_;
+        gepetto::gui::MainWindow* main_;
+        HppWidgetsPlugin* plugin_;
+        JointTreeItem const* item_;
+
+        const int bound_;
+        const double maxVelocity_;
+        hpp::floatSeq q_, dq_;
+        int index_;
+    };
+
+    class SliderBoundedJoint : public QSlider
+    {
+      Q_OBJECT
+
+      public:
+        SliderBoundedJoint (Qt::Orientation orientation, HppWidgetsPlugin* plugin, QWidget* parent,
+            gepetto::gui::MainWindow *main, JointTreeItem const* item, int index);
+
+        double getValue ();
+
+        private slots:
+          void updateConfig (int value);
+
+      private:
+        gepetto::gui::MainWindow* main_;
+        HppWidgetsPlugin* plugin_;
+        JointTreeItem const* item_;
+        double value_;
+        int index_;
+        double m_, M_;
     };
 
     class JointItemDelegate : public QItemDelegate
