@@ -13,7 +13,6 @@
 #include <QWidget>
 
 #include <omniORB4/CORBA.h>
-#include "gepetto/gui/meta.hh"
 
 #include <gepetto/viewer/node.h>
 #include <gepetto/gui/mainwindow.hh>

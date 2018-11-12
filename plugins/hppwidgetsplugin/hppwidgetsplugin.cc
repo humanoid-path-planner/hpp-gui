@@ -30,7 +30,6 @@
 #include "hppwidgetsplugin/joint-action.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
-#include <gepetto/gui/meta.hh>
 
 using CORBA::ULong;
 
