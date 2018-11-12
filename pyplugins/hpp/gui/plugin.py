@@ -88,12 +88,12 @@ class _RoadmapTab(QtGui.QWidget):
         self.nbEdge = QtGui.QLabel()
         box.addWidget(self.nbEdge, 1, 1)
 
-        box.addWidget(QtGui.QLabel("Number of connected components :"), 0, 2)
+        box.addWidget(QtGui.QLabel("Number of connected components :"), 2, 0)
         self.nbComponent = QtGui.QLabel()
-        box.addWidget(self.nbComponent, 0, 3)
+        box.addWidget(self.nbComponent, 2, 1)
 
         self.updateCB = QtGui.QCheckBox("Continuous update")
-        box.addWidget(self.updateCB, 2, 2, 1, 2)
+        box.addWidget(self.updateCB, 3, 2, 1, 2)
         self.updateCB.setTristate(False)
 
         self.timer = Qt.QTimer(self)
