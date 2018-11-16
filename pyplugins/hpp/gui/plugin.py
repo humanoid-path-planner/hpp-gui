@@ -11,6 +11,7 @@ from directpath import DirectPathBox
 from findGrasp import GraspFinder
 from inspector import InspectBodies
 from collision_pairs import CollisionPairs
+from .parameters import Parameters
 
 class _PathTab(QtGui.QWidget):
     def __init__ (self, parent):
@@ -183,6 +184,7 @@ class Plugin(QtGui.QDockWidget):
         self.tabWidget.addTab (_PathManagement(self), "Paths management")
         self.tabWidget.addTab (InspectBodies(self), "Inspector")
         self.tabWidget.addTab (CollisionPairs(self), "Collision pairs")
+        self.tabWidget.addTab (Parameters(self), "Parameters")
 
     def resetConnection(self):
         self.client = Client(url= str(self.hppPlugin.getHppIIOPurl()),

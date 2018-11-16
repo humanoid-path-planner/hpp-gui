@@ -20,6 +20,7 @@ FINDPYTHON(2.7 EXACT)
 INSTALL(
   FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/plugin.py
+  ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/parameters.py
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/directpath.py
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/graphutility.py
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/findGrasp.py
