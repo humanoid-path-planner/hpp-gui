@@ -132,6 +132,10 @@ signals:
         /// Apply the current configuration of the robot.
           void applyCurrentConfiguration ();
 
+        void setCurrentConfig (const hpp::floatSeq& q);
+
+        hpp::floatSeq const* getCurrentConfig () const;
+
         /// Build a list of bodies in collision.
         void configurationValidation ();
 

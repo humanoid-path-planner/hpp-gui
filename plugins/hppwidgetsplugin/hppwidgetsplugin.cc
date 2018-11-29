@@ -150,6 +150,8 @@ namespace hpp {
       main->registerSlot("getCurrentPath", pathPlayer_);
       main->registerSlot("getHppIIOPurl", this);
       main->registerSlot("getHppContext", this);
+      main->registerSlot("getCurrentConfig", this);
+      main->registerSlot("setCurrentConfig", this);
       main->registerSlot("getSelectedJoint", jointTreeWidget_);
       main->registerSignal(SIGNAL(appliedConfigAtParam(int,double)), pathPlayer_);
 
@@ -209,6 +211,16 @@ namespace hpp {
     {
       hpp::floatSeq_var c = client()->robot ()->getCurrentConfig ();
       config_ = c.in();
+    }
+
+    void HppWidgetsPlugin::setCurrentConfig (const hpp::floatSeq& q)
+    {
+      config_ = q;
+    }
+
+    hpp::floatSeq const* HppWidgetsPlugin::getCurrentConfig () const
+    {
+      return &config_;
     }
 
     bool HppWidgetsPlugin::corbaException(int jobId, const CORBA::Exception &excep) const
@@ -318,7 +330,6 @@ namespace hpp {
           ite->item->updateFromRobotConfig (config_);
         }
       }
-      hpp::floatSeq_var c = client()->robot ()->getCurrentConfig ();
       // for (std::list<std::string>::const_iterator it = jointFrames_.begin ();
           // it != jointFrames_.end (); ++it) {
       Ts = client()->robot()->getJointsPosition(config_, jointFrames_);
@@ -347,19 +358,17 @@ namespace hpp {
 
     void HppWidgetsPlugin::configurationValidation()
     {
-      hpp::floatSeq_var q = client()->robot()->getCurrentConfig ();
-      bool bb = false;
-      CORBA::Boolean_out b = bb;
+      bool valid = false;
       CORBA::String_var report;
       try {
-        client()->robot()->isConfigValid (q.in(), b, report);
+        client()->robot()->isConfigValid (config_, valid, report);
       } catch (const hpp::Error& e) {
         emit logFailure(QString (e.msg));
         return;
       }
       static QRegExp collision ("Collision between object (.*) and (.*)");
       QStringList col;
-      if (!bb) {
+      if (!valid) {
         if (collision.exactMatch(QString::fromLocal8Bit(report))) {
           CORBA::String_var robotName = client ()->robot()->getRobotName();
           size_t pos = strlen(robotName) + 1;
