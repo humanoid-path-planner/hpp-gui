@@ -81,7 +81,8 @@ namespace hpp {
     void HppManipulationWidgetsPlugin::loadRobotModel(gepetto::gui::DialogLoadRobot::RobotDefinition rd)
     {
       try {
-	client ()->robot ()->getCurrentConfig();
+        hpp::floatSeq_var q = client ()->robot ()->getCurrentConfig();
+        (void)q;
       } catch (hpp::Error const& e) {
 	client ()->robot ()->createRobot (to_corba("composite").in());
       }
@@ -101,7 +102,8 @@ namespace hpp {
     void HppManipulationWidgetsPlugin::loadEnvironmentModel(gepetto::gui::DialogLoadEnvironment::EnvironmentDefinition ed)
     {
       try {
-	client ()->robot ()->getCurrentConfig();
+        hpp::floatSeq_var q = client ()->robot ()->getCurrentConfig();
+        (void)q;
       } catch (hpp::Error const& e) {
 	client ()->robot ()->createRobot (to_corba("composite").in());
       }
