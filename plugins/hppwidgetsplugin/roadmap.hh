@@ -67,12 +67,11 @@ namespace hpp {
 
       private:
         void initRoadmap (); 
-        inline void getPosition(hpp::Transform__var& t) const;
+        inline void getPosition(const hpp::floatSeq& q, Frame& t) const;
 
         HppWidgetsPlugin* plugin_;
         std::string name_;
         bool link_;
-        hpp::floatSeq_var config_;
     };
   } // namespace gui
 } // namespace hpp

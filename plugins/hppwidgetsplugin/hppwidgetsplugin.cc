@@ -216,6 +216,7 @@ namespace hpp {
     void HppWidgetsPlugin::setCurrentConfig (const hpp::floatSeq& q)
     {
       config_ = q;
+      MainWindow::instance()->requestApplyCurrentConfiguration();
     }
 
     hpp::floatSeq const* HppWidgetsPlugin::getCurrentConfig () const
@@ -317,8 +318,6 @@ namespace hpp {
                             "interface) and you did not refresh this GUI. "
                             "Use the refresh button \"Tools\" menu.");
       }
-      // Something smarter could be done here.
-      // For instance, the joint tree item could know the NodePtr_t of their bodies.
       hpp::TransformSeq_var Ts = client()->robot ()->getLinksPosition (config_, linkNames_);
       fromHPP (Ts, bodyConfs_);
       main->osg()->applyConfigurations (bodyNames_, bodyConfs_);
@@ -330,8 +329,6 @@ namespace hpp {
           ite->item->updateFromRobotConfig (config_);
         }
       }
-      // for (std::list<std::string>::const_iterator it = jointFrames_.begin ();
-          // it != jointFrames_.end (); ++it) {
       Ts = client()->robot()->getJointsPosition(config_, jointFrames_);
       fromHPP (Ts, bodyConfs_);
       main->osg()->applyConfigurations (jointGroupNames_, bodyConfs_);
@@ -414,8 +411,7 @@ namespace hpp {
           if (type == "node") {
             try {
               hpp::floatSeq_var q = hpp_->problem()->node(n);
-              hpp_->robot()->setCurrentConfig(q.in());
-              gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
+              setCurrentConfig(q.in());
             } catch (const hpp::Error& e) {
               emit logFailure(QString::fromLocal8Bit(e.msg));
             }
@@ -429,8 +425,7 @@ namespace hpp {
             hpp::floatSeq_var times;
             hpp::floatSeqSeq_var waypoints = hpp_->problem()->getWaypoints((CORBA::UShort)pid, times.out());
             if (n < waypoints->length()) {
-              hpp_->robot()->setCurrentConfig(waypoints[n]);
-              MainWindow::instance()->requestApplyCurrentConfiguration();
+              setCurrentConfig(waypoints[n]);
             }
           }
         }

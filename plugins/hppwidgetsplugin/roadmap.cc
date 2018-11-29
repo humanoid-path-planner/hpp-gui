@@ -91,12 +91,10 @@ namespace hpp {
 
     void Roadmap::beforeDisplay ()
     {
-      config_ = plugin_->client()->robot()->getCurrentConfig();
     }
 
     void Roadmap::afterDisplay ()
     {
-      plugin_->client()->robot()->setCurrentConfig(config_.in());
     }
 
     std::size_t Roadmap::numberNodes ()
@@ -132,23 +130,19 @@ namespace hpp {
     {
       HppWidgetsPlugin::HppClient* hpp = plugin_->client();
       hpp::floatSeq_var n = hpp->problem()->node(nodeId);
-      hpp->robot()->setCurrentConfig(n.in());
-      hpp::Transform__var t; getPosition (t);
-      fromHPP(t, frame);
+      getPosition (n.in(), frame);
     }
 
     void Roadmap::edgePositions (EdgeID edgeId, Position& start, Position& end)
     {
       HppWidgetsPlugin::HppClient* hpp = plugin_->client();
       hpp::floatSeq_var n1, n2;
-      hpp::Transform__var t;
+      Frame t;
       hpp->problem()->edge(edgeId, n1.out(), n2.out());
-      hpp->robot()->setCurrentConfig(n1.in());
-      getPosition (t);
-      fromHPP(t, start);
-      hpp->robot()->setCurrentConfig(n2.in());
-      getPosition (t);
-      fromHPP(t, end);
+      getPosition (n1.in(), t);
+      start = t.position;
+      getPosition (n2.in(), t);
+      end   = t.position;
     }
 
     void Roadmap::nodeColor (NodeID nodeId, Color& color)
@@ -163,11 +157,18 @@ namespace hpp {
       edgeColorMap_.getColor (iCC, color);
     }
 
-    inline void Roadmap::getPosition (hpp::Transform__var& t) const
+    inline void Roadmap::getPosition (const hpp::floatSeq& q, Frame& t) const
     {
       HppWidgetsPlugin::HppClient* hpp = plugin_->client();
-      if (link_) t = hpp->robot()->getLinkPosition (name_.c_str());
-      else       t = hpp->robot()->getJointPosition(name_.c_str());
+      hpp::TransformSeq_var Ts;
+      // Temporary object to avoid dynamic allocation.
+      // Arguments are max, length, storage, take ownership.
+      char* tmps[1];
+      hpp::Names_t names (1, 1, tmps, false);
+      names[0] = name_.c_str();
+      if (link_) Ts = hpp->robot()->getLinksPosition (q, names);
+      else       Ts = hpp->robot()->getJointsPosition(q, names);
+      fromHPP(Ts[0], t);
     }
   } // namespace gui
 } // namespace hpp

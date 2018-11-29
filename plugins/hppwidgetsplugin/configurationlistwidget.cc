@@ -75,8 +75,8 @@ namespace hpp {
 
     void ConfigurationListWidget::onSaveClicked ()
     {
-      hpp::floatSeq_var c = plugin_->client()->robot()->getCurrentConfig ();
-      list()->addItem(makeItem(name()->text(), c.in()));
+      hpp::floatSeq const* c = plugin_->getCurrentConfig ();
+      list()->addItem(makeItem(name()->text(), *c));
       name()->setText(basename_ + QString::number(count_));
       count_++;
     }
@@ -85,8 +85,7 @@ namespace hpp {
     {
       if (current != 0) {
           const hpp::floatSeq& c = getConfig(current);
-          plugin_->client()->robot()->setCurrentConfig (c);
-          main_->requestApplyCurrentConfiguration();
+          plugin_->setCurrentConfig (c);
           if (previous_ &&
               previous_ != current->listWidget()) {
               previous_->clearSelection();
