@@ -109,8 +109,6 @@ namespace hpp {
           return velocity_;
         }
 
-        void fetchConfiguration ();
-
 signals:
         void configurationValidationStatus (bool valid);
         void configurationValidationStatus (QStringList collision);
@@ -135,6 +133,12 @@ signals:
         void setCurrentConfig (const hpp::floatSeq& q);
 
         hpp::floatSeq const* getCurrentConfig () const;
+
+        /// Set internal configuration from HPP current config.
+        void fetchConfiguration ();
+
+        /// Set HPP configuration to internal current configuration
+        void sendConfiguration ();
 
         /// Build a list of bodies in collision.
         void configurationValidation ();

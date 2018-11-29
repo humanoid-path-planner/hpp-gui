@@ -154,6 +154,12 @@ namespace hpp {
       main->registerSlot("setCurrentConfig", this);
       main->registerSlot("getSelectedJoint", jointTreeWidget_);
       main->registerSignal(SIGNAL(appliedConfigAtParam(int,double)), pathPlayer_);
+      QAction* action = main->findChild<QAction*>("actionFetch_configuration");
+      if (action != NULL) connect (action, SIGNAL(triggered()), SLOT(fetchConfiguration()));
+      else qDebug () << "Action actionFetch_configuration not found";
+      action = main->findChild<QAction*>("actionSend_configuration");
+      if (action != NULL) connect (action, SIGNAL(triggered()), SLOT(sendConfiguration()));
+      else qDebug () << "Action actionSend_configuration not found";
 
       ActionSearchBar* asb = main->actionSearchBar();
       JointAction* a;
@@ -210,7 +216,12 @@ namespace hpp {
     void HppWidgetsPlugin::fetchConfiguration ()
     {
       hpp::floatSeq_var c = client()->robot ()->getCurrentConfig ();
-      config_ = c.in();
+      setCurrentConfig (c.in());
+    }
+
+    void HppWidgetsPlugin::sendConfiguration ()
+    {
+      client()->robot ()->setCurrentConfig (config_);
     }
 
     void HppWidgetsPlugin::setCurrentConfig (const hpp::floatSeq& q)
