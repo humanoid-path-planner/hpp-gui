@@ -93,7 +93,7 @@ namespace hpp {
       char* tmps[1];
       hpp::Names_t names (1, 1, tmps, false);
       graphics::Configuration pos;
-      osgVector3 pos1, pos2;
+      ::osg::Vec3ArrayRefPtr posSeq = new ::osg::Vec3Array;
       for (unsigned int i = 0; i < waypoints->length(); ++i) {
         // Make name
         ss.clear(); ss.str(std::string()); ss << pn << "/node" << i;
@@ -102,18 +102,13 @@ namespace hpp {
         names[0] = jointName.c_str();
         hpp::TransformSeq_var Ts = hpp->robot()->getJointsPosition(waypoints[i], names);
         fromHPP(Ts[0], pos);
-        pos1 = pos2; pos2 = pos.position;
+        posSeq->push_back(pos.position);
         // Create the nodes
         if (wsm->nodeExists(xyzName)) wsm->deleteNode(xyzName, false);
         wsm->addXYZaxis(xyzName, colorN, 0.01f, 0.05f);
         wsm->applyConfiguration(xyzName, pos);
-        if  (i > 0) {
-          xyzName.replace(pn.length() + 1, 4, "edge");
-          qDebug () << xyzName.c_str();
-          if (wsm->nodeExists(xyzName)) wsm->deleteNode(xyzName, false);
-          wsm->addLine(xyzName, pos1, pos2, colorE);
-        }
       }
+      wsm->addCurve(pn + "/curve", posSeq, colorE);
       wsm->refresh();
     }
 
