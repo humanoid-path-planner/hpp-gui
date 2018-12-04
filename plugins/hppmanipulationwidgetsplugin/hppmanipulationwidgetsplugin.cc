@@ -67,7 +67,6 @@ namespace hpp {
       toolBar_->addAction (autoBuildGraph);
       connect(autoBuildGraph, SIGNAL(triggered()), SLOT(autoBuildGraph()));
 
-      connect(&main->worker(), SIGNAL(done(int)), SLOT(handleWorkerDone(int)));
       main->registerSlot("autoBuildGraph", this);
       main->registerSlot("drawRobotContacts", this);
       main->registerSlot("drawEnvironmentsContacts", this);
@@ -506,13 +505,6 @@ namespace hpp {
         tw_->setCornerWidget(button, Qt::BottomRightCorner);
       }
       graphBuilder_->show();
-    }
-
-    void HppManipulationWidgetsPlugin::handleWorkerDone(int id)
-    {
-      if (id == lastId_) {
-          gepetto::gui::MainWindow::instance()->logJobDone(id, "Graph is build");
-      }
     }
 
     void HppManipulationWidgetsPlugin::loadConstraintWidget()
