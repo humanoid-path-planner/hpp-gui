@@ -7,6 +7,7 @@ from PythonQt.QtGui import QDockWidget, QWidget, QLabel, QPushButton, QVBoxLayou
 from PythonQt.Qt import Qt as QNamespace, QAction, QKeySequence
 from hpp.corbaserver import Client as BasicClient
 from hpp.corbaserver.manipulation import Client as ManipClient, ConstraintGraph, Rule
+import omniORB
 from gepetto.corbaserver import Client as ViewerClient
 import re
 
@@ -213,6 +214,11 @@ class _GraspMode(QWidget):
         self.parentInstance.plugin.client.basic.problem.resetConstraints()
         for j in self.locked:
             self.parentInstance.plugin.client.basic.problem.lockJoint(j, self.parentInstance.plugin.client.basic.robot.getJointConfig(j))
+        try:
+            self.parentInstance.plugin.client.manipulation.problem.getSelected("constraintgraph")
+        except omniORB.CORBA.UserException:
+            self.parentInstance.plugin.client.manipulation.graph.createGraph("dummy")
+            self.parentInstance.plugin.client.manipulation.graph.createSubGraph("dummy")
         name = self.grippers[self.currentGripper] + " grasps " + self.handles[self.currentHandle]
         self.parentInstance.plugin.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
         self.parentInstance.plugin.client.basic.problem.addNumericalConstraints("constraints", [name,], [0,])
@@ -370,6 +376,7 @@ class Plugin(QDockWidget):
             super(Plugin, self).__init__("Dynamic Builder", flags)
         else:
             super(Plugin, self).__init__("Dynamic Builder")
+        self.setObjectName ("hpp.gui.dynamicbuild")
         self.osg = None
         self.mainWindow = mainWindow
         self.resetConnection()
