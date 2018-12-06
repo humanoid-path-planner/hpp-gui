@@ -241,8 +241,8 @@ namespace hpp {
         const hpp::Error& error = dynamic_cast <const hpp::Error&> (excep);
         emit logJobFailed(jobId, QString (error.msg));
         return true;
-      } catch (const std::exception& exp) {
-        qDebug () << exp.what();
+      } catch (const std::bad_cast&) {
+        // dynamic_cast failed.
       }
       return false;
     }
