@@ -134,7 +134,7 @@ namespace hpp {
       }
     }
 
-    JointTreeItem* JointTreeWidget::buildJointTreeItem(const char* name, std::size_t& rkConfig)
+    JointTreeItem* JointTreeWidget::buildJointTreeItem(const char* name, ULong& rkConfig, ULong& rkVel)
     {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
       HppWidgetsPlugin::JointElement& je = plugin_->jointMap() [name];
@@ -150,13 +150,14 @@ namespace hpp {
       if (nbDof > 0) {
         hpp::floatSeq_var c = plugin_->client()->robot ()->getJointConfig (name);
         hpp::floatSeq_var b = plugin_->client()->robot ()->getJointBounds (name);
-        j = new JointTreeItem (name, rkConfig, c.in(), b.in(), nbDof, nodes);
+        j = new JointTreeItem (name, rkConfig, rkVel, c.in(), b.in(), nbDof, nodes);
       } else {
-        j = new JointTreeItem (name, rkConfig, hpp::floatSeq(), hpp::floatSeq(), nbDof, nodes);
+        j = new JointTreeItem (name, rkConfig, rkVel, hpp::floatSeq(), hpp::floatSeq(), nbDof, nodes);
       }
       je.item = j;
       j->setupActions(plugin_);
       rkConfig += nbCfg;
+      rkVel    += nbDof;
       return j;
     }
 
@@ -224,11 +225,11 @@ namespace hpp {
         hpp::Names_t_var joints = plugin_->client()->robot()->getAllJointNames ();
         typedef std::map<std::string, JointTreeItem*> JointTreeItemMap_t;
         JointTreeItemMap_t items;
-        std::size_t rk = 0;
+        ULong rkCfg = 0, rkVel = 0;
         for (size_t i = 0; i < joints->length (); ++i) {
           const char* jname = joints[(ULong) i];
           std::string bjn (joints[0]);
-          items[jname] = buildJointTreeItem(jname, rk);
+          items[jname] = buildJointTreeItem(jname, rkCfg, rkVel);
         }
         for (JointTreeItemMap_t::const_iterator _jti = items.begin();
             _jti != items.end(); ++_jti) {

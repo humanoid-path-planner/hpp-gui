@@ -9,7 +9,6 @@
 #include <QDockWidget>
 
 #include <omniORB4/CORBA.h>
-#include "gepetto/gui/meta.hh"
 #include "gepetto/gui/mainwindow.hh"
 
 #include "hppwidgetsplugin/hppwidgetsplugin.hh"

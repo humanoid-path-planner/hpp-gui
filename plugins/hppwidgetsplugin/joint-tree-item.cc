@@ -26,23 +26,27 @@ using CORBA::ULong;
 
 namespace hpp {
   namespace gui {
+    using CORBA::ULong;
+
     const int JointTreeItem::IndexRole      = Qt::UserRole + 1;
     const int JointTreeItem::LowerBoundRole = Qt::UserRole + 2;
     const int JointTreeItem::UpperBoundRole = Qt::UserRole + 3;
-    const int JointTreeItem::NumberDofRole  = Qt::UserRole + 4;
     const int JointTreeItem::TypeRole       = Qt::UserRole + 10;
 
     JointTreeItem::JointTreeItem(const char* name,
-        const std::size_t& idxQ,
+        const ULong& idxQ,
+        const ULong& idxV,
         const hpp::floatSeq &q,
         const hpp::floatSeq &b,
-        const unsigned int nbDof, const NodesPtr_t& nodes)
-      : QStandardItem (QString (name)), name_ (name), idxQ_ (idxQ), nodes_ (nodes), value_ ()
+        const ULong& nbDof, const NodesPtr_t& nodes)
+      : QStandardItem (QString (name)), name_ (name)
+      , idxQ_ (idxQ), idxV_ (idxV)
+      , nq_ (q.length()), nv_ (nbDof)
+      , nodes_ (nodes), value_ ()
     {
       setData((int)-1, IndexRole);
-      setData(nbDof, NumberDofRole);
       setData(SkipType, TypeRole);
-      for (size_t i = 0; i < q.length(); ++i) {
+      for (size_t i = 0; i < nq_; ++i) {
         QStandardItem *joint = new QStandardItem;
         QStandardItem *upper = new QStandardItem;
         QStandardItem *lower = new QStandardItem;
@@ -72,7 +76,7 @@ namespace hpp {
         b[2*(ULong) i] = value_[(ULong) i][0]->data(LowerBoundRole).toFloat();
         b[2*(ULong) i+1] = value_[(ULong) i][0]->data(UpperBoundRole).toFloat();
       }
-      return new JointTreeItem (name_.c_str(), idxQ_, q, b, data (NumberDofRole).toInt(), nodes_);
+      return new JointTreeItem (name_.c_str(), idxQ_, idxV_, q, b, nv_, nodes_);
     }
 
     hpp::floatSeq JointTreeItem::config() const
@@ -128,9 +132,9 @@ namespace hpp {
       // planar and freeflyer joints
       int threshold = value_.size();
       // TODO SO3 joint fall in that case too whereas threshold should be 0 for them.
-      if (data(NumberDofRole).toInt() == 3 && value_.size() == 4 )
+      if (nv_ == 3 && nq_ == 4 )
         threshold = 2;
-      else if (data(NumberDofRole).toInt() == 6 && value_.size() == 7 )
+      else if (nv_ == 6 && nq_ == 7 )
         threshold = 3;
       for (int i = 0; i < value_.size(); ++i) {
         float lo = value_[i][1]->data (Qt::EditRole).toFloat();
@@ -205,33 +209,16 @@ namespace hpp {
       switch (type) {
         case JointTreeItem::SkipType:
           return 0;
-        case JointTreeItem::IntegratorType: {
-                                              assert (ji);
-                                              IntegratorWheel* wheel =
-                                                new IntegratorWheel (Qt::Horizontal, plugin_, parent, main_,
-                                                    ji->name(),
-                                                    ji->data(JointTreeItem::NumberDofRole).toInt(),
-                                                    std::min (
-                                                      index.data(JointTreeItem::IndexRole).toInt(),
-                                                      ji->data(JointTreeItem::NumberDofRole).toInt()-1));
-                                              return wheel;
-                                            }
-        case JointTreeItem::BoundedValueType: {
-                                                assert (ji);
-                                                hpp::floatSeq* q = new hpp::floatSeq;
-                                                hpp::floatSeq cfg = ji->config();
-                                                q->length(cfg.length());
-                                                *q = cfg;
-                                                const QModelIndex& lower = index.sibling(index.row(), 1);
-                                                const QModelIndex& upper = index.sibling(index.row(), 2);
-                                                float lo = lower.data(Qt::EditRole).toFloat(),
-                                                      up = upper.data(Qt::EditRole).toFloat();
-                                                SliderBoundedJoint* slider =
-                                                  new SliderBoundedJoint (Qt::Horizontal, plugin_, parent,
-                                                      main_, ji->name(), q, index.data(JointTreeItem::IndexRole).toInt(),
-                                                      lo, up);
-                                                return slider;
-                                              }
+        case JointTreeItem::IntegratorType:
+          assert (ji);
+          return new IntegratorWheel (Qt::Horizontal, plugin_, parent, main_,
+              ji, std::min ( (ULong)index.data(JointTreeItem::IndexRole).toInt(),
+                             ji->numberDof()-1)
+              );
+        case JointTreeItem::BoundedValueType:
+          assert (ji);
+          return new SliderBoundedJoint (Qt::Horizontal, plugin_, parent,
+              main_, ji, index.data(JointTreeItem::IndexRole).toInt());
         case JointTreeItem::UnboundedValueType:
         case JointTreeItem::BoundType: {
                                          QDoubleSpinBox* spinbox = new QDoubleSpinBox (parent);
@@ -323,17 +310,19 @@ namespace hpp {
     }
 
     IntegratorWheel::IntegratorWheel(Qt::Orientation o, HppWidgetsPlugin *plugin, QWidget *parent,
-        gepetto::gui::MainWindow *main, std::string jointName,
-        int nbDof, int index)
-      : QSlider (o, parent), rate_ (100), main_ (main), plugin_ (plugin), jointName_ (jointName),
-      bound_ (100), maxVelocity_ (0.1),
-      currentValue_ (0), dq_ (new hpp::floatSeq), nbDof_ (nbDof), index_ (index)
+        gepetto::gui::MainWindow *main, JointTreeItem const* item, int index)
+      : QSlider (o, parent), rate_ (100), main_ (main), plugin_ (plugin),
+      item_ (item), bound_ (100), maxVelocity_ (0.1),
+      index_ (index)
     {
       setMinimum(-bound_);
       setMaximum(bound_);
+      q_.length (item_->configSize());
+      dq_.length (item_->numberDof());
+      for (ULong i = 0; i < q_.length(); ++i)
+        q_ [ i] = plugin_->currentConfig()[item_->rankInConfig()+i];
+      for (ULong i = 0; i < dq_.length(); ++i) dq_[ i] = 0;
       setValue (0);
-      dq_->length (nbDof_);
-      for (size_t i = 0; i < dq_->length(); ++i) dq_[(ULong) i] = 0;
       connect(this, SIGNAL (sliderReleased()), this, SLOT (reset()));
       connect(this, SIGNAL (sliderMoved(int)), this, SLOT (updateIntegrator(int)));
       timerId_ = startTimer(rate_);
@@ -342,9 +331,11 @@ namespace hpp {
     void IntegratorWheel::timerEvent(QTimerEvent *)
     {
       killTimer(timerId_);
-      if (currentValue_ != 0) {
-        dq_[index_] = currentValue_;
-        plugin_->client()->robot ()->jointIntegrate (jointName_.c_str(), dq_.in());
+      if (dq_[index_] != 0) {
+        hpp::floatSeq_var q = plugin_->client()->robot ()->jointIntegrate (q_, item_->name().c_str(), dq_, true);
+        q_ = q.in();
+        for (ULong i = 0; i < q_.length(); ++i)
+          plugin_->currentConfig()[item_->rankInConfig()+i] = q_ [ i];
         main_->requestApplyCurrentConfiguration();
       }
       timerId_ = startTimer(rate_);
@@ -352,36 +343,40 @@ namespace hpp {
 
     void IntegratorWheel::reset()
     {
-      currentValue_ = 0;
+      dq_[index_] = 0;
       setValue(0);
     }
 
     void IntegratorWheel::updateIntegrator(int value)
     {
-      currentValue_ = maxVelocity_ * (double)value / (double)bound_;
+      dq_[index_] = maxVelocity_ * (double)value / (double)bound_;
     }
 
     SliderBoundedJoint::SliderBoundedJoint(Qt::Orientation orientation, HppWidgetsPlugin *plugin, QWidget *parent,
-        gepetto::gui::MainWindow *main, std::string jointName,
-        hpp::floatSeq *q, int index, double min, double max)
-      : QSlider (orientation, parent), main_ (main), plugin_ (plugin), jointName_ (jointName),
-      q_ (q), index_ (index), m_ (min), M_ (max)
+        gepetto::gui::MainWindow *main, JointTreeItem const* item, int index)
+      : QSlider (orientation, parent), main_ (main), plugin_ (plugin),
+      item_ (item), index_ (index)
     {
+      value_ = item_->config()[index];
+      hpp::floatSeq bounds = item_->bounds();
+      m_ = bounds[2*index  ];
+      M_ = bounds[2*index+1];
+
       setMinimum(0);
       setMaximum(100);
-      setValue ((int)(100*(q_[index_] - m_)/(M_ - m_)));
+      setValue ((int)(100*(value_ - m_)/(M_ - m_)));
       connect (this, SIGNAL (sliderMoved(int)), this, SLOT (updateConfig(int)));
     }
 
     double SliderBoundedJoint::getValue()
     {
-      return q_[index_];
+      return value_;
     }
 
     void SliderBoundedJoint::updateConfig(int value)
     {
-      q_[index_] = m_ + (double)(value - 0) * (M_ - m_) / (double)100;
-      plugin_->client()->robot()->setJointConfig (jointName_.c_str(), q_.in());
+      value_ = m_ + (double)(value - 0) * (M_ - m_) / (double)100;
+      plugin_->currentConfig()[item_->rankInConfig()+index_] = value_;
       main_->requestApplyCurrentConfiguration();
     }
   } // namespace gui

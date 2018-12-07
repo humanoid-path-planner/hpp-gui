@@ -22,6 +22,9 @@ namespace hpp {
     class Roadmap;
     class ConstraintWidget;
 
+    inline CORBA::String_var to_corba(const QString& s)
+    { return (const char*)s.toLocal8Bit().data(); }
+
     /// Plugin that add a lot of features to work with hpp.
     class HppWidgetsPlugin : public QObject, public gepetto::gui::PluginInterface,
     public gepetto::gui::ModelInterface, public gepetto::gui::CorbaInterface
@@ -85,6 +88,27 @@ namespace hpp {
         /// \todo this should be changed because there can be several body per
         /// joints now.
         std::string getBodyFromJoint (const std::string& jointName) const;
+
+        const hpp::floatSeq& currentConfig () const
+        {
+          return config_;
+        }
+
+        hpp::floatSeq& currentConfig ()
+        {
+          return config_;
+        }
+
+        const hpp::floatSeq& currentVelocity () const
+        {
+          return velocity_;
+        }
+
+        hpp::floatSeq& currentVelocity ()
+        {
+          return velocity_;
+        }
+
 signals:
         void configurationValidationStatus (bool valid);
         void configurationValidationStatus (QStringList collision);
@@ -105,6 +129,16 @@ signals:
         public slots:
         /// Apply the current configuration of the robot.
           void applyCurrentConfiguration ();
+
+        void setCurrentConfig (const hpp::floatSeq& q);
+
+        hpp::floatSeq const* getCurrentConfig () const;
+
+        /// Set internal configuration from HPP current config.
+        void fetchConfiguration ();
+
+        /// Set HPP configuration to internal current configuration
+        void sendConfiguration ();
 
         /// Build a list of bodies in collision.
         void configurationValidation ();
@@ -193,13 +227,16 @@ signals:
         JointTreeWidget* jointTreeWidget_;
         ConstraintWidget* constraintWidget_;
         JointMap jointMap_;
-        std::list <std::string> jointFrames_;
+        hpp::Names_t jointFrames_;
         std::list <std::string> comFrames_;
+
+        hpp::floatSeq config_, velocity_;
 
         // Cache variables
         hpp::Names_t             linkNames_;
         std::vector<std::string> bodyNames_;
         std::vector<graphics::Configuration> bodyConfs_;
+        std::vector<std::string> jointGroupNames_;
     };
   } // namespace gui
 } // namespace hpp

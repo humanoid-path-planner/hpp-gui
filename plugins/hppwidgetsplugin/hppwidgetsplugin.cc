@@ -30,7 +30,6 @@
 #include "hppwidgetsplugin/joint-action.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
-#include <gepetto/gui/meta.hh>
 
 using CORBA::ULong;
 
@@ -151,8 +150,16 @@ namespace hpp {
       main->registerSlot("getCurrentPath", pathPlayer_);
       main->registerSlot("getHppIIOPurl", this);
       main->registerSlot("getHppContext", this);
+      main->registerSlot("getCurrentConfig", this);
+      main->registerSlot("setCurrentConfig", this);
       main->registerSlot("getSelectedJoint", jointTreeWidget_);
       main->registerSignal(SIGNAL(appliedConfigAtParam(int,double)), pathPlayer_);
+      QAction* action = main->findChild<QAction*>("actionFetch_configuration");
+      if (action != NULL) connect (action, SIGNAL(triggered()), SLOT(fetchConfiguration()));
+      else qDebug () << "Action actionFetch_configuration not found";
+      action = main->findChild<QAction*>("actionSend_configuration");
+      if (action != NULL) connect (action, SIGNAL(triggered()), SLOT(sendConfiguration()));
+      else qDebug () << "Action actionSend_configuration not found";
 
       ActionSearchBar* asb = main->actionSearchBar();
       JointAction* a;
@@ -174,12 +181,12 @@ namespace hpp {
     void HppWidgetsPlugin::loadRobotModel(gepetto::gui::DialogLoadRobot::RobotDefinition rd)
     {
       client()->robot()->loadRobotModel(
-          gepetto::gui::Traits<QString>::to_corba(rd.robotName_    ).in(),
-          gepetto::gui::Traits<QString>::to_corba(rd.rootJointType_).in(),
-          gepetto::gui::Traits<QString>::to_corba(rd.package_      ).in(),
-          gepetto::gui::Traits<QString>::to_corba(rd.modelName_    ).in(),
-          gepetto::gui::Traits<QString>::to_corba(rd.urdfSuf_      ).in(),
-          gepetto::gui::Traits<QString>::to_corba(rd.srdfSuf_      ).in());
+          to_corba(rd.robotName_    ).in(),
+          to_corba(rd.rootJointType_).in(),
+          to_corba(rd.package_      ).in(),
+          to_corba(rd.modelName_    ).in(),
+          to_corba(rd.urdfSuf_      ).in(),
+          to_corba(rd.srdfSuf_      ).in());
       // This is already done in requestRefresh
       // jointTreeWidget_->reload();
       gepetto::gui::MainWindow::instance()->requestRefresh();
@@ -191,9 +198,9 @@ namespace hpp {
     {
       QString prefix = ed.envName_ + "/";
       client()->obstacle()->loadObstacleModel(
-          gepetto::gui::Traits<QString>::to_corba(ed.package_     ).in(),
-          gepetto::gui::Traits<QString>::to_corba(ed.urdfFilename_).in(),
-          gepetto::gui::Traits<QString>::to_corba(prefix          ).in());
+          to_corba(ed.package_     ).in(),
+          to_corba(ed.urdfFilename_).in(),
+          to_corba(prefix          ).in());
       computeObjectPosition ();
       gepetto::gui::MainWindow::instance()->requestRefresh();
       emit logSuccess ("Environment " + ed.name_ + " loaded");
@@ -206,14 +213,36 @@ namespace hpp {
       return itj->prefix + itj->bodyNames[0];
     }
 
+    void HppWidgetsPlugin::fetchConfiguration ()
+    {
+      hpp::floatSeq_var c = client()->robot ()->getCurrentConfig ();
+      setCurrentConfig (c.in());
+    }
+
+    void HppWidgetsPlugin::sendConfiguration ()
+    {
+      client()->robot ()->setCurrentConfig (config_);
+    }
+
+    void HppWidgetsPlugin::setCurrentConfig (const hpp::floatSeq& q)
+    {
+      config_ = q;
+      MainWindow::instance()->requestApplyCurrentConfiguration();
+    }
+
+    hpp::floatSeq const* HppWidgetsPlugin::getCurrentConfig () const
+    {
+      return &config_;
+    }
+
     bool HppWidgetsPlugin::corbaException(int jobId, const CORBA::Exception &excep) const
     {
       try {
         const hpp::Error& error = dynamic_cast <const hpp::Error&> (excep);
         emit logJobFailed(jobId, QString (error.msg));
         return true;
-      } catch (const std::exception& exp) {
-        qDebug () << exp.what();
+      } catch (const std::bad_cast&) {
+        // dynamic_cast failed.
       }
       return false;
     }
@@ -259,6 +288,8 @@ namespace hpp {
     void HppWidgetsPlugin::prepareApplyConfiguration()
     {
       bodyNames_.clear();
+      config_  .length (client()->robot()->getConfigSize());
+      velocity_.length (client()->robot()->getNumberDof ());
       gepetto::gui::MainWindow * main = gepetto::gui::MainWindow::instance ();
       CORBA::ULong size = 0; const CORBA::ULong sall = 100;
       linkNames_.length(sall);
@@ -298,54 +329,54 @@ namespace hpp {
                             "interface) and you did not refresh this GUI. "
                             "Use the refresh button \"Tools\" menu.");
       }
-      // Something smarter could be done here.
-      // For instance, the joint tree item could know the NodePtr_t of their bodies.
-      hpp::TransformSeq_var Ts = client()->robot ()->getLinksPosition (linkNames_);
+      hpp::TransformSeq_var Ts = client()->robot ()->getLinksPosition (config_, linkNames_);
       fromHPP (Ts, bodyConfs_);
       main->osg()->applyConfigurations (bodyNames_, bodyConfs_);
 
-      hpp::floatSeq_var c = client()->robot ()->getCurrentConfig ();
       for (JointMap::iterator ite = jointMap_.begin ();
           ite != jointMap_.end (); ite++) {
         if (!ite->item) continue;
         if (ite->item->config().length() > 0) {
-          ite->item->updateFromRobotConfig (c.in());
+          ite->item->updateFromRobotConfig (config_);
         }
       }
-      OsgConfiguration_t T;
-      for (std::list<std::string>::const_iterator it = jointFrames_.begin ();
-          it != jointFrames_.end (); ++it) {
-        std::string n = escapeJointName(*it);
-        hpp::Transform__var t = client()->robot()->getJointPosition(it->c_str());
-        fromHPP(t, T);
-        main->osg()->applyConfiguration (n, T);
-      }
-      T.quat.set(0,0,0,1);
-      for (std::list<std::string>::const_iterator it = comFrames_.begin ();
-          it != comFrames_.end (); ++it) {
-        std::string n = "com_" + escapeJointName(*it);
-        hpp::floatSeq_var t = client()->robot()->getPartialCom(it->c_str());
-        fromHPP (t, T.position);
-        main->osg()->applyConfiguration (n, T);
+      Ts = client()->robot()->getJointsPosition(config_, jointFrames_);
+      fromHPP (Ts, bodyConfs_);
+      main->osg()->applyConfigurations (jointGroupNames_, bodyConfs_);
+
+      if (comFrames_.size() > 0) {
+        static bool firstTime = true;
+        if (firstTime) {
+          main->log ("COM frames is not thread safe. Use with care.");
+          firstTime = false;
+        }
+        OsgConfiguration_t T;
+        T.quat.set(0,0,0,1);
+        client()->robot()->setCurrentConfig (config_);
+        for (std::list<std::string>::const_iterator it = comFrames_.begin ();
+            it != comFrames_.end (); ++it) {
+          std::string n = "com_" + escapeJointName(*it);
+          hpp::floatSeq_var t = client()->robot()->getPartialCom(it->c_str());
+          fromHPP (t, T.position);
+          main->osg()->applyConfiguration (n, T);
+        }
       }
       main->osg()->refresh();
     }
 
     void HppWidgetsPlugin::configurationValidation()
     {
-      hpp::floatSeq_var q = client()->robot()->getCurrentConfig ();
-      bool bb = false;
-      CORBA::Boolean_out b = bb;
+      bool valid = false;
       CORBA::String_var report;
       try {
-        client()->robot()->isConfigValid (q.in(), b, report);
+        client()->robot()->isConfigValid (config_, valid, report);
       } catch (const hpp::Error& e) {
         emit logFailure(QString (e.msg));
         return;
       }
       static QRegExp collision ("Collision between object (.*) and (.*)");
       QStringList col;
-      if (!bb) {
+      if (!valid) {
         if (collision.exactMatch(QString::fromLocal8Bit(report))) {
           CORBA::String_var robotName = client ()->robot()->getRobotName();
           size_t pos = strlen(robotName) + 1;
@@ -391,8 +422,7 @@ namespace hpp {
           if (type == "node") {
             try {
               hpp::floatSeq_var q = hpp_->problem()->node(n);
-              hpp_->robot()->setCurrentConfig(q.in());
-              gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
+              setCurrentConfig(q.in());
             } catch (const hpp::Error& e) {
               emit logFailure(QString::fromLocal8Bit(e.msg));
             }
@@ -406,8 +436,7 @@ namespace hpp {
             hpp::floatSeq_var times;
             hpp::floatSeqSeq_var waypoints = hpp_->problem()->getWaypoints((CORBA::UShort)pid, times.out());
             if (n < waypoints->length()) {
-              hpp_->robot()->setCurrentConfig(waypoints[n]);
-              MainWindow::instance()->requestApplyCurrentConfiguration();
+              setCurrentConfig(waypoints[n]);
             }
           }
         }
@@ -569,7 +598,9 @@ namespace hpp {
         hpp::Transform__var t = client()->robot()->getJointPosition (jn.c_str());
         OsgConfiguration_t p;
         fromHPP(t, p);
-        jointFrames_.push_back(jn);
+        jointFrames_.length(jointFrames_.length()+1);
+        jointFrames_[jointFrames_.length() -1] = jn.c_str();
+        jointGroupNames_.push_back(target);
         main->osg()->applyConfiguration (target, p);
         main->osg()->refresh();
       }

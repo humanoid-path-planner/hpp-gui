@@ -62,17 +62,16 @@ namespace hpp {
         virtual void edgeColor (EdgeID edgeId, Color& color);
 
       protected:
-        std::size_t currentNodeId_, currentEdgeId_;
+        NodeID currentNodeId_, currentEdgeId_;
         gepetto::gui::ColorMap nodeColorMap_, edgeColorMap_;
 
       private:
         void initRoadmap (); 
-        inline void getPosition(hpp::Transform__var& t) const;
+        inline void getPosition(const hpp::floatSeq& q, Frame& t) const;
 
         HppWidgetsPlugin* plugin_;
         std::string name_;
         bool link_;
-        hpp::floatSeq_var config_;
     };
   } // namespace gui
 } // namespace hpp

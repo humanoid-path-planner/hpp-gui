@@ -10,7 +10,6 @@
 #include <QListWidgetItem>
 
 #include <omniORB4/CORBA.h>
-#include "gepetto/gui/meta.hh"
 
 namespace Ui {
 class NumericalConstraintPicker;

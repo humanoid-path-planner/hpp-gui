@@ -99,7 +99,6 @@ namespace hpp {
         private slots:
           /// Construct all the corba vars and create the graph.
           void buildGraph();
-          void handleWorkerDone(int id);
 
       protected:
         virtual void loadConstraintWidget();
@@ -135,8 +134,6 @@ namespace hpp {
         QToolBar *toolBar_;
         QTabWidget *tw_;
         QDialog* graphBuilder_;
-
-        int lastId_;
     };
   } // namespace gui
 } // namespace hpp

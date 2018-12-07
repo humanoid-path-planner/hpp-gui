@@ -88,30 +88,27 @@ namespace hpp {
         wsm->createGroup (pn);
         wsm->addToGroup(pn, "hpp-gui");
       }
-      hpp::floatSeq_var curCfg = hpp->robot()->getCurrentConfig();
+      // Temporary object to avoid dynamic allocation.
+      // Arguments are max, length, storage, take ownership.
+      char* tmps[1];
+      hpp::Names_t names (1, 1, tmps, false);
       graphics::Configuration pos;
-      osgVector3 pos1, pos2;
+      ::osg::Vec3ArrayRefPtr posSeq = new ::osg::Vec3Array;
       for (unsigned int i = 0; i < waypoints->length(); ++i) {
         // Make name
         ss.clear(); ss.str(std::string()); ss << pn << "/node" << i;
         std::string xyzName = ss.str();
         // Get positions
-        hpp->robot()->setCurrentConfig(waypoints[i]);
-        hpp::Transform__var t = hpp->robot()->getJointPosition(jointName.c_str());
-        fromHPP(t, pos);
-        pos1 = pos2; pos2 = pos.position;
+        names[0] = jointName.c_str();
+        hpp::TransformSeq_var Ts = hpp->robot()->getJointsPosition(waypoints[i], names);
+        fromHPP(Ts[0], pos);
+        posSeq->push_back(pos.position);
         // Create the nodes
         if (wsm->nodeExists(xyzName)) wsm->deleteNode(xyzName, false);
         wsm->addXYZaxis(xyzName, colorN, 0.01f, 0.05f);
         wsm->applyConfiguration(xyzName, pos);
-        if  (i > 0) {
-          xyzName.replace(pn.length() + 1, 4, "edge");
-          qDebug () << xyzName.c_str();
-          if (wsm->nodeExists(xyzName)) wsm->deleteNode(xyzName, false);
-          wsm->addLine(xyzName, pos1, pos2, colorE);
-        }
       }
-      hpp->robot()->setCurrentConfig(curCfg.in());
+      wsm->addCurve(pn + "/curve", posSeq, colorE);
       wsm->refresh();
     }
 
@@ -142,25 +139,28 @@ namespace hpp {
       graphics::WindowsManager::Color_t colorE (1.f, 0.f, 0.f, 1.f);
       gepetto::gui::WindowsManagerPtr_t wsm = main->osg();
       HppWidgetsPlugin::HppClient* hpp = plugin_->client();
-      hpp::floatSeq_var curCfg = hpp->robot()->getCurrentConfig();
       CORBA::Double length = hpp->problem()->pathLength(pid);
       double dt = lengthBetweenRefresh();
       CORBA::ULong nbPos = (CORBA::ULong)(length / dt) + 1;
+      osgVector3 pos;
       ::osg::Vec3ArrayRefPtr posSeq = new ::osg::Vec3Array;
+      // Temporary object to avoid dynamic allocation.
+      // Arguments are max, length, storage, take ownership.
+      char* tmps[1];
+      hpp::Names_t names (1, 1, tmps, false);
       float statusStep = 100.f / (float) nbPos;
       emit displayPath_status(0);
       for (CORBA::ULong i = 0; i < nbPos; ++i) {
         double t = std::min (i * dt, length);
         hpp::floatSeq_var q = hpp->problem()->configAtParam(pid, t);
-        hpp->robot()->setCurrentConfig(q);
-        hpp::Transform__var transform = hpp->robot()->getJointPosition(jointName.c_str());
-        const hpp::Transform__slice* tt = transform.in();
-        posSeq->push_back(::osg::Vec3 ((float)tt[0],(float)tt[1],(float)tt[2]));
+        names[0] = jointName.c_str();
+        hpp::TransformSeq_var Ts = hpp->robot()->getJointsPosition(q.in(), names);
+        fromHPP(Ts[0], pos);
+        posSeq->push_back(pos);
         emit displayPath_status(qFloor ((float)i * statusStep));
       }
       if (wsm->nodeExists(pn)) wsm->deleteNode (pn, true);
       wsm->addCurve(pn, posSeq, colorE);
-      hpp->robot()->setCurrentConfig(curCfg.in());
       wsm->addToGroup(pn.c_str(), "hpp-gui");
       wsm->refresh();
       emit displayPath_status (100);
@@ -268,11 +268,11 @@ namespace hpp {
     {
       hpp::floatSeq_var config =
         plugin_->client()->problem()->configAtParam ((CORBA::ULong)pathIndex()->value(),currentParam_);
-      plugin_->client()->robot()->setCurrentConfig (config.in());
+      plugin_->currentConfig() = config.in();
       if (velocity_) {
         config =
           plugin_->client()->problem()->derivativeAtParam ((CORBA::ULong)pathIndex()->value(),1,currentParam_);
-        plugin_->client()->robot()->setCurrentVelocity (config.in());
+        plugin_->currentVelocity() = config.in();
       }
       gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
       emit appliedConfigAtParam (getCurrentPath(), currentParam_);

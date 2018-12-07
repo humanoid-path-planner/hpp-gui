@@ -67,7 +67,6 @@ namespace hpp {
       toolBar_->addAction (autoBuildGraph);
       connect(autoBuildGraph, SIGNAL(triggered()), SLOT(autoBuildGraph()));
 
-      connect(&main->worker(), SIGNAL(done(int)), SLOT(handleWorkerDone(int)));
       main->registerSlot("autoBuildGraph", this);
       main->registerSlot("drawRobotContacts", this);
       main->registerSlot("drawEnvironmentsContacts", this);
@@ -81,16 +80,17 @@ namespace hpp {
     void HppManipulationWidgetsPlugin::loadRobotModel(gepetto::gui::DialogLoadRobot::RobotDefinition rd)
     {
       try {
-	client ()->robot ()->getCurrentConfig();
+        hpp::floatSeq_var q = client ()->robot ()->getCurrentConfig();
+        (void)q;
       } catch (hpp::Error const& e) {
-	client ()->robot ()->createRobot (gepetto::gui::Traits<QString>::to_corba("composite").in());
+	client ()->robot ()->createRobot (to_corba("composite").in());
       }
-      hpp_->robot ()->insertRobotModel (gepetto::gui::Traits<QString>::to_corba(rd.robotName_).in(),
-					gepetto::gui::Traits<QString>::to_corba(rd.rootJointType_).in(),
-					gepetto::gui::Traits<QString>::to_corba(rd.package_).in(),
-					gepetto::gui::Traits<QString>::to_corba(rd.modelName_).in(),
-					gepetto::gui::Traits<QString>::to_corba(rd.urdfSuf_).in(),
-					gepetto::gui::Traits<QString>::to_corba(rd.srdfSuf_).in());
+      hpp_->robot ()->insertRobotModel (to_corba(rd.robotName_).in(),
+					to_corba(rd.rootJointType_).in(),
+					to_corba(rd.package_).in(),
+					to_corba(rd.modelName_).in(),
+					to_corba(rd.urdfSuf_).in(),
+					to_corba(rd.srdfSuf_).in());
       // This is already done in requestRefresh
       // jointTreeWidget_->reload();
       gepetto::gui::MainWindow::instance()->requestRefresh();
@@ -101,15 +101,16 @@ namespace hpp {
     void HppManipulationWidgetsPlugin::loadEnvironmentModel(gepetto::gui::DialogLoadEnvironment::EnvironmentDefinition ed)
     {
       try {
-	client ()->robot ()->getCurrentConfig();
+        hpp::floatSeq_var q = client ()->robot ()->getCurrentConfig();
+        (void)q;
       } catch (hpp::Error const& e) {
-	client ()->robot ()->createRobot (gepetto::gui::Traits<QString>::to_corba("composite").in());
+	client ()->robot ()->createRobot (to_corba("composite").in());
       }
-      hpp_->robot ()-> loadEnvironmentModel(gepetto::gui::Traits<QString>::to_corba(ed.package_).in(),
-					    gepetto::gui::Traits<QString>::to_corba(ed.urdfFilename_).in(),
-					    gepetto::gui::Traits<QString>::to_corba(ed.urdfSuf_).in(),
-					    gepetto::gui::Traits<QString>::to_corba(ed.srdfSuf_).in(),
-					    gepetto::gui::Traits<QString>::to_corba(ed.name_ + "/").in());
+      hpp_->robot ()-> loadEnvironmentModel(to_corba(ed.package_).in(),
+					    to_corba(ed.urdfFilename_).in(),
+					    to_corba(ed.urdfSuf_).in(),
+					    to_corba(ed.srdfSuf_).in(),
+					    to_corba(ed.name_ + "/").in());
       HppWidgetsPlugin::computeObjectPosition();
       gepetto::gui::MainWindow::instance()->requestRefresh();
       emit logSuccess ("Environment " + ed.name_ + " loaded");
@@ -504,13 +505,6 @@ namespace hpp {
         tw_->setCornerWidget(button, Qt::BottomRightCorner);
       }
       graphBuilder_->show();
-    }
-
-    void HppManipulationWidgetsPlugin::handleWorkerDone(int id)
-    {
-      if (id == lastId_) {
-          gepetto::gui::MainWindow::instance()->logJobDone(id, "Graph is build");
-      }
     }
 
     void HppManipulationWidgetsPlugin::loadConstraintWidget()
