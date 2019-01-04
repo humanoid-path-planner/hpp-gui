@@ -30,3 +30,6 @@ INSTALL(
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/__init__.py
   DESTINATION ${PYTHON_SITELIB}/hpp/gui
   )
+GEPETTO_GUI_PYPLUGIN(hpp/gui/plugin.py)
+GEPETTO_GUI_PYPLUGIN(hpp/gui/dynamicbuild.py)
+# GEPETTO_GUI_PYPLUGIN(hpp/gui/graphutility.py)
