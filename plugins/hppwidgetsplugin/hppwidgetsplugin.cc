@@ -235,6 +235,20 @@ namespace hpp {
       return &config_;
     }
 
+    void HppWidgetsPlugin::setCurrentQtConfig (const QVector<double>& q)
+    {
+      config_  .length (q.size());
+      for (ULong i = 0; i < config_.length(); ++i) config_[i] = q[i];
+      MainWindow::instance()->requestApplyCurrentConfiguration();
+    }
+
+    QVector<double> HppWidgetsPlugin::getCurrentQtConfig () const
+    {
+      QVector<double> c (config_.length());
+      for (ULong i = 0; i < config_.length(); ++i) c[i] = config_[i];
+      return c;
+    }
+
     bool HppWidgetsPlugin::corbaException(int jobId, const CORBA::Exception &excep) const
     {
       try {

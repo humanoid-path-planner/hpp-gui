@@ -17,14 +17,13 @@ class DirectPathBox(QtGui.QGroupBox):
 
     def shootRandom(self):
         q = self.plugin.client.robot.shootRandomConfig()
-        self.plugin.client.robot.setCurrentConfig(q)
-        self.plugin.main.requestApplyCurrentConfiguration()
+        self.plugin.hppPlugin.setCurrentQtConfig(q)
 
     def getFrom (self):
-        self.fromCfg = self.plugin.client.robot.getCurrentConfig()
+        self.fromCfg = self.plugin.hppPlugin.getCurrentQtConfig()
 
     def getTo (self):
-        self.toCfg = self.plugin.client.robot.getCurrentConfig()
+        self.toCfg = self.plugin.hppPlugin.getCurrentQtConfig()
 
     def makePath (self):
         n = self.plugin.client.robot.getConfigSize()

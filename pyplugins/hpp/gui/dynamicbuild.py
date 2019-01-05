@@ -204,7 +204,7 @@ class _GraspMode(QWidget):
 
     def graspCurrent(self):
         if (len(self.handles) > 0 and len(self.grippers) > 0):
-            self.grasp(self.parentInstance.plugin.client.basic.robot.getCurrentConfig())
+            self.grasp(self.parentInstance.plugin.hppPlugin.getCurrentQtConfig())
 
     def graspRandom(self):
         if (len(self.handles) > 0 and len(self.grippers) > 0):
@@ -224,12 +224,11 @@ class _GraspMode(QWidget):
         self.parentInstance.plugin.client.basic.problem.addNumericalConstraints("constraints", [name,], [0,])
         res = self.parentInstance.plugin.client.basic.problem.applyConstraints(config)
         if res[0] == True:
-            self.parentInstance.plugin.client.basic.robot.setCurrentConfig(res[1])
-            self.mainWindow.requestApplyCurrentConfiguration()
+            self.parentInstance.plugin.hppPlugin.setCurrentQtConfig(res[1])
 
     def pregraspCurrent(self):
         if (len(self.handles) > 0 and len(self.grippers) > 0):
-            self.pregrasp(self.parentInstance.plugin.client.basic.robot.getCurrentConfig())
+            self.pregrasp(self.parentInstance.plugin.hppPlugin.getCurrentQtConfig())
 
     def pregraspRandom(self):
         if (len(self.handles) > 0 and len(self.grippers) > 0):
@@ -242,10 +241,9 @@ class _GraspMode(QWidget):
         name = self.grippers[self.currentGripper] + " pregrasps " + self.handles[self.currentHandle]
         self.parentInstance.plugin.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
         self.parentInstance.plugin.client.basic.problem.addNumericalConstraints("constraints", [name], [True])
-        res = self.parentInstance.plugin.client.basic.problem.applyConstraints(self.parentInstance.plugin.client.basic.robot.getCurrentConfig())
+        res = self.parentInstance.plugin.client.basic.problem.applyConstraints(self.parentInstance.plugin.hppPlugin.getCurrentQtConfig())
         if (res[0] == True):
-            self.parentInstance.plugin.client.basic.robot.setCurrentConfig(res[1])
-            self.mainWindow.requestApplyCurrentConfiguration()
+            self.parentInstance.plugin.hppPlugin.setCurrentQtConfig(res[1])
 
     def lock(self):
         if (self.selected != ""):
@@ -314,10 +312,9 @@ class _PlacementMode(QWidget):
                                                                                    [self.surfaceName], [self.carryName])
 
         self.parent().plugin.client.basic.problem.addNumericalConstraints("numerical", ["placement"], [True])
-        res = self.parent().plugin.client.basic.problem.applyConstraints(self.parent().plugin.client.basic.robot.getCurrentConfig())
+        res = self.parent().plugin.client.basic.problem.applyConstraints(self.parent().plugin.hppPlugin.getCurrentQtConfig())
         if res[0]:
-            self.parent().plugin.client.basic.robot.setCurrentConfig(res[1])
-        self.parent().mainWindow.requestApplyCurrentConfiguration()
+            self.parent().plugin.hppPlugin.setCurrentQtConfig(res[1])
 
     def createWidget(self):
         box = QVBoxLayout(self)
@@ -379,6 +376,7 @@ class Plugin(QDockWidget):
         self.setObjectName ("hpp.gui.dynamicbuild")
         self.osg = None
         self.mainWindow = mainWindow
+        self.hppPlugin = mainWindow.getFromSlot("getHppIIOPurl")
         self.resetConnection()
         mainWindow.registerShortcut("Dynamic builder", "Toggle view", self.toggleViewAction())
         self.dynamicBuilder = _DynamicBuilder(mainWindow, self)
