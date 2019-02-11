@@ -96,7 +96,7 @@ namespace hpp {
         vecDouble[i + 1] = ui->secondYPosition->value();
         vecDouble[i + 2] = ui->secondZPosition->value();
       }
-      emit finished(std::make_pair<QVector<double>, QVector<bool> >(vecDouble, vecBool));
+      emit finished(std::make_pair (vecDouble, vecBool));
       this->deleteLater();
       this->close();
     }
