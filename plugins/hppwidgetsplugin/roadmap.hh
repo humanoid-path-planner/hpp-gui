@@ -17,9 +17,9 @@ namespace hpp {
       public:
         typedef unsigned int NodeID;
         typedef unsigned int EdgeID;
-        typedef graphics::Configuration Frame;
+        typedef gepetto::viewer::Configuration Frame;
         typedef osgVector3 Position;
-        typedef graphics::WindowsManager::Color_t Color;
+        typedef gepetto::viewer::WindowsManager::Color_t Color;
 
         float radius, axisSize;
 

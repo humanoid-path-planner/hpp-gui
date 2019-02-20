@@ -25,9 +25,11 @@
 
 namespace hpp {
   namespace gui {
+    typedef gepetto::viewer::Node Node;
+
     DEF_CLASS_SMART_PTR(BVHDisplay)
 
-    class BVHDisplay : public graphics::Node
+    class BVHDisplay : public Node
     {
       public:
         BVHDisplay (const std::string& filename, const std::string& name);

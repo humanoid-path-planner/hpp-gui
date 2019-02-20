@@ -27,6 +27,8 @@
 
 using CORBA::ULong;
 
+namespace gv = gepetto::viewer;
+
 namespace hpp {
   namespace gui {
     HppManipulationWidgetsPlugin::HppManipulationWidgetsPlugin() :
@@ -173,7 +175,7 @@ namespace hpp {
       osgVector4 color (0, 1, 0, 1);
       osgVector3 norm(0, 0, 0);
       CORBA::Long iPts = (j == 0) ? 0 : indexes[j - 1];
-      graphics::WindowsManager::Vec3ArrayPtr_t ps(new osg::Vec3Array);
+      gv::WindowsManager::Vec3ArrayPtr_t ps(new osg::Vec3Array);
       ps->resize (indexes[j] - iPts);
       if (ps->size() > 3) {
 	osgVector3 a((float)(points[iPts][0] - points[iPts + 1][0]),
@@ -241,8 +243,8 @@ namespace hpp {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var rcs = hpp_->problem()->getAvailable("handle");
       hpp::Transform__var t (new Transform_);
-      graphics::Configuration config;
-      const graphics::WindowsManager::Color_t color (0, 1, 0, 1);
+      gv::Configuration config;
+      const gv::WindowsManager::Color_t color (0, 1, 0, 1);
       for (CORBA::ULong i = 0; i < rcs->length(); ++i) {
         const std::string jn =
           hpp_->robot()->getHandlePositionInJoint (rcs[i],t.out());
@@ -262,8 +264,8 @@ namespace hpp {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var rcs = hpp_->problem()->getAvailable("gripper");
       hpp::Transform__var t (new Transform_);
-      graphics::Configuration config;
-      const graphics::WindowsManager::Color_t color (0, 1, 0, 1);
+      gv::Configuration config;
+      const gv::WindowsManager::Color_t color (0, 1, 0, 1);
       for (CORBA::ULong i = 0; i < rcs->length(); ++i) {
         const std::string jn =
           hpp_->robot()->getGripperPositionInJoint (rcs[i],t.out());

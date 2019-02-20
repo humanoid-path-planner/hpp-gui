@@ -20,12 +20,12 @@ namespace hpp {
   namespace gui {
     /// HppManipulationWidgetsPlugin add functionalities to interact with hpp-manipulation-corba
     class HppManipulationWidgetsPlugin : public HppWidgetsPlugin
-                                         // , public PluginInterface, public ModelInterface, public CorbaErrorInterface
+                                         // , public PluginInterface, public ModelInterface, public ConnectionInterface
     {
       Q_OBJECT
         Q_INTERFACES (gepetto::gui::PluginInterface
             gepetto::gui::ModelInterface
-            gepetto::gui::CorbaInterface)
+            gepetto::gui::ConnectionInterface)
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
     Q_PLUGIN_METADATA (IID "hpp-gui.hppmanipulationwidgetsplugin")
@@ -60,7 +60,7 @@ namespace hpp {
         /// \param jointName joint name
         std::string getBodyFromJoint (const std::string& jointName) const;
 
-        // CorbaInterface
+        // ConnectionInterface
       public:
         /// Open a connection to a corba manipulation server.
         virtual void openConnection ();

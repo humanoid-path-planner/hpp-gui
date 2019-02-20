@@ -36,8 +36,8 @@ using CORBA::ULong;
 namespace hpp {
   namespace gui {
     using gepetto::gui::MainWindow;
-    typedef graphics::WindowsManager::Color_t OsgColor_t;
-    typedef graphics::Configuration OsgConfiguration_t;
+    typedef gepetto::viewer::WindowsManager::Color_t OsgColor_t;
+    typedef gepetto::viewer::Configuration OsgConfiguration_t;
     typedef gepetto::gui::ActionSearchBar ActionSearchBar;
 
     HppWidgetsPlugin::JointElement::JointElement (
@@ -247,18 +247,6 @@ namespace hpp {
       QVector<double> c (config_.length());
       for (ULong i = 0; i < config_.length(); ++i) c[i] = config_[i];
       return c;
-    }
-
-    bool HppWidgetsPlugin::corbaException(int jobId, const CORBA::Exception &excep) const
-    {
-      try {
-        const hpp::Error& error = dynamic_cast <const hpp::Error&> (excep);
-        emit logJobFailed(jobId, QString (error.msg));
-        return true;
-      } catch (const std::bad_cast&) {
-        // dynamic_cast failed.
-      }
-      return false;
     }
 
     QString HppWidgetsPlugin::getHppIIOPurl () const
@@ -603,7 +591,7 @@ namespace hpp {
     {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       std::string target = escapeJointName(jn);
-      graphics::GroupNodePtr_t group = main->osg()->getGroup (target.c_str(), false);
+      gepetto::viewer::GroupNodePtr_t group = main->osg()->getGroup (target.c_str(), false);
       if (group) return target;
       if (!main->osg()->getGroup(target)) {
         main->osg()->createGroup(target);
@@ -625,7 +613,7 @@ namespace hpp {
     {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       std::string target = "com_" + escapeJointName(com);
-      graphics::GroupNodePtr_t group = main->osg()->getGroup (target.c_str(), false);
+      gepetto::viewer::GroupNodePtr_t group = main->osg()->getGroup (target.c_str(), false);
       if (group) return target;
       if (!main->osg()->getGroup(target)) {
         main->osg()->createGroup(target);

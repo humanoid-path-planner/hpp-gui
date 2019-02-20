@@ -94,7 +94,7 @@ namespace hpp {
       // Arguments are max, length, storage, take ownership.
       char* tmps[1];
       hpp::Names_t names (1, 1, tmps, false);
-      graphics::Configuration pos;
+      gepetto::viewer::Configuration pos;
       ::osg::Vec3ArrayRefPtr posSeq = new ::osg::Vec3Array;
       for (unsigned int i = 0; i < waypoints->length(); ++i) {
         // Make name
@@ -138,7 +138,7 @@ namespace hpp {
       CORBA::ULong pid = (CORBA::ULong) pathIndex()->value();
       std::stringstream ss; ss << "curvedpath_" << pid << "_" << jointName;
       std::string pn = ss.str();
-      graphics::WindowsManager::Color_t colorE (1.f, 0.f, 0.f, 1.f);
+      gepetto::viewer::WindowsManager::Color_t colorE (1.f, 0.f, 0.f, 1.f);
       gepetto::gui::WindowsManagerPtr_t wsm = main->osg();
       HppWidgetsPlugin::HppClient* hpp = plugin_->client();
       CORBA::Double length = hpp->problem()->pathLength(pid);

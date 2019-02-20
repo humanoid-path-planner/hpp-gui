@@ -23,10 +23,10 @@
 namespace hpp {
   namespace gui {
     BVHDisplay::BVHDisplay (const std::string& filename, const std::string& name)
-      : graphics::Node (name)
+      : Node (name)
       , filename_ (filename)
     {
-      setWireFrameMode (graphics::WIREFRAME);
+      setWireFrameMode (gepetto::viewer::WIREFRAME);
     }
 
     void BVHDisplay::setColor (const osgVector4&)
@@ -57,7 +57,7 @@ namespace hpp {
       level_ = 0;
       this->asQueue()->addChild(levels_[0].geode);
 
-      using graphics::UIntProperty;
+      using gepetto::viewer::UIntProperty;
       addProperty (UIntProperty::create ("Level",
             UIntProperty::getterFromMemberFunction (this, &BVHDisplay::getLevel),
             UIntProperty::setterFromMemberFunction (this, &BVHDisplay::setLevel))

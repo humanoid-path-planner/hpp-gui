@@ -47,7 +47,7 @@ namespace hpp {
           this, SLOT (updateJointAttitude (double, double, double, double)));
 
       gepetto::gui::MainWindow* m = gepetto::gui::MainWindow::instance();
-      graphics::WindowsManager::Color_t black(1,1,1,1);
+      gepetto::viewer::WindowsManager::Color_t black(1,1,1,1);
       m->osg()->addBox("hpp-gui/attitudeControl", 0.001f, 0.001f, 0.001f, black);
       m->osg()->addLandmark("hpp-gui/attitudeControl", 0.1f);
       m->osg()->setVisibility("hpp-gui/attitudeControl", "OFF");

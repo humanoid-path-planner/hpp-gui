@@ -34,6 +34,9 @@ namespace hpp {
 
     void HppFclPlugin::init()
     {
+      MainWindow* main = MainWindow::instance ();
+      main->registerSlot("addBV", this);
+
       // TODO add a way to add an action to body tree items.
       QToolBar* toolBar = MainWindow::instance()->addToolBar("hpp-fcl tools");
       toolBar->setObjectName ("hppfclplugin.toolbar");
@@ -42,13 +45,9 @@ namespace hpp {
       connect (openD, SIGNAL(triggered()), SLOT (openDialog()));
     }
 
-    void HppFclPlugin::openDialog() const
+    void HppFclPlugin::addBV (QString name, QString filename, int splitMethod) const
     {
-      QString filename = QFileDialog::getOpenFileName (NULL, "Select a mesh file");
-      QString name = QInputDialog::getText(NULL, "Node name", "Node name", QLineEdit::Normal, "bvhmodel");
       std::string _name (name.toStdString());
-      int splitMethod = QInputDialog::getInt(NULL, "Split method type",
-          "Split method type", 0, 0, 3, 1);
 
       BVHDisplayPtr_t node (new BVHDisplay (filename.toStdString(), _name));
       switch (splitMethod) {
@@ -65,7 +64,15 @@ namespace hpp {
       }
       MainWindow* main = MainWindow::instance ();
       main->osg()->insertNode (_name, node);
-      main->osg()->addToGroup (_name, "hpp-gui");
+    }
+
+    void HppFclPlugin::openDialog() const
+    {
+      QString filename = QFileDialog::getOpenFileName (NULL, "Select a mesh file");
+      QString name = QInputDialog::getText(NULL, "Node name", "Node name", QLineEdit::Normal, "bvhmodel");
+      int splitMethod = QInputDialog::getInt(NULL, "Split method type",
+          "Split method type", 0, 0, 3, 1);
+      addBV (filename, name, splitMethod);
     }
 
 #if (QT_VERSION < QT_VERSION_CHECK(5,0,0))

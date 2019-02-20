@@ -12,14 +12,14 @@ namespace hpp {
   namespace gui {
     inline void fromHPP(const hpp::floatSeq_var& in, osgVector3& v)
     {
-      typedef graphics::WindowsManager::value_type type;
+      typedef gepetto::viewer::WindowsManager::value_type type;
       const hpp::floatSeq& t (in.in());
       v.set((type)t[0], (type)t[1], (type)t[2]);
     }
 
     inline void fromHPP(const hpp::Transform__slice* t, osgVector3& v)
     {
-      typedef graphics::WindowsManager::value_type type;
+      typedef gepetto::viewer::WindowsManager::value_type type;
       v.set((type)t[0], (type)t[1], (type)t[2]);
     }
 
@@ -30,7 +30,7 @@ namespace hpp {
 
     inline void fromHPP(const hpp::Transform__slice* t, osgQuat& q)
     {
-      typedef graphics::WindowsManager::value_type type;
+      typedef gepetto::viewer::WindowsManager::value_type type;
       q.set((type)t[3], (type)t[4], (type)t[5], (type)t[6]);
     }
 
@@ -39,18 +39,18 @@ namespace hpp {
       fromHPP (in.in(), q);
     }
 
-    inline void fromHPP(const hpp::Transform__slice* in, graphics::Configuration& c)
+    inline void fromHPP(const hpp::Transform__slice* in, gepetto::viewer::Configuration& c)
     {
       fromHPP(in, c.position);
       fromHPP(in, c.quat);
     }
 
-    inline void fromHPP(const hpp::Transform__var& in, graphics::Configuration& c)
+    inline void fromHPP(const hpp::Transform__var& in, gepetto::viewer::Configuration& c)
     {
       fromHPP(in.in(), c);
     }
 
-    inline void fromHPP(const hpp::TransformSeq& in, std::vector<graphics::Configuration>& c)
+    inline void fromHPP(const hpp::TransformSeq& in, std::vector<gepetto::viewer::Configuration>& c)
     {
       c.resize (in.length());
       for (std::size_t i = 0; i < in.length(); ++i)

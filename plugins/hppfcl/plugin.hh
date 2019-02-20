@@ -34,6 +34,9 @@ namespace hpp {
       public:
         QString name () const { return QString("HppFclPlugin"); }
 
+      public slots:
+        void addBV (QString name, QString filename, int splitMethod) const;
+
       protected:
         void init();
 

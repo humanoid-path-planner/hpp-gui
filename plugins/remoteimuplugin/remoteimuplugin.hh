@@ -79,7 +79,7 @@ namespace hpp {
         hpp::Quaternion_ q;
         hpp::boolSeq_var mask;
 
-        graphics::Configuration frameViz;
+        gepetto::viewer::Configuration frameViz;
 
         QFuture <void> lock_;
     };
