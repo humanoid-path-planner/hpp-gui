@@ -377,7 +377,7 @@ class Plugin(QDockWidget):
         self.osg = None
         self.mainWindow = mainWindow
         self.hppPlugin = mainWindow.getFromSlot("getHppIIOPurl")
-        self.resetConnection()
+        #self.resetConnection()
         mainWindow.registerShortcut("Dynamic builder", "Toggle view", self.toggleViewAction())
         self.dynamicBuilder = _DynamicBuilder(mainWindow, self)
         self.setWidget(self.dynamicBuilder)

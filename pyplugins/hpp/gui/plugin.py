@@ -171,7 +171,7 @@ class Plugin(QtGui.QDockWidget):
         self.setObjectName ("hpp.gui.plugin")
         self.main = mainWindow
         self.hppPlugin = self.main.getFromSlot("getHppIIOPurl")
-        self.resetConnection()
+        #self.resetConnection()
         self.widgetToRefresh = list()
         self.osg = None
         # Initialize the widget
