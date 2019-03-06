@@ -23,9 +23,9 @@ class _Clients(object):
     def __init__(self, mainWindow):
         self.hppPlugin = mainWindow.getFromSlot("getHppIIOPurl")
         self.basic = BasicClient(url= str(self.hppPlugin.getHppIIOPurl()),
-                postContextId= str(self.hppPlugin.getHppContext()))
+                context= str(self.hppPlugin.getHppContext()))
         self.manipulation = ManipClient(url= str(self.hppPlugin.getHppIIOPurl()),
-                postContextId= str(self.hppPlugin.getHppContext()))
+                context= str(self.hppPlugin.getHppContext()))
         self.viewer = ViewerClient()
 
 class _GraspMode(QWidget):

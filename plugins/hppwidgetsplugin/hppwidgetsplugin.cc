@@ -261,7 +261,7 @@ namespace hpp {
     QString HppWidgetsPlugin::getHppContext () const
     {
       QString context = gepetto::gui::MainWindow::instance ()->settings_->getSetting
-        ("hpp/context", QString ()).toString ();
+        ("hpp/context", QString ("corbaserver")).toString ();
       return context;
     }
 

@@ -188,7 +188,7 @@ class Plugin(QtGui.QDockWidget):
 
     def resetConnection(self):
         self.client = Client(url= str(self.hppPlugin.getHppIIOPurl()),
-                postContextId= str(self.hppPlugin.getHppContext()))
+                context = str(self.hppPlugin.getHppContext()))
         self.resetRobot();
         self.gui = GuiClient()
 
