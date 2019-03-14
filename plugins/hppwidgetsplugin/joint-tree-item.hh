@@ -10,7 +10,7 @@
 #include <QSlider>
 #include <QStandardItem>
 
-#include <hpp/corbaserver/robot.hh>
+//#include <hpp/corbaserver/robot.hh>
 #include <gepetto/gui/fwd.hh>
 #include <gepetto/viewer/node.h>
 

@@ -6,7 +6,7 @@
 #ifndef HPP_GUI_JOINTBOUNDDIALOG_HH
 #define HPP_GUI_JOINTBOUNDDIALOG_HH
 
-#include <hpp/corbaserver/robot.hh>
+#include <hpp/common-idl.hh>
 #include <QDialog>
 #include <QLabel>
 #include <QDoubleSpinBox>

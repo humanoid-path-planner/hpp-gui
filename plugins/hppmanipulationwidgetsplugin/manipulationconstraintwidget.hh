@@ -6,8 +6,6 @@
 #ifndef HPP_GUI_MANIPULATIONCONSTRAINTWIDGET_HH
 #define HPP_GUI_MANIPULATIONCONSTRAINTWIDGET_HH
 
-#include "hpp/corbaserver/manipulation/graph.hh"
-
 #include "hppwidgetsplugin/constraintwidget.hh"
 #include "hppwidgetsplugin/hppwidgetsplugin.hh"
 

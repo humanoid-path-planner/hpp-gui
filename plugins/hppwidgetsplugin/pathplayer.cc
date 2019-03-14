@@ -15,7 +15,6 @@
 # include <QtConcurrent>
 #endif
 
-#include <hpp/corbaserver/common.hh>
 #include <hpp/corbaserver/client.hh>
 
 #include "gepetto/gui/mainwindow.hh"

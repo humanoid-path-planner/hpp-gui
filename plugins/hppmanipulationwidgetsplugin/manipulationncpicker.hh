@@ -6,7 +6,7 @@
 #ifndef MANIPULATIONNCPICKER_HH
 #define MANIPULATIONNCPICKER_HH
 
-#include <hpp/corbaserver/manipulation/graph.hh>
+#include <hpp/corbaserver/manipulation/graph-idl.hh>
 
 #include "hppwidgetsplugin/numericalconstraintpicker.hh"
 

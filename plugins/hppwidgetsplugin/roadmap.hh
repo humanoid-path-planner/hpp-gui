@@ -6,7 +6,7 @@
 #ifndef HPP_GUI_ROADMAP_HH
 #define HPP_GUI_ROADMAP_HH
 
-#include <hpp/corbaserver/common.hh>
+#include <hpp/common-idl.hh>
 #include <gepetto/gui/color-map.hh>
 #include <gepetto/gui/windows-manager.hh>
 #include <hppwidgetsplugin/hppwidgetsplugin.hh>

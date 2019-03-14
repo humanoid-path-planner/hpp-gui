@@ -11,7 +11,7 @@
 #include "gepetto/gui/fwd.hh"
 #include "gepetto/gui/mainwindow.hh"
 
-#include "hpp/corbaserver/common.hh"
+#include "hpp/common-idl.hh"
 
 #include "configurationlist.hh"
 
