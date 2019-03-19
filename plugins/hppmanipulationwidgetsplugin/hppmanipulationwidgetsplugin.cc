@@ -5,6 +5,8 @@
 
 #include "hppmanipulationwidgetsplugin/hppmanipulationwidgetsplugin.hh"
 
+#include <sstream>
+
 #include <QAction>
 #include <QDockWidget>
 #include <QLayout>

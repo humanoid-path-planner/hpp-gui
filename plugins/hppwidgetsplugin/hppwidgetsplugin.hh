@@ -134,6 +134,10 @@ signals:
 
         hpp::floatSeq const* getCurrentConfig () const;
 
+        void setCurrentQtConfig (const QVector<double>& q);
+
+        QVector<double> getCurrentQtConfig () const;
+
         /// Set internal configuration from HPP current config.
         void fetchConfiguration ();
 

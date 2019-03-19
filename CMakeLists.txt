@@ -24,15 +24,16 @@ SET(CXX_DISABLE_WERROR TRUE)
 INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/boost.cmake)
 INCLUDE(cmake/python.cmake)
+INCLUDE(cmake/hpp.cmake)
 
 # Tells pkg-config to read qtversion and cmake_plugin from pkg config file.
 LIST(APPEND PKG_CONFIG_ADDITIONAL_VARIABLES qtversion cmake_plugin)
 
 SET(PROJECT_NAME "hpp-gui")
-SET(PROJECT_URL "https://github.com/jmirabel/hpp-gui")
+SET(PROJECT_URL "https://github.com/humanoid-path-planner/hpp-gui")
 SET(PROJECT_DESCRIPTION "Graphical interface for HPP ")
 
-SETUP_PROJECT()
+SETUP_HPP_PROJECT()
 
 ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba >= 1.3")
 
@@ -96,4 +97,4 @@ ELSE ()
     DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/gepetto-gui)
 ENDIF ()
 
-SETUP_PROJECT_FINALIZE()
+SETUP_HPP_PROJECT_FINALIZE()

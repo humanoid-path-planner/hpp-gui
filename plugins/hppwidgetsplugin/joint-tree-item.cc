@@ -267,11 +267,8 @@ namespace hpp {
       switch (type) {
         case JointTreeItem::SkipType:
           return;
-        case JointTreeItem::IntegratorType:{
-                                             hpp::floatSeq_var q = plugin_->client()->robot()->getJointConfig (ji->name().c_str());
-                                             ji->updateConfig(q.in());
-                                             return;
-                                           }
+        case JointTreeItem::IntegratorType:
+          return;
         case JointTreeItem::BoundedValueType: {
                                                 SliderBoundedJoint* slider = static_cast <SliderBoundedJoint*> (editor);
                                                 q = slider->getValue();
@@ -288,11 +285,12 @@ namespace hpp {
       }
       model->setData(index, q, Qt::EditRole);
       assert (ji);
+      ULong idxCfg = (ULong)index.data(JointTreeItem::IndexRole).toInt();
       switch (type) {
         case JointTreeItem::BoundedValueType:
           return;
         case JointTreeItem::UnboundedValueType:
-          plugin_->client()->robot()->setJointConfig (ji->name().c_str(), ji->config());
+          plugin_->currentConfig()[ji->rankInConfig()+idxCfg] = q;
           break;
         case JointTreeItem::BoundType:
           plugin_->client()->robot()->setJointBounds (ji->name().c_str(), ji->bounds());
