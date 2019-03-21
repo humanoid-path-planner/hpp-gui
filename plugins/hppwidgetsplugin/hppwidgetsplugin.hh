@@ -27,12 +27,12 @@ namespace hpp {
 
     /// Plugin that add a lot of features to work with hpp.
     class HppWidgetsPlugin : public QObject, public gepetto::gui::PluginInterface,
-    public gepetto::gui::ModelInterface, public gepetto::gui::CorbaInterface
+    public gepetto::gui::ModelInterface, public gepetto::gui::ConnectionInterface
     {
       Q_OBJECT
         Q_INTERFACES (gepetto::gui::PluginInterface
             gepetto::gui::ModelInterface
-            gepetto::gui::CorbaInterface)
+            gepetto::gui::ConnectionInterface)
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
     Q_PLUGIN_METADATA (IID "hpp-gui.hppwidgetsplugin")
@@ -113,10 +113,8 @@ signals:
         void configurationValidationStatus (bool valid);
         void configurationValidationStatus (QStringList collision);
 
-        // CorbaInterface interface
+        // ConnectionInterface interface
       public:
-        virtual bool corbaException (int jobId, const CORBA::Exception &excep) const;
-
         /// Open a connection to a corba server.
         virtual void openConnection ();
 
@@ -239,7 +237,7 @@ signals:
         // Cache variables
         hpp::Names_t             linkNames_;
         std::vector<std::string> bodyNames_;
-        std::vector<graphics::Configuration> bodyConfs_;
+        std::vector<gepetto::viewer::Configuration> bodyConfs_;
         std::vector<std::string> jointGroupNames_;
     };
   } // namespace gui

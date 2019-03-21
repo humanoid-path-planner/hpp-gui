@@ -52,4 +52,5 @@ GEPETTO_GUI_PLUGIN(hppmanipulationwidgetsplugin
 
   PKG_CONFIG_DEPENDENCIES
   "hpp-manipulation-corba"
+  "gepetto-viewer-corba"
   )

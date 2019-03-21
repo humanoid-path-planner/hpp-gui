@@ -36,8 +36,8 @@ using CORBA::ULong;
 namespace hpp {
   namespace gui {
     using gepetto::gui::MainWindow;
-    typedef graphics::WindowsManager::Color_t OsgColor_t;
-    typedef graphics::Configuration OsgConfiguration_t;
+    typedef gepetto::viewer::WindowsManager::Color_t OsgColor_t;
+    typedef gepetto::viewer::Configuration OsgConfiguration_t;
     typedef gepetto::gui::ActionSearchBar ActionSearchBar;
 
     HppWidgetsPlugin::JointElement::JointElement (
@@ -249,18 +249,6 @@ namespace hpp {
       return c;
     }
 
-    bool HppWidgetsPlugin::corbaException(int jobId, const CORBA::Exception &excep) const
-    {
-      try {
-        const hpp::Error& error = dynamic_cast <const hpp::Error&> (excep);
-        emit logJobFailed(jobId, QString (error.msg));
-        return true;
-      } catch (const std::bad_cast&) {
-        // dynamic_cast failed.
-      }
-      return false;
-    }
-
     QString HppWidgetsPlugin::getHppIIOPurl () const
     {
       QString host = gepetto::gui::MainWindow::instance ()->settings_->getSetting
@@ -273,7 +261,7 @@ namespace hpp {
     QString HppWidgetsPlugin::getHppContext () const
     {
       QString context = gepetto::gui::MainWindow::instance ()->settings_->getSetting
-        ("hpp/context", QString ()).toString ();
+        ("hpp/context", QString ("corbaserver")).toString ();
       return context;
     }
 
@@ -603,7 +591,7 @@ namespace hpp {
     {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       std::string target = escapeJointName(jn);
-      graphics::GroupNodePtr_t group = main->osg()->getGroup (target.c_str(), false);
+      gepetto::viewer::GroupNodePtr_t group = main->osg()->getGroup (target.c_str(), false);
       if (group) return target;
       if (!main->osg()->getGroup(target)) {
         main->osg()->createGroup(target);
@@ -625,7 +613,7 @@ namespace hpp {
     {
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       std::string target = "com_" + escapeJointName(com);
-      graphics::GroupNodePtr_t group = main->osg()->getGroup (target.c_str(), false);
+      gepetto::viewer::GroupNodePtr_t group = main->osg()->getGroup (target.c_str(), false);
       if (group) return target;
       if (!main->osg()->getGroup(target)) {
         main->osg()->createGroup(target);

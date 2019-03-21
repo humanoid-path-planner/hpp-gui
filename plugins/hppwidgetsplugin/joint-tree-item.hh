@@ -26,7 +26,7 @@ namespace hpp {
     {
       public:
         typedef CORBA::ULong ULong;
-        typedef graphics::NodePtr_t NodePtr_t;
+        typedef gepetto::viewer::NodePtr_t NodePtr_t;
         typedef std::vector<NodePtr_t> NodesPtr_t;
 
         static const int IndexRole     ;

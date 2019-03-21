@@ -79,4 +79,5 @@ GEPETTO_GUI_PLUGIN(hppwidgetsplugin
 
   PKG_CONFIG_DEPENDENCIES
   "hpp-corbaserver"
+  "gepetto-viewer-corba"
   )
