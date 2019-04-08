@@ -132,7 +132,15 @@ namespace hpp {
       hpp_ = new HppManipClient (0,0);
       QByteArray iiop    = getHppIIOPurl ().toLatin1();
       QByteArray context = getHppContext ().toLatin1();
-      hpp_->connect (iiop.constData (), context.constData ());
+      try {
+        hpp_->connect (iiop.constData (), context.constData ());
+      } catch (const CosNaming::NamingContext::NotFound&) {
+        const char* msg = "Could not find the manipulation server. Is it running ?";
+        qDebug () << msg;
+        gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
+        if (main != NULL)
+          main->logError(msg);
+      }
     }
 
     void HppManipulationWidgetsPlugin::closeConnection()
