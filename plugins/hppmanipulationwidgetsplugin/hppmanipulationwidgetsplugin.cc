@@ -155,17 +155,6 @@ namespace hpp {
       return hpp_;
     }
 
-    void HppManipulationWidgetsPlugin::updateRobotJoints(const QString robotName)
-    {
-      Q_UNUSED(robotName)
-      hpp::Names_t_var joints = client()->robot()->getAllJointNames ();
-      for (size_t i = 0; i < joints->length (); ++i) {
-        const char* jname = joints[(ULong) i];
-        hpp::Names_t_var lnames = client()->robot()->getLinkNames (jname);
-        jointMap_[jname] = JointElement(jname, "", lnames, 0, true);
-      }
-    }
-
     Roadmap *HppManipulationWidgetsPlugin::createRoadmap(const std::string &jointName)
     {
       ManipulationRoadmap* r = new ManipulationRoadmap(this);
