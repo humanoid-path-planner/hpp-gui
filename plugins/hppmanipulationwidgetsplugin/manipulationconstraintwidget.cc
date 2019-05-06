@@ -6,7 +6,6 @@
 #include "hppmanipulationwidgetsplugin/hppmanipulationwidgetsplugin.hh"
 #include "hppwidgetsplugin/ui_constraintwidget.h"
 
-#include "hppmanipulationwidgetsplugin/manipulationncpicker.hh"
 #include "manipulationconstraintwidget.hh"
 
 namespace hpp {
@@ -24,16 +23,6 @@ namespace hpp {
     {
     }
 
-    void ManipulationConstraintWidget::refresh()
-    {
-      HppManipulationWidgetsPlugin* plugin = dynamic_cast<HppManipulationWidgetsPlugin*>(plugin_);
-      ConstraintWidget::refresh();
-      hpp::Names_t_var names = plugin->client()->problem()->getAvailable("lockedjoint");
-      for (unsigned i = 0; i < names->length(); i++) {
-	ui->nameList->addItem(names[i].in());
-      }
-    }
-
     void ManipulationConstraintWidget::reset()
     {
       HppManipulationWidgetsPlugin* plugin = dynamic_cast<HppManipulationWidgetsPlugin*>(plugin_);
@@ -47,14 +36,6 @@ namespace hpp {
       for (unsigned i = 0; i < graphElems->nodes.length(); ++i) {
         plugin->manipClient()->graph()->resetConstraints(graphElems->nodes[i].id);
       }
-    }
-
-    void ManipulationConstraintWidget::confirmNumerical()
-    {
-      HppManipulationWidgetsPlugin* plugin = dynamic_cast<HppManipulationWidgetsPlugin*>(plugin_);
-      ManipulationNCPicker* ncp = new ManipulationNCPicker(plugin);
-
-      ncp->show();
     }
   }
 }

@@ -100,6 +100,10 @@ namespace hpp {
       for (unsigned i = 0; i < nc->length(); i++) {
 	ui->nameList->addItem(nc[i].in());
       }
+      hpp::Names_t_var lj = plugin_->client()->problem()->getAvailable("LockedJoint");
+      for (unsigned i = 0; i < lj->length(); i++) {
+	ui->nameList->addItem(lj[i].in());
+      }
     }
 
     void ConstraintWidget::createConstraint()
