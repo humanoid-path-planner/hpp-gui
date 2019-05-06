@@ -21,9 +21,6 @@
 #include "hppwidgetsplugin/conversions.hh"
 #include "hppwidgetsplugin/jointtreewidget.hh"
 #include "hppmanipulationwidgetsplugin/linkwidget.hh"
-#include "hppmanipulationwidgetsplugin/manipulationconstraintwidget.hh"
-#include "hppwidgetsplugin/twojointsconstraint.hh"
-#include "hppwidgetsplugin/listjointconstraint.hh"
 
 using CORBA::ULong;
 
@@ -506,22 +503,6 @@ namespace hpp {
         tw_->setCornerWidget(button, Qt::BottomRightCorner);
       }
       graphBuilder_->show();
-    }
-
-    void HppManipulationWidgetsPlugin::loadConstraintWidget()
-    {
-      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
-      QDockWidget* dock = new QDockWidget ("&Constraint creator", main);
-      dock->setObjectName ("hppmanipulationwidgetsplugin.constraintcreator");
-      constraintWidget_ = new ManipulationConstraintWidget (this, dock);
-      dock->setWidget(constraintWidget_);
-      main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
-      dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_V);
-      dockWidgets_.append(dock);
-      constraintWidget_->addConstraint(new PositionConstraint(this));
-      constraintWidget_->addConstraint(new OrientationConstraint(this));
-      constraintWidget_->addConstraint(new TransformConstraint(this));
-      constraintWidget_->addConstraint(new LockedJointConstraint(this));
     }
 
 #if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
