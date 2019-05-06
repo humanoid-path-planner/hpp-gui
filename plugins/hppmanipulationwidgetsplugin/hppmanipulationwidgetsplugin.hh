@@ -72,10 +72,6 @@ namespace hpp {
         /// Get the instance of corba manipulation client.
         HppManipClient* manipClient () const;
 
-        /// Get the list of joints from corbaserver and update internal joint map.
-        /// \param robotName name of the robot (unused)
-        void updateRobotJoints (const QString robotName);
-
         /// Create the roadmap of a given joint.
         /// \param jointName name of the joint
         virtual Roadmap* createRoadmap (const std::string& jointName);
@@ -99,9 +95,6 @@ namespace hpp {
         private slots:
           /// Construct all the corba vars and create the graph.
           void buildGraph();
-
-      protected:
-        virtual void loadConstraintWidget();
 
       private:
         // Type used to make one function to build datas needed for autoBuild

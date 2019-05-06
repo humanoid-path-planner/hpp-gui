@@ -21,9 +21,6 @@
 #include "hppwidgetsplugin/conversions.hh"
 #include "hppwidgetsplugin/jointtreewidget.hh"
 #include "hppmanipulationwidgetsplugin/linkwidget.hh"
-#include "hppmanipulationwidgetsplugin/manipulationconstraintwidget.hh"
-#include "hppwidgetsplugin/twojointsconstraint.hh"
-#include "hppwidgetsplugin/listjointconstraint.hh"
 
 using CORBA::ULong;
 
@@ -83,6 +80,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::loadRobotModel(gepetto::gui::DialogLoadRobot::RobotDefinition rd)
     {
+      if (hpp_) return;
       try {
         hpp::floatSeq_var q = client ()->robot ()->getCurrentConfig();
         (void)q;
@@ -104,6 +102,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::loadEnvironmentModel(gepetto::gui::DialogLoadEnvironment::EnvironmentDefinition ed)
     {
+      if (hpp_) return;
       try {
         hpp::floatSeq_var q = client ()->robot ()->getCurrentConfig();
         (void)q;
@@ -132,7 +131,24 @@ namespace hpp {
       hpp_ = new HppManipClient (0,0);
       QByteArray iiop    = getHppIIOPurl ().toLatin1();
       QByteArray context = getHppContext ().toLatin1();
-      hpp_->connect (iiop.constData (), context.constData ());
+      try {
+        hpp_->connect (iiop.constData (), context.constData ());
+        hpp::Names_t_var for_memory_deletion = hpp_->problem()->getAvailable("type");
+      } catch (const CORBA::Exception& e) {
+        QString error ("Could not find the manipulation server. Is it running ?");
+        error += "\n";
+        error += e._name();
+        error += " : ";
+        error += e._rep_id();
+        gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
+        if (main != NULL)
+          main->logError(error);
+        else
+          qDebug () << error;
+
+        if (hpp_) delete hpp_;
+        hpp_ = NULL;
+      }
     }
 
     void HppManipulationWidgetsPlugin::closeConnection()
@@ -145,17 +161,6 @@ namespace hpp {
     HppManipulationWidgetsPlugin::HppManipClient *HppManipulationWidgetsPlugin::manipClient() const
     {
       return hpp_;
-    }
-
-    void HppManipulationWidgetsPlugin::updateRobotJoints(const QString robotName)
-    {
-      Q_UNUSED(robotName)
-      hpp::Names_t_var joints = client()->robot()->getAllJointNames ();
-      for (size_t i = 0; i < joints->length (); ++i) {
-        const char* jname = joints[(ULong) i];
-        hpp::Names_t_var lnames = client()->robot()->getLinkNames (jname);
-        jointMap_[jname] = JointElement(jname, "", lnames, 0, true);
-      }
     }
 
     Roadmap *HppManipulationWidgetsPlugin::createRoadmap(const std::string &jointName)
@@ -197,6 +202,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::drawRobotContacts()
     {
+      if (hpp_) return;
       hpp::Names_t_var rcs = hpp_->problem()->getRobotContactNames();
       hpp::floatSeqSeq_var points;
       hpp::intSeq_var indexes;
@@ -220,6 +226,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::drawEnvironmentContacts()
     {
+      if (hpp_) return;
       hpp::Names_t_var rcs = hpp_->problem()->getEnvironmentContactNames();
       hpp::floatSeqSeq_var points;
       hpp::intSeq_var indexes;
@@ -240,6 +247,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::drawHandlesFrame()
     {
+      if (hpp_) return;
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var rcs = hpp_->problem()->getAvailable("handle");
       hpp::Transform__var t (new Transform_);
@@ -261,6 +269,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::drawGrippersFrame()
     {
+      if (hpp_) return;
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var rcs = hpp_->problem()->getAvailable("gripper");
       hpp::Transform__var t (new Transform_);
@@ -335,6 +344,7 @@ namespace hpp {
 
     HppManipulationWidgetsPlugin::MapNames HppManipulationWidgetsPlugin::getObjects()
     {
+      assert (hpp_ != NULL);
       HppManipulationWidgetsPlugin::MapNames map;
       hpp::Names_t_var handles = manipClient()->problem()->getAvailable("handle");
       hpp::Names_t_var surfaces = manipClient()->problem()->getAvailable("robotcontact");
@@ -406,6 +416,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::buildGraph()
     {
+      if (hpp_) return;
       QListWidget* l = dynamic_cast<QListWidget*>(tw_->widget(0));
       HppManipulationWidgetsPlugin::MapNames handlesMap = getObjects();
       HppManipulationWidgetsPlugin::MapNames shapesMap = getObjects();
@@ -444,6 +455,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::autoBuildGraph()
     {
+      if (hpp_) return;
       if (graphBuilder_ == NULL) {
         graphBuilder_ = new QDialog(NULL, Qt::Dialog);
         tw_ = new QTabWidget(graphBuilder_);
@@ -509,22 +521,6 @@ namespace hpp {
         tw_->setCornerWidget(button, Qt::BottomRightCorner);
       }
       graphBuilder_->show();
-    }
-
-    void HppManipulationWidgetsPlugin::loadConstraintWidget()
-    {
-      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
-      QDockWidget* dock = new QDockWidget ("&Constraint creator", main);
-      dock->setObjectName ("hppmanipulationwidgetsplugin.constraintcreator");
-      constraintWidget_ = new ManipulationConstraintWidget (this, dock);
-      dock->setWidget(constraintWidget_);
-      main->insertDockWidget (dock, Qt::RightDockWidgetArea, Qt::Vertical);
-      dock->toggleViewAction()->setShortcut(gepetto::gui::DockKeyShortcutBase + Qt::Key_V);
-      dockWidgets_.append(dock);
-      constraintWidget_->addConstraint(new PositionConstraint(this));
-      constraintWidget_->addConstraint(new OrientationConstraint(this));
-      constraintWidget_->addConstraint(new TransformConstraint(this));
-      constraintWidget_->addConstraint(new LockedJointConstraint(this));
     }
 
 #if (QT_VERSION < QT_VERSION_CHECK(5,0,0))

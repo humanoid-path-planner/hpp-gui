@@ -31,8 +31,6 @@ GEPETTO_GUI_PLUGIN(hppmanipulationwidgetsplugin
   HEADERS
   hppmanipulationwidgetsplugin.hh
   linkwidget.hh
-  manipulationconstraintwidget.hh
-  manipulationncpicker.hh
 
   HEADERS_NO_MOC
   roadmap.hh
@@ -44,8 +42,6 @@ GEPETTO_GUI_PLUGIN(hppmanipulationwidgetsplugin
   hppmanipulationwidgetsplugin.cc
   roadmap.cc
   linkwidget.cc
-  manipulationconstraintwidget.cc
-  manipulationncpicker.cc
 
   LINK_DEPENDENCIES
   hppwidgetsplugin
