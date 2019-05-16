@@ -80,7 +80,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::loadRobotModel(gepetto::gui::DialogLoadRobot::RobotDefinition rd)
     {
-      if (hpp_) return;
+      if (!hpp_) return;
       try {
         hpp::floatSeq_var q = client ()->robot ()->getCurrentConfig();
         (void)q;
@@ -102,7 +102,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::loadEnvironmentModel(gepetto::gui::DialogLoadEnvironment::EnvironmentDefinition ed)
     {
-      if (hpp_) return;
+      if (!hpp_) return;
       try {
         hpp::floatSeq_var q = client ()->robot ()->getCurrentConfig();
         (void)q;
@@ -202,7 +202,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::drawRobotContacts()
     {
-      if (hpp_) return;
+      if (!hpp_) return;
       hpp::Names_t_var rcs = hpp_->problem()->getRobotContactNames();
       hpp::floatSeqSeq_var points;
       hpp::intSeq_var indexes;
@@ -226,7 +226,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::drawEnvironmentContacts()
     {
-      if (hpp_) return;
+      if (!hpp_) return;
       hpp::Names_t_var rcs = hpp_->problem()->getEnvironmentContactNames();
       hpp::floatSeqSeq_var points;
       hpp::intSeq_var indexes;
@@ -247,7 +247,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::drawHandlesFrame()
     {
-      if (hpp_) return;
+      if (!hpp_) return;
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var rcs = hpp_->problem()->getAvailable("handle");
       hpp::Transform__var t (new Transform_);
@@ -269,7 +269,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::drawGrippersFrame()
     {
-      if (hpp_) return;
+      if (!hpp_) return;
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
       hpp::Names_t_var rcs = hpp_->problem()->getAvailable("gripper");
       hpp::Transform__var t (new Transform_);
@@ -416,7 +416,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::buildGraph()
     {
-      if (hpp_) return;
+      if (!hpp_) return;
       QListWidget* l = dynamic_cast<QListWidget*>(tw_->widget(0));
       HppManipulationWidgetsPlugin::MapNames handlesMap = getObjects();
       HppManipulationWidgetsPlugin::MapNames shapesMap = getObjects();
@@ -455,7 +455,7 @@ namespace hpp {
 
     void HppManipulationWidgetsPlugin::autoBuildGraph()
     {
-      if (hpp_) return;
+      if (!hpp_) return;
       if (graphBuilder_ == NULL) {
         graphBuilder_ = new QDialog(NULL, Qt::Dialog);
         tw_ = new QTabWidget(graphBuilder_);
