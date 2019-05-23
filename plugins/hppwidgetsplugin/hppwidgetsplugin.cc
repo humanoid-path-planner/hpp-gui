@@ -119,6 +119,7 @@ namespace hpp {
       // Path player widget
       dock = new QDockWidget ("&Path player", main);
       dock->setObjectName ("hppwidgetplugin.pathplayer");
+      dock->setSizePolicy (QSizePolicy::Minimum, QSizePolicy::Fixed);
       pathPlayer_ = new PathPlayer (this, dock);
       dock->setWidget(pathPlayer_);
       main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);
