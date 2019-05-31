@@ -97,4 +97,14 @@ ELSE ()
     DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/gepetto-gui)
 ENDIF ()
 
+# If basic.conf not yet installed, install it
+IF (EXISTS "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_SYSCONFDIR}/gepetto-gui/basic.conf")
+  MESSAGE (STATUS
+    "File ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_SYSCONFDIR}/gepetto-gui/basic.conf detected.")
+ELSE ()
+  MESSAGE (STATUS "File ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_SYSCONFDIR}/gepetto-gui/basic.conf does not exist. Will install it.")
+  INSTALL (FILES etc/gepetto-gui/basic.conf
+    DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/gepetto-gui)
+ENDIF ()
+
 SETUP_HPP_PROJECT_FINALIZE()
