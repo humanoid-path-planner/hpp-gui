@@ -72,7 +72,7 @@ namespace hpp {
       QString name = QInputDialog::getText(NULL, "Node name", "Node name", QLineEdit::Normal, "bvhmodel");
       int splitMethod = QInputDialog::getInt(NULL, "Split method type",
           "Split method type", 0, 0, 3, 1);
-      addBV (filename, name, splitMethod);
+      addBV (name, filename, splitMethod);
     }
 
 #if (QT_VERSION < QT_VERSION_CHECK(5,0,0))

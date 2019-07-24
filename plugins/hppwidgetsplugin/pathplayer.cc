@@ -267,15 +267,22 @@ namespace hpp {
 
     void PathPlayer::updateConfiguration ()
     {
-      hpp::floatSeq_var config =
-        plugin_->client()->problem()->configAtParam ((CORBA::ULong)pathIndex()->value(),currentParam_);
-      plugin_->currentConfig() = config.in();
-      if (velocity_) {
-        config =
-          plugin_->client()->problem()->derivativeAtParam ((CORBA::ULong)pathIndex()->value(),1,currentParam_);
-        plugin_->currentVelocity() = config.in();
+      gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
+      hpp::floatSeq_var config, velocity;
+      try {
+        config = plugin_->client()->problem()->configAtParam
+          ((CORBA::ULong)pathIndex()->value(),currentParam_);
+        if (velocity_)
+          velocity = plugin_->client()->problem()->derivativeAtParam
+            ((CORBA::ULong)pathIndex()->value(),1,currentParam_);
+      } catch (const hpp::Error& e) {
+        main->logError(e.msg.in());
+        return;
       }
-      gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
+      plugin_->currentConfig() = config.in();
+      if (velocity_)
+        plugin_->currentVelocity() = velocity.in();
+      main->requestApplyCurrentConfiguration();
       emit appliedConfigAtParam (getCurrentPath(), currentParam_);
     }
 

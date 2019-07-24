@@ -15,6 +15,7 @@
 #include <gepetto/gui/windows-manager.hh>
 #include <gepetto/gui/omniorb/url.hh>
 #include <gepetto/gui/action-search-bar.hh>
+#include <gepetto/gui/safeapplication.hh>
 
 #include <omniORB4/CORBA.h>
 
@@ -39,6 +40,22 @@ namespace hpp {
     typedef gepetto::viewer::WindowsManager::Color_t OsgColor_t;
     typedef gepetto::viewer::Configuration OsgConfiguration_t;
     typedef gepetto::gui::ActionSearchBar ActionSearchBar;
+
+    class HppExceptionCatch : public gepetto::gui::SlotExceptionCatch
+    {
+      public:
+        bool safeNotify (QApplication* app, QObject* receiver, QEvent* e)
+        {
+          try {
+            return impl_notify (app, receiver, e);
+          } catch (const hpp::Error& e) {
+            qDebug () << e.msg.in();
+            MainWindow* main = MainWindow::instance();
+            if (main != NULL) main->logError (e.msg.in());
+          }
+          return false;
+        }
+    };
 
     HppWidgetsPlugin::JointElement::JointElement (
         const std::string& n, const std::string& prefix,
@@ -71,6 +88,9 @@ namespace hpp {
 
     void HppWidgetsPlugin::init()
     {
+      gepetto::gui::SafeApplication* app = dynamic_cast<gepetto::gui::SafeApplication*>(QApplication::instance());
+      if (app) app->addAsLeaf(new HppExceptionCatch);
+
       openConnection();
 
       gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance ();
@@ -99,6 +119,7 @@ namespace hpp {
       // Path player widget
       dock = new QDockWidget ("&Path player", main);
       dock->setObjectName ("hppwidgetplugin.pathplayer");
+      dock->setSizePolicy (QSizePolicy::Minimum, QSizePolicy::Fixed);
       pathPlayer_ = new PathPlayer (this, dock);
       dock->setWidget(pathPlayer_);
       main->insertDockWidget (dock, Qt::BottomDockWidgetArea, Qt::Horizontal);

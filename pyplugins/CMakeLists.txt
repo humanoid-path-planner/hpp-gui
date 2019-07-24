@@ -15,8 +15,6 @@
 # hpp-corbaserver.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-FINDPYTHON(2.7 EXACT)
-
 INSTALL(
   FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/plugin.py

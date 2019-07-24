@@ -3,6 +3,7 @@
 #  Author: Joseph Mirabel
 #
 
+from __future__ import print_function
 from PythonQt import QtGui, Qt
 import numpy as np
 from gepetto import Quaternion, Color
@@ -76,7 +77,7 @@ class GraspFinder(QtGui.QWidget):
     def optimize(self):
         n = len(self.P)
         if not n == len(self.Q):
-            print "P and Q must be of the same size"
+            print("P and Q must be of the same size")
             return
         P = np.array(self.P).transpose()
         Q = np.array(self.Q).transpose()
@@ -91,11 +92,11 @@ class GraspFinder(QtGui.QWidget):
         T = [0,0,0,1,0,0,0]
         T[0:3] = t.tolist()
         T[3:7] = Quaternion(R).toTuple()
-        print self.names[0], T
+        print(self.names[0], T)
         self.instructions.text = "Current transform of\n" + self.names[0] + "\nis\n" + str(T) + "\n\nSelect a fixed point."
         self.plugin.gui.gui.applyConfiguration(self.names[0], T)
         self.plugin.gui.gui.refresh()
-        for i in xrange(n):
+        for i in range(n):
             self.setLineTransform(i)
         self.plugin.gui.gui.refresh()
 

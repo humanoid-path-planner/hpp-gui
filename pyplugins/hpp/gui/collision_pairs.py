@@ -5,7 +5,7 @@
 
 from PythonQt import QtGui, Qt
 import xml.etree.ElementTree as ET
-from itertools import izip
+
 import re
 
 def _makeCheckBox(active):
@@ -113,7 +113,7 @@ class CollisionPairs(QtGui.QWidget):
 
     def configValidation(self):
         collide = self.plugin.client.robot.autocollisionCheck()
-        for p, c in izip(self.orderedPairs, collide):
+        for p, c in zip(self.orderedPairs, collide):
             if c:
                 self.pairToRow[p][self.CURRENT_CONFIG].setText("Collision")
             else:
@@ -121,7 +121,7 @@ class CollisionPairs(QtGui.QWidget):
 
     def setCollisionPair(self, r, l1, l2, active, reason):
         pair = _Pair(l1, l2)
-        if self.pairToRow.has_key(pair):
+        if pair in self.pairToRow:
             self.pairToRow[pair][self.ACTIVE].checked = active
             self.pairToRow[pair][self.REASON].setText(reason)
             return
@@ -149,15 +149,15 @@ class CollisionPairs(QtGui.QWidget):
         ncfg = int(pow(10, self.sliderRandomCfg.value / 10))
         nbCol = [0] * len(self.pairToRow)
         r = self.plugin.client.robot
-        for i in xrange(ncfg):
+        for i in range(ncfg):
             cfg = r.shootRandomConfig()
             r.setCurrentConfig(cfg)
             collide = r.autocollisionCheck()
-            for i in xrange(len(collide)):
+            for i in range(len(collide)):
                 if collide[i]:
                     nbCol[i] += 1
 
-        for p, n in izip(self.orderedPairs, nbCol):
+        for p, n in zip(self.orderedPairs, nbCol):
             self.pairToRow[p][self.PERCENTAGE].setData(Qt.Qt.DisplayRole, n * 100. / ncfg)
 
     def refresh(self):
@@ -169,7 +169,7 @@ class CollisionPairs(QtGui.QWidget):
         inner, outer, active = self.plugin.client.robot.autocollisionPairs()
         self.table.sortingEnabled = False
         self.table.setRowCount(len(inner))
-        for r, l1, l2, a in izip(xrange(len(inner)), inner, outer, active):
+        for r, l1, l2, a in zip(range(len(inner)), inner, outer, active):
             self.setCollisionPair(r, l1, l2, a, "From SRDF")
         self.table.sortingEnabled = True
         print(time.time() - start_time)
@@ -195,12 +195,12 @@ class CollisionPairs(QtGui.QWidget):
             p = _Pair(dc.attrib["link1"], dc.attrib["link2"])
             pairsInFile[p] = dc
 
-        for p, row in self.pairToRow.iteritems():
+        for p, row in self.pairToRow.items():
             if row[self.ACTIVE].checked:
                 continue
             reason = str(row[self.REASON].text())
             pp = _Pair(_(p.l1), _(p.l2))
-            if pairsInFile.has_key(pp):
+            if pp in pairsInFile:
                 dc.attrib["reason"] = reason
             else:
                 attrib = dict()

@@ -3,6 +3,7 @@
 #  Author: Joseph Mirabel
 #
 
+from __future__ import print_function
 from PythonQt import QtGui, Qt, QtCore
 from hpp import Transform
 from numpy import array
@@ -60,14 +61,14 @@ class InspectBodies(QtGui.QWidget):
             self.pointLabel ["global"].text = vec2str(vec(event.point (False)))
             self.normalLabel["global"].text = vec2str(vec(event.normal(False)))
             if len(self.refName.text) == 0:
-                print self.refName.text
+                print(self.refName.text)
             else:
                 T = Transform(self.plugin.client.robot.getJointPosition(str(self.refName.text))).inverse()
                 try:
                     self.pointLabel ["reference"].text = vec2str(T.transform(           vec(event.point (False))))
                     self.normalLabel["reference"].text = vec2str(T.quaternion.transform(vec(event.normal(False))))
                 except ValueError as e:
-                    print e
-                    print event.point(False)
-                    print vec(event.point(False))
+                    print(e)
+                    print(event.point(False))
+                    print(vec(event.point(False)))
         event.done()
