@@ -3,14 +3,15 @@
 #  Author: Joseph Mirabel and Heidy Dallard
 #
 
+from __future__ import print_function
 from PythonQt import QtGui, Qt
 from hpp.corbaserver import Client
 from hpp.corbaserver.robot import Robot
 from gepetto.corbaserver import Client as GuiClient
-from directpath import DirectPathBox
-from findGrasp import GraspFinder
-from inspector import InspectBodies
-from collision_pairs import CollisionPairs
+from .directpath import DirectPathBox
+from .findGrasp import GraspFinder
+from .inspector import InspectBodies
+from .collision_pairs import CollisionPairs
 from .parameters import Parameters
 
 class _PathTab(QtGui.QWidget):
@@ -64,14 +65,14 @@ class _PathManagement(QtGui.QWidget):
         if (len(selected) > 1):
             first = int(selected[0].text())
             for i in range(1, len(selected)):
-                print "Concatenate %s and %s" % (first, int(selected[i].text()))
+                print("Concatenate %s and %s" % (first, int(selected[i].text())))
                 self.plugin.client.problem.concatenatePath(first, int(selected[i].text()))
 
     def erase(self):
         selected = self.paths.selectedItems()
         if (len(selected) > 0):
             for i in range(len(selected) - 1, -1, -1):
-                print "erase path %s " % (int(selected[i].text()))
+                print("erase path %s " % (int(selected[i].text())))
                 self.plugin.client.problem.erasePath(int(selected[i].text()))
             self.refresh()
 
@@ -152,7 +153,7 @@ class _StepByStepSolverTab(QtGui.QWidget):
             self.plugin.main.log ("Problem is solved")
 
     def executeOneStep(self):
-        for i in xrange(self.stepCount.value):
+        for i in range(self.stepCount.value):
             if self.plugin.client.problem.executeOneStep():
                 self.plugin.main.log ("Problem is solved")
                 break
