@@ -166,7 +166,7 @@ namespace hpp {
 
       if (!vec3d.isNull()) {
           qtQuat = QQuaternion::fromAxisAndAngle(vec3d.normalized(), vec3d.length());
-          const float theta = vec3d.length();
+          const float theta = (float) vec3d.length();
           qtQuat = QQuaternion(std::cos(theta/2), std::sin(theta/2) * vec3d / theta);
       }
 
@@ -233,7 +233,7 @@ namespace hpp {
 
       if (!vec3d.isNull()) {
           qtQuat = QQuaternion::fromAxisAndAngle(vec3d.normalized(), vec3d.length());
-          const float theta = vec3d.length();
+          const float theta = (float) vec3d.length();
           qtQuat = QQuaternion(std::cos(theta/2), std::sin(theta/2) * vec3d / theta);
       }
 
