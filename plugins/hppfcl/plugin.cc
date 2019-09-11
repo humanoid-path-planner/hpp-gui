@@ -24,6 +24,7 @@
 #include <QInputDialog>
 
 #include <gepetto/gui/mainwindow.hh>
+#include <gepetto/gui/osgwidget.hh>
 #include <gepetto/gui/windows-manager.hh>
 
 #include <node.hh>
@@ -68,11 +69,35 @@ namespace hpp {
 
     void HppFclPlugin::openDialog() const
     {
+      bool ok;
       QString filename = QFileDialog::getOpenFileName (NULL, "Select a mesh file");
-      QString name = QInputDialog::getText(NULL, "Node name", "Node name", QLineEdit::Normal, "bvhmodel");
+      if (filename.isNull()) return;
       int splitMethod = QInputDialog::getInt(NULL, "Split method type",
-          "Split method type", 0, 0, 3, 1);
+          "Split method type", 0, 0, 3, 1, &ok);
+      if (!ok) return;
+      QString name = QInputDialog::getText(NULL, "Node name", "Node name", QLineEdit::Normal, "bvhmodel");
+      if (name.isNull()) return;
+
+      std::string filename_ (filename.toStdString());
+      std::string name_ (name.toStdString());
+      std::string mname_ (name_ + "_mesh");
+
+      // Load mesh
+      MainWindow* main = MainWindow::instance ();
+      if (!main->osg()->nodeExists (mname_) && !main->osg()->addMesh (mname_, filename_)) return;
+
+      std::string group;
+      if (main->osgWindows().empty()) {
+        group = "window";
+        main->osg()->createWindow (group);
+      } else {
+        group = main->osgWindows().first()->window()->getID();
+      }
+
       addBV (name, filename, splitMethod);
+
+      main->osg()->addToGroup (name_, group);
+      main->osg()->addToGroup (mname_, group);
     }
 
 #if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
