@@ -20,13 +20,8 @@ namespace hpp {
     {
       ui->setupUi(this);
 
-      hpp::Names_t_var names = plugin->client()->problem()->getAvailable("lockedjoint");
-      ui->lockedJointList->setSelectionMode(QAbstractItemView::ExtendedSelection);
-      for (unsigned i = 0; i < names->length(); ++i) {
-          ui->lockedJointList->addItem(QString(names[i]));
-      }
-
-      names = plugin->client()->problem()->getAvailable("numericalconstraint");
+      hpp::Names_t_var names =
+        plugin->client()->problem()->getAvailable("numericalconstraint");
       ui->numericalList->setSelectionMode(QAbstractItemView::ExtendedSelection);
       for (unsigned i = 0; i < names->length(); ++i) {
         ui->numericalList->addItem(QString(names[i]));
