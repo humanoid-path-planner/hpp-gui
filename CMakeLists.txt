@@ -24,7 +24,7 @@ SET(CXX_DISABLE_WERROR TRUE)
 INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/boost.cmake)
 INCLUDE(cmake/hpp.cmake)
-INCLUDE(cmake/hpp/python.cmake)
+INCLUDE(cmake//python.cmake)
 
 # Tells pkg-config to read qtversion and cmake_plugin from pkg config file.
 LIST(APPEND PKG_CONFIG_ADDITIONAL_VARIABLES qtversion cmake_plugin)
@@ -34,7 +34,7 @@ SET(PROJECT_DESCRIPTION "Graphical interface for HPP ")
 
 SETUP_HPP_PROJECT()
 
-HPP_FINDPYTHON()
+FINDPYTHON()
 ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba >= 1.3")
 
 # Get desired Qt version
