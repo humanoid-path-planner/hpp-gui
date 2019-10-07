@@ -1,5 +1,7 @@
 # hpp-gui
 
+[![Pipeline status](https://gepgitlab.laas.fr/humanoid-path-planner/hpp-gui/badges/master/pipeline.svg)](https://gepgitlab.laas.fr/humanoid-path-planner/hpp-gui/commits/master)
+[![Coverage report](https://gepgitlab.laas.fr/humanoid-path-planner/hpp-gui/badges/master/coverage.svg?job=doc-coverage)](http://projects.laas.fr/gepetto/doc/humanoid-path-planner/hpp-gui/master/coverage/)
 [![Build Status](https://travis-ci.org/jmirabel/hpp-gui.svg?branch=master)](https://travis-ci.org/jmirabel/hpp-gui)
 
 **hpp-gui** is a set of plugins to integrate [HPP] inside `gepetto-gui`, which comes with the `gepetto-viewer-corba` package.
