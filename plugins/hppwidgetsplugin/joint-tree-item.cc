@@ -322,7 +322,7 @@ namespace hpp {
       for (ULong i = 0; i < dq_.length(); ++i) dq_[ i] = 0;
       setValue (0);
       connect(this, SIGNAL (sliderReleased()), this, SLOT (reset()));
-      connect(this, SIGNAL (sliderMoved(int)), this, SLOT (updateIntegrator(int)));
+      connect(this, SIGNAL (valueChanged(int)), this, SLOT (updateIntegrator(int)));
       timerId_ = startTimer(rate_);
     }
 
@@ -363,7 +363,7 @@ namespace hpp {
       setMinimum(0);
       setMaximum(100);
       setValue ((int)(100*(value_ - m_)/(M_ - m_)));
-      connect (this, SIGNAL (sliderMoved(int)), this, SLOT (updateConfig(int)));
+      connect (this, SIGNAL (valueChanged(int)), this, SLOT (updateConfig(int)));
     }
 
     double SliderBoundedJoint::getValue()
