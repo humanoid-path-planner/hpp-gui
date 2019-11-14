@@ -22,6 +22,7 @@
 #include <gepetto/viewer/node.h>
 
 #include <hpp/fcl/BVH/BVH_model.h>
+#include <hpp/fcl/internal/BV_splitter.h>
 
 namespace hpp {
   namespace gui {
