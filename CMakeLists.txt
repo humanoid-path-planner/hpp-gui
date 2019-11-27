@@ -17,22 +17,22 @@
 # hpp-gui  If not, see
 # <http://www.gnu.org/licenses/>.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+SET(PROJECT_NAME "hpp-gui")
+SET(PROJECT_DESCRIPTION "Graphical interface for HPP ")
 
 SET(CXX_DISABLE_WERROR TRUE)
 
-INCLUDE(cmake/base.cmake)
-INCLUDE(cmake/boost.cmake)
 INCLUDE(cmake/hpp.cmake)
+INCLUDE(cmake/boost.cmake)
 INCLUDE(cmake//python.cmake)
 
 # Tells pkg-config to read qtversion and cmake_plugin from pkg config file.
 LIST(APPEND PKG_CONFIG_ADDITIONAL_VARIABLES qtversion cmake_plugin)
 
-SET(PROJECT_NAME "hpp-gui")
-SET(PROJECT_DESCRIPTION "Graphical interface for HPP ")
-
-SETUP_HPP_PROJECT()
+COMPUTE_PROJECT_ARGS(PROJECT_ARGS LANGUAGES CXX)
+PROJECT(${PROJECT_NAME} ${PROJECT_ARGS})
 
 FINDPYTHON()
 ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba >= 1.3")
@@ -106,5 +106,3 @@ ELSE ()
   INSTALL (FILES etc/gepetto-gui/basic.conf
     DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/gepetto-gui)
 ENDIF ()
-
-SETUP_HPP_PROJECT_FINALIZE()
