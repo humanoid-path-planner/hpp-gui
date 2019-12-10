@@ -201,13 +201,15 @@ namespace hpp {
 
     void HppWidgetsPlugin::loadRobotModel(gepetto::gui::DialogLoadRobot::RobotDefinition rd)
     {
+      QString urdfFilename ("package://" + rd.package_ + "/urdf/" +
+                            rd.modelName_ + rd.urdfSuf_ + ".urdf");
+      QString srdfFilename ("package://" + rd.package_ + "/srdf/" +
+                            rd.modelName_ + rd.srdfSuf_ + ".srdf");
       client()->robot()->loadRobotModel(
           to_corba(rd.robotName_    ).in(),
           to_corba(rd.rootJointType_).in(),
-          to_corba(rd.package_      ).in(),
-          to_corba(rd.modelName_    ).in(),
-          to_corba(rd.urdfSuf_      ).in(),
-          to_corba(rd.srdfSuf_      ).in());
+          to_corba(urdfFilename     ).in(),
+          to_corba(srdfFilename     ).in ());
       // This is already done in requestRefresh
       // jointTreeWidget_->reload();
       gepetto::gui::MainWindow::instance()->requestRefresh();
@@ -218,9 +220,10 @@ namespace hpp {
     void HppWidgetsPlugin::loadEnvironmentModel(gepetto::gui::DialogLoadEnvironment::EnvironmentDefinition ed)
     {
       QString prefix = ed.envName_ + "/";
+      QString urdfFilename ("package://" + ed.package_ + "/urdf/" +
+                            ed.urdfFilename_ + ".urdf");
       client()->obstacle()->loadObstacleModel(
-          to_corba(ed.package_     ).in(),
-          to_corba(ed.urdfFilename_).in(),
+          to_corba(urdfFilename    ).in(),
           to_corba(prefix          ).in());
       computeObjectPosition ();
       gepetto::gui::MainWindow::instance()->requestRefresh();
