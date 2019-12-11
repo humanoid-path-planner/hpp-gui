@@ -87,12 +87,14 @@ namespace hpp {
       } catch (hpp::Error const& e) {
 	client ()->robot ()->createRobot (to_corba("composite").in());
       }
+      QString urdfFilename ("package://" + rd.package_ + "/urdf/" +
+                            rd.modelName_ + rd.urdfSuf_ + ".urdf");
+      QString srdfFilename ("package://" + rd.package_ + "/srdf/" +
+                            rd.modelName_ + rd.srdfSuf_ + ".srdf");
       hpp_->robot ()->insertRobotModel (to_corba(rd.robotName_).in(),
 					to_corba(rd.rootJointType_).in(),
-					to_corba(rd.package_).in(),
-					to_corba(rd.modelName_).in(),
-					to_corba(rd.urdfSuf_).in(),
-					to_corba(rd.srdfSuf_).in());
+					to_corba(urdfFilename).in(),
+					to_corba(srdfFilename).in());
       // This is already done in requestRefresh
       // jointTreeWidget_->reload();
       gepetto::gui::MainWindow::instance()->requestRefresh();
@@ -109,10 +111,12 @@ namespace hpp {
       } catch (hpp::Error const& e) {
 	client ()->robot ()->createRobot (to_corba("composite").in());
       }
-      hpp_->robot ()-> loadEnvironmentModel(to_corba(ed.package_).in(),
-					    to_corba(ed.urdfFilename_).in(),
-					    to_corba(ed.urdfSuf_).in(),
-					    to_corba(ed.srdfSuf_).in(),
+      QString urdfFilename ("package://" + ed.package_ + "/urdf/" +
+                            ed.urdfFilename_ + ed.urdfSuf_ + ".urdf");
+      QString srdfFilename ("package://" + ed.package_ + "/srdf/" +
+                            ed.urdfFilename_ + ed.srdfSuf_ + ".srdf");
+      hpp_->robot ()-> loadEnvironmentModel(to_corba(urdfFilename).in(),
+					    to_corba(srdfFilename).in(),
 					    to_corba(ed.name_ + "/").in());
       HppWidgetsPlugin::computeObjectPosition();
       gepetto::gui::MainWindow::instance()->requestRefresh();
