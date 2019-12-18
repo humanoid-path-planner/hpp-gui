@@ -276,10 +276,10 @@ namespace hpp {
     QString HppWidgetsPlugin::getHppIIOPurl () const
     {
       QString host = gepetto::gui::MainWindow::instance ()->settings_->getSetting
-        ("hpp/host", QString ()).toString ();
+        ("hpp/host", "localhost").toString ();
       QString port = gepetto::gui::MainWindow::instance ()->settings_->getSetting
-        ("hpp/port", QString ()).toString ();
-      return gepetto::gui::omniOrb::IIOPurl (host, port);
+        ("hpp/port", "13331").toString ();
+      return QString ("corbaloc:iiop:%1:%2").arg(host).arg(port);
     }
 
     QString HppWidgetsPlugin::getHppContext () const
