@@ -131,10 +131,12 @@ namespace hpp {
     {
       // planar and freeflyer joints
       int threshold = value_.size();
+      if (nv_ == 1 && nq_ == 2 ) //SO2
+        threshold = 0;
       // TODO SO3 joint fall in that case too whereas threshold should be 0 for them.
-      if (nv_ == 3 && nq_ == 4 )
+      else if (nv_ == 3 && nq_ == 4 ) //SO3 and SE2
         threshold = 2;
-      else if (nv_ == 6 && nq_ == 7 )
+      else if (nv_ == 6 && nq_ == 7 ) //SE3
         threshold = 3;
       for (int i = 0; i < value_.size(); ++i) {
         float lo = value_[i][1]->data (Qt::EditRole).toFloat();
