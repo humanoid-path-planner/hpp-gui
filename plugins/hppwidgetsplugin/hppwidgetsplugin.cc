@@ -13,7 +13,6 @@
 
 #include <gepetto/gui/mainwindow.hh>
 #include <gepetto/gui/windows-manager.hh>
-#include <gepetto/gui/omniorb/url.hh>
 #include <gepetto/gui/action-search-bar.hh>
 #include <gepetto/gui/safeapplication.hh>
 
