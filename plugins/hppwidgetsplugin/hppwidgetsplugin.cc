@@ -296,7 +296,7 @@ namespace hpp {
       QByteArray context = getHppContext ().toLatin1();
       try {
         hpp_->connect (iiop.constData (), context.constData ());
-      } catch (const CosNaming::NamingContext::NotFound&) {
+      } catch (const CORBA::Exception&) {
         const char* msg = "Could not find the HPP server. Is it running ?";
         qDebug () << msg;
         gepetto::gui::MainWindow* main = gepetto::gui::MainWindow::instance();
