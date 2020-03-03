@@ -26,7 +26,7 @@ SET(CXX_DISABLE_WERROR TRUE)
 
 INCLUDE(cmake/hpp.cmake)
 INCLUDE(cmake/boost.cmake)
-INCLUDE(cmake//python.cmake)
+INCLUDE(cmake/python.cmake)
 
 # Tells pkg-config to read qtversion and cmake_plugin from pkg config file.
 LIST(APPEND PKG_CONFIG_ADDITIONAL_VARIABLES qtversion cmake_plugin)

@@ -77,6 +77,9 @@ GEPETTO_GUI_PLUGIN(hppwidgetsplugin
   listjointconstraint.cc
   joint-action.cc
 
+  LINK_DEPENDENCIES
+  ${Boost_LIBRARIES}
+
   PKG_CONFIG_DEPENDENCIES
   "hpp-corbaserver"
   "gepetto-viewer-corba"
