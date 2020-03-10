@@ -42,6 +42,18 @@ class _Pair:
     def __hash__(self):
         return self.hash
 
+class TableWidget (QtGui.QTableWidget):
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Qt.Key_Space:
+            lastRow = -1
+            print("Selecting items")
+            for item in self.selectedItems():
+                if lastRow != item.row():
+                    self.cellWidget(item.row(), CollisionPairs.ACTIVE).toggle()
+                    lastRow = item.row()
+        else:
+            QtGui.QTableWidget.keyPressEvent(self, event)
+
 class CollisionPairs(QtGui.QWidget):
     ACTIVE=0
     LINK_1=1
@@ -68,7 +80,7 @@ class CollisionPairs(QtGui.QWidget):
         box.addWidget(button)
 
         # Create table
-        self.table = QtGui.QTableWidget(0, 6)
+        self.table = TableWidget(0, 6)
         self.table.setHorizontalHeaderLabels(["Active", "Link 1", "Link 2", "Reason", "Current configuration", "% of collision"])
         if Qt.qVersion().startswith('4'):
             self.table.horizontalHeader().setResizeMode(QtGui.QHeaderView.Interactive)
