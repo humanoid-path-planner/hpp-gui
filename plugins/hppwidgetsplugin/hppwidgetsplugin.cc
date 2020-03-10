@@ -442,7 +442,7 @@ namespace hpp {
 
     void HppWidgetsPlugin::selectJointFromBodyName(const QString bodyName)
     {
-      boost::regex roadmap ("^(roadmap|path[0-9]+)_(.*)/(node|edge)([0-9]+)$");
+      static const boost::regex roadmap ("^(roadmap|path[0-9]+)_(.*)/(node|edge)([0-9]+)$");
       boost::cmatch what;
       const std::string bname = bodyName.toStdString();
       if (boost::regex_match (bname.c_str(), what, roadmap)) {
@@ -475,6 +475,13 @@ namespace hpp {
         }
         return;
       }
+      static const boost::regex bodyname ("^(.*)(_[0-9]+)$");
+      std::string shortBodyName;
+      bool test_short_name = boost::regex_match (bname.c_str(), what, bodyname);
+      if (test_short_name) {
+        shortBodyName.assign(what[0].first, what[1].second);
+      }
+
       foreach (const JointElement& je, jointMap_) {
         // je.bodyNames will be of size 1 most of the time
         // so it is fine to use a vector + line search, vs map + binary
@@ -482,7 +489,9 @@ namespace hpp {
         const std::size_t len = je.prefix.length();
         if (bname.compare(0, len, je.prefix) == 0) {
           for (std::size_t i = 0; i < je.bodyNames.size(); ++i) {
-            if (bname.compare(len, std::string::npos, je.bodyNames[i]) == 0) {
+            if (bname.compare(len, std::string::npos, je.bodyNames[i]) == 0
+                || (test_short_name
+                  && shortBodyName.compare(len, std::string::npos, je.bodyNames[i]) == 0)) {
               // TODO: use je.item for a faster selection.
               jointTreeWidget_->selectJoint (je.name);
               return;
