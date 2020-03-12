@@ -67,6 +67,12 @@ namespace hpp {
       a = new JointAction (tr("Display selected &path"), plugin_->jointTreeWidget(), this);
       connect (a, SIGNAL (triggered(std::string)), SLOT (displayPath(std::string)));
       asb->addAction(a);
+
+      {
+        QAction* a = new QAction (tr("Play path"), this);
+        playPause()->connect (a, SIGNAL (triggered()), SLOT (toggle()));
+        asb->addAction(a);
+      }
     }
 
     void PathPlayer::displayWaypointsOfPath(const std::string jointName)
