@@ -98,12 +98,14 @@ namespace hpp {
             planner()->addItem(QString::fromLocal8Bit(names[i]));
           setSelected(planner(), "PathPlanner");
           if (s == Planner) break;
+          // fall through
         case Optimizer:
           names = plugin_->client()->problem()->getAvailable("PathOptimizer");
           optimizers_.clear();
           for (CORBA::ULong i = 0; i < names->length(); ++i)
             optimizers_ << QString::fromLocal8Bit(names[i]);
           if (s == Optimizer) break;
+          // fall through
         case Validation:
 	  clearQComboBox(validation());
           names = plugin_->client()->problem()->getAvailable("PathValidation");
@@ -111,6 +113,7 @@ namespace hpp {
             validation()->addItem(QString::fromLocal8Bit(names[i]), QVariant (0.2));
           setSelected(validation(), "PathValidation");
           if (s == Validation) break;
+          // fall through
         case Projector:
           clearQComboBox(projector());
           names = plugin_->client()->problem()->getAvailable("PathProjector");
@@ -118,6 +121,7 @@ namespace hpp {
             projector()->addItem(QString::fromLocal8Bit(names[i]), QVariant (0.2));
           setSelected(projector(), "PathProjector");
           if (s == Projector) break;
+          // fall through
         case SteeringMethod:
           clearQComboBox(steeringMethod());
           names = plugin_->client()->problem()->getAvailable("SteeringMethod");
@@ -125,6 +129,7 @@ namespace hpp {
             steeringMethod()->addItem(QString::fromLocal8Bit(names[i]));
           setSelected(steeringMethod(), "SteeringMethod");
           if (s == SteeringMethod) break;
+          // fall through
       }
     }
 
