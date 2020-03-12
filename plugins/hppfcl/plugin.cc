@@ -23,6 +23,7 @@
 #include <QFileDialog>
 #include <QInputDialog>
 
+#include <gepetto/viewer/window-manager.h>
 #include <gepetto/gui/mainwindow.hh>
 #include <gepetto/gui/osgwidget.hh>
 #include <gepetto/gui/windows-manager.hh>

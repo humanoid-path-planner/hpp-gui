@@ -5,6 +5,7 @@
 
 #include "hppwidgetsplugin/pathplayer.hh"
 
+#include <assert.h>
 #include <sstream>
 
 #include <QProgressDialog>

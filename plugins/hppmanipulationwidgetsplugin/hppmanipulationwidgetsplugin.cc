@@ -5,6 +5,7 @@
 
 #include "hppmanipulationwidgetsplugin/hppmanipulationwidgetsplugin.hh"
 
+#include <assert.h>
 #include <sstream>
 
 #include <QAction>

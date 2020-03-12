@@ -10,6 +10,8 @@
 #include "hppwidgetsplugin/jointtreewidget.hh"
 #include "hppwidgetsplugin/ui_jointtreewidget.h"
 
+#include <gepetto/viewer/group-node.h>
+
 #include <gepetto/gui/mainwindow.hh>
 #include <gepetto/gui/bodytreewidget.hh>
 #include <gepetto/gui/windows-manager.hh>
