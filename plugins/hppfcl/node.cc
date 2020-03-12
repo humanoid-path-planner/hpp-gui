@@ -34,9 +34,9 @@ namespace hpp {
       // TODO
     }
 
-    void BVHDisplay::setLevel (const std::size_t level)
+    void BVHDisplay::setLevel (const int& level)
     {
-      if (level >= levels_.size())
+      if (level >= (int)levels_.size())
         throw std::invalid_argument ("level out of range");
       this->asQueue()->replaceChild (
           levels_[level_].geode,
@@ -57,12 +57,12 @@ namespace hpp {
       level_ = 0;
       this->asQueue()->addChild(levels_[0].geode);
 
-      using gepetto::viewer::UIntProperty;
-      addProperty (UIntProperty::create ("Level",
-            UIntProperty::getterFromMemberFunction (this, &BVHDisplay::getLevel),
-            UIntProperty::setterFromMemberFunction (this, &BVHDisplay::setLevel))
-          );
-
+      using gepetto::viewer::RangedIntProperty;
+      RangedIntProperty::Ptr_t levelProp = RangedIntProperty::create ("Level",
+          this, &BVHDisplay::getLevel, &BVHDisplay::setLevel);
+      levelProp->min = 0;
+      levelProp->max = (int)(levels_.size()-1);
+      addProperty (levelProp);
     }
 
     void BVHDisplay::recursiveBuildTree (const BVH_t& bvh, int ibv,

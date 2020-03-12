@@ -35,9 +35,9 @@ namespace hpp {
       public:
         BVHDisplay (const std::string& filename, const std::string& name);
 
-        void setLevel (const std::size_t level);
+        void setLevel (const int& level);
 
-        const std::size_t& getLevel () const
+        const int& getLevel () const
         {
           return level_;
         }
@@ -60,7 +60,7 @@ namespace hpp {
         };
         const std::string filename_;
         std::vector <BVLevel> levels_;
-        std::size_t level_;
+        int level_;
     };
   } // namespace gui
 } // namespace hpp
