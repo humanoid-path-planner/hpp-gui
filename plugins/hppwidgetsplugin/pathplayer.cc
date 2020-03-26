@@ -209,6 +209,7 @@ namespace hpp {
     {
       assert (i >= 0);
       pathLength_ = plugin_->client()->problem()->pathLength ((short unsigned int)i);
+      timeSpinBox()->setValue(pathLength_);
       currentParam_= 0;
     }
 
@@ -305,6 +306,7 @@ namespace hpp {
 
     inline double PathPlayer::timeToLength(double time) const
     {
+      if (timeSpinBox()->value() == 0) return time;
       return time * pathLength_ / timeSpinBox()->value();
     }
 
@@ -316,6 +318,7 @@ namespace hpp {
 
     double PathPlayer::lengthBetweenRefresh() const
     {
+      if (timeSpinBox()->value() == 0) return timeBetweenRefresh() / 1000;
       return pathLength_ * timeBetweenRefresh() / (1000 * timeSpinBox()->value());
     }
 
