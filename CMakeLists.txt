@@ -1,6 +1,6 @@
 #
-# Copyright (c) 2015 CNRS
-# Authors: Joseph Mirabel
+# Copyright (c) 2015, 2020 CNRS
+# Authors: Joseph Mirabel, Guilhem Saurel
 #
 #
 # This file is part of hpp-gui
@@ -17,25 +17,23 @@
 # hpp-gui  If not, see
 # <http://www.gnu.org/licenses/>.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 
 SET(PROJECT_NAME "hpp-gui")
 SET(PROJECT_DESCRIPTION "Graphical interface for HPP ")
 
+SET(PROJECT_USE_CMAKE_EXPORT TRUE)
 SET(CXX_DISABLE_WERROR TRUE)
 
 INCLUDE(cmake/hpp.cmake)
 INCLUDE(cmake/boost.cmake)
 INCLUDE(cmake/python.cmake)
 
-# Tells pkg-config to read qtversion and cmake_plugin from pkg config file.
-LIST(APPEND PKG_CONFIG_ADDITIONAL_VARIABLES qtversion cmake_plugin)
-
 COMPUTE_PROJECT_ARGS(PROJECT_ARGS LANGUAGES CXX)
 PROJECT(${PROJECT_NAME} ${PROJECT_ARGS})
 
 FINDPYTHON()
-ADD_REQUIRED_DEPENDENCY("gepetto-viewer-corba >= 1.3")
+ADD_PROJECT_DEPENDENCY("gepetto-viewer-corba" REQUIRED)
 
 # Get desired Qt version
 string(REPLACE "." ";" DESIRED_QT_VERSION_LIST ${GEPETTO_VIEWER_CORBA_QTVERSION})
@@ -53,28 +51,27 @@ MESSAGE(STATUS "Looking for Qt ${DESIRED_QT_VERSION_MAJOR}.")
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 IF(USE_QT4)
   FIND_PACKAGE(Qt4 REQUIRED QtCore QtGui QtOpenGl QtNetwork)
-  SET(PKG_CONFIG_EXTRA "qtversion: ${QT_VERSION_MAJOR}.${QT_VERSION_MINOR}.${QT_VERSION_PATCH}")
+  SET(HPP_GUI_QTVERSION "${QT_VERSION_MAJOR}.${QT_VERSION_MINOR}.${QT_VERSION_PATCH}")
 ELSE(USE_QT4)
-  FOREACH (component "Core" "Widgets" "Gui" "OpenGL" "Concurrent" "Network")
+  FOREACH (component "Core" "Widgets" "Gui" "OpenGL" "Concurrent" "Network" "Xml")
     FIND_PACKAGE ("Qt5${component}" REQUIRED)
     LIST(APPEND QT_INCLUDE_DIRS ${Qt5${component}_INCLUDE_DIRS})
     LIST(APPEND QT_LIBRARIES    ${Qt5${component}_LIBRARIES}   )
   ENDFOREACH (component "Core" "Widgets" "Gui" "OpenGL" "Network")
-  SET(PKG_CONFIG_EXTRA "qtversion=${Qt5Core_VERSION}")
+  SET(HPP_GUI_QTVERSION "${Qt5Core_VERSION}")
 ENDIF(USE_QT4)
+SET(PKG_CONFIG_EXTRA "qtversion=${HPP_GUI_QTVERSION}")
+SET(PACKAGE_EXTRA_MACROS "set(HPP_GUI_QTVERSION ${HPP_GUI_QTVERSION})")
 
-SET(BOOST_COMPONENTS thread regex)
+SET(BOOST_COMPONENTS thread regex system)
 SEARCH_FOR_BOOST ()
 
-ADD_OPTIONAL_DEPENDENCY("hpp-corbaserver")
-ADD_OPTIONAL_DEPENDENCY("hpp-manipulation-corba")
+ADD_PROJECT_DEPENDENCY("hpp-fcl")
+ADD_PROJECT_DEPENDENCY("hpp-manipulation-corba")
 ADD_OPTIONAL_DEPENDENCY("remoteimu")
 
-# Activate hpp-util logging if requested
-SET (HPP_DEBUG FALSE CACHE BOOL "trigger hpp-util debug output")
-IF (HPP_DEBUG)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHPP_DEBUG")
-ENDIF()
+ADD_LIBRARY(${PROJECT_NAME} INTERFACE)
+INSTALL(TARGETS ${PROJECT_NAME} EXPORT ${TARGETS_EXPORT_NAME} DESTINATION lib)
 
 # This line allows QT-MOC to compile with the include from gepetto-gui
 # It cannot be done through the pkg-config framework because the moc settings

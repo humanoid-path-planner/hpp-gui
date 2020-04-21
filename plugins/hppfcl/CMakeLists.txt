@@ -1,5 +1,5 @@
-# Copyright (c) 2018 CNRS
-# Authors: Joseph Mirabel
+# Copyright (c) 2018, 2020 CNRS
+# Authors: Joseph Mirabel, Guilhem Saurel
 #
 #
 # This file is part of gepetto-viewer-corba
@@ -22,6 +22,8 @@ ELSE()
   SET(QT4 "")
 ENDIF()
 
+INCLUDE(${GEPETTO_VIEWER_CMAKE_PLUGIN})
+
 GEPETTO_GUI_PLUGIN(hppfclplugin
   ${QT4}
   HEADERS_NO_MOC
@@ -38,7 +40,7 @@ GEPETTO_GUI_PLUGIN(hppfclplugin
   node.cc
 
   LINK_DEPENDENCIES
+  hpp-fcl::hpp-fcl
 
   PKG_CONFIG_DEPENDENCIES
-  hpp-fcl
   )

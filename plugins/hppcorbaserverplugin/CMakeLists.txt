@@ -1,6 +1,6 @@
 #
-# Copyright (c) 2015 CNRS
-# Authors: Joseph Mirabel
+# Copyright (c) 2015, 2020 CNRS
+# Authors: Joseph Mirabel, Guilhem Saurel
 #
 #
 # This file is part of hpp-gui
@@ -17,13 +17,13 @@
 # hpp-gui  If not, see
 # <http://www.gnu.org/licenses/>.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-
 IF(USE_QT4)
   SET(QT "QT4")
 ELSE(USE_QT4)
   SET(QT "")
 ENDIF(USE_QT4)
+
+INCLUDE(${GEPETTO_VIEWER_CMAKE_PLUGIN})
 
 GEPETTO_GUI_PLUGIN(hppcorbaserverplugin
   ${QT}
@@ -36,7 +36,7 @@ GEPETTO_GUI_PLUGIN(hppcorbaserverplugin
   hppcorbaserverplugin.cc
   hppserverprocess.cc
 
-  PKG_CONFIG_DEPENDENCIES
-  "hpp-corbaserver"
-  "gepetto-viewer-corba"
+  LINK_DEPENDENCIES
+  "hpp-corbaserver::hpp-corbaserver"
+  "gepetto-viewer-corba::gepetto-viewer-corba"
   )
