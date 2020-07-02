@@ -61,6 +61,7 @@ namespace hpp {
           this, SLOT (updateCurrentConfig(QListWidgetItem*,QListWidgetItem*)));
       connect(ui_->listGoals, SIGNAL(configurationChanged()), SLOT(setConfigs()));
       connect(list(), SIGNAL(configurationChanged()), SLOT(setConfigs()));
+      name()->setText(basename_ + QString::number(count_));
     }
 
     ConfigurationListWidget::~ConfigurationListWidget()
@@ -76,8 +77,15 @@ namespace hpp {
     {
       hpp::floatSeq const* c = plugin_->getCurrentConfig ();
       list()->addItem(makeItem(name()->text(), *c));
-      name()->setText(basename_ + QString::number(count_));
       count_++;
+      name()->setText(basename_ + QString::number(count_));
+    }
+
+    void ConfigurationListWidget::recivedConfig (QString name, const hpp::floatSeq& config)
+    {
+      list()->addItem(makeItem(name, config));
+      count_++;
+      name()->setText(basename_ + QString::number(count_));
     }
 
     void ConfigurationListWidget::updateCurrentConfig (QListWidgetItem* current, QListWidgetItem *)

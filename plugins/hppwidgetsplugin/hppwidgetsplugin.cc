@@ -29,6 +29,8 @@
 #include "hppwidgetsplugin/conversions.hh"
 #include "hppwidgetsplugin/joint-action.hh"
 
+#include "hppwidgetsplugin/demoloadersubwidget.hh"
+
 #include "hppwidgetsplugin/roadmap.hh"
 
 using CORBA::ULong;
@@ -71,7 +73,8 @@ namespace hpp {
       solverWidget_ (NULL),
       configListWidget_ (NULL),
       hpp_ (NULL),
-      jointTreeWidget_ (NULL)
+      jointTreeWidget_ (NULL),
+      demoLoaderSubWidget_ (NULL)
     {
     }
 
@@ -191,6 +194,10 @@ namespace hpp {
       a = new JointAction (tr("Display &roadmap"), jointTreeWidget_, this);
       connect (a, SIGNAL (triggered(std::string)), SLOT (displayRoadmap(std::string)));
       asb->addAction(a);
+
+      // Init the problem loader subwidget
+      demoLoaderSubWidget_ = new DemoLoaderSubWidget(this, configListWidget_);
+      demoLoaderSubWidget_->init();
     }
 
     QString HppWidgetsPlugin::name() const
