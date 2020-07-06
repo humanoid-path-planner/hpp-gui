@@ -33,7 +33,7 @@ namespace hpp {
       public:
         static const int ConfigRole;
         /// Get the list of configurations.
-        inline QListWidget* list ();
+        QListWidget* list ();
 
         /// Set the initial configuration in the problem.
         void setInitConfig(hpp::floatSeq& config);
@@ -46,13 +46,15 @@ namespace hpp {
 
         static hpp::floatSeq& getConfig (QListWidgetItem* item);
 
-        public slots:
-          /// Save the current configuration of the robot.
-          void onSaveClicked ();
+        void reciveConfig (QString name, const hpp::floatSeq& config);
 
-          /// Change the configuration displayed in the viewer.
-          /// \param current new configuration
-          /// \param previous previous configuration
+      public slots:
+        /// Save the current configuration of the robot.
+        void onSaveClicked ();
+
+        /// Change the configuration displayed in the viewer.
+        /// \param current new configuration
+        /// \param previous previous configuration
         void updateCurrentConfig (QListWidgetItem* current,QListWidgetItem* previous);
 
         void fetchInitAndGoalConfigs ();

@@ -175,6 +175,9 @@ signals:
         /// Get the pathPlayer widget.
         JointTreeWidget* jointTreeWidget() const;
 
+        /// Get the pathPlayer widget.
+        ConfigurationListWidget* configurationListWidget() const;
+
         /// Get the list of joints from corbaserver and update internal joint map.
         /// \param robotName name of the robot
         virtual void updateRobotJoints (const QString robotName);

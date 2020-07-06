@@ -1,10 +1,13 @@
 //
 // Copyright (c) CNRS
-// Author: Joseph Mirabel and Heidy Dallard
+// Authors: Yann de Mont-Marin
 //
 
 #ifndef HPP_GUI_DEMOLOADERSUBWIDGET_HH
 #define HPP_GUI_DEMOLOADERSUBWIDGET_HH
+
+# include <string>
+# include <tinyxml.h>
 
 #include <hppwidgetsplugin/hppwidgetsplugin.hh>
 #include <hppwidgetsplugin/configurationlistwidget.hh>
@@ -16,8 +19,7 @@ namespace hpp {
       Q_OBJECT
 
       public:
-        explicit DemoLoaderSubWidget(HppWidgetsPlugin *plugin,
-                                     ConfigurationListWidget *configWidget);
+        explicit DemoLoaderSubWidget(HppWidgetsPlugin *plugin);
         void init();
 
       public slots:
@@ -28,13 +30,13 @@ namespace hpp {
       protected:
         void writeBounds(TiXmlElement* parent);
         void writeConfigs(TiXmlElement* parent);
-        void writeElement(TiXmlElement* parent, std::string type, std::string name, hpp::floatSeq & fS);
-        void loadConfig(std::string name, hpp::floatSeq & fS);
-        void loadBound(std::string name, hpp::floatSeq & fS);
+        void writeElement(TiXmlElement* parent, std::string type, std::string name, const hpp::floatSeq & fS);
+        void loadConfig(const std::string & name, const hpp::floatSeq & fS);
+        void loadBound(const std::string & name, const hpp::floatSeq & fS);
 
       private:
         HppWidgetsPlugin* plugin_;
-        ConfigurationListWidget* configWidget_;
+        ConfigurationListWidget* clWidget() const;
     };
   } // namespace gui
 } // namespace hpp

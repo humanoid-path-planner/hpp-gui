@@ -196,8 +196,13 @@ namespace hpp {
       asb->addAction(a);
 
       // Init the problem loader subwidget
-      demoLoaderSubWidget_ = new DemoLoaderSubWidget(this, configListWidget_);
+      demoLoaderSubWidget_ = new DemoLoaderSubWidget(this);
       demoLoaderSubWidget_->init();
+
+      // Init osg with hpp-gui groups
+      main->osg()->createGroup("joints");
+      main->osg()->addToGroup("joints", "hpp-gui");
+      main->osg()->refresh();
     }
 
     QString HppWidgetsPlugin::name() const
@@ -547,6 +552,11 @@ namespace hpp {
     JointTreeWidget* HppWidgetsPlugin::jointTreeWidget() const
     {
       return jointTreeWidget_;
+    }
+
+    ConfigurationListWidget* HppWidgetsPlugin::configurationListWidget() const
+    {
+      return configListWidget_;
     }
 
     void HppWidgetsPlugin::updateRobotJoints(const QString robotName)

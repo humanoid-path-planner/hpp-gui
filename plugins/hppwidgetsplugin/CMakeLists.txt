@@ -42,6 +42,7 @@ GEPETTO_GUI_PLUGIN(hppwidgetsplugin
   configurationlist.hh
   twojointsconstraint.hh
   joint-action.hh
+  demoloadersubwidget.hh
 
   HEADERS_NO_MOC
   roadmap.hh
@@ -74,9 +75,11 @@ GEPETTO_GUI_PLUGIN(hppwidgetsplugin
   twojointsconstraint.cc
   listjointconstraint.cc
   joint-action.cc
+  demoloadersubwidget.cc
 
   LINK_DEPENDENCIES
   "Boost::thread" "Boost::regex" "Boost::system"
+  ${TinyXML_LIBRARY}
   "hpp-corbaserver::hpp-corbaserver"
   "gepetto-viewer-corba::gepetto-viewer-corba"
   )

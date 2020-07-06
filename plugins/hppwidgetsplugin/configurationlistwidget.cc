@@ -81,9 +81,9 @@ namespace hpp {
       name()->setText(basename_ + QString::number(count_));
     }
 
-    void ConfigurationListWidget::recivedConfig (QString name, const hpp::floatSeq& config)
+    void ConfigurationListWidget::reciveConfig (QString name_, const hpp::floatSeq& config)
     {
-      list()->addItem(makeItem(name, config));
+      list()->addItem(makeItem(name_, config));
       count_++;
       name()->setText(basename_ + QString::number(count_));
     }

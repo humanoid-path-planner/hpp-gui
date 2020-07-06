@@ -1,13 +1,20 @@
 //
 // Copyright (c) CNRS
-// Authors: Joseph Mirabel and Heidy Dallard
+// Authors: Yann de Mont-Marin
 //
+#include <QToolBar>
+#include <QAction>
+#include <QFileDialog>
+#include <QInputDialog>
+#include <QString>
+
+#include <boost/lexical_cast.hpp> 
+#include <boost/algorithm/string.hpp>
 
 #include "hppwidgetsplugin/demoloadersubwidget.hh"
 #include <hppwidgetsplugin/hppwidgetsplugin.hh>
 #include <gepetto/gui/mainwindow.hh>
 #include "hpp/corbaserver/client.hh"
-#include <boost/algorithm/string.hpp>
 
 
 namespace hpp {
@@ -16,13 +23,13 @@ namespace hpp {
     using gepetto::gui::MainWindow;
     using CORBA::ULong;
 
-    void DemoLoaderSubWidget::DemoLoaderSubWidget(HppWidgetsPlugin *plugin,
-                                                  ConfigurationListWidget *configWidget);
+    DemoLoaderSubWidget::DemoLoaderSubWidget(HppWidgetsPlugin *plugin):
       QObject (plugin),
-      plugin_ (plugin),
-      configWidget_ (configWidget)
+      plugin_ (plugin)
     {
     }
+
+
 
     void DemoLoaderSubWidget::init(){
       MainWindow* main = MainWindow::instance();
@@ -31,24 +38,25 @@ namespace hpp {
 
       QAction* load = new QAction ("Load demo", toolBar);
       toolBar->addAction (load);
-      connect (reset, SIGNAL(triggered()), SLOT (loadDemo()));
+      connect (load, SIGNAL(triggered()), SLOT (loadDemo()));
       main->registerSlot("loadDemo", this);
 
       QAction* save = new QAction ("Save demo", toolBar);
       toolBar->addAction (save);
-      connect (reset, SIGNAL(triggered()), SLOT (saveDemo()));
+      connect (save, SIGNAL(triggered()), SLOT (saveDemo()));
       main->registerSlot("saveDemo", this);
     }
 
-    void DemoLoaderSubWidget::robotName(){
-      return (std::string) CORBA::String_var robotName = plugin_->client ()->robot()->getRobotName();
+    std::string DemoLoaderSubWidget::robotName(){
+      CORBA::String_var robotName = plugin_->client ()->robot()->getRobotName();
+      return (std::string) robotName.in();
     }
 
     void DemoLoaderSubWidget::loadDemo(){
       MainWindow* main = MainWindow::instance();
 
-      QString filename = QFileDialog::getOpenFileName (this, "Select a demo file");
-      if (file.isNull()) return;
+      QString filename = QFileDialog::getOpenFileName (NULL, "Select a demo file");
+      if (filename.isNull()) return;
       std::string filename_ (filename.toStdString());
 
       TiXmlDocument doc(filename_);
@@ -60,12 +68,13 @@ namespace hpp {
       }
 
       TiXmlHandle hdl(&doc);
-      TiXmlElement* problem_element = hdl.FirstChildElement();
+      TiXmlElement* problem_element = hdl.FirstChildElement().Element();
 
       // Check that robot match
+      std::string root_type = problem_element->ValueStr ();
+      std::string robot_name = problem_element->Attribute("robotname");
       if (
-        elem->ValueStr().compare("problem")!=0 ||
-        robotName().compare((std::string) problem_element->Attribute("name")) !=0
+        root_type.compare("problem")!=0 || robot_name.compare(robotName())!=0
       ){
         const char* msg = "The robot and the demo file does not match";
         if (main != NULL)
@@ -74,38 +83,37 @@ namespace hpp {
       }
 
       // Loop on all elements
-      TiXmlElement *elem = hproblem_element->FirstChildElement().Element();
+      TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
       while (elem){
         // Get name
-        std:string name = elem->Attribute("name");
+        std::string name = elem->Attribute("name");
 
         // Parse floatSeq
         std::vector<std::string> parsing;
-        boost::split(parsing, elem->GetText(), [](char c){return c == ' ';});
+        std::string txt = elem->GetText();
+        boost::split(parsing, txt, boost::is_any_of(" "));
 
         hpp::floatSeq* fS = new hpp::floatSeq();
         fS->length((ULong) parsing.size());
-        for(int i=0; i<parsing.size(); i++){
-          (*fS)[(ULong) i] = boost::lexical_cast<double> (results[i]);
+        for(size_t i=0; i<parsing.size(); i++){
+          (*fS)[(ULong) i] = boost::lexical_cast<double> (parsing[i]);
         }
 
         // Get element type
-        std::string type = elem->ValueStr ()
+        std::string type = elem->ValueStr ();
 
-        if (type.compare("joint") = 0){
-          loadBound(name, *fS)
+        if (type.compare("joint") == 0){
+          loadBound(name, *fS);
         }
-        else if (type.compare("joint") = 0){
-          loadConfig(name, *fS)
+        else if (type.compare("config") == 0){
+          loadConfig(name, *fS);
         }
         elem = elem->NextSiblingElement(); // iteration 
       }
     }
 
     void DemoLoaderSubWidget::saveDemo(){
-      MainWindow* main = MainWindow::instance();
-
-      QString filename = QFileDialog::getSaveFileName(this, tr("Select a destination"));
+      QString filename = QFileDialog::getSaveFileName(NULL, tr("Select a destination"));
       if (filename.isNull()) return;
       std::string filename_ (filename.toStdString());
 
@@ -114,31 +122,31 @@ namespace hpp {
       doc.LinkEndChild( decl );
 
       TiXmlElement * problem_element = new TiXmlElement("problem");
-      problem_element->SetAttribute("robotname", robotname());
-      doc->LinkEndChild(problem_element);
+      problem_element->SetAttribute("robotname", robotName());
+      doc.LinkEndChild(problem_element);
 
       writeBounds(problem_element);
 
       writeConfigs(problem_element);
 
-      doc.SaveFile(filename);
+      doc.SaveFile(filename_.c_str());
     }
 
-    void DemoLoaderSubWidget::loadBound(std::string name,  hpp::floatSeq & fS){
-      CORBA::Long nbDof = plugin_->client()->robot ()->getJointNumberDof(name);
+    void DemoLoaderSubWidget::loadBound(const std::string & name, const hpp::floatSeq & fS){
+      CORBA::Long nbDof = plugin_->client()->robot ()->getJointNumberDof(name.c_str());
       if (nbDof > 0) {
         hpp::floatSeq_var bounds =
           plugin_->client()->robot()->getJointBounds(name.c_str());
         hpp::floatSeq& b = bounds.inout();
-        for (size_t i=0; i < bounds.length (); ++i){
+        for (size_t i=0; i < b.length (); ++i){
           b[(ULong) i] = fS[(ULong) i];
         }
-      plugin_->client()->robot()->setJointBounds(name.c_str(), bounds.in());
+      plugin_->client()->robot()->setJointBounds(name.c_str(), b);
       }
     }
 
-    void DemoLoaderSubWidget::loadConfig(std::string name, hpp::floatSeq & fS){
-      configWidget_->reciveConfig(Qstring(name), fS);
+    void DemoLoaderSubWidget::loadConfig(const std::string & name, const hpp::floatSeq & fS){
+      clWidget()->reciveConfig(QString::fromUtf8(name.c_str()), fS);
     }
 
     void DemoLoaderSubWidget::writeBounds(TiXmlElement* parent){
@@ -148,40 +156,35 @@ namespace hpp {
         CORBA::Long nbDof = plugin_->client()->robot ()->getJointNumberDof(jointName);
         if (nbDof > 0) {
           hpp::floatSeq_var bounds =
-            _plugin->client()->robot()->getJointBounds(jointName.c_str());
+            plugin_->client()->robot()->getJointBounds(jointName);
+        
+          const hpp::floatSeq& b = bounds.in();
           writeElement(parent, "joint",
                        (std::string) jointName,
-                       bounds.in())
+                       b);
         }
       }
     }
 
     void DemoLoaderSubWidget::writeConfigs(TiXmlElement* parent){
-      for (int i = 0; i < configWidget_->list->count(); ++i){
-        QListWidgetItem* item = configWidget_->list->item(i)
-
-
-        const hpp::floatSeq& config ;
-            writeElement(parent, "config",
-                         item->text().toStdString(),
-                         configWidget_->getConfig(item))
-
-          // OUTPUT
-          Qstring name = ;
+      for (int i = 0; i < clWidget()->list()->count(); ++i){
+        QListWidgetItem* item = clWidget()->list()->item(i);
+        writeElement(parent, "config",
+                     item->text().toStdString(),
+                     clWidget()->getConfig(item));
       }
-
-    };
+    }
 
     void DemoLoaderSubWidget::writeElement(TiXmlElement* parent,
                                            std::string type,
                                            std::string name,
-                                           hpp::floatSeq & fS){
+                                           const hpp::floatSeq & fS){
       // Convert hpp floafSeq
       std::string textual_seq("");
       for (size_t i=0; i< fS.length(); ++i){
-        textual_seq += boost::lexical_cast<std::string>(fS[(ULong) i])
-        if !(i< fS.length() -1){
-          textual_seq += " "
+        textual_seq += boost::lexical_cast<std::string>(fS[(ULong) i]);
+        if (i != fS.length() -1){
+          textual_seq += " ";
         }
       }
       // Create node
@@ -192,5 +195,8 @@ namespace hpp {
       parent->LinkEndChild(element);
     }
 
+    ConfigurationListWidget* DemoLoaderSubWidget::clWidget() const {
+      return plugin_->configurationListWidget();
+    }
   } // namespace gui
 } // namespace hpp
