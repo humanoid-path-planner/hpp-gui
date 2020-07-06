@@ -162,10 +162,6 @@ namespace hpp {
       main->connect (this, SIGNAL (logSuccess(QString)), SLOT (log(QString)));
       main->connect (this, SIGNAL (logFailure(QString)), SLOT (logError(QString)));
 
-      main->osg()->createGroup("joints");
-      main->osg()->addToGroup("joints", "hpp-gui");
-      main->osg()->refresh();
-
       main->registerSlot("requestCreateJointGroup", this);
       main->registerSlot("requestCreateComGroup", this);
       main->registerSlot("setRobotVelocity", pathPlayer_);
@@ -224,7 +220,9 @@ namespace hpp {
       // This is already done in requestRefresh
       // jointTreeWidget_->reload();
       gepetto::gui::MainWindow::instance()->requestRefresh();
-      gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
+      // We fetch the config and it contains the apply
+      // gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
+      fetchConfiguration();
       emit logSuccess ("Robot " + rd.name_ + " loaded");
     }
 
