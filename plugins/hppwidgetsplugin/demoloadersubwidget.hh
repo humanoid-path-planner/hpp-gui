@@ -9,6 +9,10 @@
 # include <string>
 # include <tinyxml.h>
 
+#include <QAction>
+#include <QList>
+#include <QToolBar>
+
 #include <hppwidgetsplugin/hppwidgetsplugin.hh>
 #include <hppwidgetsplugin/configurationlistwidget.hh>
 
@@ -20,6 +24,7 @@ namespace hpp {
 
       public:
         explicit DemoLoaderSubWidget(HppWidgetsPlugin *plugin);
+        virtual ~DemoLoaderSubWidget();
         void init();
 
       public slots:
@@ -28,13 +33,15 @@ namespace hpp {
         std::string robotName();
 
       protected:
-        void writeBounds(TiXmlElement* parent);
-        void writeConfigs(TiXmlElement* parent);
-        void writeElement(TiXmlElement* parent, std::string type, std::string name, const hpp::floatSeq & fS);
+        void writeBounds(TiXmlElement * const parent);
+        void writeConfigs(TiXmlElement * const parent);
+        void writeElement(TiXmlElement * const parent, const std::string & type, const std::string & name, const hpp::floatSeq & fS);
         void loadConfig(const std::string & name, const hpp::floatSeq & fS);
         void loadBound(const std::string & name, const hpp::floatSeq & fS);
 
       private:
+        QList <QAction*> buttons_;
+        QToolBar* toolbar_;
         HppWidgetsPlugin* plugin_;
         ConfigurationListWidget* clWidget() const;
     };

@@ -331,8 +331,13 @@ namespace hpp {
     void HppWidgetsPlugin::prepareApplyConfiguration()
     {
       bodyNames_.clear();
-      config_  .length (client()->robot()->getConfigSize());
-      velocity_.length (client()->robot()->getNumberDof ());
+      try {
+        config_  .length (client()->robot()->getConfigSize());
+        velocity_.length (client()->robot()->getNumberDof ());
+      } catch (const hpp::Error& e) {
+        qDebug () << "Could not prepare to aplly configuration:" << e.msg;
+        return;
+      }
       gepetto::gui::MainWindow * main = gepetto::gui::MainWindow::instance ();
       CORBA::ULong size = 0; const CORBA::ULong sall = 100;
       linkNames_.length(sall);

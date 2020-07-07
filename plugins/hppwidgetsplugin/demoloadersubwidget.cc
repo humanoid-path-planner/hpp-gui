@@ -2,8 +2,6 @@
 // Copyright (c) CNRS
 // Authors: Yann de Mont-Marin
 //
-#include <QToolBar>
-#include <QAction>
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QString>
@@ -29,22 +27,29 @@ namespace hpp {
     {
     }
 
-
+    DemoLoaderSubWidget::~DemoLoaderSubWidget(){
+      foreach (QAction* act, buttons_) {
+        toolbar_->removeAction (act);
+        delete act;
+      }
+    }
 
     void DemoLoaderSubWidget::init(){
       MainWindow* main = MainWindow::instance();
-      QToolBar* toolBar = MainWindow::instance()->addToolBar("demo loading toolbar");
-      toolBar->setObjectName ("demoloading.toolbar");
+      toolbar_ = MainWindow::instance()->addToolBar("demo loading toolbar");
+      toolbar_->setObjectName ("demoloading.toolbar");
 
-      QAction* load = new QAction ("Load demo", toolBar);
-      toolBar->addAction (load);
+      QAction* load = new QAction ("Load demo", toolbar_);
+      toolbar_->addAction (load);
       connect (load, SIGNAL(triggered()), SLOT (loadDemo()));
       main->registerSlot("loadDemo", this);
+      buttons_.append(load);
 
-      QAction* save = new QAction ("Save demo", toolBar);
-      toolBar->addAction (save);
+      QAction* save = new QAction ("Save demo", toolbar_);
+      toolbar_->addAction (save);
       connect (save, SIGNAL(triggered()), SLOT (saveDemo()));
       main->registerSlot("saveDemo", this);
+      buttons_.append(save);
     }
 
     std::string DemoLoaderSubWidget::robotName(){
@@ -104,6 +109,7 @@ namespace hpp {
 
         if (type.compare("joint") == 0){
           loadBound(name, *fS);
+          delete fS; // We only use fS to update bounds
         }
         else if (type.compare("config") == 0){
           loadConfig(name, *fS);
@@ -118,12 +124,13 @@ namespace hpp {
       std::string filename_ (filename.toStdString());
 
       TiXmlDocument doc;
-      TiXmlDeclaration * decl = new TiXmlDeclaration( "1.0", "", "" );
+
+      TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
       doc.LinkEndChild( decl );
 
-      TiXmlElement * problem_element = new TiXmlElement("problem");
+      TiXmlElement* problem_element = new TiXmlElement("problem");
       problem_element->SetAttribute("robotname", robotName());
-      doc.LinkEndChild(problem_element);
+      doc.LinkEndChild( problem_element );
 
       writeBounds(problem_element);
 
@@ -149,7 +156,7 @@ namespace hpp {
       clWidget()->reciveConfig(QString::fromUtf8(name.c_str()), fS);
     }
 
-    void DemoLoaderSubWidget::writeBounds(TiXmlElement* parent){
+    void DemoLoaderSubWidget::writeBounds(TiXmlElement * const parent){
       hpp::Names_t_var joints = plugin_->client()->robot()->getAllJointNames ();
       for (size_t i = 0; i < joints->length (); ++i) {
         const char* jointName = joints[(ULong) i];
@@ -166,7 +173,7 @@ namespace hpp {
       }
     }
 
-    void DemoLoaderSubWidget::writeConfigs(TiXmlElement* parent){
+    void DemoLoaderSubWidget::writeConfigs(TiXmlElement * const parent){
       for (int i = 0; i < clWidget()->list()->count(); ++i){
         QListWidgetItem* item = clWidget()->list()->item(i);
         writeElement(parent, "config",
@@ -175,9 +182,9 @@ namespace hpp {
       }
     }
 
-    void DemoLoaderSubWidget::writeElement(TiXmlElement* parent,
-                                           std::string type,
-                                           std::string name,
+    void DemoLoaderSubWidget::writeElement(TiXmlElement * const parent,
+                                           const std::string & type,
+                                           const std::string & name,
                                            const hpp::floatSeq & fS){
       // Convert hpp floafSeq
       std::string textual_seq("");
