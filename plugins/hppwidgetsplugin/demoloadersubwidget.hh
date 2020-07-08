@@ -3,8 +3,8 @@
 // Authors: Yann de Mont-Marin
 //
 
-#ifndef HPP_GUI_DEMOLOADERSUBWIDGET_HH
-#define HPP_GUI_DEMOLOADERSUBWIDGET_HH
+#ifndef HPP_GUI_DEMOSUBWIDGET_HH
+#define HPP_GUI_DEMOSUBWIDGET_HH
 
 # include <string>
 # include <tinyxml.h>
@@ -18,13 +18,13 @@
 
 namespace hpp {
   namespace gui {
-    class DemoLoaderSubWidget : public QObject
+    class DemoSubWidget : public QObject
     {
       Q_OBJECT
 
       public:
-        explicit DemoLoaderSubWidget(HppWidgetsPlugin *plugin);
-        virtual ~DemoLoaderSubWidget();
+        explicit DemoSubWidget(HppWidgetsPlugin *plugin);
+        virtual ~DemoSubWidget();
         void init();
 
       public slots:
@@ -49,4 +49,4 @@ namespace hpp {
   } // namespace gui
 } // namespace hpp
 
-#endif // HPP_GUI_DEMOLOADERSUBWIDGET_HH
+#endif // HPP_GUI_DEMOSUBWIDGET_HH

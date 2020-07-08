@@ -21,7 +21,7 @@ namespace hpp {
     class JointTreeItem;
     class Roadmap;
     class ConstraintWidget;
-    class DemoLoaderSubWidget;
+    class DemoSubWidget;
 
     inline CORBA::String_var to_corba(const QString& s)
     { return (const char*)s.toLocal8Bit().data(); }
@@ -236,7 +236,7 @@ signals:
         hpp::Names_t jointFrames_;
         std::list <std::string> comFrames_;
 
-        DemoLoaderSubWidget* demoLoaderSubWidget_; 
+        DemoSubWidget* demoSubWidget_; 
 
         hpp::floatSeq config_, velocity_;
 

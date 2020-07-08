@@ -9,7 +9,7 @@
 #include <boost/lexical_cast.hpp> 
 #include <boost/algorithm/string.hpp>
 
-#include "hppwidgetsplugin/demoloadersubwidget.hh"
+#include "hppwidgetsplugin/demosubwidget.hh"
 #include <hppwidgetsplugin/hppwidgetsplugin.hh>
 #include <gepetto/gui/mainwindow.hh>
 #include "hpp/corbaserver/client.hh"
@@ -21,20 +21,20 @@ namespace hpp {
     using gepetto::gui::MainWindow;
     using CORBA::ULong;
 
-    DemoLoaderSubWidget::DemoLoaderSubWidget(HppWidgetsPlugin *plugin):
+    DemoSubWidget::DemoSubWidget(HppWidgetsPlugin *plugin):
       QObject (plugin),
       plugin_ (plugin)
     {
     }
 
-    DemoLoaderSubWidget::~DemoLoaderSubWidget(){
+    DemoSubWidget::~DemoSubWidget(){
       foreach (QAction* act, buttons_) {
         toolbar_->removeAction (act);
         delete act;
       }
     }
 
-    void DemoLoaderSubWidget::init(){
+    void DemoSubWidget::init(){
       MainWindow* main = MainWindow::instance();
       toolbar_ = MainWindow::instance()->addToolBar("demo toolbar");
       toolbar_->setObjectName ("demo.toolbar");
@@ -58,12 +58,12 @@ namespace hpp {
       buttons_.append(save);
     }
 
-    std::string DemoLoaderSubWidget::robotName(){
+    std::string DemoSubWidget::robotName(){
       CORBA::String_var robotName = plugin_->client ()->robot()->getRobotName();
       return (std::string) robotName.in();
     }
 
-    void DemoLoaderSubWidget::resetAll(){
+    void DemoSubWidget::resetAll(){
       MainWindow* main = MainWindow::instance ();
 
       // Reinitialize config_list
@@ -89,7 +89,7 @@ namespace hpp {
       main->requestRefresh();
     }
 
-    void DemoLoaderSubWidget::loadDemo(){
+    void DemoSubWidget::loadDemo(){
       MainWindow* main = MainWindow::instance();
 
       QString filename = QFileDialog::getOpenFileName (NULL, "Select a demo file");
@@ -150,7 +150,7 @@ namespace hpp {
       }
     }
 
-    void DemoLoaderSubWidget::saveDemo(){
+    void DemoSubWidget::saveDemo(){
       QString filename = QFileDialog::getSaveFileName(NULL, tr("Select a destination"));
       if (filename.isNull()) return;
       std::string filename_ (filename.toStdString());
@@ -171,7 +171,7 @@ namespace hpp {
       doc.SaveFile(filename_.c_str());
     }
 
-    void DemoLoaderSubWidget::loadBound(const std::string & name, const hpp::floatSeq & fS){
+    void DemoSubWidget::loadBound(const std::string & name, const hpp::floatSeq & fS){
       CORBA::Long nbDof = plugin_->client()->robot ()->getJointNumberDof(name.c_str());
       if (nbDof > 0) {
         hpp::floatSeq_var bounds =
@@ -184,11 +184,11 @@ namespace hpp {
       }
     }
 
-    void DemoLoaderSubWidget::loadConfig(const std::string & name, const hpp::floatSeq & fS){
+    void DemoSubWidget::loadConfig(const std::string & name, const hpp::floatSeq & fS){
       clWidget()->reciveConfig(QString::fromUtf8(name.c_str()), fS);
     }
 
-    void DemoLoaderSubWidget::writeBounds(TiXmlElement * const parent){
+    void DemoSubWidget::writeBounds(TiXmlElement * const parent){
       hpp::Names_t_var joints = plugin_->client()->robot()->getAllJointNames ();
       for (size_t i = 0; i < joints->length (); ++i) {
         const char* jointName = joints[(ULong) i];
@@ -205,7 +205,7 @@ namespace hpp {
       }
     }
 
-    void DemoLoaderSubWidget::writeConfigs(TiXmlElement * const parent){
+    void DemoSubWidget::writeConfigs(TiXmlElement * const parent){
       clWidget()->resetAllConfigs(); // We pull all config in list
       for (int i = 0; i < clWidget()->list()->count(); ++i){
         QListWidgetItem* item = clWidget()->list()->item(i);
@@ -215,7 +215,7 @@ namespace hpp {
       }
     }
 
-    void DemoLoaderSubWidget::writeElement(TiXmlElement * const parent,
+    void DemoSubWidget::writeElement(TiXmlElement * const parent,
                                            const std::string & type,
                                            const std::string & name,
                                            const hpp::floatSeq & fS){
@@ -235,7 +235,7 @@ namespace hpp {
       parent->LinkEndChild(element);
     }
 
-    ConfigurationListWidget* DemoLoaderSubWidget::clWidget() const {
+    ConfigurationListWidget* DemoSubWidget::clWidget() const {
       return plugin_->configurationListWidget();
     }
   } // namespace gui

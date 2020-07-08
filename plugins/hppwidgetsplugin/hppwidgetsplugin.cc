@@ -29,7 +29,7 @@
 #include "hppwidgetsplugin/conversions.hh"
 #include "hppwidgetsplugin/joint-action.hh"
 
-#include "hppwidgetsplugin/demoloadersubwidget.hh"
+#include "hppwidgetsplugin/demosubwidget.hh"
 
 #include "hppwidgetsplugin/roadmap.hh"
 
@@ -74,7 +74,7 @@ namespace hpp {
       configListWidget_ (NULL),
       hpp_ (NULL),
       jointTreeWidget_ (NULL),
-      demoLoaderSubWidget_ (NULL)
+      demoSubWidget_ (NULL)
     {
     }
 
@@ -85,6 +85,7 @@ namespace hpp {
         main->removeDockWidget(dock);
         delete dock;
       }
+      delete demoSubWidget_;
       closeConnection ();
     }
 
@@ -192,8 +193,8 @@ namespace hpp {
       asb->addAction(a);
 
       // Init the problem loader subwidget
-      demoLoaderSubWidget_ = new DemoLoaderSubWidget(this);
-      demoLoaderSubWidget_->init();
+      demoSubWidget_ = new DemoSubWidget(this);
+      demoSubWidget_->init();
 
       // Init osg with hpp-gui groups
       main->osg()->createGroup("joints");
