@@ -33,7 +33,7 @@ namespace hpp {
       public:
         static const int ConfigRole;
         /// Get the list of configurations.
-        QListWidget* list ();
+        ConfigurationList* list ();
 
         /// Set the initial configuration in the problem.
         void setInitConfig(hpp::floatSeq& config);
@@ -46,7 +46,10 @@ namespace hpp {
 
         static hpp::floatSeq& getConfig (QListWidgetItem* item);
 
+        // Added for external manipulation of the widget by demo widget
         void reciveConfig (QString name, const hpp::floatSeq& config);
+        void resetAllConfigs ();
+        void reinitialize ();
 
       public slots:
         /// Save the current configuration of the robot.

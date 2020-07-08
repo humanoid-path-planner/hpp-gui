@@ -115,5 +115,12 @@ namespace hpp {
         deleteItem(item);
       }
     }
+
+    void ConfigurationList::deleteAll() {
+      while (count()) {
+        QListWidgetItem* item = takeItem(0);
+        deleteItem(item);
+      }
+    }
   }
 }

@@ -69,7 +69,7 @@ namespace hpp {
       delete ui_;
     }
 
-    QListWidget *ConfigurationListWidget::list() {
+    ConfigurationList *ConfigurationListWidget::list() {
       return ui_->listConfigurations;
     }
 
@@ -100,6 +100,28 @@ namespace hpp {
           }
           previous_ = current->listWidget();
         }
+    }
+
+    void ConfigurationListWidget::reinitialize(){
+      resetAllConfigs();
+      list()->deleteAll();
+      count_ = 0;
+      name()->setText(basename_ + QString::number(count_));
+    }
+
+    void ConfigurationListWidget::resetAllConfigs()
+    {
+      while (ui_->listGoals->count()) {
+        QListWidgetItem* item = ui_->listGoals->takeItem(0);
+        list()->addItem(item);
+      }
+      ui_->listGoals->setCurrentRow(-1);
+
+      while (ui_->listInit->count()) {
+        QListWidgetItem* item = ui_->listInit->takeItem(0);
+        list()->addItem(item);
+      }
+      ui_->listGoals->setCurrentRow(-1);
     }
 
     void ConfigurationListWidget::resetGoalConfigs(bool doEmpty)
