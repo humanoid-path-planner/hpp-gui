@@ -36,8 +36,14 @@ namespace hpp {
 
     void DemoLoaderSubWidget::init(){
       MainWindow* main = MainWindow::instance();
-      toolbar_ = MainWindow::instance()->addToolBar("demo loading toolbar");
-      toolbar_->setObjectName ("demoloading.toolbar");
+      toolbar_ = MainWindow::instance()->addToolBar("demo toolbar");
+      toolbar_->setObjectName ("demo.toolbar");
+
+      QAction* reset = new QAction ("Reset", toolbar_);
+      toolbar_->addAction (reset);
+      connect (reset, SIGNAL(triggered()), SLOT (resetAll()));
+      main->registerSlot("reset", this);
+      buttons_.append(reset);
 
       QAction* load = new QAction ("Load demo", toolbar_);
       toolbar_->addAction (load);
@@ -55,6 +61,32 @@ namespace hpp {
     std::string DemoLoaderSubWidget::robotName(){
       CORBA::String_var robotName = plugin_->client ()->robot()->getRobotName();
       return (std::string) robotName.in();
+    }
+
+    void DemoLoaderSubWidget::resetAll(){
+      MainWindow* main = MainWindow::instance ();
+
+      // Reinitialize config_list
+      clWidget()->reinitialize();
+
+      // Reset HPP class
+      plugin_->client ()->problem ()->resetProblem ();
+
+      // Delete all osg nodes
+      std::vector<std::string> v1(main->osg()->getSceneList());
+      for(std::vector<std::string>::iterator it = v1.begin(); it != v1.end(); ++it) {
+        main->osg()->deleteNode(*it, 1);
+      }
+
+      // Reinite the osg component
+      main->osg()->createScene("gepetto-gui");
+      main->osg()->createScene("hpp-gui");
+      main->osg()->createGroup("joints");
+      main->osg()->addToGroup("joints", "hpp-gui");
+      main->osg()->refresh();
+
+      // Request refresh of the main window
+      main->requestRefresh();
     }
 
     void DemoLoaderSubWidget::loadDemo(){
@@ -174,6 +206,7 @@ namespace hpp {
     }
 
     void DemoLoaderSubWidget::writeConfigs(TiXmlElement * const parent){
+      clWidget()->resetAllConfigs(); // We pull all config in list
       for (int i = 0; i < clWidget()->list()->count(); ++i){
         QListWidgetItem* item = clWidget()->list()->item(i);
         writeElement(parent, "config",

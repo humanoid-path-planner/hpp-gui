@@ -30,9 +30,10 @@ namespace hpp {
       public slots:
         void loadDemo();
         void saveDemo();
-        std::string robotName();
+        void resetAll();
 
       protected:
+        std::string robotName();
         void writeBounds(TiXmlElement * const parent);
         void writeConfigs(TiXmlElement * const parent);
         void writeElement(TiXmlElement * const parent, const std::string & type, const std::string & name, const hpp::floatSeq & fS);
