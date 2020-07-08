@@ -175,7 +175,7 @@ signals:
         /// Get the pathPlayer widget.
         JointTreeWidget* jointTreeWidget() const;
 
-        /// Get the pathPlayer widget.
+        /// Get the demo subwidget.
         ConfigurationListWidget* configurationListWidget() const;
 
         /// Get the list of joints from corbaserver and update internal joint map.

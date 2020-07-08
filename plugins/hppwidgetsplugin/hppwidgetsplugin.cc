@@ -163,6 +163,10 @@ namespace hpp {
       main->connect (this, SIGNAL (logSuccess(QString)), SLOT (log(QString)));
       main->connect (this, SIGNAL (logFailure(QString)), SLOT (logError(QString)));
 
+      main->osg()->createGroup("joints");
+      main->osg()->addToGroup("joints", "hpp-gui");
+      main->osg()->refresh();
+
       main->registerSlot("requestCreateJointGroup", this);
       main->registerSlot("requestCreateComGroup", this);
       main->registerSlot("setRobotVelocity", pathPlayer_);
@@ -195,11 +199,6 @@ namespace hpp {
       // Init the problem loader subwidget
       demoSubWidget_ = new DemoSubWidget(this);
       demoSubWidget_->init();
-
-      // Init osg with hpp-gui groups
-      main->osg()->createGroup("joints");
-      main->osg()->addToGroup("joints", "hpp-gui");
-      main->osg()->refresh();
     }
 
     QString HppWidgetsPlugin::name() const

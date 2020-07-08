@@ -34,9 +34,11 @@ namespace hpp {
 
       protected:
         std::string robotName();
+
         void writeBounds(TiXmlElement * const parent);
         void writeConfigs(TiXmlElement * const parent);
         void writeElement(TiXmlElement * const parent, const std::string & type, const std::string & name, const hpp::floatSeq & fS);
+
         void loadConfig(const std::string & name, const hpp::floatSeq & fS);
         void loadBound(const std::string & name, const hpp::floatSeq & fS);
 
