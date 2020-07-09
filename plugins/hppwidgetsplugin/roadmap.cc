@@ -35,6 +35,7 @@ namespace hpp {
       try {
         gepetto::gui::WindowsManagerPtr_t wsm = gepetto::gui::MainWindow::instance()->osg();
         wsm->createScene (roadmapName().c_str());
+        wsm->addToGroup(roadmapName(), "hpp-gui");
       } catch (const gepetto::Error&) {
         qDebug () << "Roadmap" <<
           QString::fromStdString (roadmapName ()) << "already exists.";
@@ -84,7 +85,6 @@ namespace hpp {
         std::string name = edgeName (currentEdgeId_);
         wsm->addLine(name, pos1, pos2, color);
       }
-      wsm->addToGroup(rn, "hpp-gui");
       afterDisplay ();
       wsm->refresh();
     }

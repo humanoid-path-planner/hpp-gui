@@ -72,18 +72,13 @@ namespace hpp {
       // Reset HPP class
       plugin_->client ()->problem ()->resetProblem ();
 
-      // Delete all osg nodes
-      std::vector<std::string> v1(main->osg()->getSceneList());
-      for(std::vector<std::string>::iterator it = v1.begin(); it != v1.end(); ++it) {
-        main->osg()->deleteNode(*it, 1);
+      // Deletes all non default nodes
+      std::vector<std::string> nodes(main->osg()->getNodeList());
+      for(std::vector<std::string>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
+        if (!(*it == "gepetto-gui" || *it == "hpp-gui" ||  *it == "joints" || (*it).substr(0, 4) == "View")){
+          main->osg()->deleteNode(*it, 1);
+        }
       }
-
-      // Reinite the osg component
-      main->osg()->createScene("gepetto-gui");
-      main->osg()->createScene("hpp-gui");
-      main->osg()->createGroup("joints");
-      main->osg()->addToGroup("joints", "hpp-gui");
-      main->osg()->refresh();
 
       // Request refresh of the main window
       main->requestRefresh();
