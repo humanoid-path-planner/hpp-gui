@@ -56,6 +56,8 @@ namespace hpp {
       connect (save, SIGNAL(triggered()), SLOT (saveDemo()));
       main->registerSlot("saveDemo", this);
       buttons_.append(save);
+
+      plugin_->client ()->problem ()->resetProblem ();
     }
 
     std::string DemoSubWidget::robotName(){
@@ -143,6 +145,7 @@ namespace hpp {
         }
         elem = elem->NextSiblingElement(); // iteration 
       }
+      MainWindow::instance()->requestRefresh(); // To make new bounded item slider
     }
 
     void DemoSubWidget::saveDemo(){
