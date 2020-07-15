@@ -45,4 +45,5 @@ GEPETTO_GUI_PLUGIN(hppmanipulationwidgetsplugin
   hppwidgetsplugin
   "hpp-manipulation-corba::hpp-manipulation-corba"
   "gepetto-viewer-corba::gepetto-viewer-corba"
+  "Boost::thread" "Boost::regex" "Boost::system"
   )

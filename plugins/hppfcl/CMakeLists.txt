@@ -39,6 +39,8 @@ GEPETTO_GUI_PLUGIN(hppfclplugin
 
   LINK_DEPENDENCIES
   hpp-fcl::hpp-fcl
+  gepetto-viewer-corba::gepetto-viewer-corba
+  Boost::thread Boost::regex Boost::system
 
   PKG_CONFIG_DEPENDENCIES
   )

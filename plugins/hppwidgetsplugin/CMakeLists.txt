@@ -76,7 +76,7 @@ GEPETTO_GUI_PLUGIN(hppwidgetsplugin
   joint-action.cc
 
   LINK_DEPENDENCIES
-  ${Boost_LIBRARIES}
+  "Boost::thread" "Boost::regex" "Boost::system"
   "hpp-corbaserver::hpp-corbaserver"
   "gepetto-viewer-corba::gepetto-viewer-corba"
   )
