@@ -31,15 +31,13 @@ namespace hpp {
       int nbCC = hpp->problem()->numberConnectedComponents();
       nodeColorMap_ = gepetto::gui::ColorMap (nbCC + 10);
       edgeColorMap_ = gepetto::gui::ColorMap (nbCC + 10);
-
-      try {
-        gepetto::gui::WindowsManagerPtr_t wsm = gepetto::gui::MainWindow::instance()->osg();
-        wsm->createScene (roadmapName().c_str());
-        wsm->addToGroup(roadmapName(), "hpp-gui");
-      } catch (const gepetto::Error&) {
-        qDebug () << "Roadmap" <<
-          QString::fromStdString (roadmapName ()) << "already exists.";
-      }
+      
+      std::string pn = roadmapName();
+      
+      gepetto::gui::WindowsManagerPtr_t wsm = gepetto::gui::MainWindow::instance()->osg();
+      if (wsm->nodeExists(pn)) wsm->deleteNode (pn, true);
+      wsm->createScene (pn.c_str());
+      wsm->addToGroup(pn, "hpp-gui");
     }
 
     void Roadmap::initRoadmapFromJoint(const std::string& jointName)
