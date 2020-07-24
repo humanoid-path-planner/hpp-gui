@@ -1,0 +1,5 @@
+                                                                -*- outline -*-
+New in 4.10.0
+* In class PathPlayer
+  - set time to path length by default.
+
