@@ -47,7 +47,7 @@ namespace hpp {
         static hpp::floatSeq& getConfig (QListWidgetItem* item);
 
         // Added for external manipulation of the widget by demo widget
-        void reciveConfig (QString name, const hpp::floatSeq& config);
+        void receiveConfig (QString name, const hpp::floatSeq& config);
         void resetAllConfigs ();
         void reinitialize ();
 
