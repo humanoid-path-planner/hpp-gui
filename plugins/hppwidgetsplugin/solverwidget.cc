@@ -270,7 +270,7 @@ namespace hpp {
       QString file = QFileDialog::getOpenFileName(this, tr ("Select a roadmap file"));
       if (file.isNull()) return;
       try {
-        plugin_->client()->problem()->readRoadmap (file.toLocal8Bit().data());
+        plugin_->client()->problem()->loadRoadmap (file.toLocal8Bit().data());
       } catch (const hpp::Error& e) {
         MainWindow::instance()->logError(QString::fromLocal8Bit(e.msg));
       }
