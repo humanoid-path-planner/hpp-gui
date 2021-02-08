@@ -8,6 +8,7 @@
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 
+#include <QtGlobal>
 #include <QDockWidget>
 #include <QMessageBox>
 
@@ -274,10 +275,16 @@ namespace hpp {
 
     QString HppWidgetsPlugin::getHppIIOPurl () const
     {
-      QString host = gepetto::gui::MainWindow::instance ()->settings_->getSetting
-        ("hpp/host", "localhost").toString ();
-      QString port = gepetto::gui::MainWindow::instance ()->settings_->getSetting
-        ("hpp/port", "13331").toString ();
+      auto* settings = gepetto::gui::MainWindow::instance ()->settings_;
+      QString host ("localhost"), port("13331");
+
+      QByteArray env = qgetenv("HPP_HOST");
+      if (!env.isNull()) host = env;
+      env = qgetenv("HPP_PORT");
+      if (!env.isNull()) port = env;
+
+      host = settings->getSetting ("hpp/host", host).toString();
+      port = settings->getSetting ("hpp/port", port).toString();
       return QString ("corbaloc:iiop:%1:%2").arg(host).arg(port);
     }
 
