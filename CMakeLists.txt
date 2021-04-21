@@ -103,3 +103,5 @@ ELSE ()
   INSTALL (FILES etc/gepetto-gui/basic.conf
     DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/gepetto-gui)
 ENDIF ()
+
+INSTALL(FILES package.xml DESTINATION share/${PROJECT_NAME})
