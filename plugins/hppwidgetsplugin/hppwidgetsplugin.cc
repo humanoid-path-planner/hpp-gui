@@ -30,6 +30,8 @@
 #include "hppwidgetsplugin/conversions.hh"
 #include "hppwidgetsplugin/joint-action.hh"
 
+#include "hppwidgetsplugin/demosubwidget.hh"
+
 #include "hppwidgetsplugin/roadmap.hh"
 
 using CORBA::ULong;
@@ -72,7 +74,8 @@ namespace hpp {
       solverWidget_ (NULL),
       configListWidget_ (NULL),
       hpp_ (NULL),
-      jointTreeWidget_ (NULL)
+      jointTreeWidget_ (NULL),
+      demoSubWidget_ (NULL)
     {
     }
 
@@ -83,6 +86,7 @@ namespace hpp {
         main->removeDockWidget(dock);
         delete dock;
       }
+      delete demoSubWidget_;
       closeConnection ();
     }
 
@@ -192,6 +196,10 @@ namespace hpp {
       a = new JointAction (tr("Display &roadmap"), jointTreeWidget_, this);
       connect (a, SIGNAL (triggered(std::string)), SLOT (displayRoadmap(std::string)));
       asb->addAction(a);
+
+      // Init the problem loader subwidget
+      demoSubWidget_ = new DemoSubWidget(this);
+      demoSubWidget_->init();
     }
 
     QString HppWidgetsPlugin::name() const
@@ -213,7 +221,9 @@ namespace hpp {
       // This is already done in requestRefresh
       // jointTreeWidget_->reload();
       gepetto::gui::MainWindow::instance()->requestRefresh();
-      gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
+      // We fetch the config and it contains the apply
+      // gepetto::gui::MainWindow::instance()->requestApplyCurrentConfiguration();
+      fetchConfiguration();
       emit logSuccess ("Robot " + rd.name_ + " loaded");
     }
 
@@ -328,8 +338,13 @@ namespace hpp {
     void HppWidgetsPlugin::prepareApplyConfiguration()
     {
       bodyNames_.clear();
-      config_  .length (client()->robot()->getConfigSize());
-      velocity_.length (client()->robot()->getNumberDof ());
+      try {
+        config_  .length (client()->robot()->getConfigSize());
+        velocity_.length (client()->robot()->getNumberDof ());
+      } catch (const hpp::Error& e) {
+        qDebug () << "Could not prepare to aplly configuration:" << e.msg;
+        return;
+      }
       gepetto::gui::MainWindow * main = gepetto::gui::MainWindow::instance ();
       CORBA::ULong size = 0; const CORBA::ULong sall = 100;
       linkNames_.length(sall);
@@ -547,6 +562,11 @@ namespace hpp {
     JointTreeWidget* HppWidgetsPlugin::jointTreeWidget() const
     {
       return jointTreeWidget_;
+    }
+
+    ConfigurationListWidget* HppWidgetsPlugin::configurationListWidget() const
+    {
+      return configListWidget_;
     }
 
     void HppWidgetsPlugin::updateRobotJoints(const QString robotName)

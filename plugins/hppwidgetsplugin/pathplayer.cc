@@ -92,10 +92,9 @@ namespace hpp {
       HppWidgetsPlugin::HppClient* hpp = plugin_->client();
       hpp::floatSeq_var times;
       hpp::floatSeqSeq_var waypoints = hpp->problem()->getWaypoints((CORBA::ULong)pid, times.out());
-      if (!wsm->getGroup(pn, false)) {
-        wsm->createGroup (pn);
-        wsm->addToGroup(pn, "hpp-gui");
-      }
+      if (wsm->nodeExists(pn)) wsm->deleteNode (pn, true);
+      wsm->createGroup (pn);
+      wsm->addToGroup(pn, "hpp-gui");
       // Temporary object to avoid dynamic allocation.
       // Arguments are max, length, storage, take ownership.
       char* tmps[1];

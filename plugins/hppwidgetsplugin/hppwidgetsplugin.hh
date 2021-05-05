@@ -21,6 +21,7 @@ namespace hpp {
     class JointTreeItem;
     class Roadmap;
     class ConstraintWidget;
+    class DemoSubWidget;
 
     inline CORBA::String_var to_corba(const QString& s)
     { return (const char*)s.toLocal8Bit().data(); }
@@ -174,6 +175,9 @@ signals:
         /// Get the pathPlayer widget.
         JointTreeWidget* jointTreeWidget() const;
 
+        /// Get the demo subwidget.
+        ConfigurationListWidget* configurationListWidget() const;
+
         /// Get the list of joints from corbaserver and update internal joint map.
         /// \param robotName name of the robot
         virtual void updateRobotJoints (const QString robotName);
@@ -231,6 +235,8 @@ signals:
         JointMap jointMap_;
         hpp::Names_t jointFrames_;
         std::list <std::string> comFrames_;
+
+        DemoSubWidget* demoSubWidget_; 
 
         hpp::floatSeq config_, velocity_;
 

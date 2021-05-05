@@ -241,8 +241,8 @@ namespace hpp {
           if (parent == items.end()) model_->        appendRow(_jti->second);
           else                       parent->second->appendRow(_jti->second);
         }
-      } catch (hpp::Error& e) {
-        gepetto::gui::MainWindow::instance ()->logError(QString(e.msg));
+      } catch (const hpp::Error& e) {
+        qDebug () << "Could not reload JointTreeWidget:" << e.msg;
         return;
       }
     }

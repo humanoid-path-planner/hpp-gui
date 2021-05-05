@@ -24,6 +24,7 @@ namespace hpp {
 
       void setSingleItemOnly (bool set);
       void bindDeleteKey ();
+      void deleteAll ();
 
     protected:
       void dragEnterEvent(QDragEnterEvent* event);
