@@ -1,8 +1,9 @@
 # hpp-gui
 
-[![Pipeline status](https://gepgitlab.laas.fr/humanoid-path-planner/hpp-gui/badges/master/pipeline.svg)](https://gepgitlab.laas.fr/humanoid-path-planner/hpp-gui/commits/master)
-[![Coverage report](https://gepgitlab.laas.fr/humanoid-path-planner/hpp-gui/badges/master/coverage.svg?job=doc-coverage)](http://projects.laas.fr/gepetto/doc/humanoid-path-planner/hpp-gui/master/coverage/)
-[![Build Status](https://travis-ci.org/jmirabel/hpp-gui.svg?branch=master)](https://travis-ci.org/jmirabel/hpp-gui)
+[![Pipeline status](https://gitlab.laas.fr/humanoid-path-planner/hpp-gui/badges/master/pipeline.svg)](https://gitlab.laas.fr/humanoid-path-planner/hpp-gui/commits/master)
+[![Coverage report](https://gitlab.laas.fr/humanoid-path-planner/hpp-gui/badges/master/coverage.svg?job=doc-coverage)](https://gepettoweb.laas.fr/doc/humanoid-path-planner/hpp-gui/master/coverage/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/humanoid-path-planner/hpp-gui/master.svg)](https://results.pre-commit.ci/latest/github/humanoid-path-planner/hpp-gui)
 
 **hpp-gui** is a set of plugins to integrate [HPP] inside `gepetto-gui`, which comes with the `gepetto-viewer-corba` package.
 
@@ -39,9 +40,6 @@ mkdir hpp-gui/build && cd hpp-gui/build
 cmake ..
 make install
 ```
-
-## Version
-0.1
 
 [HPP]:http://projects.laas.fr/gepetto/index.php/Software/Hpp
 [hpp-corbaserver]:https://github.com/humanoid-path-planner/hpp-corbaserver
