@@ -13,63 +13,61 @@
 class QDockWidget;
 
 namespace Ui {
-  class ConstraintWidget;
+class ConstraintWidget;
 }
 
 namespace hpp {
-  namespace gui {
-    class HppWidgetsPlugin;
+namespace gui {
+class HppWidgetsPlugin;
 
-    /// Widget that allows to create constraints.
-    class ConstraintWidget : public QWidget
-    {
-        Q_OBJECT
+/// Widget that allows to create constraints.
+class ConstraintWidget : public QWidget {
+  Q_OBJECT
 
-    public:
-        ConstraintWidget(HppWidgetsPlugin* plugin, QWidget *parent = 0);
-        virtual ~ConstraintWidget();
+ public:
+  ConstraintWidget(HppWidgetsPlugin* plugin, QWidget* parent = 0);
+  virtual ~ConstraintWidget();
 
-    public slots:
-        /// Reload the list of joints.
-        void reload();
+ public slots:
+  /// Reload the list of joints.
+  void reload();
 
-        /// Add a constraint to the internal vector.
-        /// \param constraint constraint to add
-        void addConstraint(IConstraint* constraint);
+  /// Add a constraint to the internal vector.
+  /// \param constraint constraint to add
+  void addConstraint(IConstraint* constraint);
 
-      virtual void refresh();
+  virtual void refresh();
 
-    private slots:
-        /// Create a constraint according to the currently selected.
-        void createConstraint();
+ private slots:
+  /// Create a constraint according to the currently selected.
+  void createConstraint();
 
-        /// Set numerical constraints in corbaserver.
-        virtual void confirmNumerical();
+  /// Set numerical constraints in corbaserver.
+  virtual void confirmNumerical();
 
-        /// Apply constraints to the current configuration.
-        virtual void applyConstraints();
+  /// Apply constraints to the current configuration.
+  virtual void applyConstraints();
 
-        /// Reset the numerical constraints.
-        virtual void reset();
+  /// Reset the numerical constraints.
+  virtual void reset();
 
-        /// Add the newly created constraint to the list.
-        /// \param name name of the constraint
-        void onConstraintCreated(QString name);
+  /// Add the newly created constraint to the list.
+  /// \param name name of the constraint
+  void onConstraintCreated(QString name);
 
-        void onFinished();
+  void onFinished();
 
-        void typeChanged(int index);
+  void typeChanged(int index);
 
-    protected:
-        HppWidgetsPlugin* plugin_;
-        Ui::ConstraintWidget *ui;
-        QDockWidget* dock_;
-        int lastInsert_;
-        std::vector<IConstraint*> funcs_;
-        bool haveWidget;
-    };
-  } // namespace gui
-} // namespace hpp
+ protected:
+  HppWidgetsPlugin* plugin_;
+  Ui::ConstraintWidget* ui;
+  QDockWidget* dock_;
+  int lastInsert_;
+  std::vector<IConstraint*> funcs_;
+  bool haveWidget;
+};
+}  // namespace gui
+}  // namespace hpp
 
-
-#endif // HPP_GUI_CONSTRAINTWIDGET_HH
+#endif  // HPP_GUI_CONSTRAINTWIDGET_HH

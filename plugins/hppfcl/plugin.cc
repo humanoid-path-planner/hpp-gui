@@ -16,94 +16,94 @@
 // hpp-gui  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include <plugin.hh>
+#include <gepetto/viewer/window-manager.h>
 
-#include <QToolBar>
 #include <QAction>
 #include <QFileDialog>
 #include <QInputDialog>
-
-#include <gepetto/viewer/window-manager.h>
+#include <QToolBar>
 #include <gepetto/gui/mainwindow.hh>
 #include <gepetto/gui/osgwidget.hh>
 #include <gepetto/gui/windows-manager.hh>
-
 #include <node.hh>
+#include <plugin.hh>
 
 namespace hpp {
-  namespace gui {
-    using gepetto::gui::MainWindow;
+namespace gui {
+using gepetto::gui::MainWindow;
 
-    void HppFclPlugin::init()
-    {
-      MainWindow* main = MainWindow::instance ();
-      main->registerSlot("addBV", this);
+void HppFclPlugin::init() {
+  MainWindow* main = MainWindow::instance();
+  main->registerSlot("addBV", this);
 
-      // TODO add a way to add an action to body tree items.
-      QToolBar* toolBar = MainWindow::instance()->addToolBar("hpp-fcl tools");
-      toolBar->setObjectName ("hppfclplugin.toolbar");
-      QAction* openD = new QAction (QIcon::fromTheme("document-open"), "Load a BVH model", toolBar);
-      toolBar->addAction (openD);
-      connect (openD, SIGNAL(triggered()), SLOT (openDialog()));
-    }
+  // TODO add a way to add an action to body tree items.
+  QToolBar* toolBar = MainWindow::instance()->addToolBar("hpp-fcl tools");
+  toolBar->setObjectName("hppfclplugin.toolbar");
+  QAction* openD = new QAction(QIcon::fromTheme("document-open"),
+                               "Load a BVH model", toolBar);
+  toolBar->addAction(openD);
+  connect(openD, SIGNAL(triggered()), SLOT(openDialog()));
+}
 
-    void HppFclPlugin::addBV (QString name, QString filename, int splitMethod) const
-    {
-      std::string _name (name.toStdString());
+void HppFclPlugin::addBV(QString name, QString filename,
+                         int splitMethod) const {
+  std::string _name(name.toStdString());
 
-      BVHDisplayPtr_t node (new BVHDisplay (filename.toStdString(), _name));
-      switch (splitMethod) {
-        default:
-        case 0:
-          node->init (hpp::fcl::SPLIT_METHOD_MEAN);
-          break;
-        case 1:
-          node->init (hpp::fcl::SPLIT_METHOD_MEDIAN);
-          break;
-        case 2:
-          node->init (hpp::fcl::SPLIT_METHOD_BV_CENTER);
-          break;
-      }
-      MainWindow* main = MainWindow::instance ();
-      main->osg()->insertNode (_name, node);
-    }
+  BVHDisplayPtr_t node(new BVHDisplay(filename.toStdString(), _name));
+  switch (splitMethod) {
+    default:
+    case 0:
+      node->init(hpp::fcl::SPLIT_METHOD_MEAN);
+      break;
+    case 1:
+      node->init(hpp::fcl::SPLIT_METHOD_MEDIAN);
+      break;
+    case 2:
+      node->init(hpp::fcl::SPLIT_METHOD_BV_CENTER);
+      break;
+  }
+  MainWindow* main = MainWindow::instance();
+  main->osg()->insertNode(_name, node);
+}
 
-    void HppFclPlugin::openDialog() const
-    {
-      bool ok;
-      QString filename = QFileDialog::getOpenFileName (NULL, "Select a mesh file");
-      if (filename.isNull()) return;
-      int splitMethod = QInputDialog::getInt(NULL, "Split method type",
-          "Split method type", 0, 0, 3, 1, &ok);
-      if (!ok) return;
-      QString name = QInputDialog::getText(NULL, "Node name", "Node name", QLineEdit::Normal, "bvhmodel");
-      if (name.isNull()) return;
+void HppFclPlugin::openDialog() const {
+  bool ok;
+  QString filename = QFileDialog::getOpenFileName(NULL, "Select a mesh file");
+  if (filename.isNull()) return;
+  int splitMethod = QInputDialog::getInt(NULL, "Split method type",
+                                         "Split method type", 0, 0, 3, 1, &ok);
+  if (!ok) return;
+  QString name = QInputDialog::getText(NULL, "Node name", "Node name",
+                                       QLineEdit::Normal, "bvhmodel");
+  if (name.isNull()) return;
 
-      std::string filename_ (filename.toStdString());
-      std::string name_ (name.toStdString());
-      std::string mname_ (name_ + "_mesh");
+  std::string filename_(filename.toStdString());
+  std::string name_(name.toStdString());
+  std::string mname_(name_ + "_mesh");
 
-      // Load mesh
-      MainWindow* main = MainWindow::instance ();
-      if (!main->osg()->nodeExists (mname_) && !main->osg()->addMesh (mname_, filename_)) return;
+  // Load mesh
+  MainWindow* main = MainWindow::instance();
+  if (!main->osg()->nodeExists(mname_) &&
+      !main->osg()->addMesh(mname_, filename_))
+    return;
 
-      std::string group;
-      if (main->osgWindows().empty()) {
-        group = "window";
-        main->osg()->createWindow (group);
-      } else {
-        group = main->osgWindows().first()->window()->getID();
-      }
+  std::string group;
+  if (main->osgWindows().empty()) {
+    group = "window";
+    main->osg()->createWindow(group);
+  } else {
+    group = main->osgWindows().first()->window()->getID();
+  }
 
-      addBV (name, filename, splitMethod);
+  addBV(name, filename, splitMethod);
 
-      main->osg()->addToGroup (name_, group);
-      main->osg()->addToGroup (mname_, group);
-    }
+  main->osg()->addToGroup(name_, group);
+  main->osg()->addToGroup(mname_, group);
+}
 
-#if (QT_VERSION < QT_VERSION_CHECK(5,0,0))
-    Q_EXPORT_PLUGIN2 (hppfclplugin, HppFclPlugin)
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+Q_EXPORT_PLUGIN2(hppfclplugin, HppFclPlugin)
 #endif
 
-  } // namespace gui
-} // namespace hpp
+}  // namespace gui
+}  // namespace hpp

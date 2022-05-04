@@ -11,27 +11,26 @@
 #include <hppwidgetsplugin/roadmap.hh>
 
 namespace hpp {
-  namespace gui {
-    class ManipulationRoadmap : public Roadmap
-    {
-      public:
-        typedef Roadmap::NodeID NodeID;
-        typedef Roadmap::Color Color;
+namespace gui {
+class ManipulationRoadmap : public Roadmap {
+ public:
+  typedef Roadmap::NodeID NodeID;
+  typedef Roadmap::Color Color;
 
-        ManipulationRoadmap (HppManipulationWidgetsPlugin* plugin_);
+  ManipulationRoadmap(HppManipulationWidgetsPlugin* plugin_);
 
-        virtual ~ManipulationRoadmap () {}
+  virtual ~ManipulationRoadmap() {}
 
-        virtual void initRoadmapFromJoint (const std::string& jointName);
+  virtual void initRoadmapFromJoint(const std::string& jointName);
 
-        virtual void initRoadmapFromBody  (const std::string& bodyName);
+  virtual void initRoadmapFromBody(const std::string& bodyName);
 
-        virtual void nodeColor (NodeID nodeId, Color& color);
+  virtual void nodeColor(NodeID nodeId, Color& color);
 
-      private:
-        HppManipulationWidgetsPlugin* plugin_;
-    };
-  } // namespace gui
-} // namespace hpp
+ private:
+  HppManipulationWidgetsPlugin* plugin_;
+};
+}  // namespace gui
+}  // namespace hpp
 
-#endif // HPP_GUI_MANIPULATION_ROADMAP_HH
+#endif  // HPP_GUI_MANIPULATION_ROADMAP_HH

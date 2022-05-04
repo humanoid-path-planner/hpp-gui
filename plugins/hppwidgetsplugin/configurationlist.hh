@@ -9,37 +9,36 @@
 #include <QListWidget>
 
 namespace hpp {
-  namespace gui {
-    /// A QListWidget that accept drag and drop of configurations.
-    class ConfigurationList : public QListWidget
-    {
-      Q_OBJECT
+namespace gui {
+/// A QListWidget that accept drag and drop of configurations.
+class ConfigurationList : public QListWidget {
+  Q_OBJECT
 
-    signals:
-      void configurationChanged();
+ signals:
+  void configurationChanged();
 
-    public:
-      ConfigurationList(QWidget* parent);
-      virtual ~ConfigurationList();
+ public:
+  ConfigurationList(QWidget* parent);
+  virtual ~ConfigurationList();
 
-      void setSingleItemOnly (bool set);
-      void bindDeleteKey ();
+  void setSingleItemOnly(bool set);
+  void bindDeleteKey();
 
-    protected:
-      void dragEnterEvent(QDragEnterEvent* event);
-      void dragMoveEvent(QDragMoveEvent* event);
-      void dropEvent(QDropEvent *event);
-      void startDrag(Qt::DropActions supportedActions);
+ protected:
+  void dragEnterEvent(QDragEnterEvent* event);
+  void dragMoveEvent(QDragMoveEvent* event);
+  void dropEvent(QDropEvent* event);
+  void startDrag(Qt::DropActions supportedActions);
 
-    private slots:
-      void deleteSelection();
+ private slots:
+  void deleteSelection();
 
-    private:
-      void deleteItem(QListWidgetItem* item);
+ private:
+  void deleteItem(QListWidgetItem* item);
 
-      bool singleItemOnly;
-    };
-  }
-}
+  bool singleItemOnly;
+};
+}  // namespace gui
+}  // namespace hpp
 
-#endif // CONFIGURATIONLIST_HH
+#endif  // CONFIGURATIONLIST_HH

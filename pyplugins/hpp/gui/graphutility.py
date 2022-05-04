@@ -3,12 +3,23 @@
 #  Author: Heidy Dallard
 #
 
-from PythonQt.QtGui import QDockWidget, QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QListWidget, QPushButton, QLineEdit, QLabel
+from PythonQt.QtGui import (
+    QDockWidget,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QCheckBox,
+    QListWidget,
+    QPushButton,
+    QLineEdit,
+    QLabel,
+)
 from hpp.corbaserver.manipulation.robot import Robot
 from hpp.corbaserver.manipulation import ConstraintGraph
 import re
 
-class GraphUtility (QWidget):
+
+class GraphUtility(QWidget):
     def __init__(self, parent):
         super(GraphUtility, self).__init__(parent)
         self.plugin = parent
@@ -17,14 +28,14 @@ class GraphUtility (QWidget):
         self.nodes = {}
 
     def updateNodes(self, status):
-        if (status == False):
+        if not status:
             self.nodes = {}
         else:
             self.nodes = self.cg.nodes
         self.applyFilters()
 
     def updateEdges(self, status):
-        if (status == False):
+        if not status:
             self.edges = {}
         else:
             self.edges = self.cg.edges
@@ -33,25 +44,27 @@ class GraphUtility (QWidget):
     def eraseInvalid(self, r, names):
         tempNames = names.copy()
         for n in tempNames:
-            if (r.match(n) is None):
+            if r.match(n) is None:
                 del names[n]
         return names
 
     def applyFilters(self):
         regex = ".*"
-        if (self.grippersList.currentItem() is not None):
+        if self.grippersList.currentItem() is not None:
             regex += self.grippersList.currentItem().text()
         else:
             regex += ".*"
-        if (self.graspCheck.isChecked()):
+        if self.graspCheck.isChecked():
             regex += " grasps "
-            if (self.handlesList.currentItem() is not None):
+            if self.handlesList.currentItem() is not None:
                 regex += self.handlesList.currentItem().text() + ".*"
             else:
                 regex += ".*"
-        elif (self.pregraspCheck.isChecked()):
-            if (self.handlesList.currentItem() is not None):
-                regex += "(?:<|>)" + self.handlesList.currentItem().text() + ".*pregrasp .*"
+        elif self.pregraspCheck.isChecked():
+            if self.handlesList.currentItem() is not None:
+                regex += (
+                    "(?:<|>)" + self.handlesList.currentItem().text() + ".*pregrasp .*"
+                )
             else:
                 regex += ".*pregrasp.*"
         names = self.eraseInvalid(re.compile(regex), self.nodes.copy())
@@ -60,13 +73,19 @@ class GraphUtility (QWidget):
             self.resultList.addItem(n)
 
     def fillGripper(self):
-        self.grippersList.addItems(self.plugin.r.client.manipulation.problem.getAvailable("gripper"))
+        self.grippersList.addItems(
+            self.plugin.r.client.manipulation.problem.getAvailable("gripper")
+        )
 
     def fillHandles(self):
-        self.handlesList.addItems(self.plugin.r.client.manipulation.problem.getAvailable("handle"))
+        self.handlesList.addItems(
+            self.plugin.r.client.manipulation.problem.getAvailable("handle")
+        )
 
     def applyRegex(self):
-        names = self.eraseInvalid(r.compile(self.textEdit.text()), self.cg.nodes.copy())
+        names = self.eraseInvalid(
+            re.compile(self.textEdit.text()), self.cg.nodes.copy()
+        )
         self.resultList.clear()
         for n in names:
             self.resultList.addItem(n)
@@ -77,7 +96,7 @@ class GraphUtility (QWidget):
             self.fillGripper()
             self.fillHandles()
             self.applyFilters()
-        except Exception as e:
+        except Exception:
             pass
 
     def addConnection(self):
@@ -132,9 +151,10 @@ class GraphUtility (QWidget):
         # Connect the widget to functions
         self.addConnection()
 
+
 class Plugin(QDockWidget):
-    def __init__(self, mainWindow, flags = None):
-        if (flags == None):
+    def __init__(self, mainWindow, flags=None):
+        if flags is None:
             super(Plugin, self).__init__("Graph &utility", mainWindow)
         else:
             super(Plugin, self).__init__("Graph &utility", mainWindow, flags)
@@ -147,5 +167,5 @@ class Plugin(QDockWidget):
         self.r = Robot("", "", "", False)
 
     def refreshInterface(self):
-        print ("refresh")
-        self.graphUtility.refresh()        
+        print("refresh")
+        self.graphUtility.refresh()

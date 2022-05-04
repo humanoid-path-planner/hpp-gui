@@ -3,30 +3,44 @@
 #  Authors: Heidy Dallard, Joseph Mirabel
 #
 
-from PythonQt.QtGui import QDockWidget, QWidget, QLabel, QPushButton, QVBoxLayout, QFormLayout
+from PythonQt.QtGui import (
+    QDockWidget,
+    QWidget,
+    QLabel,
+    QVBoxLayout,
+    QFormLayout,
+)
 from PythonQt.Qt import Qt as QNamespace, QAction, QKeySequence
 from hpp.corbaserver import Client as BasicClient
-from hpp.corbaserver.manipulation import Client as ManipClient, ConstraintGraph, Rule
+from hpp.corbaserver.manipulation import Client as ManipClient
 import omniORB
 from gepetto.corbaserver import Client as ViewerClient
 import re
 
+
 def xyzwTowxyz(q):
-    return [q[(i+1)%4] for i in range(4)]
+    return [q[(i + 1) % 4] for i in range(4)]
+
 
 def fromHPP(t):
     ret = t[0:3]
     ret.extend(xyzwTowxyz(t[3:7]))
     return ret
 
+
 class _Clients(object):
     def __init__(self, mainWindow):
         self.hppPlugin = mainWindow.getFromSlot("getHppIIOPurl")
-        self.basic = BasicClient(url= str(self.hppPlugin.getHppIIOPurl()),
-                context= str(self.hppPlugin.getHppContext()))
-        self.manipulation = ManipClient(url= str(self.hppPlugin.getHppIIOPurl()),
-                context= str(self.hppPlugin.getHppContext()))
+        self.basic = BasicClient(
+            url=str(self.hppPlugin.getHppIIOPurl()),
+            context=str(self.hppPlugin.getHppContext()),
+        )
+        self.manipulation = ManipClient(
+            url=str(self.hppPlugin.getHppIIOPurl()),
+            context=str(self.hppPlugin.getHppContext()),
+        )
         self.viewer = ViewerClient()
+
 
 class _GraspMode(QWidget):
     def __init__(self, parent):
@@ -52,14 +66,18 @@ class _GraspMode(QWidget):
         action.setShortcut(QKeySequence(QNamespace.Key_R))
         self.addAction(action)
         self.actionsList.append(action)
-        self.mainWindow.registerShortcut(self.parentInstance.plugin.windowTitle, "Choose as gripper", action)
+        self.mainWindow.registerShortcut(
+            self.parentInstance.plugin.windowTitle, "Choose as gripper", action
+        )
 
         action = QAction("Choose handle", self)
         action.connect("triggered()", self.selectHandle)
         action.setShortcut(QKeySequence(QNamespace.Key_H))
         self.addAction(action)
         self.actionsList.append(action)
-        self.mainWindow.registerShortcut(self.parentInstance.plugin.windowTitle, "Choose as handle", action)
+        self.mainWindow.registerShortcut(
+            self.parentInstance.plugin.windowTitle, "Choose as handle", action
+        )
 
         action = QAction("Grasp from current", self.parentInstance)
         action.connect("triggered()", self.graspCurrent)
@@ -105,10 +123,12 @@ class _GraspMode(QWidget):
 
     def createWidget(self):
         box = QVBoxLayout(self)
-        self.text = "You're in grasp/pregrasp mode.\n" +\
-        "In this mode, you can select two object.\n" +\
-        "To do so, click on it.\n" +\
-        "Once you choose one, press :\n"
+        self.text = (
+            "You're in grasp/pregrasp mode.\n"
+            + "In this mode, you can select two object.\n"
+            + "To do so, click on it.\n"
+            + "Once you choose one, press :\n"
+        )
 
         self.addActions(self.actionsList)
         for a in self.actionsList:
@@ -128,131 +148,197 @@ class _GraspMode(QWidget):
         self.selected = name.split("/")[0]
 
     def selectHandle(self):
-        if (self.selected != ""):
+        if self.selected != "":
             self.addHandle(self.selected)
 
     def selectGripper(self):
-        if (self.selected != ""):
+        if self.selected != "":
             self.addGripper(self.selected)
 
     def addHandle(self, handleName):
-        if (len(self.selectedHandles) == 1):
-            self.parentInstance.plugin.client.viewer.gui.deleteNode(self.groupName, True)
+        if len(self.selectedHandles) == 1:
+            self.parentInstance.plugin.client.viewer.gui.deleteNode(
+                self.groupName, True
+            )
         self.selectedHandles = [str(handleName)]
         self.handles = self.getAvailable(handleName + "/", "handle")
         self.currentHandle = 0
-        if (len(self.handles)):
-            config = self.parentInstance.plugin.client.manipulation.robot.getHandlePositionInJoint(self.handles[self.currentHandle])
+        if len(self.handles):
+            robot = self.parentInstance.plugin.client.manipulation.robot
+            config = robot.getHandlePositionInJoint(self.handles[self.currentHandle])
             self.handleLabel.setText(self.handles[self.currentHandle])
-            self.drawXYZAxis("handle_"+self.handles[self.currentHandle].replace("/", "_"), config)
+            self.drawXYZAxis(
+                "handle_" + self.handles[self.currentHandle].replace("/", "_"), config
+            )
         else:
             self.handleLabel.setText("None selected")
 
     def addGripper(self, gripperName):
-        if (len(self.selectedGrippers) == 1):
-            self.parentInstance.plugin.client.viewer.gui.deleteNode(self.groupName, True)
+        if len(self.selectedGrippers) == 1:
+            self.parentInstance.plugin.client.viewer.gui.deleteNode(
+                self.groupName, True
+            )
         self.selectedGrippers = [str(gripperName)]
         self.grippers = self.getAvailable(gripperName + "/", "gripper")
         self.currentGripper = 0
         self.locked = []
-        if (len(self.grippers) > 0):
+        if len(self.grippers) > 0:
             self.gripperLabel.setText(self.grippers[self.currentGripper])
-            config = self.parentInstance.plugin.client.manipulation.robot.getGripperPositionInJoint(self.grippers[self.currentGripper])
-            self.drawXYZAxis("gripper_"+self.grippers[self.currentGripper].replace("/", "_"), config)
+            robot = self.parentInstance.plugin.client.manipulation.robot
+            config = robot.getGripperPositionInJoint(self.grippers[self.currentGripper])
+            self.drawXYZAxis(
+                "gripper_" + self.grippers[self.currentGripper].replace("/", "_"),
+                config,
+            )
         else:
             self.gripperLabel.setText("None selected")
 
     def getAvailable(self, comp, t):
-        l = self.parentInstance.plugin.client.manipulation.problem.getAvailable(t)
+        names = self.parentInstance.plugin.client.manipulation.problem.getAvailable(t)
         ret = []
-        for name in l:
-            if (name.startswith(comp)):
+        for name in names:
+            if name.startswith(comp):
                 ret.append(name)
         return ret
-        
+
     def drawXYZAxis(self, name, config):
         obj = self.mainWindow.getFromSlot("requestCreateJointGroup")
         self.groupName = str(obj.requestCreateJointGroup(config[0]))
-        self.parentInstance.plugin.client.viewer.gui.addXYZaxis(name, [0, 1, 0, 1], 0.005, 0.015)
-        self.parentInstance.plugin.client.viewer.gui.applyConfiguration(name, fromHPP(config[1])) # XYZW -> WXYZ
+        self.parentInstance.plugin.client.viewer.gui.addXYZaxis(
+            name, [0, 1, 0, 1], 0.005, 0.015
+        )
+        self.parentInstance.plugin.client.viewer.gui.applyConfiguration(
+            name, fromHPP(config[1])
+        )  # XYZW -> WXYZ
         self.parentInstance.plugin.client.viewer.gui.addToGroup(name, self.groupName)
         self.parentInstance.plugin.client.viewer.gui.refresh()
 
     def changeHandle(self):
-        if (len(self.handles) > 0):
+        if len(self.handles) > 0:
             previous = self.currentHandle
             self.currentHandle += 1
-            if (self.currentHandle == len(self.handles)):
+            if self.currentHandle == len(self.handles):
                 self.currentHandle = 0
             self.handleLabel.setText(self.handles[self.currentHandle])
-            if (previous != self.currentHandle):
-                self.parentInstance.plugin.client.viewer.gui.deleteNode(self.groupName, True)
-                config = self.parentInstance.plugin.client.manipulation.robot.getHandlePositionInJoint(self.handles[self.currentHandle])
-                self.drawXYZAxis("handle_"+self.handles[self.currentHandle].replace("/", "_"), config)
+            if previous != self.currentHandle:
+                self.parentInstance.plugin.client.viewer.gui.deleteNode(
+                    self.groupName, True
+                )
+                robot = self.parentInstance.plugin.client.manipulation.robot
+                config = robot.getHandlePositionInJoint(
+                    self.handles[self.currentHandle]
+                )
+                self.drawXYZAxis(
+                    "handle_" + self.handles[self.currentHandle].replace("/", "_"),
+                    config,
+                )
 
     def changeGripper(self):
-        if (len(self.grippers) > 0):
+        if len(self.grippers) > 0:
             previous = self.currentGripper
             self.currentGripper += 1
-            if (self.currentGripper == len(self.grippers)):
+            if self.currentGripper == len(self.grippers):
                 self.currentGripper = 0
             self.gripperLabel.setText(self.grippers[self.currentGripper])
-            if (self.currentGripper != previous):
-                self.parentInstance.plugin.client.viewer.gui.deleteNode(self.groupName, True)
-                config = self.parentInstance.plugin.client.manipulation.robot.getGripperPositionInJoint(self.grippers[self.currentGripper])
-                self.drawXYZAxis("gripper_"+self.grippers[self.currentGripper].replace("/", "_"), config)
+            if self.currentGripper != previous:
+                self.parentInstance.plugin.client.viewer.gui.deleteNode(
+                    self.groupName, True
+                )
+                robot = self.parentInstance.plugin.client.manipulation.robot
+                config = robot.getGripperPositionInJoint(
+                    self.grippers[self.currentGripper]
+                )
+                self.drawXYZAxis(
+                    "gripper_" + self.grippers[self.currentGripper].replace("/", "_"),
+                    config,
+                )
 
     def graspCurrent(self):
-        if (len(self.handles) > 0 and len(self.grippers) > 0):
+        if len(self.handles) > 0 and len(self.grippers) > 0:
             self.grasp(self.parentInstance.plugin.hppPlugin.getCurrentQtConfig())
 
     def graspRandom(self):
-        if (len(self.handles) > 0 and len(self.grippers) > 0):
-            self.grasp(self.parentInstance.plugin.client.basic.robot.shootRandomConfig())
+        if len(self.handles) > 0 and len(self.grippers) > 0:
+            self.grasp(
+                self.parentInstance.plugin.client.basic.robot.shootRandomConfig()
+            )
 
     def grasp(self, config):
         self.parentInstance.plugin.client.basic.problem.resetConstraints()
         for j in self.locked:
-            self.parentInstance.plugin.client.basic.problem.lockJoint(j, self.parentInstance.plugin.client.basic.robot.getJointConfig(j))
+            self.parentInstance.plugin.client.basic.problem.lockJoint(
+                j, self.parentInstance.plugin.client.basic.robot.getJointConfig(j)
+            )
         try:
-            self.parentInstance.plugin.client.manipulation.problem.getSelected("constraintgraph")
+            self.parentInstance.plugin.client.manipulation.problem.getSelected(
+                "constraintgraph"
+            )
         except omniORB.CORBA.UserException:
             self.parentInstance.plugin.client.manipulation.graph.createGraph("dummy")
             self.parentInstance.plugin.client.manipulation.graph.createSubGraph("dummy")
-        name = self.grippers[self.currentGripper] + " grasps " + self.handles[self.currentHandle]
-        self.parentInstance.plugin.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
-        self.parentInstance.plugin.client.basic.problem.addNumericalConstraints("constraints", [name,], [0,])
+        name = (
+            self.grippers[self.currentGripper]
+            + " grasps "
+            + self.handles[self.currentHandle]
+        )
+        self.parentInstance.plugin.client.manipulation.problem.createGrasp(
+            name, self.grippers[self.currentGripper], self.handles[self.currentHandle]
+        )
+        self.parentInstance.plugin.client.basic.problem.addNumericalConstraints(
+            "constraints",
+            [
+                name,
+            ],
+            [
+                0,
+            ],
+        )
         res = self.parentInstance.plugin.client.basic.problem.applyConstraints(config)
-        if res[0] == True:
+        if res[0]:
             self.parentInstance.plugin.hppPlugin.setCurrentQtConfig(res[1])
 
     def pregraspCurrent(self):
-        if (len(self.handles) > 0 and len(self.grippers) > 0):
+        if len(self.handles) > 0 and len(self.grippers) > 0:
             self.pregrasp(self.parentInstance.plugin.hppPlugin.getCurrentQtConfig())
 
     def pregraspRandom(self):
-        if (len(self.handles) > 0 and len(self.grippers) > 0):
-            self.pregrasp(self.parentInstance.plugin.client.basic.robot.shootRandomConfig())
+        if len(self.handles) > 0 and len(self.grippers) > 0:
+            self.pregrasp(
+                self.parentInstance.plugin.client.basic.robot.shootRandomConfig()
+            )
 
     def pregrasp(self, config):
         self.parentInstance.plugin.client.basic.problem.resetConstraints()
         for j in self.locked:
-            self.parentInstance.plugin.client.basic.problem.lockJoint(name, self.parentInstance.plugin.client.basic.robot.getJointConfig())
-        name = self.grippers[self.currentGripper] + " pregrasps " + self.handles[self.currentHandle]
-        self.parentInstance.plugin.client.manipulation.problem.createGrasp(name, self.grippers[self.currentGripper], self.handles[self.currentHandle])
-        self.parentInstance.plugin.client.basic.problem.addNumericalConstraints("constraints", [name], [True])
-        res = self.parentInstance.plugin.client.basic.problem.applyConstraints(self.parentInstance.plugin.hppPlugin.getCurrentQtConfig())
-        if (res[0] == True):
+            self.parentInstance.plugin.client.basic.problem.lockJoint(
+                j.name, self.parentInstance.plugin.client.basic.robot.getJointConfig()
+            )
+        name = (
+            self.grippers[self.currentGripper]
+            + " pregrasps "
+            + self.handles[self.currentHandle]
+        )
+        self.parentInstance.plugin.client.manipulation.problem.createGrasp(
+            name, self.grippers[self.currentGripper], self.handles[self.currentHandle]
+        )
+        self.parentInstance.plugin.client.basic.problem.addNumericalConstraints(
+            "constraints", [name], [True]
+        )
+        res = self.parentInstance.plugin.client.basic.problem.applyConstraints(
+            self.parentInstance.plugin.hppPlugin.getCurrentQtConfig()
+        )
+        if res[0]:
             self.parentInstance.plugin.hppPlugin.setCurrentQtConfig(res[1])
 
     def lock(self):
-        if (self.selected != ""):
+        if self.selected != "":
             self.locked = []
             joints = self.parentInstance.plugin.client.basic.robot.getAllJointNames()
             name = self.selected + "/"
             for j in joints:
                 if j.startswith(name):
                     self.locked.append(j)
+
 
 class _PlacementMode(QWidget):
     def __init__(self, parent):
@@ -268,27 +354,34 @@ class _PlacementMode(QWidget):
         self.action = QAction("Start pick", self)
         self.action.setShortcut(QKeySequence(QNamespace.Key_P))
         self.action.connect("triggered()", self.startPlacement)
-        self.parent().mainWindow.registerShortcut(self.parent().plugin.windowTitle, self.action)
+        self.parent().mainWindow.registerShortcut(
+            self.parent().plugin.windowTitle, self.action
+        )
         self.addAction(self.action)
 
     def startPlacement(self):
-        if (self.parent().plugin.osg is not None):
+        if self.parent().plugin.osg is not None:
             self.step = -1
-            self.parent().plugin.osg.connect("clicked(QString, QVector3D)", self.selected)
+            self.parent().plugin.osg.connect(
+                "clicked(QString, QVector3D)", self.selected
+            )
 
     def selected(self, bodyName, position):
-        selectedName = bodyName[bodyName.rfind("/contact_") + 9:len(bodyName)]
+        selectedName = bodyName[bodyName.rfind("/contact_") + 9 : len(bodyName)]
         selectedName = selectedName.replace("__", "/")
-        selectedName = re.sub(r'_[0-9]*_', '', selectedName)
-        if (self.step == -1):
-            names = self.parent().plugin.client.manipulation.problem.getRobotContactNames()
+        selectedName = re.sub(r"_[0-9]*_", "", selectedName)
+        if self.step == -1:
+            names = (
+                self.parent().plugin.client.manipulation.problem.getRobotContactNames()
+            )
             for n in names:
                 if n == selectedName:
                     self.surfaceName = str(n)
                     self.step = 0
                     break
         else:
-            names = self.parent().plugin.client.manipulation.problem.getEnvironmentContactNames()
+            problem = self.parent().plugin.client.manipulation.problem
+            names = problem.getEnvironmentContactNames()
             for n in names:
                 if n == selectedName:
                     self.carryName = n
@@ -296,38 +389,58 @@ class _PlacementMode(QWidget):
                     break
 
     def endPlacement(self, position):
-        name = self.surfaceName[0:self.surfaceName.find("/")] + "/root_joint"
+        name = self.surfaceName[0 : self.surfaceName.find("/")] + "/root_joint"
         names = self.parent().plugin.client.basic.robot.getAllJointNames()
         if name in names:
             jointType = self.parent().plugin.client.basic.robot.getJointType()
             if jointType == "JointModelFreeFlyer":
-                self.parent().plugin.client.basic.robot.setJointConfig(n, [position.x(), position.y(), position.z(), 0, 0, 0, 1])
+                self.parent().plugin.client.basic.robot.setJointConfig(
+                    name, [position.x(), position.y(), position.z(), 0, 0, 0, 1]
+                )
             elif jointType == "JointModelPlanar":
-                self.parent().plugin.client.basic.robot.setJointConfig(n, [position.x(), position.y(), 1, 0])
+                self.parent().plugin.client.basic.robot.setJointConfig(
+                    name, [position.x(), position.y(), 1, 0]
+                )
             elif jointType == "anchor":
-                self.parent().plugin.client.basic.robot.setJointPositionInParentFrame(n, [position.x(), position.y(), position.z(), 0, 0, 0, 1])
+                self.parent().plugin.client.basic.robot.setJointPositionInParentFrame(
+                    name, [position.x(), position.y(), position.z(), 0, 0, 0, 1]
+                )
         self.parent().plugin.client.basic.problem.resetConstraints()
-        self.parent().plugin.osg.disconnect("clicked(QString, QVector3D)", self.selected)
-        self.parent().plugin.client.manipulation.problem.createPlacementConstraint("placement",
-                                                                                   [self.surfaceName], [self.carryName])
+        self.parent().plugin.osg.disconnect(
+            "clicked(QString, QVector3D)", self.selected
+        )
+        self.parent().plugin.client.manipulation.problem.createPlacementConstraint(
+            "placement", [self.surfaceName], [self.carryName]
+        )
 
-        self.parent().plugin.client.basic.problem.addNumericalConstraints("numerical", ["placement"], [True])
-        res = self.parent().plugin.client.basic.problem.applyConstraints(self.parent().plugin.hppPlugin.getCurrentQtConfig())
+        self.parent().plugin.client.basic.problem.addNumericalConstraints(
+            "numerical", ["placement"], [True]
+        )
+        res = self.parent().plugin.client.basic.problem.applyConstraints(
+            self.parent().plugin.hppPlugin.getCurrentQtConfig()
+        )
         if res[0]:
             self.parent().plugin.hppPlugin.setCurrentQtConfig(res[1])
 
     def createWidget(self):
         box = QVBoxLayout(self)
 
-        text = "You are in placement mode.\n" +\
-               "In this mode you can place an object\non an environment surface.\n" +\
-               "The object and the environment must\nhave contact surface defined.\n" +\
-               "Press :\n" +\
-               "  - " + self.action.shortcut.toString() + " to " + self.action.text + "\n\n" +\
-               "First selected body will be\nconsidered as the object.\n" +\
-               "Second selected body will be\nconsidered as the environment.\n" +\
-               "The object will be place where\nyou clicked on the environment."
+        text = (
+            "You are in placement mode.\n"
+            + "In this mode you can place an object\non an environment surface.\n"
+            + "The object and the environment must\nhave contact surface defined.\n"
+            + "Press :\n"
+            + "  - "
+            + self.action.shortcut.toString()
+            + " to "
+            + self.action.text
+            + "\n\n"
+            + "First selected body will be\nconsidered as the object.\n"
+            + "Second selected body will be\nconsidered as the environment.\n"
+            + "The object will be place where\nyou clicked on the environment."
+        )
         box.addWidget(QLabel(text, self))
+
 
 class _DynamicBuilder(QWidget):
     def __init__(self, mainWindow, parent):
@@ -344,13 +457,15 @@ class _DynamicBuilder(QWidget):
     def initActions(self):
         self.action = QAction("Switch mode", self)
         self.action.connect("triggered()", self.switchMode)
-        self.action.setShortcut(QKeySequence(QNamespace.ControlModifier + QNamespace.Key_M))
+        self.action.setShortcut(
+            QKeySequence(QNamespace.ControlModifier + QNamespace.Key_M)
+        )
         self.addAction(self.action)
         self.mainWindow.registerShortcut(self.plugin.windowTitle, self.action)
 
     def switchMode(self):
         self.mode = not self.mode
-        if (not self.mode):
+        if not self.mode:
             self.widgets[1].hide()
             self.widgets[0].show()
         else:
@@ -360,30 +475,36 @@ class _DynamicBuilder(QWidget):
     def initWidget(self):
         mainBox = QVBoxLayout(self)
 
-        mainBox.addWidget(QLabel("Press " + self.action.shortcut.toString() + " to " +\
-                                 self.action.text))
+        mainBox.addWidget(
+            QLabel(
+                "Press " + self.action.shortcut.toString() + " to " + self.action.text
+            )
+        )
         self.widgets = [_GraspMode(self), _PlacementMode(self)]
         mainBox.addWidget(self.widgets[0])
         mainBox.addWidget(self.widgets[1])
         self.widgets[1].hide()
 
+
 class Plugin(QDockWidget):
-    def __init__(self, mainWindow, flags = None):
-        if (flags is not None):
+    def __init__(self, mainWindow, flags=None):
+        if flags is not None:
             super(Plugin, self).__init__("Dynamic Builder", flags)
         else:
             super(Plugin, self).__init__("Dynamic Builder")
-        self.setObjectName ("hpp.gui.dynamicbuild")
+        self.setObjectName("hpp.gui.dynamicbuild")
         self.osg = None
         self.mainWindow = mainWindow
         self.hppPlugin = mainWindow.getFromSlot("getHppIIOPurl")
-        #self.resetConnection()
-        mainWindow.registerShortcut("Dynamic builder", "Toggle view", self.toggleViewAction())
+        # self.resetConnection()
+        mainWindow.registerShortcut(
+            "Dynamic builder", "Toggle view", self.toggleViewAction()
+        )
         self.dynamicBuilder = _DynamicBuilder(mainWindow, self)
         self.setWidget(self.dynamicBuilder)
 
     def osgWidget(self, osg):
-        if (self.osg is None):
+        if self.osg is None:
             self.osg = osg
 
     def resetConnection(self):

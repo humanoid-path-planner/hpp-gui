@@ -17,31 +17,29 @@
 // <http://www.gnu.org/licenses/>.
 
 #include <QObject>
-
 #include <gepetto/gui/plugin-interface.hh>
 
 namespace hpp {
-  namespace gui {
-    class HppFclPlugin : public QObject, public gepetto::gui::PluginInterface
-    {
-        Q_OBJECT
-        Q_INTERFACES (gepetto::gui::PluginInterface)
+namespace gui {
+class HppFclPlugin : public QObject, public gepetto::gui::PluginInterface {
+  Q_OBJECT
+  Q_INTERFACES(gepetto::gui::PluginInterface)
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
-        Q_PLUGIN_METADATA (IID "hpp-gui.hppwidgetsplugin")
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+  Q_PLUGIN_METADATA(IID "hpp-gui.hppwidgetsplugin")
 #endif
 
-      public:
-        QString name () const { return QString("HppFclPlugin"); }
+ public:
+  QString name() const { return QString("HppFclPlugin"); }
 
-      public slots:
-        void addBV (QString name, QString filename, int splitMethod) const;
+ public slots:
+  void addBV(QString name, QString filename, int splitMethod) const;
 
-      protected:
-        void init();
+ protected:
+  void init();
 
-      protected slots:
-        void openDialog () const;
-    };
-  } // namespace gui
-} // namespace hpp
+ protected slots:
+  void openDialog() const;
+};
+}  // namespace gui
+}  // namespace hpp

@@ -14,14 +14,16 @@ from .inspector import InspectBodies
 from .collision_pairs import CollisionPairs
 from .parameters import Parameters
 
+
 class _PathTab(QtGui.QWidget):
-    def __init__ (self, parent):
-        super(_PathTab, self).__init__ (parent)
+    def __init__(self, parent):
+        super(_PathTab, self).__init__(parent)
         self.plugin = parent
         box = QtGui.QVBoxLayout(self)
 
         # Create group
         box.addWidget(DirectPathBox(self, self.plugin))
+
 
 class _PathManagement(QtGui.QWidget):
     def __init__(self, parent):
@@ -30,19 +32,23 @@ class _PathManagement(QtGui.QWidget):
         parent.widgetToRefresh.append(self)
 
         box = QtGui.QVBoxLayout(self)
-        
+
         button = QtGui.QPushButton("Get paths", self)
         button.connect("clicked()", self.refresh)
         box.addWidget(button)
-        box.addWidget(QtGui.QLabel("Choose the paths you want to concatenate.\n"
-                                   "All the paths will be concatenate in the first choose."))
+        box.addWidget(
+            QtGui.QLabel(
+                "Choose the paths you want to concatenate.\n"
+                "All the paths will be concatenate in the first choose."
+            )
+        )
         box.addWidget(QtGui.QLabel("List of path:"))
         self.paths = QtGui.QListWidget()
         box.addWidget(self.paths)
         self.paths.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
 
         hBox = QtGui.QHBoxLayout()
-        
+
         self.buttonConcatenate = QtGui.QPushButton("Concatenate")
         hBox.addWidget(self.buttonConcatenate)
         self.buttonConcatenate.connect("clicked()", self.concatenate)
@@ -62,23 +68,26 @@ class _PathManagement(QtGui.QWidget):
 
     def concatenate(self):
         selected = self.paths.selectedItems()
-        if (len(selected) > 1):
+        if len(selected) > 1:
             first = int(selected[0].text())
             for i in range(1, len(selected)):
                 print("Concatenate %s and %s" % (first, int(selected[i].text())))
-                self.plugin.client.problem.concatenatePath(first, int(selected[i].text()))
+                self.plugin.client.problem.concatenatePath(
+                    first, int(selected[i].text())
+                )
 
     def erase(self):
         selected = self.paths.selectedItems()
-        if (len(selected) > 0):
+        if len(selected) > 0:
             for i in range(len(selected) - 1, -1, -1):
                 print("erase path %s " % (int(selected[i].text())))
                 self.plugin.client.problem.erasePath(int(selected[i].text()))
             self.refresh()
 
+
 class _RoadmapTab(QtGui.QWidget):
-    def __init__ (self, parent):
-        super(_RoadmapTab, self).__init__ (parent)
+    def __init__(self, parent):
+        super(_RoadmapTab, self).__init__(parent)
         self.plugin = parent
         box = QtGui.QGridLayout(self)
 
@@ -107,11 +116,13 @@ class _RoadmapTab(QtGui.QWidget):
 
     def updateCount(self):
         try:
-            self.nbNode.setNum (self.plugin.client.problem.numberNodes())
-            self.nbEdge.setNum (self.plugin.client.problem.numberEdges())
-            self.nbComponent.setNum(self.plugin.client.problem.numberConnectedComponents())
+            self.nbNode.setNum(self.plugin.client.problem.numberNodes())
+            self.nbEdge.setNum(self.plugin.client.problem.numberEdges())
+            self.nbComponent.setNum(
+                self.plugin.client.problem.numberConnectedComponents()
+            )
         except Exception as e:
-            self.plugin.main.logError (str(e))
+            self.plugin.main.logError(str(e))
             self.updateCB.setChecked(False)
 
     def startStopTimer(self, state):
@@ -120,9 +131,10 @@ class _RoadmapTab(QtGui.QWidget):
         else:
             self.timer.stop()
 
+
 class _StepByStepSolverTab(QtGui.QWidget):
-    def __init__ (self, parent):
-        super(_StepByStepSolverTab, self).__init__ (parent)
+    def __init__(self, parent):
+        super(_StepByStepSolverTab, self).__init__(parent)
         self.plugin = parent
         box = QtGui.QVBoxLayout(self)
 
@@ -150,59 +162,64 @@ class _StepByStepSolverTab(QtGui.QWidget):
 
     def prepareSolveStepByStep(self):
         if self.plugin.client.problem.prepareSolveStepByStep():
-            self.plugin.main.log ("Problem is solved")
+            self.plugin.main.log("Problem is solved")
 
     def executeOneStep(self):
         for i in range(self.stepCount.value):
             if self.plugin.client.problem.executeOneStep():
-                self.plugin.main.log ("Problem is solved")
+                self.plugin.main.log("Problem is solved")
                 break
 
     def finishSolveStepByStep(self):
         self.plugin.client.problem.finishSolveStepByStep()
 
+
 class Plugin(QtGui.QDockWidget):
-    """ Extra HPP functionalities for the Gepetto Viewer GUI """
-    def __init__ (self, mainWindow, flags = None):
+    """Extra HPP functionalities for the Gepetto Viewer GUI"""
+
+    def __init__(self, mainWindow, flags=None):
         title = "HPP extra functionalities"
         if flags is None:
-            super(Plugin, self).__init__ (title, mainWindow)
+            super(Plugin, self).__init__(title, mainWindow)
         else:
-            super(Plugin, self).__init__ (title, mainWindow, flags)
-        self.setObjectName ("hpp.gui.plugin")
+            super(Plugin, self).__init__(title, mainWindow, flags)
+        self.setObjectName("hpp.gui.plugin")
         self.main = mainWindow
         self.hppPlugin = self.main.getFromSlot("getHppIIOPurl")
-        #self.resetConnection()
+        # self.resetConnection()
         self.widgetToRefresh = list()
         self.osg = None
         # Initialize the widget
         self.tabWidget = QtGui.QTabWidget(self)
-        self.setWidget (self.tabWidget)
-        self.tabWidget.addTab (_PathTab(self), "Path")
-        self.tabWidget.addTab (_RoadmapTab(self), "Roadmap")
-        self.tabWidget.addTab (_StepByStepSolverTab(self), "Step by step solver")
-        self.tabWidget.addTab (GraspFinder(self), "Grasp Finder")
-        self.tabWidget.addTab (_PathManagement(self), "Paths management")
-        self.tabWidget.addTab (InspectBodies(self), "Inspector")
-        self.tabWidget.addTab (CollisionPairs(self), "Collision pairs")
-        self.tabWidget.addTab (Parameters(self), "Parameters")
+        self.setWidget(self.tabWidget)
+        self.tabWidget.addTab(_PathTab(self), "Path")
+        self.tabWidget.addTab(_RoadmapTab(self), "Roadmap")
+        self.tabWidget.addTab(_StepByStepSolverTab(self), "Step by step solver")
+        self.tabWidget.addTab(GraspFinder(self), "Grasp Finder")
+        self.tabWidget.addTab(_PathManagement(self), "Paths management")
+        self.tabWidget.addTab(InspectBodies(self), "Inspector")
+        self.tabWidget.addTab(CollisionPairs(self), "Collision pairs")
+        self.tabWidget.addTab(Parameters(self), "Parameters")
 
     def resetConnection(self):
-        self.client = Client(url= str(self.hppPlugin.getHppIIOPurl()),
-                context = str(self.hppPlugin.getHppContext()))
-        self.resetRobot();
+        self.client = Client(
+            url=str(self.hppPlugin.getHppIIOPurl()),
+            context=str(self.hppPlugin.getHppContext()),
+        )
+        self.resetRobot()
         self.gui = GuiClient()
 
     def resetRobot(self):
         try:
-            self.robot = Robot(client = self.client)
-        except:
+            self.robot = Robot(client=self.client)
+        except Exception:
             self.robot = None
 
-    def osgWidget(self,osg):
+    def osgWidget(self, osg):
         if self.osg is None:
             self.osg = osg
 
     def refreshInterface(self):
         self.resetRobot()
-        for w in self.widgetToRefresh: w.refresh()
+        for w in self.widgetToRefresh:
+            w.refresh()

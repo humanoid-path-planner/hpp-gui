@@ -20,49 +20,44 @@
 #define HPP_GUI_HPP_FCL_PLUGIN_NODE_HH
 
 #include <gepetto/viewer/node.h>
-
 #include <hpp/fcl/BVH/BVH_model.h>
 #include <hpp/fcl/internal/BV_splitter.h>
 
 namespace hpp {
-  namespace gui {
-    typedef gepetto::viewer::Node Node;
+namespace gui {
+typedef gepetto::viewer::Node Node;
 
-    DEF_CLASS_SMART_PTR(BVHDisplay)
+DEF_CLASS_SMART_PTR(BVHDisplay)
 
-    class BVHDisplay : public Node
-    {
-      public:
-        BVHDisplay (const std::string& filename, const std::string& name);
+class BVHDisplay : public Node {
+ public:
+  BVHDisplay(const std::string& filename, const std::string& name);
 
-        void setLevel (const int& level);
+  void setLevel(const int& level);
 
-        const int& getLevel () const
-        {
-          return level_;
-        }
+  const int& getLevel() const { return level_; }
 
-        void setColor (const osgVector4& color);
+  void setColor(const osgVector4& color);
 
-        void init (hpp::fcl::SplitMethodType splitMethod);
+  void init(hpp::fcl::SplitMethodType splitMethod);
 
-      private:
-        typedef hpp::fcl::OBB BoundingVolume;
-        typedef hpp::fcl::BVHModel<BoundingVolume> BVH_t;
-        typedef shared_ptr < BVH_t > BVHPtr_t;
+ private:
+  typedef hpp::fcl::OBB BoundingVolume;
+  typedef hpp::fcl::BVHModel<BoundingVolume> BVH_t;
+  typedef shared_ptr<BVH_t> BVHPtr_t;
 
-        void recursiveBuildTree (const BVH_t& bvh, int ibv, std::size_t level);
+  void recursiveBuildTree(const BVH_t& bvh, int ibv, std::size_t level);
 
-        struct BVLevel {
-          //std::vector< ::osg::ShapeDrawableRefPtr > bvs;
-          std::vector< ::osg::BoxRefPtr > boxes;
-          ::osg::GeodeRefPtr geode;
-        };
-        const std::string filename_;
-        std::vector <BVLevel> levels_;
-        int level_;
-    };
-  } // namespace gui
-} // namespace hpp
+  struct BVLevel {
+    // std::vector< ::osg::ShapeDrawableRefPtr > bvs;
+    std::vector< ::osg::BoxRefPtr> boxes;
+    ::osg::GeodeRefPtr geode;
+  };
+  const std::string filename_;
+  std::vector<BVLevel> levels_;
+  int level_;
+};
+}  // namespace gui
+}  // namespace hpp
 
-#endif // HPP_GUI_HPP_FCL_PLUGIN_NODE_HH
+#endif  // HPP_GUI_HPP_FCL_PLUGIN_NODE_HH

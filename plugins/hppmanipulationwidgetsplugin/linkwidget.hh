@@ -7,7 +7,6 @@
 #define LINKWIDGET_HH
 
 #include <QWidget>
-
 #include <hpp/corbaserver/manipulation/client.hh>
 
 #include "hppmanipulationwidgetsplugin.hh"
@@ -19,41 +18,42 @@ class LinkWidget;
 }
 
 namespace hpp {
-  namespace gui {
-  using hpp::corbaserver::manipulation::Rules;
-  using hpp::corbaserver::manipulation::Rules_var;
+namespace gui {
+using hpp::corbaserver::manipulation::Rules;
+using hpp::corbaserver::manipulation::Rules_var;
 
-    class LinkWidget : public QWidget
-    {
-      Q_OBJECT
+class LinkWidget : public QWidget {
+  Q_OBJECT
 
-    public:
-      explicit LinkWidget(QListWidget* grippersList, QListWidget* handlesList,
-                          QWidget *parent = 0);
-      ~LinkWidget();
+ public:
+  explicit LinkWidget(QListWidget* grippersList, QListWidget* handlesList,
+                      QWidget* parent = 0);
+  ~LinkWidget();
 
-      Rules_var getRules();
+  Rules_var getRules();
 
-    public slots:
-      void gripperChanged(const QItemSelection& selected, const QItemSelection& deselected);
-      void handleChanged(const QItemSelection& selected, const QItemSelection& deselected);
+ public slots:
+  void gripperChanged(const QItemSelection& selected,
+                      const QItemSelection& deselected);
+  void handleChanged(const QItemSelection& selected,
+                     const QItemSelection& deselected);
 
-    private slots:
-      void createRule();
-      void deleteSelectedRules();
+ private slots:
+  void createRule();
+  void deleteSelectedRules();
 
-    private:
-      struct RuleProxy {
-        QVector<QString> grippers, handles;
-        bool link;
-      };
-      typedef QVector<RuleProxy> RuleProxies;
-      Ui::LinkWidget *ui_;
-      RuleProxies rules_;
-      QListWidget* grippers_;
-      QListWidget* handles_;
-    };
-  }
-}
+ private:
+  struct RuleProxy {
+    QVector<QString> grippers, handles;
+    bool link;
+  };
+  typedef QVector<RuleProxy> RuleProxies;
+  Ui::LinkWidget* ui_;
+  RuleProxies rules_;
+  QListWidget* grippers_;
+  QListWidget* handles_;
+};
+}  // namespace gui
+}  // namespace hpp
 
-#endif // LINKWIDGET_HH
+#endif  // LINKWIDGET_HH

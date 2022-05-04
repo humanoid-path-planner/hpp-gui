@@ -3,18 +3,15 @@
 //
 
 #include <hppwidgetsplugin/joint-action.hh>
-
 #include <hppwidgetsplugin/jointtreewidget.hh>
 
 namespace hpp {
-  namespace gui {
-    void JointAction::trigger ()
-    {
-      if (jointName_.empty()) {
-        if (tree_ != NULL)
-          emit triggered(tree_->selectedJoint());
-      } else
-        emit triggered(jointName_);
-    }
-  } // namespace gui
-} // namespace hpp
+namespace gui {
+void JointAction::trigger() {
+  if (jointName_.empty()) {
+    if (tree_ != NULL) emit triggered(tree_->selectedJoint());
+  } else
+    emit triggered(jointName_);
+}
+}  // namespace gui
+}  // namespace hpp

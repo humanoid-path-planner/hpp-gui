@@ -15,32 +15,33 @@ class TransformConstraintWidget;
 }
 
 namespace hpp {
-  namespace gui {
-    class TransformConstraintWidget : public QWidget
-    {
-      Q_OBJECT
+namespace gui {
+class TransformConstraintWidget : public QWidget {
+  Q_OBJECT
 
-    public:
-      explicit TransformConstraintWidget(QString const& firstJoint, QString const& secondJoint,
-                                         bool doPosition = true, bool doOrientation = true,
-                                         bool isPositionConstraint = false,
-                                         QWidget *parent = 0);
-      ~TransformConstraintWidget();
+ public:
+  explicit TransformConstraintWidget(QString const& firstJoint,
+                                     QString const& secondJoint,
+                                     bool doPosition = true,
+                                     bool doOrientation = true,
+                                     bool isPositionConstraint = false,
+                                     QWidget* parent = 0);
+  ~TransformConstraintWidget();
 
-    signals:
-      void finished(std::pair<QVector<double>, QVector<bool> > result);
+ signals:
+  void finished(std::pair<QVector<double>, QVector<bool> > result);
 
-    private slots:
-      void onClick();
+ private slots:
+  void onClick();
 
-    private:
-      Ui::TransformConstraintWidget *ui;
-      bool positionEnabled_;
-      bool orientationEnabled_;
-      bool isPositionConstraint_;
-      int length_;
-    };
-  } // namespace gui
-} // namespace hpp
+ private:
+  Ui::TransformConstraintWidget* ui;
+  bool positionEnabled_;
+  bool orientationEnabled_;
+  bool isPositionConstraint_;
+  int length_;
+};
+}  // namespace gui
+}  // namespace hpp
 
-#endif // HPP_GUI_TRANSFORMCONSTRAINTWIDGET_HH
+#endif  // HPP_GUI_TRANSFORMCONSTRAINTWIDGET_HH

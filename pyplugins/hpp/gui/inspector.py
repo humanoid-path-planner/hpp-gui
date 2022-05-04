@@ -4,28 +4,31 @@
 #
 
 from __future__ import print_function
-from PythonQt import QtGui, Qt, QtCore
+from PythonQt import QtGui, QtCore
 from hpp import Transform
 from numpy import array
+
 
 def vec(v):
     return array([v.x(), v.y(), v.z()])
 
+
 def vec2str(v):
     return str(v[0]) + ", " + str(v[1]) + ", " + str(v[2])
 
+
 class InspectBodies(QtGui.QWidget):
-    def __init__ (self, parent):
-        super(InspectBodies, self).__init__ (parent)
+    def __init__(self, parent):
+        super(InspectBodies, self).__init__(parent)
         self.plugin = parent
 
         self.initWidget()
 
-    def initWidget (self):
+    def initWidget(self):
         box = QtGui.QVBoxLayout(self)
 
         setRefButton = QtGui.QPushButton("Set reference frame", self)
-        setRefButton.connect('clicked()', self.setReference)
+        setRefButton.connect("clicked()", self.setReference)
         box.addWidget(setRefButton)
         self.layout().addWidget(QtGui.QLabel("Current reference frame", self))
         self.refName = QtGui.QLabel("", self)
@@ -38,10 +41,14 @@ class InspectBodies(QtGui.QWidget):
             self.normalLabel[t] = self.addInfo("Normal", t)
 
     def showEvent(self, event):
-        self.plugin.main.bodyTree().connect('bodySelected(SelectionEvent*)', self.selected)
+        self.plugin.main.bodyTree().connect(
+            "bodySelected(SelectionEvent*)", self.selected
+        )
 
     def hideEvent(self, event):
-        self.plugin.main.bodyTree().disconnect('bodySelected(SelectionEvent*)', self.selected)
+        self.plugin.main.bodyTree().disconnect(
+            "bodySelected(SelectionEvent*)", self.selected
+        )
 
     def addInfo(self, what, where):
         label = QtGui.QLabel(what + " in " + where + " frame", self)
@@ -52,21 +59,29 @@ class InspectBodies(QtGui.QWidget):
         return text
 
     def setReference(self):
-        self.refName.text = str(self.plugin.main.getFromSlot("getSelectedJoint").getSelectedJoint())
+        self.refName.text = str(
+            self.plugin.main.getFromSlot("getSelectedJoint").getSelectedJoint()
+        )
 
     def selected(self, event):
         if event.hasIntersection():
-            self.pointLabel ["local"].text  = vec2str(vec(event.point (True)))
-            self.normalLabel["local"].text  = vec2str(vec(event.normal(True)))
-            self.pointLabel ["global"].text = vec2str(vec(event.point (False)))
+            self.pointLabel["local"].text = vec2str(vec(event.point(True)))
+            self.normalLabel["local"].text = vec2str(vec(event.normal(True)))
+            self.pointLabel["global"].text = vec2str(vec(event.point(False)))
             self.normalLabel["global"].text = vec2str(vec(event.normal(False)))
             if len(self.refName.text) == 0:
                 print(self.refName.text)
             else:
-                T = Transform(self.plugin.client.robot.getJointPosition(str(self.refName.text))).inverse()
+                T = Transform(
+                    self.plugin.client.robot.getJointPosition(str(self.refName.text))
+                ).inverse()
                 try:
-                    self.pointLabel ["reference"].text = vec2str(T.transform(           vec(event.point (False))))
-                    self.normalLabel["reference"].text = vec2str(T.quaternion.transform(vec(event.normal(False))))
+                    self.pointLabel["reference"].text = vec2str(
+                        T.transform(vec(event.point(False)))
+                    )
+                    self.normalLabel["reference"].text = vec2str(
+                        T.quaternion.transform(vec(event.normal(False)))
+                    )
                 except ValueError as e:
                     print(e)
                     print(event.point(False))
