@@ -44,7 +44,7 @@ class BVHDisplay : public Node {
  private:
   typedef hpp::fcl::OBB BoundingVolume;
   typedef hpp::fcl::BVHModel<BoundingVolume> BVH_t;
-  typedef shared_ptr<BVH_t> BVHPtr_t;
+  typedef hpp::fcl::shared_ptr<BVH_t> BVHPtr_t;
 
   void recursiveBuildTree(const BVH_t& bvh, int ibv, std::size_t level);
 

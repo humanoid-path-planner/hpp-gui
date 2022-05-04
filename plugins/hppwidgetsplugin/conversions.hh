@@ -7,6 +7,7 @@
 #define HPP_GUI_CONVERSIONS_HH
 
 #include <gepetto/gui/windows-manager.hh>
+#include <hpp/common-idl.hh>
 
 namespace hpp {
 namespace gui {
