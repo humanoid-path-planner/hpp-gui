@@ -22,12 +22,10 @@ set(CXX_DISABLE_WERROR TRUE)
 
 include(cmake/hpp.cmake)
 include(cmake/boost.cmake)
-include(cmake/python.cmake)
 
 compute_project_args(PROJECT_ARGS LANGUAGES CXX)
 project(${PROJECT_NAME} ${PROJECT_ARGS})
 
-findpython()
 add_project_dependency("gepetto-viewer-corba" REQUIRED)
 
 # Get desired Qt version
