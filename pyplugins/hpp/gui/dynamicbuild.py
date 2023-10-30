@@ -3,19 +3,15 @@
 #  Authors: Heidy Dallard, Joseph Mirabel
 #
 
-from PythonQt.QtGui import (
-    QDockWidget,
-    QWidget,
-    QLabel,
-    QVBoxLayout,
-    QFormLayout,
-)
-from PythonQt.Qt import Qt as QNamespace, QAction, QKeySequence
-from hpp.corbaserver import Client as BasicClient
-from hpp.corbaserver.manipulation import Client as ManipClient
+import re
+
 import omniORB
 from gepetto.corbaserver import Client as ViewerClient
-import re
+from hpp.corbaserver import Client as BasicClient
+from hpp.corbaserver.manipulation import Client as ManipClient
+from PythonQt.Qt import QAction, QKeySequence
+from PythonQt.Qt import Qt as QNamespace
+from PythonQt.QtGui import QDockWidget, QFormLayout, QLabel, QVBoxLayout, QWidget
 
 
 def xyzwTowxyz(q):

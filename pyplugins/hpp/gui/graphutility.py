@@ -3,20 +3,21 @@
 #  Author: Heidy Dallard
 #
 
+import re
+
+from hpp.corbaserver.manipulation import ConstraintGraph
+from hpp.corbaserver.manipulation.robot import Robot
 from PythonQt.QtGui import (
-    QDockWidget,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
     QCheckBox,
+    QDockWidget,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
     QListWidget,
     QPushButton,
-    QLineEdit,
-    QLabel,
+    QVBoxLayout,
+    QWidget,
 )
-from hpp.corbaserver.manipulation.robot import Robot
-from hpp.corbaserver.manipulation import ConstraintGraph
-import re
 
 
 class GraphUtility(QWidget):

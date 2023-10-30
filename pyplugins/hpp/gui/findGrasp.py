@@ -4,9 +4,10 @@
 #
 
 from __future__ import print_function
-from PythonQt import QtGui
+
 import numpy as np
-from gepetto import Quaternion, Color
+from gepetto import Color, Quaternion
+from PythonQt import QtGui
 
 z = np.array([0, 0, 1])
 I3 = np.identity(3)

@@ -4,9 +4,10 @@
 #
 
 from __future__ import print_function
-from PythonQt import QtGui, QtCore
+
 from hpp import Transform
 from numpy import array
+from PythonQt import QtCore, QtGui
 
 
 def vec(v):

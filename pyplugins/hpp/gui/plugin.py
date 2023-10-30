@@ -4,14 +4,16 @@
 #
 
 from __future__ import print_function
-from PythonQt import QtGui, Qt
+
+from gepetto.corbaserver import Client as GuiClient
 from hpp.corbaserver import Client
 from hpp.corbaserver.robot import Robot
-from gepetto.corbaserver import Client as GuiClient
+from PythonQt import Qt, QtGui
+
+from .collision_pairs import CollisionPairs
 from .directpath import DirectPathBox
 from .findGrasp import GraspFinder
 from .inspector import InspectBodies
-from .collision_pairs import CollisionPairs
 from .parameters import Parameters
 
 

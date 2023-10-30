@@ -3,10 +3,10 @@
 #  Author: Joseph Mirabel
 #
 
-from PythonQt import QtGui, Qt
+import re
 import xml.etree.ElementTree as ET
 
-import re
+from PythonQt import Qt, QtGui
 
 
 def _makeCheckBox(active):

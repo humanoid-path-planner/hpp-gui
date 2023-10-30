@@ -3,8 +3,9 @@
 #  Author: Joseph Mirabel
 #
 
-from PythonQt import QtGui
 import sys
+
+from PythonQt import QtGui
 
 sys.argv = ["none"]
 
