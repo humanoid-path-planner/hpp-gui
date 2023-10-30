@@ -12,7 +12,7 @@
 # details.  You should have received a copy of the GNU Lesser General Public
 # License along with hpp-gui  If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.10)
 
 set(PROJECT_NAME "hpp-gui")
 set(PROJECT_DESCRIPTION "Graphical interface for HPP ")
