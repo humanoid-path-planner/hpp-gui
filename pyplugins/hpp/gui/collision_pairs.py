@@ -69,7 +69,7 @@ class CollisionPairs(QtGui.QWidget):
     PERCENTAGE = 5
 
     def __init__(self, parent):
-        super(CollisionPairs, self).__init__(parent)
+        super().__init__(parent)
         self.plugin = parent
         # parent.widgetToRefresh.append(self)
         self.orderedPairs = list()

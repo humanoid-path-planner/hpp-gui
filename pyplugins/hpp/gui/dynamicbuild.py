@@ -7,11 +7,12 @@ import re
 
 import omniORB
 from gepetto.corbaserver import Client as ViewerClient
-from hpp.corbaserver import Client as BasicClient
-from hpp.corbaserver.manipulation import Client as ManipClient
 from PythonQt.Qt import QAction, QKeySequence
 from PythonQt.Qt import Qt as QNamespace
 from PythonQt.QtGui import QDockWidget, QFormLayout, QLabel, QVBoxLayout, QWidget
+
+from hpp.corbaserver import Client as BasicClient
+from hpp.corbaserver.manipulation import Client as ManipClient
 
 
 def xyzwTowxyz(q):
@@ -24,7 +25,7 @@ def fromHPP(t):
     return ret
 
 
-class _Clients(object):
+class _Clients:
     def __init__(self, mainWindow):
         self.hppPlugin = mainWindow.getFromSlot("getHppIIOPurl")
         self.basic = BasicClient(
@@ -40,7 +41,7 @@ class _Clients(object):
 
 class _GraspMode(QWidget):
     def __init__(self, parent):
-        super(_GraspMode, self).__init__(parent)
+        super().__init__(parent)
         self.parentInstance = parent
         self.mainWindow = parent.mainWindow
         self.selectedHandles = []
@@ -338,7 +339,7 @@ class _GraspMode(QWidget):
 
 class _PlacementMode(QWidget):
     def __init__(self, parent):
-        super(_PlacementMode, self).__init__(parent)
+        super().__init__(parent)
         self.step = -1
         self.surfaceName = ""
         self.carryName = ""
@@ -440,7 +441,7 @@ class _PlacementMode(QWidget):
 
 class _DynamicBuilder(QWidget):
     def __init__(self, mainWindow, parent):
-        super(_DynamicBuilder, self).__init__(parent)
+        super().__init__(parent)
         self.plugin = parent
         self.selected = ""
         self.mainWindow = mainWindow
@@ -485,9 +486,9 @@ class _DynamicBuilder(QWidget):
 class Plugin(QDockWidget):
     def __init__(self, mainWindow, flags=None):
         if flags is not None:
-            super(Plugin, self).__init__("Dynamic Builder", flags)
+            super().__init__("Dynamic Builder", flags)
         else:
-            super(Plugin, self).__init__("Dynamic Builder")
+            super().__init__("Dynamic Builder")
         self.setObjectName("hpp.gui.dynamicbuild")
         self.osg = None
         self.mainWindow = mainWindow

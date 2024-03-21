@@ -3,12 +3,12 @@
 #  Author: Joseph Mirabel and Heidy Dallard
 #
 
-from __future__ import print_function
 
 from gepetto.corbaserver import Client as GuiClient
+from PythonQt import Qt, QtGui
+
 from hpp.corbaserver import Client
 from hpp.corbaserver.robot import Robot
-from PythonQt import Qt, QtGui
 
 from .collision_pairs import CollisionPairs
 from .directpath import DirectPathBox
@@ -19,7 +19,7 @@ from .parameters import Parameters
 
 class _PathTab(QtGui.QWidget):
     def __init__(self, parent):
-        super(_PathTab, self).__init__(parent)
+        super().__init__(parent)
         self.plugin = parent
         box = QtGui.QVBoxLayout(self)
 
@@ -29,7 +29,7 @@ class _PathTab(QtGui.QWidget):
 
 class _PathManagement(QtGui.QWidget):
     def __init__(self, parent):
-        super(_PathManagement, self).__init__(parent)
+        super().__init__(parent)
         self.plugin = parent
         parent.widgetToRefresh.append(self)
 
@@ -73,7 +73,7 @@ class _PathManagement(QtGui.QWidget):
         if len(selected) > 1:
             first = int(selected[0].text())
             for i in range(1, len(selected)):
-                print("Concatenate %s and %s" % (first, int(selected[i].text())))
+                print(f"Concatenate {first} and {selected[i].text()}")
                 self.plugin.client.problem.concatenatePath(
                     first, int(selected[i].text())
                 )
@@ -89,7 +89,7 @@ class _PathManagement(QtGui.QWidget):
 
 class _RoadmapTab(QtGui.QWidget):
     def __init__(self, parent):
-        super(_RoadmapTab, self).__init__(parent)
+        super().__init__(parent)
         self.plugin = parent
         box = QtGui.QGridLayout(self)
 
@@ -136,7 +136,7 @@ class _RoadmapTab(QtGui.QWidget):
 
 class _StepByStepSolverTab(QtGui.QWidget):
     def __init__(self, parent):
-        super(_StepByStepSolverTab, self).__init__(parent)
+        super().__init__(parent)
         self.plugin = parent
         box = QtGui.QVBoxLayout(self)
 
@@ -182,9 +182,9 @@ class Plugin(QtGui.QDockWidget):
     def __init__(self, mainWindow, flags=None):
         title = "HPP extra functionalities"
         if flags is None:
-            super(Plugin, self).__init__(title, mainWindow)
+            super().__init__(title, mainWindow)
         else:
-            super(Plugin, self).__init__(title, mainWindow, flags)
+            super().__init__(title, mainWindow, flags)
         self.setObjectName("hpp.gui.plugin")
         self.main = mainWindow
         self.hppPlugin = self.main.getFromSlot("getHppIIOPurl")

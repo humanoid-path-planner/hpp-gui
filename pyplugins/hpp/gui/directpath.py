@@ -12,7 +12,7 @@ sys.argv = ["none"]
 
 class DirectPathBox(QtGui.QGroupBox):
     def __init__(self, parent, plugin):
-        super(DirectPathBox, self).__init__("Direct Path", parent)
+        super().__init__("Direct Path", parent)
         self.fromCfg = []
         self.toCfg = []
         self.plugin = plugin

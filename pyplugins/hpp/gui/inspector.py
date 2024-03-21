@@ -3,11 +3,11 @@
 #  Author: Joseph Mirabel
 #
 
-from __future__ import print_function
 
-from hpp import Transform
 from numpy import array
 from PythonQt import QtCore, QtGui
+
+from hpp import Transform
 
 
 def vec(v):
@@ -20,7 +20,7 @@ def vec2str(v):
 
 class InspectBodies(QtGui.QWidget):
     def __init__(self, parent):
-        super(InspectBodies, self).__init__(parent)
+        super().__init__(parent)
         self.plugin = parent
 
         self.initWidget()

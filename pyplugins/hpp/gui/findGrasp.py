@@ -3,7 +3,6 @@
 #  Author: Joseph Mirabel
 #
 
-from __future__ import print_function
 
 import numpy as np
 from gepetto import Color, Quaternion
@@ -42,7 +41,7 @@ class GraspFinder(QtGui.QWidget):
     groupName = "hpp-gui/findGrasp"
 
     def __init__(self, parent):
-        super(GraspFinder, self).__init__(parent)
+        super().__init__(parent)
         self.plugin = parent
         box = QtGui.QVBoxLayout(self)
 

@@ -8,7 +8,7 @@ _DOCUMENTATION = 3
 
 class Parameters(QtGui.QWidget):
     def __init__(self, plugin):
-        super(Parameters, self).__init__(plugin)
+        super().__init__(plugin)
         self.plugin = plugin
 
         box = QtGui.QVBoxLayout(self)

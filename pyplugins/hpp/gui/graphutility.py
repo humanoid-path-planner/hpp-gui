@@ -5,8 +5,6 @@
 
 import re
 
-from hpp.corbaserver.manipulation import ConstraintGraph
-from hpp.corbaserver.manipulation.robot import Robot
 from PythonQt.QtGui import (
     QCheckBox,
     QDockWidget,
@@ -19,10 +17,13 @@ from PythonQt.QtGui import (
     QWidget,
 )
 
+from hpp.corbaserver.manipulation import ConstraintGraph
+from hpp.corbaserver.manipulation.robot import Robot
+
 
 class GraphUtility(QWidget):
     def __init__(self, parent):
-        super(GraphUtility, self).__init__(parent)
+        super().__init__(parent)
         self.plugin = parent
         self.initWidget()
         self.edges = {}
@@ -156,9 +157,9 @@ class GraphUtility(QWidget):
 class Plugin(QDockWidget):
     def __init__(self, mainWindow, flags=None):
         if flags is None:
-            super(Plugin, self).__init__("Graph &utility", mainWindow)
+            super().__init__("Graph &utility", mainWindow)
         else:
-            super(Plugin, self).__init__("Graph &utility", mainWindow, flags)
+            super().__init__("Graph &utility", mainWindow, flags)
         self.mainWindow = mainWindow
         self.graphUtility = GraphUtility(self)
         self.setWidget(self.graphUtility)
