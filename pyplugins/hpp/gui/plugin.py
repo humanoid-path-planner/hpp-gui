@@ -82,7 +82,7 @@ class _PathManagement(QtGui.QWidget):
         selected = self.paths.selectedItems()
         if len(selected) > 0:
             for i in range(len(selected) - 1, -1, -1):
-                print("erase path %s " % (int(selected[i].text())))
+                print("erase path", int(selected[i].text()))
                 self.plugin.client.problem.erasePath(int(selected[i].text()))
             self.refresh()
 

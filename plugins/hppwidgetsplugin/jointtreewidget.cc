@@ -248,7 +248,9 @@ void JointTreeWidget::reset() {
   model_->clear();
   ui_->jointTree->header()->setVisible(true);
   QStringList l;
-  l << "Joint" << "Lower bound" << "Upper bound";
+  l << "Joint"
+    << "Lower bound"
+    << "Upper bound";
   model_->setHorizontalHeaderLabels(l);
   model_->setColumnCount(3);
   ui_->jointTree->setColumnHidden(1, true);
