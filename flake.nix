@@ -13,7 +13,7 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
     hpp-manipulation-corba = {
-      url = "github:humanoid-path-planner/hpp-manipulation-corba/release/5.1.0";
+      url = "github:humanoid-path-planner/hpp-manipulation-corba";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
     };
