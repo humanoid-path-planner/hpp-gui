@@ -16,7 +16,7 @@
 // hpp-gui  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include <hpp/fcl/mesh_loader/assimp.h>
+#include <coal/mesh_loader/assimp.h>
 
 #include <node.hh>
 
@@ -38,8 +38,8 @@ void BVHDisplay::setLevel(const int& level) {
   level_ = level;
 }
 
-void BVHDisplay::init(hpp::fcl::SplitMethodType splitMethod) {
-  using namespace hpp::fcl;
+void BVHDisplay::init(coal::SplitMethodType splitMethod) {
+  using namespace coal;
 
   BVHPtr_t bvh(new BVH_t);
   bvh->bv_splitter.reset(new BVSplitter<BoundingVolume>(splitMethod));

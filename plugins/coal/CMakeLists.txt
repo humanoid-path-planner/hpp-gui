@@ -19,7 +19,7 @@ else()
 endif()
 
 gepetto_gui_plugin(
-  hppfclplugin
+  coalplugin
   ${QT4}
   HEADERS_NO_MOC
   node.hh
@@ -31,7 +31,7 @@ gepetto_gui_plugin(
   plugin.cc
   node.cc
   LINK_DEPENDENCIES
-  hpp-fcl::hpp-fcl
+  coal::coal
   gepetto-viewer-corba::gepetto-viewer-corba
   Boost::thread
   Boost::regex

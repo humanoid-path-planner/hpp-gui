@@ -17,7 +17,7 @@
  <depend>gepetto-viewer</depend>
  <depend>gepetto-viewer-corba</depend>
 
- <depend>hpp-fcl</depend>
+ <depend>coal</depend>
  <depend>hpp-corbaserver</depend>
  <depend>hpp-manipulation-corba</depend>
 </package>

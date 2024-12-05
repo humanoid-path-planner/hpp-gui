@@ -16,12 +16,12 @@
 // hpp-gui  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#ifndef HPP_GUI_HPP_FCL_PLUGIN_NODE_HH
-#define HPP_GUI_HPP_FCL_PLUGIN_NODE_HH
+#ifndef HPP_GUI_COAL_PLUGIN_NODE_HH
+#define HPP_GUI_COAL_PLUGIN_NODE_HH
 
+#include <coal/BVH/BVH_model.h>
+#include <coal/internal/BV_splitter.h>
 #include <gepetto/viewer/node.h>
-#include <hpp/fcl/BVH/BVH_model.h>
-#include <hpp/fcl/internal/BV_splitter.h>
 
 namespace hpp {
 namespace gui {
@@ -39,12 +39,12 @@ class BVHDisplay : public Node {
 
   void setColor(const osgVector4& color);
 
-  void init(hpp::fcl::SplitMethodType splitMethod);
+  void init(coal::SplitMethodType splitMethod);
 
  private:
-  typedef hpp::fcl::OBB BoundingVolume;
-  typedef hpp::fcl::BVHModel<BoundingVolume> BVH_t;
-  typedef hpp::fcl::shared_ptr<BVH_t> BVHPtr_t;
+  typedef coal::OBB BoundingVolume;
+  typedef coal::BVHModel<BoundingVolume> BVH_t;
+  typedef coal::shared_ptr<BVH_t> BVHPtr_t;
 
   void recursiveBuildTree(const BVH_t& bvh, int ibv, std::size_t level);
 
@@ -60,4 +60,4 @@ class BVHDisplay : public Node {
 }  // namespace gui
 }  // namespace hpp
 
-#endif  // HPP_GUI_HPP_FCL_PLUGIN_NODE_HH
+#endif  // HPP_GUI_COAL_PLUGIN_NODE_HH

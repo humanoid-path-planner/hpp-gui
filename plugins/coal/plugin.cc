@@ -32,41 +32,40 @@ namespace hpp {
 namespace gui {
 using gepetto::gui::MainWindow;
 
-void HppFclPlugin::init() {
+void CoalPlugin::init() {
   MainWindow* main = MainWindow::instance();
   main->registerSlot("addBV", this);
 
   // TODO add a way to add an action to body tree items.
-  QToolBar* toolBar = MainWindow::instance()->addToolBar("hpp-fcl tools");
-  toolBar->setObjectName("hppfclplugin.toolbar");
+  QToolBar* toolBar = MainWindow::instance()->addToolBar("coal tools");
+  toolBar->setObjectName("coalplugin.toolbar");
   QAction* openD = new QAction(QIcon::fromTheme("document-open"),
                                "Load a BVH model", toolBar);
   toolBar->addAction(openD);
   connect(openD, SIGNAL(triggered()), SLOT(openDialog()));
 }
 
-void HppFclPlugin::addBV(QString name, QString filename,
-                         int splitMethod) const {
+void CoalPlugin::addBV(QString name, QString filename, int splitMethod) const {
   std::string _name(name.toStdString());
 
   BVHDisplayPtr_t node(new BVHDisplay(filename.toStdString(), _name));
   switch (splitMethod) {
     default:
     case 0:
-      node->init(hpp::fcl::SPLIT_METHOD_MEAN);
+      node->init(coal::SPLIT_METHOD_MEAN);
       break;
     case 1:
-      node->init(hpp::fcl::SPLIT_METHOD_MEDIAN);
+      node->init(coal::SPLIT_METHOD_MEDIAN);
       break;
     case 2:
-      node->init(hpp::fcl::SPLIT_METHOD_BV_CENTER);
+      node->init(coal::SPLIT_METHOD_BV_CENTER);
       break;
   }
   MainWindow* main = MainWindow::instance();
   main->osg()->insertNode(_name, node);
 }
 
-void HppFclPlugin::openDialog() const {
+void CoalPlugin::openDialog() const {
   bool ok;
   QString filename = QFileDialog::getOpenFileName(NULL, "Select a mesh file");
   if (filename.isNull()) return;
@@ -102,7 +101,7 @@ void HppFclPlugin::openDialog() const {
 }
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-Q_EXPORT_PLUGIN2(hppfclplugin, HppFclPlugin)
+Q_EXPORT_PLUGIN2(coalplugin, CoalPlugin)
 #endif
 
 }  // namespace gui

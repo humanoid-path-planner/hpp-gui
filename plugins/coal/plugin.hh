@@ -21,7 +21,7 @@
 
 namespace hpp {
 namespace gui {
-class HppFclPlugin : public QObject, public gepetto::gui::PluginInterface {
+class CoalPlugin : public QObject, public gepetto::gui::PluginInterface {
   Q_OBJECT
   Q_INTERFACES(gepetto::gui::PluginInterface)
 
@@ -30,7 +30,7 @@ class HppFclPlugin : public QObject, public gepetto::gui::PluginInterface {
 #endif
 
  public:
-  QString name() const { return QString("HppFclPlugin"); }
+  QString name() const { return QString("CoalPlugin"); }
 
  public slots:
   void addBV(QString name, QString filename, int splitMethod) const;

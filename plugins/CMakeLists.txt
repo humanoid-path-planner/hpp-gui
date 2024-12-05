@@ -25,9 +25,9 @@ set(BUILD_HPP_WIDGETS_PLUGIN
 set(BUILD_HPP_MANIPULATION_WIDGETS_PLUGIN
     ${hpp-manipulation-corba_FOUND}
     CACHE BOOL "Build hppmanipulationwidgetsplugin")
-set(BUILD_HPP_FCL_PLUGIN
-    ${hpp-fcl_FOUND}
-    CACHE BOOL "Build hppfclplugin")
+set(BUILD_COAL_PLUGIN
+    ${coal_FOUND}
+    CACHE BOOL "Build coalplugin")
 
 if(hpp-corbaserver_FOUND)
   if(REMOTEIMU_FOUND AND BUILD_REMOTEIMU_PLUGIN)
@@ -47,6 +47,6 @@ if(hpp-corbaserver_FOUND)
   endif(hpp-manipulation-corba_FOUND AND BUILD_HPP_MANIPULATION_WIDGETS_PLUGIN)
 endif(hpp-corbaserver_FOUND)
 
-if(BUILD_HPP_FCL_PLUGIN AND hpp-fcl_FOUND)
-  add_subdirectory(hppfcl)
+if(BUILD_COAL_PLUGIN AND coal_FOUND)
+  add_subdirectory(coal)
 endif()
