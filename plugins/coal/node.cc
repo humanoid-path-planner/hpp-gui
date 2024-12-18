@@ -43,7 +43,7 @@ void BVHDisplay::init(coal::SplitMethodType splitMethod) {
 
   BVHPtr_t bvh(new BVH_t);
   bvh->bv_splitter.reset(new BVSplitter<BoundingVolume>(splitMethod));
-  loadPolyhedronFromResource(filename_, Vec3f(1, 1, 1), bvh);
+  loadPolyhedronFromResource(filename_, Vec3s(1, 1, 1), bvh);
 
   recursiveBuildTree(*bvh, 0, 0);
 
