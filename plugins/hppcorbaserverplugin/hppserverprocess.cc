@@ -10,7 +10,7 @@
 
 namespace hpp {
 namespace gui {
-HppServerProcess::HppServerProcess(hpp::corbaServer::Server *server)
+HppServerProcess::HppServerProcess(hpp::corbaServer::Server* server)
     : server_(server) {}
 
 HppServerProcess::~HppServerProcess() { delete server_; }
