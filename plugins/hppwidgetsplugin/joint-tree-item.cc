@@ -30,10 +30,10 @@ const int JointTreeItem::LowerBoundRole = Qt::UserRole + 2;
 const int JointTreeItem::UpperBoundRole = Qt::UserRole + 3;
 const int JointTreeItem::TypeRole = Qt::UserRole + 10;
 
-JointTreeItem::JointTreeItem(const char *name, const ULong &idxQ,
-                             const ULong &idxV, const hpp::floatSeq &q,
-                             const hpp::floatSeq &b, const ULong &nbDof,
-                             const NodesPtr_t &nodes)
+JointTreeItem::JointTreeItem(const char* name, const ULong& idxQ,
+                             const ULong& idxV, const hpp::floatSeq& q,
+                             const hpp::floatSeq& b, const ULong& nbDof,
+                             const NodesPtr_t& nodes)
     : QStandardItem(QString(name)),
       name_(name),
       idxQ_(idxQ),
@@ -45,11 +45,11 @@ JointTreeItem::JointTreeItem(const char *name, const ULong &idxQ,
   setData((int)-1, IndexRole);
   setData(SkipType, TypeRole);
   for (size_t i = 0; i < nq_; ++i) {
-    QStandardItem *joint = new QStandardItem;
-    QStandardItem *upper = new QStandardItem;
-    QStandardItem *lower = new QStandardItem;
+    QStandardItem* joint = new QStandardItem;
+    QStandardItem* upper = new QStandardItem;
+    QStandardItem* lower = new QStandardItem;
     joint->setData(static_cast<int>(i), IndexRole);
-    QList<QStandardItem *> row;
+    QList<QStandardItem*> row;
     row << joint << lower << upper;
     value_.append(row);
     appendRow(row);
@@ -60,7 +60,7 @@ JointTreeItem::JointTreeItem(const char *name, const ULong &idxQ,
 
 JointTreeItem::~JointTreeItem() { qDeleteAll(actions_); }
 
-QStandardItem *JointTreeItem::clone() const {
+QStandardItem* JointTreeItem::clone() const {
   hpp::floatSeq q = hpp::floatSeq();
   q.length(value_.size());
   hpp::floatSeq b = hpp::floatSeq();
@@ -91,23 +91,23 @@ hpp::floatSeq JointTreeItem::bounds() const {
   return b;
 }
 
-void JointTreeItem::updateConfig(const hpp::floatSeq &c) {
+void JointTreeItem::updateConfig(const hpp::floatSeq& c) {
   assert((int)c.length() == value_.size());
   for (int i = 0; i < value_.size(); ++i)
     value_[i][0]->setData(c[i], Qt::EditRole);
 }
 
-void JointTreeItem::updateFromRobotConfig(const hpp::floatSeq &rc) {
+void JointTreeItem::updateFromRobotConfig(const hpp::floatSeq& rc) {
   assert(idxQ_ + value_.size() <= rc.length());
   for (int i = 0; i < value_.size(); ++i)
     value_[i][0]->setData(rc[(int)idxQ_ + i], Qt::EditRole);
 }
 
-void JointTreeItem::updateBounds(const hpp::floatSeq &b) {
+void JointTreeItem::updateBounds(const hpp::floatSeq& b) {
   assert((int)b.length() == 2 * value_.size());
   for (int i = 0; i < value_.size(); ++i) {
-    QStandardItem *lower = value_[i][1];
-    QStandardItem *upper = value_[i][2];
+    QStandardItem* lower = value_[i][1];
+    QStandardItem* upper = value_[i][2];
     lower->setData(BoundType, TypeRole);
     upper->setData(BoundType, TypeRole);
     lower->setData(b[2 * i], Qt::EditRole);
@@ -139,8 +139,8 @@ void JointTreeItem::updateTypeRole() {
   }
 }
 
-void JointTreeItem::setupActions(HppWidgetsPlugin *plugin) {
-  JointAction *a;
+void JointTreeItem::setupActions(HppWidgetsPlugin* plugin) {
+  JointAction* a;
 
   a = new JointAction(QObject::tr("Move &joint..."), name_, 0);
   plugin->jointTreeWidget()->connect(a, SIGNAL(triggered(std::string)),
@@ -174,33 +174,33 @@ void JointTreeItem::setupActions(HppWidgetsPlugin *plugin) {
   actions_.append(a);
 }
 
-const QList<QAction *> &JointTreeItem::actions() const { return actions_; }
+const QList<QAction*>& JointTreeItem::actions() const { return actions_; }
 
-JointItemDelegate::JointItemDelegate(QPushButton *forceVelocity,
-                                     HppWidgetsPlugin *plugin,
-                                     gepetto::gui::MainWindow *parent)
+JointItemDelegate::JointItemDelegate(QPushButton* forceVelocity,
+                                     HppWidgetsPlugin* plugin,
+                                     gepetto::gui::MainWindow* parent)
     : QItemDelegate(parent),
       main_(parent),
       plugin_(plugin),
       forceIntegrator_(forceVelocity) {}
 
-void JointItemDelegate::updateTypeRole(JointTreeItem::ItemType &type) const {
+void JointItemDelegate::updateTypeRole(JointTreeItem::ItemType& type) const {
   if (forceIntegrator_ && forceIntegrator_->isChecked() &&
       (type == JointTreeItem::UnboundedValueType ||
        type == JointTreeItem::BoundedValueType))
     type = JointTreeItem::IntegratorType;
 }
 
-QWidget *JointItemDelegate::createEditor(
-    QWidget *parent, const QStyleOptionViewItem & /*option*/,
-    const QModelIndex &index) const {
+QWidget* JointItemDelegate::createEditor(QWidget* parent,
+                                         const QStyleOptionViewItem& /*option*/,
+                                         const QModelIndex& index) const {
   JointTreeItem::ItemType type =
       (JointTreeItem::ItemType)index.data(JointTreeItem::TypeRole).toInt();
   updateTypeRole(type);
-  const QStandardItemModel *m =
-      static_cast<const QStandardItemModel *>(index.model());
-  const JointTreeItem *ji =
-      dynamic_cast<const JointTreeItem *>(m->itemFromIndex(index)->parent());
+  const QStandardItemModel* m =
+      static_cast<const QStandardItemModel*>(index.model());
+  const JointTreeItem* ji =
+      dynamic_cast<const JointTreeItem*>(m->itemFromIndex(index)->parent());
   switch (type) {
     case JointTreeItem::SkipType:
       return 0;
@@ -217,7 +217,7 @@ QWidget *JointItemDelegate::createEditor(
           index.data(JointTreeItem::IndexRole).toInt());
     case JointTreeItem::UnboundedValueType:
     case JointTreeItem::BoundType: {
-      QDoubleSpinBox *spinbox = new QDoubleSpinBox(parent);
+      QDoubleSpinBox* spinbox = new QDoubleSpinBox(parent);
       spinbox->setMinimum(-DBL_MAX);
       spinbox->setMaximum(DBL_MAX);
       spinbox->setSingleStep(0.01);
@@ -229,8 +229,8 @@ QWidget *JointItemDelegate::createEditor(
   }
 }
 
-void JointItemDelegate::setEditorData(QWidget *editor,
-                                      const QModelIndex &index) const {
+void JointItemDelegate::setEditorData(QWidget* editor,
+                                      const QModelIndex& index) const {
   JointTreeItem::ItemType type =
       (JointTreeItem::ItemType)index.data(JointTreeItem::TypeRole).toInt();
   updateTypeRole(type);
@@ -244,7 +244,7 @@ void JointItemDelegate::setEditorData(QWidget *editor,
       return;
     case JointTreeItem::UnboundedValueType:
     case JointTreeItem::BoundType: {
-      QDoubleSpinBox *spinbox = static_cast<QDoubleSpinBox *>(editor);
+      QDoubleSpinBox* spinbox = static_cast<QDoubleSpinBox*>(editor);
       spinbox->setValue(q);
       break;
     }
@@ -253,14 +253,14 @@ void JointItemDelegate::setEditorData(QWidget *editor,
   }
 }
 
-void JointItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
-                                     const QModelIndex &index) const {
+void JointItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
+                                     const QModelIndex& index) const {
   JointTreeItem::ItemType type =
       (JointTreeItem::ItemType)index.data(JointTreeItem::TypeRole).toInt();
   updateTypeRole(type);
-  QStandardItemModel *m = static_cast<QStandardItemModel *>(model);
-  JointTreeItem *ji =
-      dynamic_cast<JointTreeItem *>(m->itemFromIndex(index)->parent());
+  QStandardItemModel* m = static_cast<QStandardItemModel*>(model);
+  JointTreeItem* ji =
+      dynamic_cast<JointTreeItem*>(m->itemFromIndex(index)->parent());
   double q;
   switch (type) {
     case JointTreeItem::SkipType:
@@ -268,13 +268,13 @@ void JointItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
     case JointTreeItem::IntegratorType:
       return;
     case JointTreeItem::BoundedValueType: {
-      SliderBoundedJoint *slider = static_cast<SliderBoundedJoint *>(editor);
+      SliderBoundedJoint* slider = static_cast<SliderBoundedJoint*>(editor);
       q = slider->getValue();
       break;
     }
     case JointTreeItem::UnboundedValueType:
     case JointTreeItem::BoundType: {
-      QDoubleSpinBox *spinbox = static_cast<QDoubleSpinBox *>(editor);
+      QDoubleSpinBox* spinbox = static_cast<QDoubleSpinBox*>(editor);
       q = spinbox->value();
       break;
     }
@@ -302,15 +302,15 @@ void JointItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 }
 
 void JointItemDelegate::updateEditorGeometry(
-    QWidget *editor, const QStyleOptionViewItem &option,
-    const QModelIndex & /*index*/) const {
+    QWidget* editor, const QStyleOptionViewItem& option,
+    const QModelIndex& /*index*/) const {
   editor->setGeometry(option.rect);
 }
 
-IntegratorWheel::IntegratorWheel(Qt::Orientation o, HppWidgetsPlugin *plugin,
-                                 QWidget *parent,
-                                 gepetto::gui::MainWindow *main,
-                                 JointTreeItem const *item, int index)
+IntegratorWheel::IntegratorWheel(Qt::Orientation o, HppWidgetsPlugin* plugin,
+                                 QWidget* parent,
+                                 gepetto::gui::MainWindow* main,
+                                 JointTreeItem const* item, int index)
     : QSlider(o, parent),
       rate_(100),
       main_(main),
@@ -332,7 +332,7 @@ IntegratorWheel::IntegratorWheel(Qt::Orientation o, HppWidgetsPlugin *plugin,
   timerId_ = startTimer(rate_);
 }
 
-void IntegratorWheel::timerEvent(QTimerEvent *) {
+void IntegratorWheel::timerEvent(QTimerEvent*) {
   killTimer(timerId_);
   if (dq_[index_] != 0) {
     hpp::floatSeq_var q = plugin_->client()->robot()->jointIntegrate(
@@ -355,10 +355,10 @@ void IntegratorWheel::updateIntegrator(int value) {
 }
 
 SliderBoundedJoint::SliderBoundedJoint(Qt::Orientation orientation,
-                                       HppWidgetsPlugin *plugin,
-                                       QWidget *parent,
-                                       gepetto::gui::MainWindow *main,
-                                       JointTreeItem const *item, int index)
+                                       HppWidgetsPlugin* plugin,
+                                       QWidget* parent,
+                                       gepetto::gui::MainWindow* main,
+                                       JointTreeItem const* item, int index)
     : QSlider(orientation, parent),
       main_(main),
       plugin_(plugin),
