@@ -13,9 +13,9 @@
 # <http://www.gnu.org/licenses/>.
 
 if(USE_QT4)
-  set(QT4 "QT4")
+    set(QT4 "QT4")
 else()
-  set(QT4 "")
+    set(QT4 "")
 endif()
 
 gepetto_gui_plugin(
@@ -36,4 +36,5 @@ gepetto_gui_plugin(
   Boost::thread
   Boost::regex
   Boost::system
-  PKG_CONFIG_DEPENDENCIES)
+  PKG_CONFIG_DEPENDENCIES
+)
