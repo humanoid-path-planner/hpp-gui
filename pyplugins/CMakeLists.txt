@@ -13,7 +13,8 @@
 # <http://www.gnu.org/licenses/>.
 
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/plugin.py
+    FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/plugin.py
         ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/parameters.py
         ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/directpath.py
         ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/graphutility.py
@@ -22,7 +23,8 @@ install(
         ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/inspector.py
         ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/collision_pairs.py
         ${CMAKE_CURRENT_SOURCE_DIR}/hpp/gui/__init__.py
-  DESTINATION ${PYTHON_SITELIB}/hpp/gui)
+    DESTINATION ${PYTHON_SITELIB}/hpp/gui
+)
 gepetto_gui_pyplugin(hpp/gui/plugin.py)
 gepetto_gui_pyplugin(hpp/gui/dynamicbuild.py)
 # GEPETTO_GUI_PYPLUGIN(hpp/gui/graphutility.py)
