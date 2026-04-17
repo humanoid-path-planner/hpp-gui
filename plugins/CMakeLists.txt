@@ -17,36 +17,43 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(BUILD_REMOTEIMU_PLUGIN
     ${REMOTEIMU_FOUND}
-    CACHE BOOL "Build remoteimuplugin")
+    CACHE BOOL
+    "Build remoteimuplugin"
+)
 # SET(BUILD_HPP_CORBASERVER_PLUGIN OFF CACHE BOOL "Build hppcorbaserverplugin")
 set(BUILD_HPP_WIDGETS_PLUGIN
     ${hpp-corbaserver_FOUND}
-    CACHE BOOL "Build hppwidgetsplugin")
+    CACHE BOOL
+    "Build hppwidgetsplugin"
+)
 set(BUILD_HPP_MANIPULATION_WIDGETS_PLUGIN
     ${hpp-manipulation-corba_FOUND}
-    CACHE BOOL "Build hppmanipulationwidgetsplugin")
-set(BUILD_COAL_PLUGIN
-    ${coal_FOUND}
-    CACHE BOOL "Build coalplugin")
+    CACHE BOOL
+    "Build hppmanipulationwidgetsplugin"
+)
+set(BUILD_COAL_PLUGIN ${coal_FOUND} CACHE BOOL "Build coalplugin")
 
 if(hpp-corbaserver_FOUND)
-  if(REMOTEIMU_FOUND AND BUILD_REMOTEIMU_PLUGIN)
-    add_subdirectory(remoteimuplugin)
-  endif(REMOTEIMU_FOUND AND BUILD_REMOTEIMU_PLUGIN)
+    if(REMOTEIMU_FOUND AND BUILD_REMOTEIMU_PLUGIN)
+        add_subdirectory(remoteimuplugin)
+    endif(REMOTEIMU_FOUND AND BUILD_REMOTEIMU_PLUGIN)
 
-  # Disable because header <gepetto/gui/omniorb/omniorbthread.hh> no more
-  # accessible. IF(BUILD_HPP_CORBASERVER_PLUGIN)
-  # ADD_SUBDIRECTORY(hppcorbaserverplugin) ENDIF(BUILD_HPP_CORBASERVER_PLUGIN)
+    # Disable because header <gepetto/gui/omniorb/omniorbthread.hh> no more
+    # accessible. IF(BUILD_HPP_CORBASERVER_PLUGIN)
+    # ADD_SUBDIRECTORY(hppcorbaserverplugin) ENDIF(BUILD_HPP_CORBASERVER_PLUGIN)
 
-  if(BUILD_HPP_WIDGETS_PLUGIN)
-    add_subdirectory(hppwidgetsplugin)
-  endif(BUILD_HPP_WIDGETS_PLUGIN)
+    if(BUILD_HPP_WIDGETS_PLUGIN)
+        add_subdirectory(hppwidgetsplugin)
+    endif(BUILD_HPP_WIDGETS_PLUGIN)
 
-  if(hpp-manipulation-corba_FOUND AND BUILD_HPP_MANIPULATION_WIDGETS_PLUGIN)
-    add_subdirectory(hppmanipulationwidgetsplugin)
-  endif(hpp-manipulation-corba_FOUND AND BUILD_HPP_MANIPULATION_WIDGETS_PLUGIN)
+    if(hpp-manipulation-corba_FOUND AND BUILD_HPP_MANIPULATION_WIDGETS_PLUGIN)
+        add_subdirectory(hppmanipulationwidgetsplugin)
+    endif(
+        hpp-manipulation-corba_FOUND
+        AND BUILD_HPP_MANIPULATION_WIDGETS_PLUGIN
+    )
 endif(hpp-corbaserver_FOUND)
 
 if(BUILD_COAL_PLUGIN AND coal_FOUND)
-  add_subdirectory(coal)
+    add_subdirectory(coal)
 endif()

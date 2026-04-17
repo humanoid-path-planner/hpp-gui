@@ -13,9 +13,9 @@
 # License along with hpp-gui  If not, see <http://www.gnu.org/licenses/>.
 
 if(USE_QT4)
-  set(QT "QT4")
+    set(QT "QT4")
 else(USE_QT4)
-  set(QT "")
+    set(QT "")
 endif(USE_QT4)
 
 gepetto_gui_plugin(
@@ -71,4 +71,5 @@ gepetto_gui_plugin(
   "Boost::regex"
   "Boost::system"
   "hpp-corbaserver::hpp-corbaserver"
-  "gepetto-viewer-corba::gepetto-viewer-corba")
+  "gepetto-viewer-corba::gepetto-viewer-corba"
+)
