@@ -38,5 +38,4 @@ gepetto_gui_plugin(
   "gepetto-viewer-corba::gepetto-viewer-corba"
   "Boost::thread"
   "Boost::regex"
-  "Boost::system"
 )

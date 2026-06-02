@@ -69,7 +69,6 @@ gepetto_gui_plugin(
   LINK_DEPENDENCIES
   "Boost::thread"
   "Boost::regex"
-  "Boost::system"
   "hpp-corbaserver::hpp-corbaserver"
   "gepetto-viewer-corba::gepetto-viewer-corba"
 )

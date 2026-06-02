@@ -115,7 +115,7 @@ set(PKG_CONFIG_EXTRA "qtversion=${HPP_GUI_QTVERSION}")
 set(PACKAGE_EXTRA_MACROS "set(HPP_GUI_QTVERSION ${HPP_GUI_QTVERSION})")
 
 # Search for Boost.
-add_project_dependency(Boost REQUIRED COMPONENTS thread regex system)
+add_project_dependency(Boost REQUIRED COMPONENTS thread regex)
 
 add_project_dependency("coal")
 add_project_dependency("hpp-manipulation-corba")
