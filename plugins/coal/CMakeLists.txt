@@ -35,6 +35,5 @@ gepetto_gui_plugin(
   gepetto-viewer-corba::gepetto-viewer-corba
   Boost::thread
   Boost::regex
-  Boost::system
   PKG_CONFIG_DEPENDENCIES
 )
