@@ -9,7 +9,6 @@
       { lib, ... }:
       {
         overrideAttrs.hpp-gui = {
-          patches = [ ]; # https://github.com/Gepetto/flakoboros/issues/62
           src = lib.fileset.toSource {
             root = ./.;
             fileset = lib.fileset.unions [
